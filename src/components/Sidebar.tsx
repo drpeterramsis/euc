@@ -21,7 +21,8 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
   const fullUser = users.find(u => u.id === currentUser?.id) || currentUser;
 
   const sidebarClass = `
-  fixed top-0 left-0 h-full w-64 bg-black z-50 flex flex-col
+  fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-black z-30 flex flex-col
+  border-r border-gray-800 overflow-y-auto
   transform transition-transform duration-300
   ${isOpen ? "translate-x-0" : "-translate-x-full"}
   lg:translate-x-0
@@ -64,6 +65,12 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
 
   return (
     <>
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-20 lg:hidden"
+          onClick={onClose}
+        />
+      )}
       <aside className={sidebarClass}>
         <div className="p-6 text-2xl font-bold border-b border-gray-800 flex justify-between items-center text-white">
             <div>EUC <span className="text-yellow-500">EVA URO</span></div>

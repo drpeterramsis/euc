@@ -40,25 +40,57 @@ export async function readJSON(fileName: string): Promise<any[]> {
   return [];
 }
 
-export async function writeJSON(filePath: string, content: any) {
+export async function writeJSON(fileName: string, data: any): Promise<void> {
   const TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
   const REPO = import.meta.env.VITE_GITHUB_REPO;
   const BRANCH = import.meta.env.VITE_GITHUB_BRANCH || "main";
-  if (!TOKEN || !REPO) throw new Error("GitHub配置 missing");
-  
-  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data/${filePath}`, {
-    headers: { Authorization: `Bearer ${TOKEN}` }
-  });
-  const data = await res.json();
-  
-  await fetch(`https://api.github.com/repos/${REPO}/contents/data/${filePath}`, {
-    method: "PUT",
-    headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      message: `Update ${filePath}`,
-      content: btoa(JSON.stringify(content, null, 2)),
-      sha: data.sha,
-      branch: BRANCH
-    })
-  });
+
+  if (!TOKEN || !REPO) {
+    console.warn("No GitHub credentials — write skipped");
+    return;
+  }
+
+  // Step 1: Get current file SHA (required for GitHub API update)
+  const getRes = await fetch(
+    `https://api.github.com/repos/${REPO}/contents/data/${fileName}?ref=${BRANCH}`,
+    {
+      headers: {
+        Authorization: `Bearer ${TOKEN}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    }
+  );
+
+  let sha = "";
+  if (getRes.ok) {
+    const fileData = await getRes.json();
+    sha = fileData.sha;
+  }
+
+  // Step 2: Encode content to base64
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+
+  // Step 3: PUT to GitHub API
+  const putRes = await fetch(
+    `https://api.github.com/repos/${REPO}/contents/data/${fileName}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${TOKEN}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: `Update ${fileName} via EUC Admin Panel`,
+        content,
+        sha,
+        branch: BRANCH,
+      }),
+    }
+  );
+
+  if (!putRes.ok) {
+    const err = await putRes.json();
+    throw new Error(`GitHub write failed: ${err.message}`);
+  }
 }

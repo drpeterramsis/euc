@@ -16,20 +16,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header onMenuClick={() => setSidebarOpen(true)} />
       
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex-1 flex flex-col lg:ml-64">
-        <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-        <main className="flex-1 p-4 md:p-8 pt-20">
+      {/* Main content area */}
+      <div className="pt-16 lg:pl-64 min-h-screen flex flex-col">
+        <main className="p-4 md:p-6 lg:p-8 flex-1">
           {children}
         </main>
         <Footer />
