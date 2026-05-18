@@ -31,19 +31,21 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
   const renderNav = (label: string, to: string, icon: string, featureKey?: string) => {
     // If featureKey is provided, check access
     if (featureKey && fullUser?.featureAccess) {
-      if (!fullUser.featureAccess[featureKey]) return null; // OFF
+      // If access is explicitly false, hide it
+      if (fullUser.featureAccess[featureKey] === false) return null;
 
+      // Handle 'coming_soon'
       if (fullUser.featureAccess[featureKey] === 'coming_soon') {
         return (
           <NavLink
             to={`/coming-soon?feature=${featureKey}`}
             onClick={onClose}
             className={({ isActive }) =>
-              `block p-3 rounded-lg transition-colors flex items-center justify-between font-medium ${isActive ? "bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500" : "text-gray-700 hover:bg-gray-100"}`
+              `block p-3 rounded-lg transition-colors flex items-center justify-between font-medium ${isActive ? "bg-yellow-500/10 text-[#FFBF00] border-l-4 border-[#FFBF00]" : "text-white hover:bg-gray-800 hover:text-[#FFBF00]"}`
             }
           >
             <span>{icon} {label}</span>
-            <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full border border-gray-300 font-bold hidden sm:inline-block">Soon</span>
+            <span className="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded-full border border-gray-700 font-bold hidden sm:inline-block">Soon</span>
           </NavLink>
         );
       }
@@ -55,7 +57,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
         to={to}
         onClick={onClose}
         className={({ isActive }) =>
-          `block p-3 rounded-lg transition-colors font-medium flex items-center gap-2 ${isActive ? "bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500" : "text-gray-700 hover:bg-gray-100"}`
+          `block p-3 rounded-lg transition-colors font-medium flex items-center gap-2 ${isActive ? "bg-yellow-500/10 text-[#FFBF00] border-l-4 border-[#FFBF00]" : "text-white hover:bg-gray-800 hover:text-[#FFBF00]"}`
         }
       >
         <span>{icon}</span> <span>{label}</span>
@@ -78,12 +80,12 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
         </div>
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {renderNav("Dashboard", "/dashboard", "📊")}
+          {renderNav("Media", "/media", "🖼️", "photoGallery")}
           {renderNav("My Profile", "/profile", "👤")}
           {renderNav("Trip Schedule", "/schedule", "📅", "schedule")}
           {renderNav("Sessions", "/sessions", "🎓", "sessions")}
           {renderNav("Social Program", "/coming-soon?feature=social_program", "🎉", "social_program")}
           {renderNav("Awards Ceremony", "/coming-soon?feature=awards_ceremony", "🏆", "awards_ceremony")}
-          {renderNav("Photo Gallery", "/coming-soon?feature=photo_gallery", "📷", "photo_gallery")}
           {renderNav("Documents", "/coming-soon?feature=documents", "📄", "documents")}
           
           {currentUser?.role === 'admin' && (

@@ -8,6 +8,7 @@ import { useApp } from '../context/AppContext';
 import { Navigate, useSearchParams, useNavigate } from 'react-router-dom';
 import { writeJSON } from '../utils/github';
 import UserControlCard from '../components/UserControlCard';
+import MediaPostViewerModal from '../components/MediaPostViewerModal';
 import { showToast } from '../components/Toast';
 
 export default function Admin() {
@@ -918,7 +919,9 @@ export default function Admin() {
     }
   }
 
-  const renderTab5 = () => (
+  const renderTab5 = () => {
+    const [selectedPost, setSelectedPost] = useState<any>(null);
+    return (
     <div>
        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
          <h2 className="text-xl font-bold">Media / Posts</h2>
@@ -927,12 +930,12 @@ export default function Admin() {
        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
          {media.length === 0 && <p className="text-gray-500 col-span-full text-center py-10">No posts. Create one to get started.</p>}
          {media.map((post: any) => (
-            <div key={post.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+            <div key={post.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedPost(post)}>
               <img src={post.imageDataUrl} alt={post.title} className="w-full h-48 object-cover" />
               <div className="p-4 flex-1 flex flex-col">
                  <div className="flex items-center justify-between mb-2">
                     <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded capitalize">{post.category}</span>
-                    <button onClick={() => handleDeleteMedia(post.id)} className="text-red-500 hover:text-red-700 text-sm font-bold bg-red-50 px-2 py-1 rounded">Delete</button>
+                    <button onClick={(e) => { e.stopPropagation(); handleDeleteMedia(post.id); }} className="text-red-500 hover:text-red-700 text-sm font-bold bg-red-50 px-2 py-1 rounded z-10">Delete</button>
                  </div>
                  <h3 className="font-bold text-gray-900 line-clamp-1">{post.title}</h3>
                  <p className="text-xs text-gray-400 mt-1">{new Date(post.createdAt || Date.now()).toLocaleDateString()}</p>
@@ -942,6 +945,10 @@ export default function Admin() {
             </div>
          ))}
        </div>
+
+       {selectedPost && (
+         <MediaPostViewerModal post={selectedPost} onClose={() => setSelectedPost(null)} />
+       )}
 
        {showMediaForm && (
          <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 overflow-y-auto">
@@ -982,6 +989,7 @@ export default function Admin() {
        )}
     </div>
   );
+  };
 
   return (
     <Layout>

@@ -16,6 +16,7 @@ import Schedule from './pages/Schedule';
 import Sessions from './pages/Sessions';
 import Admin from './pages/Admin';
 import ComingSoon from './pages/ComingSoon';
+import Media from './pages/Media';
 import { useApp } from './context/AppContext';
 
 /**
@@ -84,6 +85,7 @@ export default function App() {
           <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
           <Route path="/sessions" element={<ProtectedRoute><Sessions /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+          <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
           <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

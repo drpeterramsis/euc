@@ -2,12 +2,15 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
+import MediaPostViewerModal from '../components/MediaPostViewerModal';
 
 export default function Dashboard() {
-  const { currentUser, users } = useApp();
+  const { currentUser, users, media = [] } = useApp();
+  const [selectedPost, setSelectedPost] = useState<any>(null);
   const navigate = useNavigate();
   
   const viewAs = sessionStorage.getItem("euc_view_as");
@@ -56,6 +59,28 @@ export default function Dashboard() {
 
       <h1 className="text-2xl font-bold mb-6 text-gray-900">Dashboard</h1>
       {fullUser && <p className="mb-6 text-gray-700">Welcome back, {fullUser.name}</p>}
+
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+        <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-bold">Latest Posts</h2>
+            <a href="/media" className="text-yellow-600 text-sm font-bold hover:underline">View all →</a>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {media.slice(0, 3).map((post: any) => (
+                <div key={post.id} className="border rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedPost(post)}>
+                    <img src={post.imageDataUrl} alt={post.title} className="w-full h-32 object-cover" />
+                    <div className="p-3">
+                        <h4 className="font-semibold text-sm truncate">{post.title}</h4>
+                    </div>
+                </div>
+            ))}
+            {media.length === 0 && <p className="text-gray-500">No posts yet.</p>}
+        </div>
+      </div>
+
+      {selectedPost && (
+        <MediaPostViewerModal post={selectedPost} onClose={() => setSelectedPost(null)} />
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Flight Card */}
