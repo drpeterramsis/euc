@@ -1,6 +1,6 @@
 {
-  "name": "EVA URO CLUB",
-  "description": "Conference trip management for EVA URO CLUB Prague trip.",
+  "name": "EUC - EVA URO CLUB",
+  "description": "Conference trip management platform for the EVA URO CLUB medical delegation.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
