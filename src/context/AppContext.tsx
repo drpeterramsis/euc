@@ -38,6 +38,7 @@ export const CACHE = {
   schedule:  "euc_session_schedule",
   sessions:  "euc_session_sessions",
   settings:  "euc_session_settings",
+  media:     "euc_session_media",
   lastFetch: "euc_last_fetch_time",
 };
 
@@ -48,6 +49,7 @@ interface AppContextType {
   schedule:    any[];
   sessions:    any[];
   settings:    any;
+  media:       any[];
   currentUser: any;
   loading:     boolean;
   isFirstLoad: boolean;
@@ -57,6 +59,7 @@ interface AppContextType {
   updateSchedule: (data: any[])  => void;
   updateSessions: (data: any[])  => void;
   updateSettings: (data: any)    => void;
+  updateMedia:    (data: any[])  => void;
   refreshData:    () => Promise<void>;
   loginUser:      (user: any) => void;
 }
@@ -69,24 +72,27 @@ function readSessionCache() {
     const sc = sessionStorage.getItem(CACHE.schedule);
     const se = sessionStorage.getItem(CACHE.sessions);
     const st = sessionStorage.getItem(CACHE.settings);
-    if (u && sc && se && st) {
+    const md = sessionStorage.getItem(CACHE.media);
+    if (u && sc && se && st && md) {
       return {
         users:    JSON.parse(u),
         schedule: JSON.parse(sc),
         sessions: JSON.parse(se),
         settings: JSON.parse(st),
+        media:    JSON.parse(md),
       };
     }
   } catch { }
   return null;
 }
 
-function writeSessionCache(data: { users: any[], schedule: any[], sessions: any[], settings: any }) {
+function writeSessionCache(data: { users: any[], schedule: any[], sessions: any[], settings: any, media: any[] }) {
   try {
     sessionStorage.setItem(CACHE.users,    JSON.stringify(data.users));
     sessionStorage.setItem(CACHE.schedule, JSON.stringify(data.schedule));
     sessionStorage.setItem(CACHE.sessions, JSON.stringify(data.sessions));
     sessionStorage.setItem(CACHE.settings, JSON.stringify(data.settings));
+    sessionStorage.setItem(CACHE.media,    JSON.stringify(data.media));
     localStorage.setItem(CACHE.lastFetch,  Date.now().toString());
   } catch { }
 }
@@ -102,6 +108,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [schedule, setSchedule] = useState<any[]>([]);
   const [sessions, setSessions] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>({});
+  const [media,    setMedia]    = useState<any[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [error,    setError]    = useState<string | null>(null);
@@ -117,13 +124,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   });
 
   const fetchFreshData = useCallback(async () => {
-    const [u, sc, se, st] = await Promise.all([
+    const [u, sc, se, st, md] = await Promise.all([
       readJSON("users.json"),
       readJSON("schedule.json"),
       readJSON("sessions.json"),
       readJSON("settings.json"),
+      readJSON("media.json").catch(() => []), // gracefully handle missing media file
     ]);
-    return { users: u, schedule: sc, sessions: se, settings: st };
+    return { users: u, schedule: sc, sessions: se, settings: st, media: md };
   }, []);
 
   const backgroundRefresh = useCallback(async () => {
@@ -139,6 +147,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setSchedule(fresh.schedule);
         setSessions(fresh.sessions);
         setSettings(fresh.settings);
+        setMedia(fresh.media);
         writeSessionCache(fresh);
         return;
       }
@@ -147,13 +156,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         stableStringify(fresh.users) !== stableStringify(cached.users) ||
         stableStringify(fresh.schedule) !== stableStringify(cached.schedule) ||
         stableStringify(fresh.sessions) !== stableStringify(cached.sessions) ||
-        stableStringify(fresh.settings) !== stableStringify(cached.settings);
+        stableStringify(fresh.settings) !== stableStringify(cached.settings) ||
+        stableStringify(fresh.media) !== stableStringify(cached.media);
 
       if (changed) {
         setUsers(fresh.users);
         setSchedule(fresh.schedule);
         setSessions(fresh.sessions);
         setSettings(fresh.settings);
+        setMedia(fresh.media);
         writeSessionCache(fresh);
       }
     } catch {
@@ -179,6 +190,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setSchedule(cached.schedule);
       setSessions(cached.sessions);
       setSettings(cached.settings);
+      setMedia(cached.media);
       setLoading(false);
       setIsFirstLoad(false);
 
@@ -192,6 +204,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setSchedule(fresh.schedule);
           setSessions(fresh.sessions);
           setSettings(fresh.settings);
+          setMedia(fresh.media);
           writeSessionCache(fresh);
         })
         .catch(() => {
@@ -243,6 +256,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, []);
 
+  const updateMedia = useCallback((data: any[]) => {
+    setMedia(data);
+    try { 
+      sessionStorage.setItem(CACHE.media, JSON.stringify(data));
+      localStorage.setItem(CACHE.lastFetch, Date.now().toString());
+    } catch {}
+  }, []);
+
   const refreshData = useCallback(async () => {
     setLoading(true);
     try {
@@ -251,6 +272,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setSchedule(fresh.schedule);
       setSessions(fresh.sessions);
       setSettings(fresh.settings);
+      setMedia(fresh.media);
       writeSessionCache(fresh);
     } catch {
       setError("Failed to refresh data.");
@@ -261,9 +283,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      users, schedule, sessions, settings,
+      users, schedule, sessions, settings, media,
       currentUser, loading, isFirstLoad, error, isBackgroundRefreshing,
-      updateUsers, updateSchedule, updateSessions, updateSettings,
+      updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia,
       refreshData, loginUser,
     }}>
       {children}

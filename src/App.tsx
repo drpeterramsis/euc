@@ -57,7 +57,7 @@ export default function App() {
   if (loading && isFirstLoad) return (
     <div className="fixed inset-0 bg-white flex flex-col items-center justify-center">
       <div className="text-4xl font-extrabold text-gray-900 mb-1 tracking-tight">EUC<span className="text-yellow-500">.</span></div>
-      <div className="text-gray-500 text-xs mb-8 font-medium">EVA URO CLUB</div>
+      <div className="text-gray-500 text-xs mb-8 font-medium">EVA URO COMMUNITY</div>
       <div className="w-12 h-12 border-4 border-yellow-500 border-t-transparent
                       rounded-full animate-spin"></div>
       <div className="text-gray-500 text-sm mt-6 font-medium">Loading conference data...</div>

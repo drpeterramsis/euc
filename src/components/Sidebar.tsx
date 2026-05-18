@@ -21,8 +21,8 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
   const fullUser = users.find(u => u.id === currentUser?.id) || currentUser;
 
   const sidebarClass = `
-  fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-white z-30 flex flex-col
-  border-r border-gray-200 overflow-y-auto shadow-sm
+  fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-black z-30 flex flex-col
+  border-r border-gray-800 overflow-y-auto shadow-sm
   transform transition-transform duration-300
   ${isOpen ? "translate-x-0" : "-translate-x-full"}
   lg:translate-x-0
@@ -72,9 +72,9 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
         />
       )}
       <aside className={sidebarClass}>
-        <div className="p-6 text-2xl font-bold border-b border-gray-200 flex justify-between items-center text-gray-900 bg-gray-50">
+        <div className="p-6 text-2xl font-bold border-b border-gray-800 flex justify-between items-center text-white bg-black">
             <div>EUC <span className="text-yellow-500 text-base ml-1">EVA URO</span></div>
-            <button className="lg:hidden text-gray-500 hover:text-gray-900" onClick={onClose}>✕</button>
+            <button className="lg:hidden text-gray-400 hover:text-white" onClick={onClose}>✕</button>
         </div>
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {renderNav("Dashboard", "/dashboard", "📊")}
@@ -88,7 +88,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
           
           {currentUser?.role === 'admin' && (
             <>
-              <div className="border-t border-gray-200 my-4" />
+              <div className="border-t border-gray-800 my-4" />
               <NavLink
                 to="/admin"
                 onClick={() => onClose?.()}
@@ -106,18 +106,18 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
           )}
         </nav>
         {/* User info and Logout button */}
-        <div className="p-4 border-t border-gray-200 bg-gray-50">
+        <div className="p-4 border-t border-gray-800 bg-black">
           {fullUser && (
             <div className="flex items-center space-x-3 mb-4">
-              <img src={fullUser.photo} className="w-10 h-10 rounded-full border border-gray-300 shadow-sm" alt="Avatar" />
+              <img src={fullUser.photo} className="w-10 h-10 rounded-full border border-gray-700 shadow-sm" alt="Avatar" />
               <div className="flex flex-col truncate">
-                <span className="text-sm font-bold text-gray-900 truncate">{fullUser.name || fullUser.username}</span>
-                <span className="text-xs text-yellow-600 font-semibold">{fullUser.role.toUpperCase()}</span>
+                <span className="text-sm font-bold text-white truncate">{fullUser.name || fullUser.username}</span>
+                <span className="text-xs text-yellow-500 font-semibold">{fullUser.role.toUpperCase()}</span>
               </div>
             </div>
           )}
           <button 
-              className="w-full text-center p-3 rounded-lg font-bold transition-colors bg-white border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-700 hover:border-red-200 shadow-sm"
+              className="w-full text-center p-3 rounded-lg font-bold transition-colors bg-gray-900 border border-gray-700 text-gray-300 hover:bg-gray-800 shadow-sm"
               onClick={logout}
           >
               Logout

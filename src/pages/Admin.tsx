@@ -12,12 +12,13 @@ import { showToast } from '../components/Toast';
 
 export default function Admin() {
   const { 
-    currentUser, users, schedule, sessions, settings, 
-    updateUsers, updateSchedule, updateSessions, updateSettings 
+    currentUser, users, schedule, sessions, settings, media = [],
+    updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia
   } = useApp();
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get("tab") || "users";
   const [activeTab, setActiveTab] = useState(defaultTab);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
   const navigate = useNavigate();
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -30,6 +31,7 @@ export default function Admin() {
   const [scheduleItems, setScheduleItems] = useState<any[]>([]);
   const [editingSchedule, setEditingSchedule] = useState<any | null>(null);
   const [showScheduleForm, setShowScheduleForm] = useState(false);
+  const [applyToAllSchedule, setApplyToAllSchedule] = useState(false);
   const [scheduleForm, setScheduleForm] = useState({
     id: "",
     date: "",
@@ -55,10 +57,17 @@ export default function Admin() {
 
   // Tab 4 State (Features)
   const [featureSettings, setFeatureSettings] = useState<any>({});
+  const [applyFeaturesToAllUsers, setApplyFeaturesToAllUsers] = useState(false);
   const [selectedFeatureUser, setSelectedFeatureUser] = useState<string>("");
   const [userFeatureAccess, setUserFeatureAccess] = useState<any>({});
   const [userVisibleFields, setUserVisibleFields] = useState<any>({});
   const [isSavingFeatures, setIsSavingFeatures] = useState(false);
+
+  // Tab 5 State (Media)
+  const [showMediaForm, setShowMediaForm] = useState(false);
+  const [mediaForm, setMediaForm] = useState({
+    id: "", category: "trips", title: "", description: "", caption: "", imageDataUrl: ""
+  });
 
   useEffect(() => {
     if (schedule && schedule.length > 0) {
@@ -98,12 +107,23 @@ export default function Admin() {
   }
 
   // --- TAB 1 METHODS ---
-  const handleSaveUser = async (updatedUser: any) => {
+  const handleSaveUser = async (updatedUser: any, applyToAllTravel: boolean = false) => {
     let newUsers;
     if (editingUser) {
       newUsers = users.map(u => u.id === updatedUser.id ? updatedUser : u);
     } else {
       newUsers = [...users, updatedUser];
+    }
+
+    if (applyToAllTravel) {
+      if (confirm("Are you sure you want to apply these travel & hotel details to ALL users?")) {
+        newUsers = newUsers.map(u => ({
+          ...u,
+          flightDetails: updatedUser.flightDetails,
+          hotel: updatedUser.hotel,
+          transfers: updatedUser.transfers
+        }));
+      }
     }
 
     await writeJSON('users.json', newUsers);
@@ -155,7 +175,21 @@ export default function Admin() {
   async function handleSaveSchedule() {
     try {
       let updated: any[];
-      if (editingSchedule) {
+      if (applyToAllSchedule) {
+        if (!confirm("Are you sure you want to apply these details to ALL schedule items?")) return;
+        updated = scheduleItems.map(day => ({
+          ...day,
+          items: day.items?.map((i: any) => ({
+            ...i,
+            date: scheduleForm.date,
+            time: scheduleForm.time,
+            location: scheduleForm.location,
+            notes: scheduleForm.notes,
+            accessRoles: scheduleForm.accessRoles,
+            accessUserIds: scheduleForm.accessUserIds
+          })) || []
+        }));
+      } else if (editingSchedule) {
         let found = false;
         updated = scheduleItems.map(day => {
           if (day.items?.some((i: any) => i.id === editingSchedule.id)) {
@@ -185,6 +219,7 @@ export default function Admin() {
       updateSchedule(updated);
       setShowScheduleForm(false);
       setEditingSchedule(null);
+      setApplyToAllSchedule(false);
       showToast("Schedule saved successfully ✓", "success");
     } catch (err) {
       showToast("Failed to save schedule", "error");
@@ -269,6 +304,25 @@ export default function Admin() {
       };
       await writeJSON("settings.json", updatedSettings);
       updateSettings(updatedSettings);
+
+      if (applyFeaturesToAllUsers) {
+        if (confirm("Are you sure you want to apply these feature settings to ALL users?")) {
+          const statusMap: any = {
+            active: { access: true, status: "full" },
+            coming_soon: { access: true, status: "coming_soon" },
+            disabled: { access: false, status: "coming_soon" },
+          };
+          const newAccess: any = {};
+          for (const k in featureSettings) {
+            newAccess[k] = statusMap[featureSettings[k] || "active"];
+          }
+          const updatedUsers = users.map(u => ({ ...u, featureAccess: newAccess }));
+          await writeJSON("users.json", updatedUsers);
+          updateUsers(updatedUsers);
+        }
+        setApplyFeaturesToAllUsers(false);
+      }
+
       showToast("Global features saved ✓", "success");
     } catch (err) {
       showToast("Failed to save features", "error");
@@ -295,13 +349,28 @@ export default function Admin() {
     }
   }
 
+  const filteredUsers = users.filter((u: any) => {
+    if (!userSearchQuery) return true;
+    const q = userSearchQuery.trim().toLowerCase();
+    const hay = [
+      u.name, u.username, u.role, u.email, u.id
+    ].filter(Boolean).join(" ").toLowerCase();
+    return hay.includes(q);
+  });
+
   const renderTab1 = () => (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
         <h2 className="text-xl font-bold">User Management</h2>
-        <div className="flex gap-4">
-          <input type="text" placeholder="🔍 Search users..." className="p-2 border rounded" />
-          <button onClick={() => { setEditingUser(null); setModalOpen(true); }} className="bg-yellow-500 hover:bg-yellow-600 p-2 px-4 rounded font-bold cursor-pointer transition-colors">+ Create New User</button>
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <input 
+            type="text" 
+            placeholder="🔍 Search users..." 
+            value={userSearchQuery}
+            onChange={(e) => setUserSearchQuery(e.target.value)}
+            className="p-2 border rounded w-full sm:w-64" 
+          />
+          <button onClick={() => { setEditingUser(null); setModalOpen(true); }} className="bg-yellow-500 hover:bg-yellow-600 p-2 px-4 rounded font-bold cursor-pointer transition-colors whitespace-nowrap">+ Create New User</button>
         </div>
       </div>
       
@@ -313,49 +382,92 @@ export default function Admin() {
         onSave={handleSaveUser} 
       />
 
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
-        <table className="w-full text-left min-w-[800px]">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="p-4 rounded-tl-lg">Photo</th>
-              <th className="p-4">Name</th>
-              <th className="p-4">Username</th>
-              <th className="p-4">Role</th>
-              <th className="p-4">Status</th>
-              <th className="p-4 rounded-tr-lg">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y text-sm">
-            {users.map((u: any) => (
-              <tr key={u.id} className="hover:bg-gray-50 transition-colors">
-                <td className="p-4"><img src={u.photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id}`} alt={u.name} className="w-10 h-10 rounded-full border bg-gray-100 object-cover" /></td>
-                <td className="p-4 font-semibold">{u.name}</td>
-                <td className="p-4 text-gray-500">{u.username}</td>
-                <td className="p-4">
-                  <span className={`px-2 py-1 rounded text-xs font-bold ${
-                    u.role === 'admin' ? 'bg-yellow-200 text-yellow-800' : 
-                    u.role === 'doctor' ? 'bg-blue-100 text-blue-800' : 'bg-gray-200 text-gray-800'
-                  }`}>
-                    {u.role.toUpperCase()}
-                  </span>
-                </td>
-                <td className="p-4">
-                  <span className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                    {u.isActive ? "Active" : "Inactive"}
-                  </span>
-                </td>
-                <td className="p-4">
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => handleImpersonate(u)} className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold flex items-center gap-1">👁 View</button>
-                    <button onClick={() => { setEditingUser(u); setModalOpen(true); }} className="px-2 py-1 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs">✏️ Edit</button> 
-                    <button onClick={() => handleDeleteUser(u.id)} className="px-2 py-1 text-red-600 hover:bg-red-50 bg-red-50 rounded text-xs">🗑 Delete</button>
-                  </div>
-                </td>
+      <div className="bg-white rounded-lg shadow">
+        {/* Mobile View */}
+        <div className="md:hidden divide-y text-sm">
+          {filteredUsers.map((u: any) => (
+            <div key={u.id} className="p-4 space-y-3">
+              <div className="flex items-center gap-3">
+                <img src={u.photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id}`} alt={u.name} className="w-12 h-12 rounded-full border bg-gray-100 object-cover flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-bold text-gray-900 truncate">{u.name}</h4>
+                  <p className="text-gray-500 truncate">{u.username}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className={`px-2 py-1 rounded text-xs font-bold ${
+                  u.role === 'admin' ? 'bg-yellow-200 text-yellow-800' : 
+                  u.role === 'doctor' ? 'bg-blue-100 text-blue-800' : 'bg-gray-200 text-gray-800'
+                }`}>
+                  {u.role.toUpperCase()}
+                </span>
+                <span className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+                  <span className={`w-2 h-2 rounded-full ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                  {u.isActive ? "Active" : "Inactive"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+                <button onClick={() => handleImpersonate(u)} className="flex-1 py-1.5 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold text-center">👁 View</button>
+                <button onClick={() => { setEditingUser(u); setModalOpen(true); }} className="flex-1 py-1.5 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs text-center font-bold">✏️ Edit</button> 
+                <button onClick={() => handleDeleteUser(u.id)} className="flex-1 py-1.5 text-red-600 hover:bg-red-50 bg-red-50 rounded text-xs text-center font-bold">🗑 Delete</button>
+              </div>
+            </div>
+          ))}
+          {filteredUsers.length === 0 && (
+            <div className="p-8 text-center text-gray-500">No users found.</div>
+          )}
+        </div>
+
+        {/* Desktop View */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full text-left min-w-[800px]">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="p-4 rounded-tl-lg">Photo</th>
+                <th className="p-4">Name</th>
+                <th className="p-4">Username</th>
+                <th className="p-4">Role</th>
+                <th className="p-4">Status</th>
+                <th className="p-4 rounded-tr-lg">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y text-sm">
+              {filteredUsers.map((u: any) => (
+                <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="p-4"><img src={u.photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id}`} alt={u.name} className="w-10 h-10 rounded-full border bg-gray-100 object-cover" /></td>
+                  <td className="p-4 font-semibold">{u.name}</td>
+                  <td className="p-4 text-gray-500">{u.username}</td>
+                  <td className="p-4">
+                    <span className={`px-2 py-1 rounded text-xs font-bold ${
+                      u.role === 'admin' ? 'bg-yellow-200 text-yellow-800' : 
+                      u.role === 'doctor' ? 'bg-blue-100 text-blue-800' : 'bg-gray-200 text-gray-800'
+                    }`}>
+                      {u.role.toUpperCase()}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    <span className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                      {u.isActive ? "Active" : "Inactive"}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => handleImpersonate(u)} className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold flex items-center gap-1">👁 View</button>
+                      <button onClick={() => { setEditingUser(u); setModalOpen(true); }} className="px-2 py-1 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs font-bold">✏️ Edit</button> 
+                      <button onClick={() => handleDeleteUser(u.id)} className="px-2 py-1 text-red-600 hover:bg-red-50 bg-red-50 rounded text-xs font-bold">🗑 Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filteredUsers.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-gray-500">No users found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
@@ -524,7 +636,12 @@ export default function Admin() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+            <label className="flex items-center gap-2 cursor-pointer p-3 bg-yellow-50 text-yellow-900 border border-yellow-200 rounded-lg max-w-max mx-auto shadow-sm hover:bg-yellow-100 transition-colors mt-4">
+              <input type="checkbox" checked={applyToAllSchedule} onChange={(e) => setApplyToAllSchedule(e.target.checked)} className="accent-yellow-500 w-5 h-5"/>
+              <span className="font-bold text-sm">Apply to all schedule items</span>
+            </label>
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 mt-4">
               <button
                 onClick={() => setShowScheduleForm(false)}
                 className="px-5 py-2 rounded-lg bg-white border border-gray-300 shadow-sm text-gray-700 font-bold hover:bg-gray-50 transition-colors"
@@ -640,7 +757,7 @@ export default function Admin() {
               </button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               {FEATURES.map(feature => (
                 <div key={feature.key} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-center justify-between shadow-sm">
                   <div className="flex items-center gap-3">
@@ -664,6 +781,11 @@ export default function Admin() {
                 </div>
               ))}
             </div>
+
+            <label className="flex items-center gap-2 cursor-pointer p-3 bg-yellow-50 text-yellow-900 border border-yellow-200 rounded-lg max-w-max mx-auto shadow-sm hover:bg-yellow-100 transition-colors">
+              <input type="checkbox" checked={applyFeaturesToAllUsers} onChange={(e) => setApplyFeaturesToAllUsers(e.target.checked)} className="accent-yellow-500 w-5 h-5"/>
+              <span className="font-bold text-sm">Apply global feature settings to ALL users</span>
+            </label>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow space-y-6">
@@ -748,6 +870,119 @@ export default function Admin() {
     );
   };
 
+  // --- TAB 5 METHODS (Media) ---
+  const handleImageSelect = (e: any) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 1.5 * 1024 * 1024) {
+      showToast("Image must be smaller than 1.5MB", "error");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev: any) => {
+      setMediaForm({ ...mediaForm, imageDataUrl: ev.target.result });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  async function handleSaveMedia() {
+    try {
+      if (!mediaForm.title.trim() || !mediaForm.imageDataUrl) {
+         showToast("Title and Photo are required", "error");
+         return;
+      }
+      let updated: any[];
+      if (mediaForm.id.startsWith("m_")) { 
+        updated = media.map(m => m.id === mediaForm.id ? { ...mediaForm } : m);
+      } else {
+        updated = [{ ...mediaForm, id: "m_" + Date.now(), createdAt: new Date().toISOString(), createdByUserId: currentUser.id }, ...media];
+      }
+      await writeJSON("media.json", updated);
+      updateMedia(updated);
+      setShowMediaForm(false);
+      showToast("Post saved successfully ✓", "success");
+    } catch (e) {
+      showToast("Failed to save post", "error");
+    }
+  }
+
+  async function handleDeleteMedia(id: string) {
+    if (!confirm("Delete this post?")) return;
+    try {
+      const updated = media.filter(m => m.id !== id);
+      await writeJSON("media.json", updated);
+      updateMedia(updated);
+      showToast("Post deleted", "success");
+    } catch (e) {
+      showToast("Failed to delete post", "error");
+    }
+  }
+
+  const renderTab5 = () => (
+    <div>
+       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+         <h2 className="text-xl font-bold">Media / Posts</h2>
+         <button onClick={() => { setMediaForm({ id: "", title: "", description: "", caption: "", category: "trips", imageDataUrl: "" }); setShowMediaForm(true); }} className="bg-yellow-500 hover:bg-yellow-600 p-2 px-4 rounded font-bold transition-colors whitespace-nowrap">+ Create Post</button>
+       </div>
+       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+         {media.length === 0 && <p className="text-gray-500 col-span-full text-center py-10">No posts. Create one to get started.</p>}
+         {media.map((post: any) => (
+            <div key={post.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+              <img src={post.imageDataUrl} alt={post.title} className="w-full h-48 object-cover" />
+              <div className="p-4 flex-1 flex flex-col">
+                 <div className="flex items-center justify-between mb-2">
+                    <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded capitalize">{post.category}</span>
+                    <button onClick={() => handleDeleteMedia(post.id)} className="text-red-500 hover:text-red-700 text-sm font-bold bg-red-50 px-2 py-1 rounded">Delete</button>
+                 </div>
+                 <h3 className="font-bold text-gray-900 line-clamp-1">{post.title}</h3>
+                 <p className="text-xs text-gray-400 mt-1">{new Date(post.createdAt || Date.now()).toLocaleDateString()}</p>
+                 {post.description && <p className="text-sm text-gray-600 mt-2 line-clamp-2">{post.description}</p>}
+                 {post.caption && <p className="text-sm italic text-gray-500 mt-2 bg-gray-50 p-2 rounded line-clamp-2">"{post.caption}"</p>}
+              </div>
+            </div>
+         ))}
+       </div>
+
+       {showMediaForm && (
+         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
+              <div className="p-6 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
+                <h2 className="text-xl font-bold">{mediaForm.id ? "Edit Post" : "Create Post"}</h2>
+                <button onClick={() => setShowMediaForm(false)} className="text-xl font-bold p-2 text-gray-500 hover:text-gray-800 leading-none">✕</button>
+              </div>
+              <div className="p-6 overflow-y-auto space-y-4">
+                 <div>
+                    <label className="block text-sm font-bold mb-1">Upload Photo (Max 1.5MB)</label>
+                    <input type="file" accept="image/*" onChange={handleImageSelect} className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-800 hover:file:bg-yellow-100" />
+                    {mediaForm.imageDataUrl && <img src={mediaForm.imageDataUrl} className="mt-3 w-full h-40 object-cover rounded-lg border shadow-sm" alt="Preview"/>}
+                 </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="col-span-2">
+                       <input value={mediaForm.title} onChange={e => setMediaForm({...mediaForm, title: e.target.value})} placeholder="Title *" className="w-full p-2 border rounded" />
+                    </div>
+                    <div className="col-span-2">
+                       <select value={mediaForm.category} onChange={e => setMediaForm({...mediaForm, category: e.target.value})} className="w-full p-2 border rounded font-semibold text-gray-700">
+                         <option value="program">Program</option>
+                         <option value="trips">Trips</option>
+                         <option value="places">Places</option>
+                         <option value="meetings">Meetings</option>
+                         <option value="photos">Photos</option>
+                       </select>
+                    </div>
+                 </div>
+                 <textarea value={mediaForm.description} onChange={e => setMediaForm({...mediaForm, description: e.target.value})} placeholder="Description (Optional)" className="w-full p-2 border rounded h-20" />
+                 <input value={mediaForm.caption} onChange={e => setMediaForm({...mediaForm, caption: e.target.value})} placeholder="Caption (Optional)" className="w-full p-2 border rounded" />
+              </div>
+              <div className="p-6 border-t bg-gray-50 rounded-b-xl flex justify-end gap-3">
+                 <button onClick={() => setShowMediaForm(false)} className="px-5 py-2 bg-white border shadow-sm font-bold rounded hover:bg-gray-50 transition-colors">Cancel</button>
+                 <button onClick={handleSaveMedia} className="px-5 py-2 bg-yellow-500 text-black font-bold rounded shadow hover:bg-yellow-600 transition-colors">Save Post</button>
+              </div>
+            </div>
+         </div>
+       )}
+    </div>
+  );
+
   return (
     <Layout>
       <div className="mb-6 flex gap-2 border-b overflow-x-auto pb-[-1px]">
@@ -755,7 +990,8 @@ export default function Admin() {
           { key: 'users', label: '👥 User Management' },
           { key: 'data', label: '📊 User Data Control' },
           { key: 'schedule', label: '📅 Schedule & Sessions' },
-          { key: 'features', label: '⚙️ Feature Flags' }
+          { key: 'features', label: '⚙️ Feature Flags' },
+          { key: 'media', label: '🖼️ Media / Posts' }
         ].map(tab => (
           <button 
             key={tab.key}
@@ -774,6 +1010,7 @@ export default function Admin() {
         {activeTab === 'data' && renderTab2()}
         {activeTab === 'schedule' && renderTab3()}
         {activeTab === 'features' && renderTab4()}
+        {activeTab === 'media' && renderTab5()}
       </div>
     </Layout>
   );

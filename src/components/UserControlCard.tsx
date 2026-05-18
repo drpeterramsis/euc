@@ -84,6 +84,8 @@ const FIELD_SECTIONS = [
 export default function UserControlCard({ isOpen, mode, user, onClose, onSave }: any) {
   const [activeTab, setActiveTab] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [applyToAllTravel, setApplyToAllTravel] = useState(false);
 
   const [formData, setFormData] = useState(() => {
     if (mode === "edit" && user) {
@@ -218,6 +220,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
       setFeatureAccess({ ...DEFAULT_FEATURE_ACCESS });
       setVisibleFields({ ...DEFAULT_VISIBLE_FIELDS });
     }
+    setApplyToAllTravel(false);
   }, [isOpen, user, mode]);
 
   if (!isOpen) return null;
@@ -322,7 +325,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         visibleFields: { ...visibleFields },
       };
 
-      await onSave(updatedUser);
+      await onSave(updatedUser, applyToAllTravel);
 
       showToast(
         mode === "edit"
@@ -346,9 +349,9 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
           <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full text-xl leading-none">✕</button>
         </div>
         
-        <div className="flex border-b text-sm font-bold">
+        <div className="flex flex-wrap sm:flex-nowrap border-b text-sm font-bold">
           {['Personal Info', 'Travel Details', 'Feature Access', 'Field Visibility'].map((name, i) => (
-            <button key={i} onClick={() => setActiveTab(i+1)} className={`flex-1 py-3 px-4 text-center border-b-2 transition-colors ${activeTab === i+1 ? 'border-yellow-500 text-yellow-600 bg-yellow-50' : 'border-transparent text-gray-500 hover:bg-gray-50'}`}>
+            <button key={i} onClick={() => setActiveTab(i+1)} className={`flex-1 min-w-[120px] py-3 px-4 text-center border-b-2 transition-colors ${activeTab === i+1 ? 'border-yellow-500 text-yellow-600 bg-yellow-50' : 'border-transparent text-gray-500 hover:bg-gray-50'}`}>
               {name}
             </button>
           ))}
@@ -357,10 +360,26 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         <div className="flex-1 overflow-y-auto p-6">
           {activeTab === 1 && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <input name="name" value={formData.name} onChange={handleChange} placeholder="Full Name" className="w-full p-2 border rounded" />
                 <input name="username" value={formData.username} onChange={handleChange} placeholder="Username" className="w-full p-2 border rounded" />
-                <input name="password" type="text" value={formData.password} onChange={handleChange} placeholder="Password" className="w-full p-2 border rounded" />
+                
+                <div className="relative">
+                  <input name="password" type={showPassword ? "text" : "password"} value={formData.password} onChange={handleChange} placeholder="Password" className="w-full p-2 border rounded pr-10" />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clipRule="evenodd" /><path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" /></svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" /></svg>
+                    )}
+                  </button>
+                </div>
+
                 <select name="role" value={formData.role} onChange={handleChange} className="w-full p-2 border rounded">
                   <option value="admin">Admin</option>
                   <option value="doctor">Doctor</option>
@@ -384,7 +403,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
             <div className="space-y-6">
               <div className="p-4 border rounded bg-gray-50">
                 <h3 className="font-bold mb-3">✈️ Flight Details</h3>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <input name="flightNumber" value={travelData.flightNumber} onChange={handleTravelChange} placeholder="Flight Number" className="w-full p-2 border rounded" />
                   <input name="departureDate" type="date" value={travelData.departureDate} onChange={handleTravelChange} className="w-full p-2 border rounded" />
                   <input name="departureTime" type="time" value={travelData.departureTime} onChange={handleTravelChange} className="w-full p-2 border rounded" />
@@ -395,7 +414,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
               </div>
               <div className="p-4 border rounded bg-gray-50">
                 <h3 className="font-bold mb-3">🏨 Hotel Details</h3>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <input name="hotelName" value={travelData.hotelName} onChange={handleTravelChange} placeholder="Hotel Name" className="w-full p-2 border rounded" />
                   <input name="roomNumber" value={travelData.roomNumber} onChange={handleTravelChange} placeholder="Room Number" className="w-full p-2 border rounded" />
                   <input name="checkIn" type="date" value={travelData.checkIn} onChange={handleTravelChange} className="w-full p-2 border rounded" />
@@ -404,6 +423,10 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                   <input name="mapsLink" value={travelData.mapsLink} onChange={handleTravelChange} placeholder="Google Maps Link" className="col-span-2 w-full p-2 border rounded" />
                 </div>
               </div>
+              <label className="flex items-center gap-2 cursor-pointer p-3 bg-yellow-50 text-yellow-900 border border-yellow-200 rounded-lg max-w-max mx-auto shadow-sm hover:bg-yellow-100 transition-colors">
+                <input type="checkbox" name="applyToAllTravel" checked={applyToAllTravel} onChange={(e) => setApplyToAllTravel(e.target.checked)} className="accent-yellow-500 w-5 h-5"/>
+                <span className="font-bold text-sm">Apply these travel & hotel details to ALL users</span>
+              </label>
             </div>
           )}
 
@@ -486,7 +509,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                       </button>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {section.fields.map(field => (
                       <label key={field.key} className="flex items-center gap-2 cursor-pointer group hover:bg-gray-100 p-1 rounded">
                         <input

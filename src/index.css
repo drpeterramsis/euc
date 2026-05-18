@@ -8,7 +8,26 @@
   100% { transform: scaleY(1) skewX(-2deg) skewY(0deg); }
 }
 
+@keyframes wave-strong {
+  0% { transform: scaleY(1) skewX(-4deg) skewY(0deg); }
+  25% { transform: scaleY(0.95) skewX(-2deg) skewY(2deg); }
+  50% { transform: scaleY(1.05) skewX(-6deg) skewY(-2deg); }
+  75% { transform: scaleY(0.97) skewX(-2deg) skewY(4deg); }
+  100% { transform: scaleY(1) skewX(-4deg) skewY(0deg); }
+}
+
 .animate-wave {
   animation: wave 4s ease-in-out infinite;
   transform-origin: left center;
+}
+
+.animate-wave-strong {
+  animation: wave-strong 3s ease-in-out infinite;
+  transform-origin: left center;
+}
+
+.login-code-bg {
+  background-color: #fdfcfa;
+  background-image: radial-gradient(#fbbf24 1px, transparent 1px);
+  background-size: 24px 24px;
 }
