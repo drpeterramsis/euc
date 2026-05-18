@@ -11,6 +11,7 @@
 import { NavLink } from "react-router-dom";
 import { logout } from "../utils/auth";
 import { useApp } from "../context/AppContext";
+import { getFeatureStatus } from "../utils/featureAccess";
 
 /**
  * Sidebar component renders fixed navigation menu.
@@ -30,12 +31,12 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
 
   const renderNav = (label: string, to: string, icon: string, featureKey?: string) => {
     // If featureKey is provided, check access
-    if (featureKey && fullUser?.featureAccess) {
-      // If access is explicitly false, hide it
-      if (fullUser.featureAccess[featureKey] === false) return null;
+    if (featureKey) {
+      const status = getFeatureStatus(fullUser, featureKey);
+      
+      if (status === "disabled") return null;
 
-      // Handle 'coming_soon'
-      if (fullUser.featureAccess[featureKey] === 'coming_soon') {
+      if (status === "coming_soon") {
         return (
           <NavLink
             to={`/coming-soon?feature=${featureKey}`}

@@ -37,6 +37,8 @@ export default function Admin() {
     id: "",
     date: "",
     time: "",
+    endTime: "",
+    category: "other",
     activity: "",
     location: "",
     notes: "",
@@ -68,6 +70,12 @@ export default function Admin() {
   const [showMediaForm, setShowMediaForm] = useState(false);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
   const [compressingProgress, setCompressingProgress] = useState(0);
+  const [isGlobalLoading, setIsGlobalLoading] = useState(false);
+  const [roleGlobalConfig, setRoleGlobalConfig] = useState({
+    role: "doctor",
+    feature: "schedule",
+    status: "active"
+  });
   const [mediaForm, setMediaForm] = useState({
     id: "", category: "trips", title: "", description: "", caption: "", imageDataUrl: ""
   });
@@ -171,6 +179,8 @@ export default function Admin() {
       id: "s" + Date.now(),
       date: "",
       time: "",
+      endTime: "",
+      category: "other",
       activity: "",
       location: "",
       notes: "",
@@ -180,15 +190,32 @@ export default function Admin() {
   }
 
   function handleEditSchedule(item: any) {
+    if (editingScheduleId === item.id) {
+        setEditingScheduleId(null);
+        return;
+    }
     setEditingScheduleId(item.id);
-    setScheduleForm({ ...item, accessRoles: item.accessRoles || [], accessUserIds: item.accessUserIds || [] });
+    setScheduleForm({ 
+        ...item, 
+        accessRoles: item.accessRoles || ["admin", "doctor", "staff"], 
+        accessUserIds: item.accessUserIds || [] 
+    });
   }
 
   async function handleSaveSchedule() {
+    if (!scheduleForm.activity || !scheduleForm.date || !scheduleForm.time) {
+        showToast("Activity, Date and Time are required", "error");
+        return;
+    }
+
     try {
+      setIsGlobalLoading(true);
       let updated: any[];
       if (applyToAllSchedule) {
-        if (!confirm("Are you sure you want to apply these details to ALL schedule items?")) return;
+        if (!confirm("Are you sure you want to apply these details to ALL schedule items?")) {
+            setIsGlobalLoading(false);
+            return;
+        }
         updated = scheduleItems.map(day => ({
           ...day,
           items: day.items?.map((i: any) => ({
@@ -202,19 +229,29 @@ export default function Admin() {
           })) || []
         }));
       } else if (editingScheduleId && editingScheduleId !== "new") {
-        let found = false;
-        updated = scheduleItems.map(day => {
-          if (day.items?.some((i: any) => i.id === editingScheduleId)) {
-            found = true;
-            return {
-              ...day,
-              items: day.items.map((i: any) => i.id === editingScheduleId ? { ...scheduleForm } : i)
-            };
-          }
-          return day;
-        });
-        if (!found) {
-          updated = [...scheduleItems, { id: 'd' + Date.now(), date: scheduleForm.date, title: "Schedule", items: [{...scheduleForm}] }];
+        updated = scheduleItems.map(day => ({
+          ...day,
+          items: day.items?.map((i: any) => i.id === editingScheduleId ? { ...scheduleForm } : i) || []
+        }));
+        
+        // If the date was changed, we might need to move it to another day container
+        const currentItem = scheduleForm;
+        const originalDay = scheduleItems.find(d => d.items?.some((i: any) => i.id === editingScheduleId));
+        
+        if (originalDay && originalDay.date !== currentItem.date) {
+            // Remove from old day
+            updated = updated.map(d => ({
+                ...d,
+                items: d.items.filter((i: any) => i.id !== editingScheduleId)
+            })).filter(d => d.items.length > 0);
+            
+            // Add to new day
+            const dayIdx = updated.findIndex(d => d.date === currentItem.date);
+            if (dayIdx >= 0) {
+                updated[dayIdx] = { ...updated[dayIdx], items: [...updated[dayIdx].items, currentItem] };
+            } else {
+                updated.push({ id: 'd' + Date.now(), date: currentItem.date, title: "Schedule", items: [currentItem] });
+            }
         }
       } else {
         // Find existing day or create new
@@ -223,9 +260,16 @@ export default function Admin() {
         if (dayIdx >= 0) {
           updated[dayIdx] = { ...updated[dayIdx], items: [...(updated[dayIdx].items || []), { ...scheduleForm }] };
         } else {
-          updated.push({ id: 'd' + Date.now(), date: scheduleForm.date, title: "Schedule Update", items: [{ ...scheduleForm }] });
+          updated.push({ id: 'd' + Date.now(), date: scheduleForm.date, title: "Schedule", items: [{ ...scheduleForm }] });
         }
       }
+      
+      // Sort items by time within days
+      updated = updated.map(day => ({
+          ...day,
+          items: [...day.items].sort((a, b) => a.time.localeCompare(b.time))
+      })).sort((a, b) => a.date.localeCompare(b.date));
+
       setScheduleItems(updated);
       await writeJSON("schedule.json", updated);
       updateSchedule(updated);
@@ -234,12 +278,15 @@ export default function Admin() {
       showToast("Schedule saved successfully ✓", "success");
     } catch (err) {
       showToast("Failed to save schedule", "error");
+    } finally {
+      setIsGlobalLoading(false);
     }
   }
 
   async function handleDeleteSchedule(id: string) {
     if (!confirm("Delete this schedule item?")) return;
     try {
+      setIsGlobalLoading(true);
       const updated = scheduleItems.map(day => ({
         ...day,
         items: day.items?.filter((i: any) => i.id !== id) || []
@@ -250,6 +297,8 @@ export default function Admin() {
       showToast("Schedule item deleted", "success");
     } catch (err) {
       showToast("Failed to delete", "error");
+    } finally {
+      setIsGlobalLoading(false);
     }
   }
 
@@ -295,6 +344,7 @@ export default function Admin() {
   async function handleDeleteSession(id: string) {
     if (!confirm("Delete this session?")) return;
     try {
+      setIsGlobalLoading(true);
       const updated = sessionItems.filter(s => s.id !== id);
       setSessionItems(updated);
       await writeJSON("sessions.json", updated);
@@ -302,6 +352,8 @@ export default function Admin() {
       showToast("Session deleted", "success");
     } catch (err) {
       showToast("Failed to delete", "error");
+    } finally {
+      setIsGlobalLoading(false);
     }
   }
 
@@ -494,30 +546,191 @@ export default function Admin() {
     );
   };
 
+  const ScheduleForm = () => (
+    <div className="bg-white border-2 border-yellow-400 rounded-xl p-6 shadow-lg mb-6 animate-in slide-in-from-top duration-300">
+      <div className="flex items-center gap-2 mb-6 border-b pb-3">
+        <span className="text-xl">📅</span>
+        <h4 className="font-bold text-lg">{editingScheduleId === "new" ? "Add New Item" : "Edit Item"}</h4>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <div className="md:col-span-2">
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Title / Activity</label>
+          <input 
+            type="text" 
+            placeholder="e.g. Welcome Reception"
+            value={scheduleForm.activity}
+            onChange={e => setScheduleForm({...scheduleForm, activity: e.target.value})}
+            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Date</label>
+          <input 
+            type="date" 
+            value={scheduleForm.date}
+            onChange={e => setScheduleForm({...scheduleForm, date: e.target.value})}
+            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Category</label>
+          <select 
+            value={scheduleForm.category}
+            onChange={e => setScheduleForm({...scheduleForm, category: e.target.value})}
+            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
+          >
+            <option value="Scientific">Scientific</option>
+            <option value="Social">Social</option>
+            <option value="Transport">Transport</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Start Time</label>
+          <input 
+            type="time" 
+            value={scheduleForm.time}
+            onChange={e => setScheduleForm({...scheduleForm, time: e.target.value})}
+            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">End Time</label>
+          <input 
+            type="time" 
+            value={scheduleForm.endTime}
+            onChange={e => setScheduleForm({...scheduleForm, endTime: e.target.value})}
+            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
+          />
+        </div>
+        <div className="md:col-span-2">
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Location</label>
+          <input 
+            type="text" 
+            placeholder="e.g. Grand Ballroom"
+            value={scheduleForm.location}
+            onChange={e => setScheduleForm({...scheduleForm, location: e.target.value})}
+            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
+          />
+        </div>
+        <div className="md:col-span-2">
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Notes</label>
+          <textarea 
+            rows={2}
+            placeholder="Any additional details..."
+            value={scheduleForm.notes}
+            onChange={e => setScheduleForm({...scheduleForm, notes: e.target.value})}
+            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Visible To Roles</label>
+          <div className="flex flex-wrap gap-3">
+            {["admin", "doctor", "staff"].map(role => (
+              <label key={role} className={`flex items-center gap-2 border px-3 py-1.5 rounded-lg cursor-pointer transition-colors ${scheduleForm.accessRoles.includes(role) ? "bg-yellow-50 border-yellow-400 text-yellow-900" : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
+                <input 
+                  type="checkbox"
+                  checked={scheduleForm.accessRoles.includes(role)}
+                  onChange={e => {
+                    const roles = e.target.checked 
+                      ? [...scheduleForm.accessRoles, role] 
+                      : scheduleForm.accessRoles.filter(r => r !== role);
+                    setScheduleForm({...scheduleForm, accessRoles: roles});
+                  }}
+                  className="accent-yellow-500 w-4 h-4"
+                />
+                <span className="font-bold text-sm uppercase tracking-wider">{role}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="md:col-span-2 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input 
+              type="checkbox" 
+              checked={applyToAllSchedule}
+              onChange={e => setApplyToAllSchedule(e.target.checked)}
+              className="accent-yellow-500 w-5 h-5 shadow-sm"
+            />
+            <span className="font-bold text-sm text-yellow-900 font-bold">Apply these changes (Role/Access/Notes/Location) to ALL items</span>
+          </label>
+        </div>
+      </div>
+      
+      <div className="flex justify-end gap-3 mt-8 pt-4 border-t">
+        <button 
+          onClick={() => setEditingScheduleId(null)}
+          className="px-6 py-2 rounded-lg bg-white border border-gray-300 font-bold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+        >
+          Cancel
+        </button>
+        <button 
+          onClick={handleSaveSchedule}
+          className="px-8 py-2 rounded-lg bg-yellow-500 border border-yellow-600 font-bold text-black hover:bg-yellow-400 transition-colors shadow-md"
+        >
+          Save Item
+        </button>
+      </div>
+    </div>
+  );
+
   const renderTab3 = () => (
     <div>
       <h2 className="text-xl font-bold mb-6">Schedule & Sessions Control</h2>
+      
+      {/* Inline Form for NEW Item */}
+      {editingScheduleId === "new" && <ScheduleForm />}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Schedule Manager */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-lg">📅 Schedule Manager</h3>
-            <button onClick={handleAddSchedule} className="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-sm font-bold">+ Add Schedule Item</button>
+            <button 
+              onClick={handleAddSchedule} 
+              disabled={editingScheduleId === "new"}
+              className="bg-black text-white hover:bg-gray-800 px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm disabled:opacity-50"
+            >
+              + Add Schedule Item
+            </button>
           </div>
-          <div className="space-y-4">
-            {scheduleItems.map((day: any) => (
-              <div key={day.id} className="border p-4 rounded bg-gray-50">
-                <div className="font-bold flex justify-between">
-                  <span>{day.date}: {day.title}</span>
+          <div className="space-y-6">
+            {scheduleItems.length === 0 && <p className="text-gray-400 text-center py-4">No schedule items yet.</p>}
+            {[...scheduleItems].sort((a, b) => a.date.localeCompare(b.date)).map((day: any) => (
+              <div key={day.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                <div className="bg-gray-50 p-3 font-bold flex justify-between items-center border-b border-gray-200">
+                  <span className="text-sm font-bold text-gray-700">{new Date(day.date).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}</span>
                 </div>
-                <div className="mt-2 space-y-2 text-sm text-gray-600">
-                  {day.items?.map((item: any, i: number) => (
-                    <div key={i} className="flex justify-between border-b pb-2 last:border-0 last:pb-0">
-                      <span>{item.time} - {item.activity}</span>
-                      <div className="flex gap-2">
-                        <button onClick={() => handleEditSchedule(item)} className="text-blue-500">Edit</button>
-                        <button onClick={() => handleDeleteSchedule(item.id)} className="text-red-500">Del</button>
-                      </div>
+                <div className="p-3 space-y-3">
+                  {day.items?.map((item: any) => (
+                    <div key={item.id}>
+                      {editingScheduleId === item.id ? (
+                        <ScheduleForm />
+                      ) : (
+                        <div className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-lg hover:border-gray-300 transition-colors shadow-sm">
+                          <div className="flex flex-col gap-0.5 min-w-0">
+                            <div className="flex items-center gap-2">
+                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                                    item.category === "Scientific" ? "bg-blue-100 text-blue-700" :
+                                    item.category === "Social" ? "bg-purple-100 text-purple-700" :
+                                    item.category === "Transport" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
+                                }`}>{item.category || "Other"}</span>
+                                <span className="font-bold text-gray-900 truncate">{item.activity}</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-xs text-gray-500 font-medium">
+                                <span>⏰ {item.time} {item.endTime ? ` - ${item.endTime}` : ""}</span>
+                                <span className="truncate max-w-[150px]">📍 {item.location || "No location"}</span>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 flex-shrink-0">
+                            <button onClick={() => handleEditSchedule(item)} className="p-1 px-3 bg-blue-50 text-blue-600 rounded font-bold text-xs hover:bg-blue-100">Edit</button>
+                            <button onClick={() => handleDeleteSchedule(item.id)} className="p-1 px-3 bg-red-50 text-red-600 rounded font-bold text-xs hover:bg-red-100">Delete</button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -528,21 +741,29 @@ export default function Admin() {
 
         {/* Sessions Manager */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-lg">🎓 Sessions Manager</h3>
-            <button onClick={handleAddSession} className="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-sm font-bold">+ Add Session</button>
+            <button onClick={handleAddSession} className="bg-black text-white hover:bg-gray-800 px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm">+ Add Session</button>
           </div>
           <div className="space-y-4">
-            {sessionItems.map((session: any) => (
-              <div key={session.id} className="border p-4 rounded bg-gray-50">
-                <div className="font-bold flex justify-between">
-                  <span>{session.title}</span>
+            {sessionItems.length === 0 && <p className="text-gray-400 text-center py-4">No sessions yet.</p>}
+            {[...sessionItems].sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)).map((session: any) => (
+              <div key={session.id} className="border border-gray-200 p-4 rounded-xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                <div className="font-bold flex justify-between items-start">
+                  <div className="flex flex-col">
+                    <span className="text-gray-900">{session.title}</span>
+                    <span className="text-xs text-blue-600 font-bold uppercase mt-1">🗣 {session.speaker}</span>
+                  </div>
                   <div className="flex gap-2">
-                    <button onClick={() => handleEditSession(session)} className="text-blue-500 text-sm">Edit</button>
-                    <button onClick={() => handleDeleteSession(session.id)} className="text-red-500 text-sm">Del</button>
+                    <button onClick={() => handleEditSession(session)} className="text-blue-600 text-xs font-bold p-1 px-2 border border-blue-200 rounded bg-white hover:bg-blue-50">Edit</button>
+                    <button onClick={() => handleDeleteSession(session.id)} className="text-red-600 text-xs font-bold p-1 px-2 border border-red-200 rounded bg-white hover:bg-red-50">Del</button>
                   </div>
                 </div>
-                <div className="text-sm text-gray-500 mt-1">{session.speaker} - {session.date} {session.time}</div>
+                <div className="text-xs text-gray-500 mt-3 flex items-center gap-4">
+                    <span className="flex items-center gap-1">📅 {session.date}</span>
+                    <span className="flex items-center gap-1">⏰ {session.time}</span>
+                    <span className="flex items-center gap-1">🏛 {session.hall}</span>
+                </div>
               </div>
             ))}
           </div>
@@ -632,10 +853,102 @@ export default function Admin() {
     { key: "documents", label: "Documents", icon: "📄", desc: "Conference documents and files" },
   ];
 
+  async function handleApplyRoleGlobal() {
+    const { role, feature, status } = roleGlobalConfig;
+    if (!confirm(`Apply ${status.replace('_', ' ')} status for ${feature} to ALL users with the role "${role}"?`)) return;
+
+    try {
+      setIsGlobalLoading(true);
+      const statusMap: any = {
+        active: { access: true, status: "full" },
+        coming_soon: { access: true, status: "coming_soon" },
+        disabled: { access: false, status: "coming_soon" },
+      };
+      
+      const newStatus = statusMap[status];
+      const updatedUsers = users.map(u => {
+        if (u.role === role) {
+          return {
+            ...u,
+            featureAccess: {
+              ...(u.featureAccess || {}),
+              [feature]: newStatus
+            }
+          };
+        }
+        return u;
+      });
+
+      await writeJSON("users.json", updatedUsers);
+      updateUsers(updatedUsers);
+      showToast(`Finished applying status to all ${role}s ✓`, "success");
+    } catch (e) {
+      showToast("Failed to apply role global settings", "error");
+    } finally {
+      setIsGlobalLoading(false);
+    }
+  }
+
   const renderTab4 = () => {
     return (
       <div>
         <h2 className="text-xl font-bold mb-6">Feature & Access Control</h2>
+
+        {/* New Role Global Settings Section */}
+        <div className="bg-white p-6 rounded-lg shadow mb-8 border border-yellow-100">
+           <div className="flex items-center gap-2 mb-4">
+             <span className="text-xl">🚀</span>
+             <h3 className="font-bold text-lg">Role Global Settings</h3>
+           </div>
+           <p className="text-gray-600 text-sm mb-6">Apply a feature status to entire roles at once.</p>
+           
+           <div className="flex flex-col md:flex-row items-end gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+             <div className="w-full md:w-1/4">
+               <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Target Role</label>
+               <select 
+                 value={roleGlobalConfig.role}
+                 onChange={e => setRoleGlobalConfig({...roleGlobalConfig, role: e.target.value})}
+                 className="w-full p-2 border border-gray-300 rounded-lg bg-white font-medium focus:ring-2 focus:ring-yellow-500 outline-none"
+               >
+                 <option value="doctor">Doctor</option>
+                 <option value="staff">Staff</option>
+                 <option value="admin">Admin</option>
+               </select>
+             </div>
+             <div className="w-full md:w-1/4">
+               <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Feature</label>
+               <select 
+                 value={roleGlobalConfig.feature}
+                 onChange={e => setRoleGlobalConfig({...roleGlobalConfig, feature: e.target.value})}
+                 className="w-full p-2 border border-gray-300 rounded-lg bg-white font-medium focus:ring-2 focus:ring-yellow-500 outline-none"
+               >
+                 {FEATURES.map(f => (
+                   <option key={f.key} value={f.key}>{f.label}</option>
+                 ))}
+               </select>
+             </div>
+             <div className="w-full md:w-1/4">
+               <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">New Status</label>
+               <select 
+                 value={roleGlobalConfig.status}
+                 onChange={e => setRoleGlobalConfig({...roleGlobalConfig, status: e.target.value})}
+                 className="w-full p-2 border border-gray-300 rounded-lg bg-white font-medium focus:ring-2 focus:ring-yellow-500 outline-none"
+               >
+                 <option value="active">Active</option>
+                 <option value="coming_soon">Coming Soon</option>
+                 <option value="disabled">Disabled</option>
+               </select>
+             </div>
+             <div className="w-full md:w-1/4">
+               <button 
+                 onClick={handleApplyRoleGlobal}
+                 className="w-full bg-black text-white font-bold py-2 rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
+               >
+                 Apply to all {roleGlobalConfig.role}s
+               </button>
+             </div>
+           </div>
+        </div>
         
         <div className="bg-white p-6 rounded-lg shadow space-y-6 mb-8">
             <div className="flex items-center justify-between border-b pb-4">
@@ -901,6 +1214,14 @@ export default function Admin() {
 
   return (
     <Layout>
+      {/* Global Saving Overlay */}
+      {isGlobalLoading && (
+        <div className="fixed inset-0 z-[100] bg-black/40 flex flex-col items-center justify-center gap-4 backdrop-blur-sm">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-yellow-500 border-t-transparent"></div>
+          <p className="text-white font-bold text-xl drop-shadow-md">Saving changes...</p>
+        </div>
+      )}
+
       <div className="mb-6 flex gap-2 border-b overflow-x-auto pb-[-1px]">
         {[
           { key: 'users', label: '👥 User Management' },

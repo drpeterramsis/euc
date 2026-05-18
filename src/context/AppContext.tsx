@@ -173,6 +173,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           if (JSON.stringify(freshCurrentUser) !== JSON.stringify(currentUser)) {
             setCurrentUser(freshCurrentUser);
             localStorage.setItem("euc_user", JSON.stringify(freshCurrentUser));
+            sessionStorage.setItem("euc_view_as", JSON.stringify(freshCurrentUser)); // ensure impersonation also syncs if it was active
           }
         }
       }

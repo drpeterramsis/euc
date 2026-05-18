@@ -8,6 +8,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -18,6 +19,7 @@ import Admin from './pages/Admin';
 import ComingSoon from './pages/ComingSoon';
 import Media from './pages/Media';
 import { useApp } from './context/AppContext';
+import { getFeatureStatus } from './utils/featureAccess';
 
 /**
  * ProtectedRoute component verifies authentication synchronously.
@@ -47,6 +49,20 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("euc_user");
     return <Navigate to="/" replace />;
   }
+};
+
+const FeatureRoute = ({ children, featureKey }: { children: React.ReactNode, featureKey: string }) => {
+  const { currentUser, users } = useApp();
+  const fullUser = users.find(u => u.id === currentUser?.id) || currentUser;
+  
+  if (!fullUser) return <Navigate to="/" replace />;
+  
+  const status = getFeatureStatus(fullUser, featureKey);
+  
+  if (status === "disabled") return <Navigate to="/dashboard" replace />;
+  if (status === "coming_soon") return <Navigate to={`/coming-soon?feature=${featureKey}`} replace />;
+  
+  return <>{children}</>;
 };
 
 /**
@@ -82,10 +98,10 @@ export default function App() {
           <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
-          <Route path="/sessions" element={<ProtectedRoute><Sessions /></ProtectedRoute>} />
+          <Route path="/schedule" element={<ProtectedRoute><FeatureRoute featureKey="schedule"><Schedule /></FeatureRoute></ProtectedRoute>} />
+          <Route path="/sessions" element={<ProtectedRoute><FeatureRoute featureKey="sessions"><Sessions /></FeatureRoute></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-          <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
+          <Route path="/media" element={<ProtectedRoute><FeatureRoute featureKey="photoGallery"><Media /></FeatureRoute></ProtectedRoute>} />
           <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
