@@ -414,45 +414,45 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                 const isOn = fa.access === true;
 
                 return (
-                  <div key={feature.key} className="bg-gray-800 border border-gray-700 rounded-xl p-4 space-y-3">
+                  <div key={feature.key} className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">{feature.icon}</span>
                         <div>
-                          <p className="text-white font-semibold text-sm">{feature.label}</p>
-                          <p className="text-gray-400 text-xs">{feature.desc}</p>
+                          <p className="text-gray-900 font-semibold text-sm">{feature.label}</p>
+                          <p className="text-gray-500 text-xs">{feature.desc}</p>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => toggleFeatureAccess(feature.key)}
-                        className={`relative inline-flex items-center w-14 h-7 rounded-full transition-colors duration-200 focus:outline-none ${isOn ? "bg-yellow-400" : "bg-gray-600"}`}
+                        className={`relative inline-flex items-center w-14 h-7 rounded-full transition-colors duration-200 focus:outline-none border ${isOn ? "bg-yellow-500 border-yellow-600" : "bg-gray-200 border-gray-300"}`}
                       >
                         <span className={`inline-block w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200 ${isOn ? "translate-x-8" : "translate-x-1"}`} />
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-gray-400 text-xs">Access:</span>
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isOn ? "bg-yellow-400/20 text-yellow-400" : "bg-gray-600/50 text-gray-400"}`}>
+                      <span className="text-gray-500 text-xs">Access:</span>
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isOn ? "bg-yellow-100 text-yellow-800 border border-yellow-200" : "bg-gray-200 text-gray-600 border border-gray-300"}`}>
                         {isOn ? "ON" : "OFF"}
                       </span>
                     </div>
                     {isOn && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 text-xs">Status:</span>
+                        <span className="text-gray-500 text-xs">Status:</span>
                         <select
                           value={fa.status || "full"}
                           onChange={e => setFeatureStatus(feature.key, e.target.value)}
-                          className="bg-gray-700 border border-gray-600 text-white text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-yellow-400"
+                          className="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
                         >
                           <option value="full">✅ Full Access</option>
                           <option value="coming_soon">🔒 Coming Soon</option>
                         </select>
                         {fa.status === "full" && (
-                          <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">Full Access</span>
+                          <span className="text-xs bg-green-100 text-green-800 border border-green-200 px-2 py-0.5 rounded-full">Full Access</span>
                         )}
                         {fa.status === "coming_soon" && (
-                          <span className="text-xs bg-yellow-400/20 text-yellow-400 px-2 py-0.5 rounded-full">Coming Soon</span>
+                          <span className="text-xs bg-yellow-100 text-yellow-800 border border-yellow-200 px-2 py-0.5 rounded-full">Coming Soon</span>
                         )}
                       </div>
                     )}
@@ -465,22 +465,22 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
           {activeTab === 4 && (
             <div className="space-y-4">
               {FIELD_SECTIONS.map(section => (
-                <div key={section.label} className="bg-gray-800 rounded-xl p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-white font-semibold text-sm">{section.label}</h4>
+                <div key={section.label} className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm">
+                  <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                    <h4 className="text-gray-900 font-bold text-sm">{section.label}</h4>
                     <div className="flex gap-2">
                       <button
                         type="button"
                         onClick={() => toggleSection(section.fields, true)}
-                        className="text-xs text-yellow-400 hover:underline"
+                        className="text-xs text-blue-600 hover:text-blue-800 font-semibold"
                       >
                         All
                       </button>
-                      <span className="text-gray-600">|</span>
+                      <span className="text-gray-400">|</span>
                       <button
                         type="button"
                         onClick={() => toggleSection(section.fields, false)}
-                        className="text-xs text-gray-400 hover:underline"
+                        className="text-xs text-gray-500 hover:text-gray-700 font-semibold"
                       >
                         None
                       </button>
@@ -488,14 +488,14 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     {section.fields.map(field => (
-                      <label key={field.key} className="flex items-center gap-2 cursor-pointer group">
+                      <label key={field.key} className="flex items-center gap-2 cursor-pointer group hover:bg-gray-100 p-1 rounded">
                         <input
                           type="checkbox"
                           checked={visibleFields[field.key] !== false}
                           onChange={() => toggleField(field.key)}
-                          className="w-4 h-4 accent-yellow-400 cursor-pointer"
+                          className="w-4 h-4 accent-yellow-500 cursor-pointer"
                         />
-                        <span className="text-gray-300 text-sm group-hover:text-white transition-colors">
+                        <span className="text-gray-700 text-sm group-hover:text-gray-900 transition-colors font-medium">
                           {field.label}
                         </span>
                       </label>

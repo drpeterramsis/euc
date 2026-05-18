@@ -55,12 +55,12 @@ export default function App() {
   const { loading, isFirstLoad, isBackgroundRefreshing } = useApp();
 
   if (loading && isFirstLoad) return (
-    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center">
-      <div className="text-4xl font-bold text-yellow-400 mb-4">EUC</div>
-      <div className="text-white text-sm mb-6">EVA URO CLUB</div>
-      <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent
+    <div className="fixed inset-0 bg-white flex flex-col items-center justify-center">
+      <div className="text-4xl font-extrabold text-gray-900 mb-1 tracking-tight">EUC<span className="text-yellow-500">.</span></div>
+      <div className="text-gray-500 text-xs mb-8 font-medium">EVA URO CLUB</div>
+      <div className="w-12 h-12 border-4 border-yellow-500 border-t-transparent
                       rounded-full animate-spin"></div>
-      <div className="text-gray-400 text-sm mt-4">Loading conference data...</div>
+      <div className="text-gray-500 text-sm mt-6 font-medium">Loading conference data...</div>
     </div>
   );
 
@@ -69,10 +69,10 @@ export default function App() {
       {isBackgroundRefreshing && (
         <div className="fixed bottom-4 right-4 z-50
                         flex items-center gap-2
-                        bg-gray-800 text-gray-400
+                        bg-white text-gray-600
                         text-xs px-3 py-2 rounded-full
-                        border border-gray-700 shadow-xl">
-          <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+                        border border-gray-200 shadow-sm font-medium">
+          <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
           Syncing...
         </div>
       )}

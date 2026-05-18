@@ -130,11 +130,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsBackgroundRefreshing(true);
       const fresh = await fetchFreshData();
-      setUsers(fresh.users);
-      setSchedule(fresh.schedule);
-      setSessions(fresh.sessions);
-      setSettings(fresh.settings);
-      writeSessionCache(fresh);
+      const cached = readSessionCache();
+
+      const stableStringify = (obj: any) => JSON.stringify(obj);
+
+      if (!cached) {
+        setUsers(fresh.users);
+        setSchedule(fresh.schedule);
+        setSessions(fresh.sessions);
+        setSettings(fresh.settings);
+        writeSessionCache(fresh);
+        return;
+      }
+
+      const changed = 
+        stableStringify(fresh.users) !== stableStringify(cached.users) ||
+        stableStringify(fresh.schedule) !== stableStringify(cached.schedule) ||
+        stableStringify(fresh.sessions) !== stableStringify(cached.sessions) ||
+        stableStringify(fresh.settings) !== stableStringify(cached.settings);
+
+      if (changed) {
+        setUsers(fresh.users);
+        setSchedule(fresh.schedule);
+        setSessions(fresh.sessions);
+        setSettings(fresh.settings);
+        writeSessionCache(fresh);
+      }
     } catch {
       console.warn("Background refresh failed — using cached data");
     } finally {
@@ -161,9 +182,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
       setIsFirstLoad(false);
 
-      if (needsBackgroundRefresh()) {
-        setTimeout(() => backgroundRefresh(), 2000);
-      }
+      // ALWAYS run a background refresh on mount when user is logged in
+      setTimeout(() => backgroundRefresh(), 2000);
     } else {
       setLoading(true);
       fetchFreshData()

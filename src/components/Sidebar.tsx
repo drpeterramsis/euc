@@ -21,8 +21,8 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
   const fullUser = users.find(u => u.id === currentUser?.id) || currentUser;
 
   const sidebarClass = `
-  fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-black z-30 flex flex-col
-  border-r border-gray-800 overflow-y-auto
+  fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-white z-30 flex flex-col
+  border-r border-gray-200 overflow-y-auto shadow-sm
   transform transition-transform duration-300
   ${isOpen ? "translate-x-0" : "-translate-x-full"}
   lg:translate-x-0
@@ -39,11 +39,11 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
             to={`/coming-soon?feature=${featureKey}`}
             onClick={onClose}
             className={({ isActive }) =>
-              `block p-3 rounded transition-colors flex items-center justify-between ${isActive ? "bg-yellow-500 text-black font-bold" : "text-white hover:bg-gray-900"}`
+              `block p-3 rounded-lg transition-colors flex items-center justify-between font-medium ${isActive ? "bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500" : "text-gray-700 hover:bg-gray-100"}`
             }
           >
             <span>{icon} {label}</span>
-            <span className="text-xs bg-gray-700 text-yellow-400 px-2 py-1 rounded">Soon</span>
+            <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full border border-gray-300 font-bold hidden sm:inline-block">Soon</span>
           </NavLink>
         );
       }
@@ -55,10 +55,10 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
         to={to}
         onClick={onClose}
         className={({ isActive }) =>
-          `block p-3 rounded transition-colors ${isActive ? "bg-yellow-500 text-black font-bold" : "text-white hover:bg-gray-900"}`
+          `block p-3 rounded-lg transition-colors font-medium flex items-center gap-2 ${isActive ? "bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500" : "text-gray-700 hover:bg-gray-100"}`
         }
       >
-        {icon} {label}
+        <span>{icon}</span> <span>{label}</span>
       </NavLink>
     );
   };
@@ -67,16 +67,16 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/60 z-20 lg:hidden"
+          className="fixed inset-0 bg-black/40 z-20 lg:hidden backdrop-blur-sm"
           onClick={onClose}
         />
       )}
       <aside className={sidebarClass}>
-        <div className="p-6 text-2xl font-bold border-b border-gray-800 flex justify-between items-center text-white">
-            <div>EUC <span className="text-yellow-500">EVA URO</span></div>
-            <button className="lg:hidden text-white" onClick={onClose}>✕</button>
+        <div className="p-6 text-2xl font-bold border-b border-gray-200 flex justify-between items-center text-gray-900 bg-gray-50">
+            <div>EUC <span className="text-yellow-500 text-base ml-1">EVA URO</span></div>
+            <button className="lg:hidden text-gray-500 hover:text-gray-900" onClick={onClose}>✕</button>
         </div>
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {renderNav("Dashboard", "/dashboard", "📊")}
           {renderNav("My Profile", "/profile", "👤")}
           {renderNav("Trip Schedule", "/schedule", "📅", "schedule")}
@@ -88,15 +88,15 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
           
           {currentUser?.role === 'admin' && (
             <>
-              <div className="border-t border-gray-700 my-2" />
+              <div className="border-t border-gray-200 my-4" />
               <NavLink
                 to="/admin"
                 onClick={() => onClose?.()}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-lg transition-all font-bold ${
                     isActive
-                      ? "bg-yellow-500 text-black"
-                      : "bg-yellow-400/10 text-yellow-400 hover:bg-yellow-400/20"
+                      ? "bg-yellow-500 text-black shadow-sm"
+                      : "bg-yellow-50 text-yellow-700 hover:bg-yellow-100 border border-yellow-200"
                   }`
                 }
               >
@@ -106,15 +106,18 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
           )}
         </nav>
         {/* User info and Logout button */}
-        <div className="p-4 border-t border-gray-800">
-          {currentUser && (
+        <div className="p-4 border-t border-gray-200 bg-gray-50">
+          {fullUser && (
             <div className="flex items-center space-x-3 mb-4">
-              <img src={currentUser.photo} className="w-8 h-8 rounded-full" alt="Avatar" />
-              <span className="text-sm text-white truncate">{currentUser.name}</span>
+              <img src={fullUser.photo} className="w-10 h-10 rounded-full border border-gray-300 shadow-sm" alt="Avatar" />
+              <div className="flex flex-col truncate">
+                <span className="text-sm font-bold text-gray-900 truncate">{fullUser.name || fullUser.username}</span>
+                <span className="text-xs text-yellow-600 font-semibold">{fullUser.role.toUpperCase()}</span>
+              </div>
             </div>
           )}
           <button 
-              className="w-full text-left p-3 hover:bg-red-900 rounded text-red-400"
+              className="w-full text-center p-3 rounded-lg font-bold transition-colors bg-white border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-700 hover:border-red-200 shadow-sm"
               onClick={logout}
           >
               Logout

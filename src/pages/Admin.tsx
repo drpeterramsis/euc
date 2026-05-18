@@ -427,65 +427,65 @@ export default function Admin() {
       </div>
 
       {showScheduleForm && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-gray-900 rounded-xl w-full max-w-lg p-6 space-y-4 my-8">
-            <div className="flex items-center justify-between">
-              <h3 className="text-white font-bold text-lg">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl border border-gray-200 w-full max-w-lg p-6 space-y-4 my-8">
+            <div className="flex items-center justify-between border-b pb-3 border-gray-100">
+              <h3 className="text-gray-900 font-bold text-lg">
                 {editingSchedule ? "Edit Schedule Item" : "Add Schedule Item"}
               </h3>
               <button onClick={() => setShowScheduleForm(false)}
-                className="text-gray-400 hover:text-white">✕</button>
+                className="text-gray-400 hover:text-gray-600">✕</button>
             </div>
 
             <div>
-              <label className="text-gray-400 text-sm">Date</label>
+              <label className="text-gray-600 font-medium text-sm">Date</label>
               <input type="date"
                 value={scheduleForm.date}
                 onChange={e => setScheduleForm({...scheduleForm, date: e.target.value})}
-                className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 mt-1"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
             <div>
-              <label className="text-gray-400 text-sm">Time</label>
+              <label className="text-gray-600 font-medium text-sm">Time</label>
               <input type="time"
                 value={scheduleForm.time}
                 onChange={e => setScheduleForm({...scheduleForm, time: e.target.value})}
-                className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 mt-1"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
             <div>
-              <label className="text-gray-400 text-sm">Activity</label>
+              <label className="text-gray-600 font-medium text-sm">Activity</label>
               <input type="text"
                 value={scheduleForm.activity}
                 onChange={e => setScheduleForm({...scheduleForm, activity: e.target.value})}
                 placeholder="Activity title..."
-                className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 mt-1"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
             <div>
-              <label className="text-gray-400 text-sm">Location</label>
+              <label className="text-gray-600 font-medium text-sm">Location</label>
               <input type="text"
                 value={scheduleForm.location}
                 onChange={e => setScheduleForm({...scheduleForm, location: e.target.value})}
                 placeholder="Location..."
-                className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 mt-1"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
             <div>
-              <label className="text-gray-400 text-sm">Notes</label>
+              <label className="text-gray-600 font-medium text-sm">Notes</label>
               <textarea
                 value={scheduleForm.notes}
                 onChange={e => setScheduleForm({...scheduleForm, notes: e.target.value})}
                 placeholder="Additional notes..."
                 rows={3}
-                className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 mt-1"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
             <div>
-              <label className="text-gray-400 text-sm">Visible to Roles</label>
+              <label className="text-gray-600 font-medium text-sm">Visible to Roles</label>
               <div className="flex gap-4 mt-2">
                 {["admin", "doctor", "staff"].map(role => (
-                  <label key={role} className="flex items-center gap-2 text-white text-sm cursor-pointer">
+                  <label key={role} className="flex items-center gap-2 text-gray-800 font-medium text-sm cursor-pointer border px-3 py-1.5 rounded-lg hover:bg-gray-50">
                     <input
                       type="checkbox"
                       checked={scheduleForm.accessRoles.includes(role)}
@@ -495,7 +495,7 @@ export default function Admin() {
                           : scheduleForm.accessRoles.filter(r => r !== role);
                         setScheduleForm({...scheduleForm, accessRoles: roles});
                       }}
-                      className="accent-yellow-400 w-4 h-4"
+                      className="accent-yellow-500 w-4 h-4 cursor-pointer"
                     />
                     {role}
                   </label>
@@ -503,10 +503,10 @@ export default function Admin() {
               </div>
             </div>
             <div>
-              <label className="text-gray-400 text-sm">Individual User Access (override)</label>
-              <div className="space-y-1 mt-2 max-h-32 overflow-y-auto bg-gray-800 p-2 rounded">
+              <label className="text-gray-600 font-medium text-sm">Individual User Access (override)</label>
+              <div className="space-y-1 mt-2 max-h-32 overflow-y-auto bg-gray-50 border border-gray-200 p-2 rounded-lg">
                 {users.map((u: any) => (
-                  <label key={u.id} className="flex items-center gap-2 text-white text-sm cursor-pointer">
+                  <label key={u.id} className="flex items-center gap-2 text-gray-800 font-medium text-sm cursor-pointer hover:bg-gray-100 p-1 rounded">
                     <input
                       type="checkbox"
                       checked={scheduleForm.accessUserIds.includes(u.id)}
@@ -516,7 +516,7 @@ export default function Admin() {
                           : scheduleForm.accessUserIds.filter(id => id !== u.id);
                         setScheduleForm({...scheduleForm, accessUserIds: ids});
                       }}
-                      className="accent-yellow-400 w-4 h-4"
+                      className="accent-yellow-500 w-4 h-4 cursor-pointer"
                     />
                     {u.name} ({u.role})
                   </label>
@@ -524,16 +524,16 @@ export default function Admin() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-700">
+            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
               <button
                 onClick={() => setShowScheduleForm(false)}
-                className="px-4 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600"
+                className="px-5 py-2 rounded-lg bg-white border border-gray-300 shadow-sm text-gray-700 font-bold hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveSchedule}
-                className="px-4 py-2 rounded-lg bg-yellow-400 text-black font-bold hover:bg-yellow-300"
+                className="px-5 py-2 rounded-lg bg-yellow-500 border border-yellow-600 shadow-sm text-gray-900 font-bold hover:bg-yellow-400 transition-colors"
               >
                 Save
               </button>
@@ -543,67 +543,67 @@ export default function Admin() {
       )}
 
       {showSessionForm && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-gray-900 rounded-xl w-full max-w-lg p-6 space-y-4 my-8">
-            <div className="flex items-center justify-between">
-              <h3 className="text-white font-bold text-lg">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl border border-gray-200 w-full max-w-lg p-6 space-y-4 my-8">
+            <div className="flex items-center justify-between border-b pb-3 border-gray-100">
+              <h3 className="text-gray-900 font-bold text-lg">
                 {editingSession ? "Edit Session" : "Add Session"}
               </h3>
               <button onClick={() => setShowSessionForm(false)}
-                className="text-gray-400 hover:text-white">✕</button>
+                className="text-gray-400 hover:text-gray-600">✕</button>
             </div>
 
             <div>
-              <label className="text-gray-400 text-sm">Title</label>
+              <label className="text-gray-600 font-medium text-sm">Title</label>
               <input type="text"
                 value={sessionForm.title}
                 onChange={e => setSessionForm({...sessionForm, title: e.target.value})}
-                className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 mt-1"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
             <div>
-              <label className="text-gray-400 text-sm">Speaker</label>
+              <label className="text-gray-600 font-medium text-sm">Speaker</label>
               <input type="text"
                 value={sessionForm.speaker}
                 onChange={e => setSessionForm({...sessionForm, speaker: e.target.value})}
-                className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 mt-1"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
             <div>
-              <label className="text-gray-400 text-sm">Date</label>
+              <label className="text-gray-600 font-medium text-sm">Date</label>
               <input type="date"
                 value={sessionForm.date}
                 onChange={e => setSessionForm({...sessionForm, date: e.target.value})}
-                className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 mt-1"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
              <div>
-              <label className="text-gray-400 text-sm">Time</label>
+              <label className="text-gray-600 font-medium text-sm">Time</label>
               <input type="time"
                 value={sessionForm.time}
                 onChange={e => setSessionForm({...sessionForm, time: e.target.value})}
-                className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 mt-1"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
             <div>
-              <label className="text-gray-400 text-sm">Hall</label>
+              <label className="text-gray-600 font-medium text-sm">Hall</label>
               <input type="text"
                 value={sessionForm.hall}
                 onChange={e => setSessionForm({...sessionForm, hall: e.target.value})}
-                className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 mt-1"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-700">
+            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
               <button
                 onClick={() => setShowSessionForm(false)}
-                className="px-4 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600"
+                className="px-5 py-2 rounded-lg bg-white border border-gray-300 shadow-sm text-gray-700 font-bold hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveSession}
-                className="px-4 py-2 rounded-lg bg-yellow-400 text-black font-bold hover:bg-yellow-300"
+                className="px-5 py-2 rounded-lg bg-yellow-500 border border-yellow-600 shadow-sm text-gray-900 font-bold hover:bg-yellow-400 transition-colors"
               >
                 Save
               </button>
@@ -634,7 +634,7 @@ export default function Admin() {
               <button
                 onClick={handleSaveGlobalFeatures}
                 disabled={isSavingFeatures}
-                className="bg-yellow-400 text-black font-bold px-6 py-2 rounded-lg hover:bg-yellow-300 disabled:opacity-50"
+                className="bg-yellow-500 text-black font-bold px-6 py-2 rounded-lg hover:bg-yellow-400 border border-yellow-600 shadow-sm disabled:opacity-50"
               >
                 {isSavingFeatures ? "Saving..." : "Save Global Features"}
               </button>
@@ -642,19 +642,19 @@ export default function Admin() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {FEATURES.map(feature => (
-                <div key={feature.key} className="bg-gray-800 rounded-xl p-4 flex items-center justify-between">
+                <div key={feature.key} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-center justify-between shadow-sm">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{feature.icon}</span>
                     <div>
-                      <p className="text-white font-semibold">{feature.label}</p>
-                      <p className="text-gray-400 text-xs">{feature.desc}</p>
+                      <p className="text-gray-900 font-semibold">{feature.label}</p>
+                      <p className="text-gray-500 text-xs">{feature.desc}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <select
                       value={featureSettings[feature.key] || "active"}
                       onChange={e => setFeatureSettings({ ...featureSettings, [feature.key]: e.target.value })}
-                      className="bg-gray-700 text-white rounded-lg px-2 py-1 text-sm outline-none"
+                      className="bg-white border border-gray-300 text-gray-900 rounded-lg px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-yellow-500"
                     >
                       <option value="active">Active</option>
                       <option value="coming_soon">Coming Soon</option>
@@ -672,7 +672,7 @@ export default function Admin() {
             <select
                 value={selectedFeatureUser}
                 onChange={(e) => setSelectedFeatureUser(e.target.value)}
-                className="p-2 border rounded font-semibold min-w-[200px]"
+                className="p-2 border border-gray-300 rounded font-semibold min-w-[200px] outline-none focus:ring-1 focus:ring-yellow-500 bg-white"
             >
                 <option value="">-- Select User --</option>
                 {users.map((u: any) => (
@@ -690,13 +690,13 @@ export default function Admin() {
                     const status = typeof access === "string" ? access : access?.status || "full";
                     
                     return (
-                        <div key={feature.key} className="bg-gray-800 rounded-xl p-4">
+                        <div key={feature.key} className="bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <span className="text-xl">{feature.icon}</span>
                                     <div>
-                                        <p className="text-white font-medium">{feature.label}</p>
-                                        <p className="text-gray-400 text-xs">{feature.desc}</p>
+                                        <p className="text-gray-900 font-medium">{feature.label}</p>
+                                        <p className="text-gray-500 text-xs">{feature.desc}</p>
                                     </div>
                                 </div>
                                 <button
@@ -704,21 +704,21 @@ export default function Admin() {
                                         ...userFeatureAccess,
                                         [feature.key]: isEnabled ? false : "full"
                                     })}
-                                    className={`relative w-12 h-6 rounded-full transition-colors ${isEnabled ? "bg-yellow-400" : "bg-gray-600"}`}
+                                    className={`relative w-12 h-6 rounded-full transition-colors border ${isEnabled ? "bg-yellow-500 border-yellow-600" : "bg-gray-200 border-gray-300"}`}
                                 >
-                                    <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${isEnabled ? "translate-x-7" : "translate-x-1"}`} />
+                                    <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform shadow ${isEnabled ? "translate-x-7" : "translate-x-1"}`} />
                                 </button>
                             </div>
                             {isEnabled && (
                                 <div className="mt-3 flex items-center gap-2">
-                                    <span className="text-gray-400 text-xs">Status:</span>
+                                    <span className="text-gray-500 text-xs">Status:</span>
                                     <select
                                         value={status}
                                         onChange={e => setUserFeatureAccess({
                                             ...userFeatureAccess,
                                             [feature.key]: e.target.value
                                         })}
-                                        className="bg-gray-700 text-white rounded px-2 py-1 text-xs outline-none"
+                                        className="bg-white border border-gray-300 text-gray-900 rounded px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-yellow-500"
                                     >
                                         <option value="full">Full Access</option>
                                         <option value="coming_soon">Coming Soon</option>
@@ -734,7 +734,7 @@ export default function Admin() {
                     <button
                         onClick={handleSaveUserFeatureAccess}
                         disabled={isSavingFeatures}
-                        className="bg-yellow-400 text-black font-bold px-6 py-2 rounded-lg hover:bg-yellow-300 disabled:opacity-50"
+                        className="bg-yellow-500 text-black font-bold px-6 py-2 rounded-lg hover:bg-yellow-400 border border-yellow-600 shadow-sm disabled:opacity-50"
                     >
                         {isSavingFeatures ? "Saving..." : "Save User Overrides"}
                     </button>
