@@ -1,72 +1,50 @@
-// ─────────────────────────────────────────────
-// FILE: src/pages/Dashboard.tsx
-// PURPOSE: Renders the dashboard page, providing
-// a quick overview of essential trip info.
-// ─────────────────────────────────────────────
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import { useEffect, useState } from 'react';
-import Sidebar from '../components/Sidebar';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { readJSON } from '../utils/github';
+import Layout from '../components/Layout';
+import { useApp } from '../context/AppContext';
 
 /**
  * Dashboard component renders the main overview page,
  * personalizing the welcome message for the logged-in user.
  */
 export default function Dashboard() {
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { currentUser, users, schedule, sessions } = useApp();
+  
+  // Find full user profile
+  const fullUser = users.find(u => u.id === currentUser?.id);
 
-  useEffect(() => {
-    async function loadUser() {
-      try {
-        setLoading(true);
-        // Get logged-in user from session
-        const sessionUser = JSON.parse(localStorage.getItem("euc_user") || "{}");
-        if (!sessionUser.id) throw new Error("No session found");
-
-        // Find this user's full profile from users.json by matching id
-        const users = await readJSON('users.json');
-        const fullUser = users.find((u: any) => u.id === sessionUser.id);
-        setCurrentUser(fullUser);
-      } catch (err) {
-        setError("Failed to load data. Please refresh.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadUser();
-  }, []);
-
-  if (loading) return (
-    <div className="flex items-center justify-center h-screen bg-black">
-      <div className="text-yellow-400 text-xl animate-pulse">
-        Loading EUC...
-      </div>
-    </div>
-  );
-
-  if (error) return (
-    <div className="flex items-center justify-center h-screen bg-black">
-      <div className="text-red-400 text-xl">{error}</div>
-    </div>
-  );
+  // Prague conference start date: 2025-09-10
+  const conferenceStart = new Date("2025-09-10");
+  const today = new Date();
+  const diffTime = conferenceStart.getTime() - today.getTime();
+  const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="ml-64 p-8 pt-20">
-        <Header />
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        {currentUser && <p>Welcome back, {currentUser.name}</p>}
-        <Footer />
+    <Layout>
+      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      {fullUser && <p className="mb-6">Welcome back, {fullUser.name}</p>}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Flight Card */}
+        <div className="bg-white p-4 rounded-lg shadow">
+          <div className="font-bold mb-2">✈️ Next Flight</div>
+          <p>{fullUser?.flightDetails?.flightNumber ?? "Not assigned yet"}</p>
+        </div>
+        
+        {/* Hotel Card */}
+        <div className="bg-white p-4 rounded-lg shadow">
+          <div className="font-bold mb-2">🏨 Hotel</div>
+          <p>{fullUser?.hotel?.name ?? "Not assigned yet"}</p>
+        </div>
+
+        {/* Countdown Card */}
+        <div className="bg-white p-4 rounded-lg shadow border-l-4 border-yellow-500">
+          <div className="font-bold mb-2">⏳ Prague Countdown</div>
+          <p className="text-2xl font-bold">{daysUntil > 0 ? `${daysUntil} days` : "Conference Ongoing"}</p>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 }

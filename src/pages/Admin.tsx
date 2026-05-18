@@ -1,102 +1,83 @@
-// ─────────────────────────────────────────────
-// FILE: src/pages/Admin.tsx
-// PURPOSE: Renders the Admin User Management panel.
-// Restricted to admin roles.
-// ─────────────────────────────────────────────
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import Layout from '../components/Layout';
+import { useApp } from '../context/AppContext';
 import { Navigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { readJSON, writeJSON } from '../utils/github';
+import { writeJSON } from '../utils/github';
+import UserModal from '../components/UserModal';
 
 /**
  * Admin component renders user management table and controls.
  */
 export default function Admin() {
-  const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { users, currentUser, updateUsers } = useApp();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<any>(null);
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        setLoading(true);
-        const sessionUser = JSON.parse(localStorage.getItem("euc_user") || "{}");
-        
-        if (sessionUser.role !== 'admin') {
-           setIsAdmin(false);
-           setLoading(false);
-           return;
-        }
-        setIsAdmin(true);
+  if (currentUser?.role !== 'admin') {
+    return <Navigate to="/dashboard" replace />;
+  }
 
-        const data = await readJSON('users.json');
-        setUsers(data);
-      } catch (err) {
-        setError("Failed to load users. Please refresh.");
-      } finally {
-        setLoading(false);
-      }
+  const handleSave = async (user: any) => {
+    let newUsers;
+    if (editingUser) {
+        newUsers = users.map(u => u.id === user.id ? user : u);
+    } else {
+        newUsers = [...users, user];
     }
-    loadData();
-  }, []);
+    await writeJSON('users.json', newUsers);
+    updateUsers(newUsers);
+    setModalOpen(false);
+    setEditingUser(null);
+  };
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-screen bg-black">
-      <div className="text-yellow-400 text-xl animate-pulse">
-        Loading Admin Panel...
-      </div>
-    </div>
-  );
-
-  if (error) return (
-    <div className="flex items-center justify-center h-screen bg-black">
-      <div className="text-red-400 text-xl">{error}</div>
-    </div>
-  );
-
-  if (!isAdmin) return <Navigate to="/dashboard" replace />;
+  const handleDelete = async (id: string) => {
+    if(confirm("Are you sure?")) {
+        const newUsers = users.filter(u => u.id !== id);
+        await writeJSON('users.json', newUsers);
+        updateUsers(newUsers);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar />
-      <div className="flex-1 ml-64 p-8 pt-20">
-        <Header />
-        <h1 className="text-2xl font-bold mb-6">User Management (Admin)</h1>
-        <div className="bg-white p-6 rounded-lg shadow">
-          {/* User CRUD Table placeholder */}
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Username</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(u => (
-                <tr key={u.id}>
-                  <td>{u.name}</td>
-                  <td>{u.username}</td>
-                  <td>{u.role}</td>
-                  <td>{u.isActive ? "Active" : "Inactive"}</td>
-                  <td><button>Edit</button> <button>Delete</button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <Footer />
+    <Layout>
+      <div className="flex justify-between items-center mb-6 pt-4">
+        <h1 className="text-2xl font-bold">User Management (Admin)</h1>
+        <button onClick={() => { setEditingUser(null); setModalOpen(true); }} className="bg-yellow-500 hover:bg-yellow-600 p-2 px-4 rounded font-bold cursor-pointer">Add User</button>
       </div>
-    </div>
+      
+      {modalOpen && <UserModal user={editingUser} onClose={() => setModalOpen(false)} onSave={handleSave} />}
+
+      <div className="bg-white p-6 rounded-lg shadow overflow-x-auto">
+        <table className="w-full text-left">
+          <thead>
+            <tr>
+              <th className="p-2">Name</th>
+              <th className="p-2">Username</th>
+              <th className="p-2">Role</th>
+              <th className="p-2">Status</th>
+              <th className="p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(u => (
+              <tr key={u.id} className="border-t">
+                <td className="p-2 flex items-center gap-2"><img src={u.photo} className="w-8 h-8 rounded-full" /> {u.name}</td>
+                <td className="p-2">{u.username}</td>
+                <td className="p-2"><span className={`px-2 py-1 rounded text-xs ${u.role === 'admin' ? 'bg-yellow-200' : 'bg-gray-200'}`}>{u.role}</span></td>
+                <td className="p-2">{u.isActive ? "Active" : "Inactive"}</td>
+                <td className="p-2">
+                    <button onClick={() => { setEditingUser(u); setModalOpen(true); }} className="text-blue-500 mr-2">Edit</button> 
+                    <button onClick={() => handleDelete(u.id)} className="text-red-500">Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Layout>
   );
 }

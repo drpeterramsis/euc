@@ -10,8 +10,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Cache duration: 5 minutes
-const CACHE_DURATION = 5 * 60 * 1000;
+// Cache duration: 10 minutes
+const CACHE_DURATION = 10 * 60 * 1000;
 
 /**
  * readJSON()
@@ -19,7 +19,7 @@ const CACHE_DURATION = 5 * 60 * 1000;
  * Returns the parsed JSON data from cache if available and fresh.
  * Falls back to GitHub API, then to local fallback /data/ folder if GitHub fails.
  */
-export async function readJSON(fileName: string): Promise<any> {
+export async function readJSON(fileName: string): Promise<any[]> {
   const cacheKey = `euc_${fileName.replace(".json","")}_cache`;
   const cacheTimeKey = `${cacheKey}_time`;
 
@@ -83,16 +83,22 @@ export async function readJSON(fileName: string): Promise<any> {
 /**
  * writeJSON()
  * Updates JSON content in a specified file path in the GitHub repository.
- * Requires the file's current SHA for the update to succeed.
  */
-export async function writeJSON(filePath: string, content: any, sha: string) {
+export async function writeJSON(filePath: string, content: any) {
   const TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
   const REPO = import.meta.env.VITE_GITHUB_REPO;
   const BRANCH = import.meta.env.VITE_GITHUB_BRANCH || "main";
   
   if (!TOKEN || !REPO) throw new Error("GitHub configuration missing");
   
-  // Updates file with base64 encoded string
+  // Get current SHA
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data/${filePath}`, {
+    headers: { Authorization: `Bearer ${TOKEN}` }
+  });
+  const data = await res.json();
+  const sha = data.sha;
+
+  // Update file
   await fetch(`https://api.github.com/repos/${REPO}/contents/data/${filePath}`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },

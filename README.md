@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.5
+Version: 1.6
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -25,9 +25,10 @@ Current event: Prague Conference 2025.
 
 ## Project Structure
 /data              → JSON files (users, schedule, sessions, settings)
-/src/components    → Reusable UI components (Sidebar, Header, Footer)
+/src/components    → Reusable UI components (Sidebar, Header, Footer, Layout)
 /src/pages         → App pages (Login, Dashboard, Profile, etc.)
 /src/utils         → Helper functions (auth, github read/write)
+/src/context       → Global application state (AppContext)
 
 ## JSON Files (act as the database)
 | File             | Purpose                            |
@@ -55,12 +56,6 @@ VITE_GITHUB_BRANCH         → e.g., main
 3. Add environment variables in Vercel dashboard
 4. Deploy — Vercel auto-deploys on every push
 
-## Default Login Credentials (for testing)
-| Username   | Password   | Role    |
-|------------|------------|---------|
-| admin      | admin123   | admin   |
-| dr.ahmed   | password123| doctor  |
-
 ## Version History
 | Version | Date       | Changes                                      |
 |---------|------------|----------------------------------------------|
@@ -70,6 +65,7 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.3    | 2025-01-01 | Fixed login white screen + session bug + GitHub fallback + env variable fix |
 | v1.4    | 2025-01-01 | Fixed metadata title + admin profile bug + Vercel 404 routing fix |
 | v1.5    | 2025-01-01 | Major fix: logout + pages loading + caching + auth guard + performance |
+| v1.6    | 2025-01-01 | Global data loading + mobile responsive + full page functionality |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

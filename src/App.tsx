@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────
 // FILE: src/App.tsx
 // PURPOSE: Main application component, sets up
-// routing and protected route logic.
+// routing, protected route logic, and global loading state.
 // ─────────────────────────────────────────────
 
 /**
@@ -15,6 +15,7 @@ import Profile from './pages/Profile';
 import Schedule from './pages/Schedule';
 import Sessions from './pages/Sessions';
 import Admin from './pages/Admin';
+import { useApp } from './context/AppContext';
 
 /**
  * ProtectedRoute component verifies authentication synchronously.
@@ -34,9 +35,21 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 /**
- * App component manages the application routing.
+ * App component manages the application routing and global loading state.
  */
 export default function App() {
+  const { loading } = useApp();
+
+  if (loading) return (
+    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center">
+      <div className="text-4xl font-bold text-yellow-400 mb-4">EUC</div>
+      <div className="text-white text-sm mb-6">EVA URO CLUB</div>
+      <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent
+                      rounded-full animate-spin"></div>
+      <div className="text-gray-400 text-sm mt-4">Loading conference data...</div>
+    </div>
+  );
+
   return (
     <BrowserRouter>
       <Routes>
