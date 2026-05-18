@@ -6,6 +6,7 @@ import { useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import Footer from './Footer';
+import { ToastContainer } from './Toast';
 
 /**
  * Layout component renders the shared structure: Sidebar, Header, Content, Footer.
@@ -33,6 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </main>
         <Footer />
       </div>
+      <ToastContainer />
     </div>
   );
 }

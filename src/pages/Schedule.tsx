@@ -11,10 +11,14 @@ import { useApp } from '../context/AppContext';
 export default function Schedule() {
   const { schedule, currentUser } = useApp();
 
-  const filtered = schedule.filter((item: any) => 
-    item.accessRoles.includes(currentUser?.role) || 
-    item.accessUserIds.includes(currentUser?.id)
-  );
+  const viewAs = sessionStorage.getItem("euc_view_as");
+  const displayUser = viewAs ? JSON.parse(viewAs) : currentUser;
+
+  const filtered = schedule.filter((item: any) => {
+    if (!item.accessRoles && !item.accessUserIds) return true;
+    return item.accessRoles?.includes(displayUser?.role) || 
+           item.accessUserIds?.includes(displayUser?.id);
+  });
 
   return (
     <Layout>

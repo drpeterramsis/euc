@@ -11,7 +11,10 @@ import { useApp } from '../context/AppContext';
 export default function Sessions() {
   const { sessions, currentUser } = useApp();
 
-  if (currentUser?.role === 'staff') {
+  const viewAs = sessionStorage.getItem("euc_view_as");
+  const displayUser = viewAs ? JSON.parse(viewAs) : currentUser;
+
+  if (displayUser?.role === 'staff') {
     return <Layout>Access Restricted. Only doctors and admins can view sessions.</Layout>;
   }
 

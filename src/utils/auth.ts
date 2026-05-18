@@ -40,15 +40,13 @@ export function login(user: User) {
 export function logout(): void {
   // Clear session and all cached data
   localStorage.removeItem(LOGIN_KEY);
-  localStorage.removeItem("euc_users_cache");
-  localStorage.removeItem("euc_users_cache_time");
-  localStorage.removeItem("euc_schedule_cache");
-  localStorage.removeItem("euc_schedule_cache_time");
-  localStorage.removeItem("euc_sessions_cache");
-  localStorage.removeItem("euc_sessions_cache_time");
-  localStorage.removeItem("euc_settings_cache");
-  localStorage.removeItem("euc_settings_cache_time");
   
+  // Clear sessionStorage if defined in AppContext
+  sessionStorage.removeItem("euc_session_users");
+  sessionStorage.removeItem("euc_session_schedule");
+  sessionStorage.removeItem("euc_session_sessions");
+  sessionStorage.removeItem("euc_session_settings");
+
   // Hard redirect to login — clears all React state
   window.location.href = "/";
 }

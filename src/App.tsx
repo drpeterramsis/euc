@@ -15,6 +15,7 @@ import Profile from './pages/Profile';
 import Schedule from './pages/Schedule';
 import Sessions from './pages/Sessions';
 import Admin from './pages/Admin';
+import ComingSoon from './pages/ComingSoon';
 import { useApp } from './context/AppContext';
 
 /**
@@ -34,13 +35,26 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 };
 
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const sessionRaw = localStorage.getItem("euc_user");
+  if (!sessionRaw) return <Navigate to="/" replace />;
+  try {
+    const user = JSON.parse(sessionRaw);
+    if (user.role !== "admin") return <Navigate to="/dashboard" replace />;
+    return <>{children}</>;
+  } catch {
+    localStorage.removeItem("euc_user");
+    return <Navigate to="/" replace />;
+  }
+};
+
 /**
  * App component manages the application routing and global loading state.
  */
 export default function App() {
-  const { loading } = useApp();
+  const { loading, isFirstLoad } = useApp();
 
-  if (loading) return (
+  if (loading && isFirstLoad) return (
     <div className="fixed inset-0 bg-black flex flex-col items-center justify-center">
       <div className="text-4xl font-bold text-yellow-400 mb-4">EUC</div>
       <div className="text-white text-sm mb-6">EVA URO CLUB</div>
@@ -58,7 +72,9 @@ export default function App() {
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
         <Route path="/sessions" element={<ProtectedRoute><Sessions /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+        <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

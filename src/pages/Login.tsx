@@ -11,7 +11,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { readJSON } from '../utils/github';
-import { login } from '../utils/auth';
+import { useApp } from '../context/AppContext';
 
 /**
  * Login component renders a centered login form for authentication.
@@ -23,6 +23,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { loginUser } = useApp();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,9 +45,9 @@ export default function Login() {
       if (matchedUser) {
         console.log("Matched user:", matchedUser);
         // Authentication successful
-        login(matchedUser);
+        loginUser(matchedUser);
         // Redirect to dashboard
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       } else {
         setError('Invalid username or password');
       }

@@ -1,116 +1,64 @@
 // ─────────────────────────────────────────────
 // FILE: src/utils/github.ts
-// PURPOSE: Handles read/write operations to
-// JSON data files hosted on GitHub via
-// the GitHub REST API, with localStorage caching.
+// PURPOSE: Handles read/write operations with caching.
 // ─────────────────────────────────────────────
 
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-// Cache duration: 10 minutes
-const CACHE_DURATION = 10 * 60 * 1000;
-
-/**
- * readJSON()
- * Fetches JSON content from a specified file path in the GitHub repository.
- * Returns the parsed JSON data from cache if available and fresh.
- * Falls back to GitHub API, then to local fallback /data/ folder if GitHub fails.
- */
-export async function readJSON(fileName: string): Promise<any[]> {
-  const cacheKey = `euc_${fileName.replace(".json","")}_cache`;
-  const cacheTimeKey = `${cacheKey}_time`;
-
-  // Check cache first
-  const cached = localStorage.getItem(cacheKey);
-  const cacheTime = localStorage.getItem(cacheTimeKey);
-
-  if (cached && cacheTime) {
-    const age = Date.now() - parseInt(cacheTime);
-    if (age < CACHE_DURATION) {
-      console.log(`Using cached data for ${fileName}`);
-      return JSON.parse(cached);
-    }
+async function fetchWithTimeout(url: string, options: RequestInit, timeout = 8000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(id);
+    return res;
+  } catch (err) {
+    clearTimeout(id);
+    throw err;
   }
+}
 
-  // Try GitHub API first
+export async function readJSON(fileName: string): Promise<any[]> {
   const TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
   const REPO = import.meta.env.VITE_GITHUB_REPO;
   const BRANCH = import.meta.env.VITE_GITHUB_BRANCH || "main";
 
   if (TOKEN && REPO) {
     try {
-      const res = await fetch(
-        `https://api.github.com/repos/${REPO}/contents/data/${fileName}?ref=${BRANCH}`,
-        {
-          headers: {
-            Authorization: `Bearer ${TOKEN}`,
-            Accept: "application/vnd.github.v3+json",
-          },
-        }
-      );
+      const res = await fetchWithTimeout(`https://api.github.com/repos/${REPO}/contents/data/${fileName}?ref=${BRANCH}&t=${Date.now()}`, {
+        headers: { Authorization: `Bearer ${TOKEN}`, Accept: "application/vnd.github.v3+json" },
+      });
       if (res.ok) {
         const data = await res.json();
-        const parsed = JSON.parse(atob(data.content));
-        // Save to cache
-        localStorage.setItem(cacheKey, JSON.stringify(parsed));
-        localStorage.setItem(cacheTimeKey, Date.now().toString());
-        return parsed;
+        return JSON.parse(atob(data.content));
       }
-    } catch (err) {
-      console.warn(`GitHub API failed for ${fileName}, using local fallback`);
-    }
+    } catch (err) { console.warn(`GitHub API failed for ${fileName}`); }
   }
 
-  // Fallback to local /data/ folder
   try {
-    const res = await fetch(`/data/${fileName}`);
-    if (res.ok) {
-      const parsed = await res.json();
-      localStorage.setItem(cacheKey, JSON.stringify(parsed));
-      localStorage.setItem(cacheTimeKey, Date.now().toString());
-      return parsed;
-    }
-  } catch (err) {
-    console.error(`Local fallback also failed for ${fileName}`);
-  }
-
+    const res = await fetch(`/data/${fileName}?t=${Date.now()}`);
+    if (res.ok) return await res.json();
+  } catch (err) { console.error(`Local fallback failed for ${fileName}`); }
   return [];
 }
 
-/**
- * writeJSON()
- * Updates JSON content in a specified file path in the GitHub repository.
- */
 export async function writeJSON(filePath: string, content: any) {
   const TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
   const REPO = import.meta.env.VITE_GITHUB_REPO;
   const BRANCH = import.meta.env.VITE_GITHUB_BRANCH || "main";
+  if (!TOKEN || !REPO) throw new Error("GitHub配置 missing");
   
-  if (!TOKEN || !REPO) throw new Error("GitHub configuration missing");
-  
-  // Get current SHA
   const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data/${filePath}`, {
     headers: { Authorization: `Bearer ${TOKEN}` }
   });
   const data = await res.json();
-  const sha = data.sha;
-
-  // Update file
+  
   await fetch(`https://api.github.com/repos/${REPO}/contents/data/${filePath}`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       message: `Update ${filePath}`,
       content: btoa(JSON.stringify(content, null, 2)),
-      sha,
+      sha: data.sha,
       branch: BRANCH
     })
   });
-  
-  // Clear cache after successful write
-  localStorage.removeItem(`euc_${filePath.replace(".json","")}_cache`);
-  localStorage.removeItem(`euc_${filePath.replace(".json","")}_cache_time`);
 }

@@ -10,7 +10,9 @@ import { useApp } from '../context/AppContext';
  */
 export default function Profile() {
   const { currentUser, users } = useApp();
-  const fullUser = users.find(u => u.id === currentUser?.id);
+  const viewAs = sessionStorage.getItem("euc_view_as");
+  const displayUser = viewAs ? JSON.parse(viewAs) : currentUser;
+  const fullUser = users.find(u => u.id === displayUser?.id) || displayUser;
 
   if (!fullUser) return <Layout>Loading...</Layout>;
 

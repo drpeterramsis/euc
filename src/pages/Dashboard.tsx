@@ -2,18 +2,17 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 
-/**
- * Dashboard component renders the main overview page,
- * personalizing the welcome message for the logged-in user.
- */
 export default function Dashboard() {
-  const { currentUser, users, schedule, sessions } = useApp();
+  const { currentUser, users } = useApp();
+  const navigate = useNavigate();
   
-  // Find full user profile
-  const fullUser = users.find(u => u.id === currentUser?.id);
+  const viewAs = sessionStorage.getItem("euc_view_as");
+  const displayUser = viewAs ? JSON.parse(viewAs) : currentUser;
+  const fullUser = users.find(u => u.id === displayUser?.id) || displayUser;
 
   // Prague conference start date: 2025-09-10
   const conferenceStart = new Date("2025-09-10");
@@ -23,6 +22,35 @@ export default function Dashboard() {
 
   return (
     <Layout>
+      {viewAs && (
+        <div className="bg-yellow-500 text-black p-3 text-center font-bold mb-6 rounded-lg relative shadow">
+          ⚠️ Viewing as [{fullUser.name || fullUser.username}]
+          <button
+            onClick={() => {
+              sessionStorage.removeItem("euc_view_as");
+              window.location.reload();
+            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-black text-yellow-500 px-3 py-1 rounded text-sm hover:bg-gray-800"
+          >
+            Exit Preview
+          </button>
+        </div>
+      )}
+
+      {currentUser?.role === "admin" && !viewAs && (
+        <div className="bg-[#1a1a1a] text-white p-5 rounded-xl mb-8 shadow-lg border border-gray-800">
+          <h2 className="text-yellow-500 font-bold mb-4 flex items-center gap-2">
+            <span>👑</span> Admin Quick Actions
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <button onClick={() => navigate("/admin?tab=users")} className="p-3 bg-gray-900 rounded hover:bg-gray-800 border border-gray-700 font-semibold text-sm transition-colors">👥 Manage Users</button>
+            <button onClick={() => navigate("/admin?tab=schedule")} className="p-3 bg-gray-900 rounded hover:bg-gray-800 border border-gray-700 font-semibold text-sm transition-colors">📅 Edit Schedule</button>
+            <button onClick={() => navigate("/admin?tab=schedule")} className="p-3 bg-gray-900 rounded hover:bg-gray-800 border border-gray-700 font-semibold text-sm transition-colors">🎓 Edit Sessions</button>
+            <button onClick={() => navigate("/admin?tab=features")} className="p-3 bg-gray-900 rounded hover:bg-gray-800 border border-gray-700 font-semibold text-sm transition-colors">⚙️ Feature Control</button>
+          </div>
+        </div>
+      )}
+
       <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
       {fullUser && <p className="mb-6">Welcome back, {fullUser.name}</p>}
 
