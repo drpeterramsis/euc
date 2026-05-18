@@ -13,11 +13,11 @@ export default function MediaPostViewerModal({ post, onClose }: { post: any, onC
       >
         <button onClick={onClose} className="absolute right-4 top-4 text-white bg-black/50 p-2 rounded-full hover:bg-black/70 z-10 text-xl font-bold">✕</button>
 
-        <div className="w-full h-80 bg-gray-100">
+        <div className="w-full flex-1 bg-gray-100 flex items-center justify-center p-2">
           <img 
             src={imageError ? "https://placehold.co/800x400?text=Image+Unavailable" : post.imageDataUrl} 
             alt={post.title} 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain max-h-[50vh]"
             onError={() => setImageError(true)}
           />
         </div>

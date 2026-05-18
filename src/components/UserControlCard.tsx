@@ -86,6 +86,8 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
   const [isSaving, setIsSaving] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [applyToAllTravel, setApplyToAllTravel] = useState(false);
+  const [applyFeaturesToAll, setApplyFeaturesToAll] = useState(false);
+  const [applyFieldsToAll, setApplyFieldsToAll] = useState(false);
 
   const [formData, setFormData] = useState(() => {
     if (mode === "edit" && user) {
@@ -325,7 +327,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         visibleFields: { ...visibleFields },
       };
 
-      await onSave(updatedUser, applyToAllTravel);
+      await onSave(updatedUser, applyToAllTravel, applyFeaturesToAll, applyFieldsToAll);
 
       showToast(
         mode === "edit"
@@ -426,6 +428,14 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
               <label className="flex items-center gap-2 cursor-pointer p-3 bg-yellow-50 text-yellow-900 border border-yellow-200 rounded-lg max-w-max mx-auto shadow-sm hover:bg-yellow-100 transition-colors">
                 <input type="checkbox" name="applyToAllTravel" checked={applyToAllTravel} onChange={(e) => setApplyToAllTravel(e.target.checked)} className="accent-yellow-500 w-5 h-5"/>
                 <span className="font-bold text-sm">Apply these travel & hotel details to ALL users</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer p-3 bg-yellow-50 text-yellow-900 border border-yellow-200 rounded-lg max-w-max mx-auto shadow-sm hover:bg-yellow-100 transition-colors">
+                <input type="checkbox" name="applyFeaturesToAll" checked={applyFeaturesToAll} onChange={(e) => setApplyFeaturesToAll(e.target.checked)} className="accent-yellow-500 w-5 h-5"/>
+                <span className="font-bold text-sm">Apply these feature access settings to ALL users</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer p-3 bg-yellow-50 text-yellow-900 border border-yellow-200 rounded-lg max-w-max mx-auto shadow-sm hover:bg-yellow-100 transition-colors">
+                <input type="checkbox" name="applyFieldsToAll" checked={applyFieldsToAll} onChange={(e) => setApplyFieldsToAll(e.target.checked)} className="accent-yellow-500 w-5 h-5"/>
+                <span className="font-bold text-sm">Apply these field visibility settings to ALL users</span>
               </label>
             </div>
           )}

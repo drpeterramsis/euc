@@ -66,6 +66,7 @@ export default function Admin() {
 
   // Tab 5 State (Media)
   const [showMediaForm, setShowMediaForm] = useState(false);
+  const [isSavingMedia, setIsSavingMedia] = useState(false);
   const [mediaForm, setMediaForm] = useState({
     id: "", category: "trips", title: "", description: "", caption: "", imageDataUrl: ""
   });
@@ -109,7 +110,7 @@ export default function Admin() {
   }
 
   // --- TAB 1 METHODS ---
-  const handleSaveUser = async (updatedUser: any, applyToAllTravel: boolean = false) => {
+  const handleSaveUser = async (updatedUser: any, applyToAllTravel: boolean = false, applyFeaturesToAll: boolean = false, applyFieldsToAll: boolean = false) => {
     let newUsers;
     if (editingUser) {
       newUsers = users.map(u => u.id === updatedUser.id ? updatedUser : u);
@@ -125,6 +126,16 @@ export default function Admin() {
           hotel: updatedUser.hotel,
           transfers: updatedUser.transfers
         }));
+      }
+    }
+
+    if (applyFeaturesToAll || applyFieldsToAll) {
+      if (confirm("Are you sure you want to apply these settings to ALL users?")) {
+          newUsers = newUsers.map(u => ({
+              ...u,
+              ...(applyFeaturesToAll ? { featureAccess: updatedUser.featureAccess } : {}),
+              ...(applyFieldsToAll ? { visibleFields: updatedUser.visibleFields } : {})
+          }));
       }
     }
 
@@ -893,6 +904,7 @@ export default function Admin() {
          showToast("Title and Photo are required", "error");
          return;
       }
+      setIsSavingMedia(true);
       let updated: any[];
       if (mediaForm.id.startsWith("m_")) { 
         updated = media.map(m => m.id === mediaForm.id ? { ...mediaForm } : m);
@@ -905,6 +917,8 @@ export default function Admin() {
       showToast("Post saved successfully ✓", "success");
     } catch (e) {
       showToast("Failed to save post", "error");
+    } finally {
+      setIsSavingMedia(false);
     }
   }
 
@@ -981,8 +995,10 @@ export default function Admin() {
                  <input value={mediaForm.caption} onChange={e => setMediaForm({...mediaForm, caption: e.target.value})} placeholder="Caption (Optional)" className="w-full p-2 border rounded" />
               </div>
               <div className="p-6 border-t bg-gray-50 rounded-b-xl flex justify-end gap-3">
-                 <button onClick={() => setShowMediaForm(false)} className="px-5 py-2 bg-white border shadow-sm font-bold rounded hover:bg-gray-50 transition-colors">Cancel</button>
-                 <button onClick={handleSaveMedia} className="px-5 py-2 bg-yellow-500 text-black font-bold rounded shadow hover:bg-yellow-600 transition-colors">Save Post</button>
+                 <button onClick={() => setShowMediaForm(false)} disabled={isSavingMedia} className="px-5 py-2 bg-white border shadow-sm font-bold rounded hover:bg-gray-50 transition-colors disabled:opacity-50">Cancel</button>
+                 <button onClick={handleSaveMedia} disabled={isSavingMedia} className="px-5 py-2 bg-yellow-500 text-black font-bold rounded shadow hover:bg-yellow-600 transition-colors disabled:opacity-50 min-w-[120px] flex items-center justify-center">
+                    {isSavingMedia ? "Saving..." : "Save Post"}
+                 </button>
               </div>
             </div>
          </div>
