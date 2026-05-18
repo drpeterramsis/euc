@@ -11,7 +11,7 @@ export default function Footer() {
    */
   return (
     <footer className="fixed bottom-0 left-64 right-0 p-4 border-t border-gray-200 bg-white text-center text-sm text-gray-500">
-      © 2025 EUC – EVA URO CLUB | Prague Conference | v1.2
+      © 2025 EUC – EVA URO CLUB | Prague Conference | v1.3
     </footer>
   );
 }

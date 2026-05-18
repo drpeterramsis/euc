@@ -3,12 +3,16 @@
 // PURPOSE: Handles user authentication logic
 // using localStorage for session management.
 // No backend or JWT — purely client-side.
+// Key used for storage: "euc_user".
 // ─────────────────────────────────────────────
 
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
+
+// Key for localStorage session
+const LOGIN_KEY = "euc_user";
 
 // Interface defining the user structure
 export interface User {
@@ -22,9 +26,11 @@ export interface User {
 /**
  * login()
  * Stores the user object in localStorage to maintain session.
+ * Logs session save confirmation.
  */
 export function login(user: User) {
-  localStorage.setItem("user", JSON.stringify(user));
+  localStorage.setItem(LOGIN_KEY, JSON.stringify(user));
+  console.log("Session saved:", localStorage.getItem(LOGIN_KEY));
 }
 
 /**
@@ -32,7 +38,7 @@ export function login(user: User) {
  * Removes the user object from localStorage, effectively ending the session.
  */
 export function logout() {
-  localStorage.removeItem("user");
+  localStorage.removeItem(LOGIN_KEY);
 }
 
 /**
@@ -41,7 +47,7 @@ export function logout() {
  * Returns the User object or null if not authenticated.
  */
 export function getCurrentUser(): User | null {
-  const user = localStorage.getItem("user");
+  const user = localStorage.getItem(LOGIN_KEY);
   return user ? JSON.parse(user) : null;
 }
 
@@ -51,5 +57,5 @@ export function getCurrentUser(): User | null {
  * Returns true if authenticated, false otherwise.
  */
 export function isAuthenticated(): boolean {
-  return !!localStorage.getItem("user");
+  return !!localStorage.getItem(LOGIN_KEY);
 }

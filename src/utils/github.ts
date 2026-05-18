@@ -13,25 +13,39 @@
 // GitHub environment variables
 const TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
 const REPO = import.meta.env.VITE_GITHUB_REPO;
-const BRANCH = import.meta.env.VITE_GITHUB_BRANCH;
+const BRANCH = import.meta.env.VITE_GITHUB_BRANCH || "main";
 const BASE = "https://api.github.com";
+
+if (!TOKEN || !REPO) {
+  console.warn("GitHub env variables missing — using local JSON fallback");
+}
 
 /**
  * readJSON()
  * Fetches JSON content from a specified file path in the GitHub repository.
  * Returns the parsed JSON data.
+ * Falls back to local /data/users.json if fetch fails or config missing.
  */
 export async function readJSON(filePath: string) {
-  if (!TOKEN || !REPO) throw new Error("GitHub configuration missing");
-  
-  const res = await fetch(`${BASE}/repos/${REPO}/contents/data/${filePath}`, {
-    headers: { Authorization: `Bearer ${TOKEN}` }
-  });
-  if (!res.ok) throw new Error("Failed to read JSON from GitHub");
-  
-  const data = await res.json();
-  // Data in GitHub contents API is base64 encoded
-  return JSON.parse(atob(data.content));
+  if (TOKEN && REPO) {
+    try {
+      const res = await fetch(`${BASE}/repos/${REPO}/contents/data/${filePath}`, {
+        headers: { Authorization: `Bearer ${TOKEN}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // Data in GitHub contents API is base64 encoded
+        return JSON.parse(atob(data.content));
+      }
+    } catch (error) {
+      console.error("GitHub fetch failed, using local fallback:", error);
+    }
+  }
+
+  // Fallback to local files
+  console.log(`Loading fallback local file: /data/${filePath}`);
+  const res = await fetch(`/data/${filePath}`);
+  return await res.json();
 }
 
 /**

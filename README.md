@@ -67,6 +67,7 @@ NEXT_PUBLIC_GITHUB_BRANCH  → e.g., main
 | v1.0    | 2025-01-01 | Initial app build                            |
 | v1.1    | 2025-01-01 | Added admin user + footer versioning         |
 | v1.2    | 2025-01-01 | Added README + code comments across all files|
+| v1.3    | 2025-01-01 | Fixed login white screen + session bug + GitHub fallback + env variable fix |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo
