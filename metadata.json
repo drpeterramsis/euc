@@ -1,6 +1,9 @@
 {
-  "name": "EUC - EVA URO CLUB",
-  "description": "Conference trip management platform for the EVA URO CLUB medical delegation.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "name": "EUC – EVA URO CLUB",
+  "short_name": "EUC",
+  "description": "EVA URO CLUB – Prague Conference 2025 Trip Management App",
+  "version": "1.4",
+  "author": "EVA Pharma",
+  "theme_color": "#FFBF00",
+  "background_color": "#000000"
 }

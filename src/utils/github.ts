@@ -2,7 +2,7 @@
 // FILE: src/utils/github.ts
 // PURPOSE: Handles read/write operations to
 // JSON data files hosted on GitHub via
-// the GitHub REST API.
+// the GitHub REST API, with localStorage caching.
 // ─────────────────────────────────────────────
 
 /**
@@ -10,42 +10,74 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// GitHub environment variables
-const TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
-const REPO = import.meta.env.VITE_GITHUB_REPO;
-const BRANCH = import.meta.env.VITE_GITHUB_BRANCH || "main";
-const BASE = "https://api.github.com";
-
-if (!TOKEN || !REPO) {
-  console.warn("GitHub env variables missing — using local JSON fallback");
-}
+// Cache duration: 5 minutes
+const CACHE_DURATION = 5 * 60 * 1000;
 
 /**
  * readJSON()
  * Fetches JSON content from a specified file path in the GitHub repository.
- * Returns the parsed JSON data.
- * Falls back to local /data/users.json if fetch fails or config missing.
+ * Returns the parsed JSON data from cache if available and fresh.
+ * Falls back to GitHub API, then to local fallback /data/ folder if GitHub fails.
  */
-export async function readJSON(filePath: string) {
-  if (TOKEN && REPO) {
-    try {
-      const res = await fetch(`${BASE}/repos/${REPO}/contents/data/${filePath}`, {
-        headers: { Authorization: `Bearer ${TOKEN}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        // Data in GitHub contents API is base64 encoded
-        return JSON.parse(atob(data.content));
-      }
-    } catch (error) {
-      console.error("GitHub fetch failed, using local fallback:", error);
+export async function readJSON(fileName: string): Promise<any> {
+  const cacheKey = `euc_${fileName.replace(".json","")}_cache`;
+  const cacheTimeKey = `${cacheKey}_time`;
+
+  // Check cache first
+  const cached = localStorage.getItem(cacheKey);
+  const cacheTime = localStorage.getItem(cacheTimeKey);
+
+  if (cached && cacheTime) {
+    const age = Date.now() - parseInt(cacheTime);
+    if (age < CACHE_DURATION) {
+      console.log(`Using cached data for ${fileName}`);
+      return JSON.parse(cached);
     }
   }
 
-  // Fallback to local files
-  console.log(`Loading fallback local file: /data/${filePath}`);
-  const res = await fetch(`/data/${filePath}`);
-  return await res.json();
+  // Try GitHub API first
+  const TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
+  const REPO = import.meta.env.VITE_GITHUB_REPO;
+  const BRANCH = import.meta.env.VITE_GITHUB_BRANCH || "main";
+
+  if (TOKEN && REPO) {
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${REPO}/contents/data/${fileName}?ref=${BRANCH}`,
+        {
+          headers: {
+            Authorization: `Bearer ${TOKEN}`,
+            Accept: "application/vnd.github.v3+json",
+          },
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const parsed = JSON.parse(atob(data.content));
+        // Save to cache
+        localStorage.setItem(cacheKey, JSON.stringify(parsed));
+        localStorage.setItem(cacheTimeKey, Date.now().toString());
+        return parsed;
+      }
+    } catch (err) {
+      console.warn(`GitHub API failed for ${fileName}, using local fallback`);
+    }
+  }
+
+  // Fallback to local /data/ folder
+  try {
+    const res = await fetch(`/data/${fileName}`);
+    if (res.ok) {
+      const parsed = await res.json();
+      localStorage.setItem(cacheKey, JSON.stringify(parsed));
+      localStorage.setItem(cacheTimeKey, Date.now().toString());
+      return parsed;
+    }
+  } catch (err) {
+    console.error(`Local fallback also failed for ${fileName}`);
+  }
+
+  return [];
 }
 
 /**
@@ -54,10 +86,14 @@ export async function readJSON(filePath: string) {
  * Requires the file's current SHA for the update to succeed.
  */
 export async function writeJSON(filePath: string, content: any, sha: string) {
+  const TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
+  const REPO = import.meta.env.VITE_GITHUB_REPO;
+  const BRANCH = import.meta.env.VITE_GITHUB_BRANCH || "main";
+  
   if (!TOKEN || !REPO) throw new Error("GitHub configuration missing");
   
   // Updates file with base64 encoded string
-  await fetch(`${BASE}/repos/${REPO}/contents/data/${filePath}`, {
+  await fetch(`https://api.github.com/repos/${REPO}/contents/data/${filePath}`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -67,4 +103,8 @@ export async function writeJSON(filePath: string, content: any, sha: string) {
       branch: BRANCH
     })
   });
+  
+  // Clear cache after successful write
+  localStorage.removeItem(`euc_${filePath.replace(".json","")}_cache`);
+  localStorage.removeItem(`euc_${filePath.replace(".json","")}_cache_time`);
 }

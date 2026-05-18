@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────
 // FILE: src/App.tsx
 // PURPOSE: Main application component, sets up
-// routing for all pages.
+// routing and protected route logic.
 // ─────────────────────────────────────────────
 
 /**
@@ -15,13 +15,22 @@ import Profile from './pages/Profile';
 import Schedule from './pages/Schedule';
 import Sessions from './pages/Sessions';
 import Admin from './pages/Admin';
-import { isAuthenticated } from './utils/auth';
 
 /**
- * ProtectedRoute component verifies authentication before rendering children.
+ * ProtectedRoute component verifies authentication synchronously.
  */
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  return isAuthenticated() ? children : <Navigate to="/" />;
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const sessionRaw = localStorage.getItem("euc_user");
+  if (!sessionRaw) {
+    return <Navigate to="/" replace />;
+  }
+  try {
+    JSON.parse(sessionRaw); // validate it's real JSON
+    return <>{children}</>;
+  } catch {
+    localStorage.removeItem("euc_user");
+    return <Navigate to="/" replace />;
+  }
 };
 
 /**

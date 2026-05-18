@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.2
+Version: 1.5
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -38,9 +38,9 @@ Current event: Prague Conference 2025.
 | settings.json    | Feature flags and coming soon list |
 
 ## Environment Variables (set in Vercel)
-NEXT_PUBLIC_GITHUB_TOKEN   → Your GitHub Personal Access Token
-NEXT_PUBLIC_GITHUB_REPO    → format: username/repo-name
-NEXT_PUBLIC_GITHUB_BRANCH  → e.g., main
+VITE_GITHUB_TOKEN          → Your GitHub Personal Access Token
+VITE_GITHUB_REPO           → format: username/repo-name
+VITE_GITHUB_BRANCH         → e.g., main
 
 ## How to Run Locally
 1. Clone the repository
@@ -68,6 +68,8 @@ NEXT_PUBLIC_GITHUB_BRANCH  → e.g., main
 | v1.1    | 2025-01-01 | Added admin user + footer versioning         |
 | v1.2    | 2025-01-01 | Added README + code comments across all files|
 | v1.3    | 2025-01-01 | Fixed login white screen + session bug + GitHub fallback + env variable fix |
+| v1.4    | 2025-01-01 | Fixed metadata title + admin profile bug + Vercel 404 routing fix |
+| v1.5    | 2025-01-01 | Major fix: logout + pages loading + caching + auth guard + performance |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

@@ -20,25 +20,37 @@ export interface User {
   username: string;
   role: string;
   name: string;
+  photo: string;
   // ... other user fields
 }
 
 /**
  * login()
  * Stores the user object in localStorage to maintain session.
- * Logs session save confirmation.
  */
 export function login(user: User) {
   localStorage.setItem(LOGIN_KEY, JSON.stringify(user));
-  console.log("Session saved:", localStorage.getItem(LOGIN_KEY));
 }
 
 /**
  * logout()
- * Removes the user object from localStorage, effectively ending the session.
+ * Removes the user object and all cached data from localStorage,
+ * and forces a hard redirect to the login page.
  */
-export function logout() {
+export function logout(): void {
+  // Clear session and all cached data
   localStorage.removeItem(LOGIN_KEY);
+  localStorage.removeItem("euc_users_cache");
+  localStorage.removeItem("euc_users_cache_time");
+  localStorage.removeItem("euc_schedule_cache");
+  localStorage.removeItem("euc_schedule_cache_time");
+  localStorage.removeItem("euc_sessions_cache");
+  localStorage.removeItem("euc_sessions_cache_time");
+  localStorage.removeItem("euc_settings_cache");
+  localStorage.removeItem("euc_settings_cache_time");
+  
+  // Hard redirect to login — clears all React state
+  window.location.href = "/";
 }
 
 /**
