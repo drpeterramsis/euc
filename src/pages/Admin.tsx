@@ -69,6 +69,7 @@ export default function Admin() {
   const [mediaForm, setMediaForm] = useState({
     id: "", category: "trips", title: "", description: "", caption: "", imageDataUrl: ""
   });
+  const [selectedPost, setSelectedPost] = useState<any>(null);
 
   useEffect(() => {
     if (schedule && schedule.length > 0) {
@@ -920,7 +921,6 @@ export default function Admin() {
   }
 
   const renderTab5 = () => {
-    const [selectedPost, setSelectedPost] = useState<any>(null);
     return (
     <div>
        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
