@@ -52,7 +52,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
  * App component manages the application routing and global loading state.
  */
 export default function App() {
-  const { loading, isFirstLoad } = useApp();
+  const { loading, isFirstLoad, isBackgroundRefreshing } = useApp();
 
   if (loading && isFirstLoad) return (
     <div className="fixed inset-0 bg-black flex flex-col items-center justify-center">
@@ -65,17 +65,29 @@ export default function App() {
   );
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
-        <Route path="/sessions" element={<ProtectedRoute><Sessions /></ProtectedRoute>} />
-        <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-        <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      {isBackgroundRefreshing && (
+        <div className="fixed bottom-4 right-4 z-50
+                        flex items-center gap-2
+                        bg-gray-800 text-gray-400
+                        text-xs px-3 py-2 rounded-full
+                        border border-gray-700 shadow-xl">
+          <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+          Syncing...
+        </div>
+      )}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
+          <Route path="/sessions" element={<ProtectedRoute><Sessions /></ProtectedRoute>} />
+          <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+          <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }

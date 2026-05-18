@@ -11,7 +11,10 @@ import UserControlCard from '../components/UserControlCard';
 import { showToast } from '../components/Toast';
 
 export default function Admin() {
-  const { currentUser, users, schedule, sessions, settings, updateUsers } = useApp();
+  const { 
+    currentUser, users, schedule, sessions, settings, 
+    updateUsers, updateSchedule, updateSessions, updateSettings 
+  } = useApp();
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get("tab") || "users";
   const [activeTab, setActiveTab] = useState(defaultTab);
@@ -95,6 +98,20 @@ export default function Admin() {
   }
 
   // --- TAB 1 METHODS ---
+  const handleSaveUser = async (updatedUser: any) => {
+    let newUsers;
+    if (editingUser) {
+      newUsers = users.map(u => u.id === updatedUser.id ? updatedUser : u);
+    } else {
+      newUsers = [...users, updatedUser];
+    }
+
+    await writeJSON('users.json', newUsers);
+    updateUsers(newUsers);
+    setModalOpen(false);
+    setEditingUser(null);
+  };
+
   const handleDeleteUser = async (id: string) => {
     if (confirm("Are you sure you want to delete this user?\nThis action cannot be undone.")) {
       const newUsers = users.filter((u: any) => u.id !== id);
@@ -165,7 +182,7 @@ export default function Admin() {
       }
       setScheduleItems(updated);
       await writeJSON("schedule.json", updated);
-      sessionStorage.setItem("euc_session_schedule", JSON.stringify(updated));
+      updateSchedule(updated);
       setShowScheduleForm(false);
       setEditingSchedule(null);
       showToast("Schedule saved successfully ✓", "success");
@@ -183,7 +200,7 @@ export default function Admin() {
       })).filter(day => day.items.length > 0);
       setScheduleItems(updated);
       await writeJSON("schedule.json", updated);
-      sessionStorage.setItem("euc_session_schedule", JSON.stringify(updated));
+      updateSchedule(updated);
       showToast("Schedule item deleted", "success");
     } catch (err) {
       showToast("Failed to delete", "error");
@@ -220,7 +237,7 @@ export default function Admin() {
       }
       setSessionItems(updated);
       await writeJSON("sessions.json", updated);
-      sessionStorage.setItem("euc_session_sessions", JSON.stringify(updated));
+      updateSessions(updated);
       setShowSessionForm(false);
       setEditingSession(null);
       showToast("Session saved successfully ✓", "success");
@@ -235,7 +252,7 @@ export default function Admin() {
       const updated = sessionItems.filter(s => s.id !== id);
       setSessionItems(updated);
       await writeJSON("sessions.json", updated);
-      sessionStorage.setItem("euc_session_sessions", JSON.stringify(updated));
+      updateSessions(updated);
       showToast("Session deleted", "success");
     } catch (err) {
       showToast("Failed to delete", "error");
@@ -251,7 +268,7 @@ export default function Admin() {
         globalFeatures: featureSettings,
       };
       await writeJSON("settings.json", updatedSettings);
-      sessionStorage.setItem("euc_session_settings", JSON.stringify(updatedSettings));
+      updateSettings(updatedSettings);
       showToast("Global features saved ✓", "success");
     } catch (err) {
       showToast("Failed to save features", "error");
@@ -270,7 +287,6 @@ export default function Admin() {
       );
       await writeJSON("users.json", updated);
       updateUsers(updated);
-      sessionStorage.setItem("euc_session_users", JSON.stringify(updated));
       showToast("User access saved ✓", "success");
     } catch (err) {
       showToast("Failed to save user access", "error");
@@ -294,7 +310,7 @@ export default function Admin() {
         mode={editingUser ? 'edit' : 'create'}
         user={editingUser} 
         onClose={() => setModalOpen(false)} 
-        onSave={() => setModalOpen(false)} 
+        onSave={handleSaveUser} 
       />
 
       <div className="bg-white rounded-lg shadow overflow-x-auto">

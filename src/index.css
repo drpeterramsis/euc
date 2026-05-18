@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+@keyframes wave {
+  0% { transform: scaleY(1) skewX(-2deg) skewY(0deg); }
+  25% { transform: scaleY(0.98) skewX(-1deg) skewY(1deg); }
+  50% { transform: scaleY(1.02) skewX(-3deg) skewY(-1deg); }
+  75% { transform: scaleY(0.99) skewX(-1deg) skewY(2deg); }
+  100% { transform: scaleY(1) skewX(-2deg) skewY(0deg); }
+}
+
+.animate-wave {
+  animation: wave 4s ease-in-out infinite;
+  transform-origin: left center;
+}

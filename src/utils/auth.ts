@@ -14,6 +14,8 @@
 // Key for localStorage session
 const LOGIN_KEY = "euc_user";
 
+import { CACHE } from "../context/AppContext";
+
 // Interface defining the user structure
 export interface User {
   id: string;
@@ -38,16 +40,22 @@ export function login(user: User) {
  * and forces a hard redirect to the login page.
  */
 export function logout(): void {
-  // Clear session and all cached data
+  // 1. Clear auth session
   localStorage.removeItem(LOGIN_KEY);
-  
-  // Clear sessionStorage if defined in AppContext
-  sessionStorage.removeItem("euc_session_users");
-  sessionStorage.removeItem("euc_session_schedule");
-  sessionStorage.removeItem("euc_session_sessions");
-  sessionStorage.removeItem("euc_session_settings");
 
-  // Hard redirect to login — clears all React state
+  // 2. Clear ALL sessionStorage data
+  sessionStorage.removeItem(CACHE.users);
+  sessionStorage.removeItem(CACHE.schedule);
+  sessionStorage.removeItem(CACHE.sessions);
+  sessionStorage.removeItem(CACHE.settings);
+
+  // 3. Clear localStorage timestamp
+  localStorage.removeItem(CACHE.lastFetch);
+
+  // 4. Clear any view-as impersonation
+  sessionStorage.removeItem("euc_view_as");
+
+  // 5. Hard redirect to login — clears all React state
   window.location.href = "/";
 }
 

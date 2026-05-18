@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.10
+Version: 1.12
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -70,6 +70,8 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.8    | 2025-01-01 | CRITICAL: True SPA fix — zero browser reloads + instant navigation + one-time data load |
 | v1.9    | 2025-01-01 | Restored + expanded admin panel: full user control, schedule/sessions manager, feature flags, impersonate view |
 | v1.10   | 2025-01-01 | Fixed header overlap + fixed admin schedule and sessions editor + feature access control saving fix |
+| v1.11   | 2025-01-01 | Edit user data pre-filling fixed + Feature Access toggles fixed + Field Visibility saving fixed |
+| v1.12   | 2025-01-01 | Smart cache persistence across browser refresh + background data synchronization |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

@@ -21,28 +21,2477 @@
   },
   {
     "id": "u001",
-    "username": "dr.ahmed",
-    "password": "password123",
+    "username": "Sultan.Fakhry",
+    "password": "Diamonrecta5mg",
+    "name": "Sultan Fakhry Khalifa Soliman",
     "role": "doctor",
-    "name": "Dr. Ahmed Hassan",
-    "email": "ahmed@evapharma.com",
-    "phone": "+20 100 000 0000",
-    "photo": "https://i.pravatar.cc/150?u=u001",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u001",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
     "flightDetails": {
-      "departureDate": "2025-09-10",
-      "departureTime": "08:00",
-      "flightNumber": "MS789",
-      "departureAirport": "Cairo International Airport (CAI)",
-      "arrivalAirport": "Václav Havel Airport Prague (PRG)",
-      "arrivalTime": "12:30"
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
     },
     "hotel": {
-      "name": "Hotel Kings Court Prague",
-      "address": "U Obecního domu 3, Prague",
-      "checkIn": "2025-09-10",
-      "checkOut": "2025-09-14",
-      "roomNumber": "304"
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
     },
-    "isActive": true
+    "transfers": []
+  },
+  {
+    "id": "u002",
+    "username": "Mohamed.Elgahawy",
+    "password": "Diamonrecta5mg",
+    "name": "MOHAMED EISSA ALI ELGAHAWY",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u002",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u003",
+    "username": "Ashraf.Shahin",
+    "password": "Diamonrecta5mg",
+    "name": "Ashraf Mohamed Samy Shahin",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u003",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u004",
+    "username": "Karim.Saad",
+    "password": "Diamonrecta5mg",
+    "name": "KARIM SAAD MOHAMED SAAD",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u004",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u005",
+    "username": "Wael.Sameh",
+    "password": "Diamonrecta5mg",
+    "name": "WAEL MOHAMED SAMEH TAHA ABDELMONEIM KHALIL",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u005",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u006",
+    "username": "Ahmed.Abouzamel",
+    "password": "Diamonrecta5mg",
+    "name": "AHMED HOSSAMELDIN FERIG MOHAMED ABOUZAMEL",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u006",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u007",
+    "username": "Mohamed.Abdelrassoul",
+    "password": "Diamonrecta5mg",
+    "name": "MOHAMED ABDOU ABDELRASSOUL ELOGAIRY",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u007",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u008",
+    "username": "Emad.Moustafa",
+    "password": "Diamonrecta5mg",
+    "name": "EMAD MOUSTAFA GABER IBRAHIM",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u008",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u009",
+    "username": "Wael.Farahat",
+    "password": "Diamonrecta5mg",
+    "name": "WAEL MOHAMED FARHAT ALI",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u009",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u010",
+    "username": "Mahmoud.Mobark",
+    "password": "Diamonrecta5mg",
+    "name": "MAHMOUD ELSAYED HASSANEIN ABDELAZIZ MOBARK",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u010",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u011",
+    "username": "Salah.Elhamshary",
+    "password": "Diamonrecta5mg",
+    "name": "SALAH ABDELHAMID MOHAMED SALAHELDIN ABDELHAMID",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u011",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u012",
+    "username": "Ahmed.Abouelez",
+    "password": "Diamonrecta5mg",
+    "name": "Ahmed Abouelez Abdelfattah Abdalla",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u012",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u013",
+    "username": "Ayman.Rashed",
+    "password": "Diamonrecta5mg",
+    "name": "AYMAN SAYED AHMED RASHED",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u013",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u014",
+    "username": "Hisham.Mansour",
+    "password": "Diamonrecta5mg",
+    "name": "HISHAM IBRAHIM MOHAMED HUSSEIN",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u014",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u015",
+    "username": "Hisham.Elshawaf",
+    "password": "Diamonrecta5mg",
+    "name": "HISHAM MOHAMED FATHEY SALAMA ELSHAWAF",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u015",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u016",
+    "username": "Amr.Elkholy",
+    "password": "Diamonrecta5mg",
+    "name": "AMR AHMED BADAWI MOHAMED ELKHOLY",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u016",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u017",
+    "username": "Tamer.Helmy",
+    "password": "Diamonrecta5mg",
+    "name": "TAMER ELSAYED HELMY ELSAYED",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u017",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u018",
+    "username": "Abdelnasser.Elgamasy",
+    "password": "Diamonrecta5mg",
+    "name": "Abdel Naser Khalifa Soliman Elgamasy",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u018",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u019",
+    "username": "Aref.Maarouf",
+    "password": "Diamonrecta5mg",
+    "name": "AREF MOHAMED MAAROUF EID",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u019",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u020",
+    "username": "Mohamed.Shabayek",
+    "password": "Diamonrecta5mg",
+    "name": "MOHAMED ISMAIL ABDELLATIF ABOSHABAYEK",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u020",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u021",
+    "username": "Hamada.Youssof",
+    "password": "Diamonrecta5mg",
+    "name": "HAMADA AHMED YOUSSOF ABDELHAMEED",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u021",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u022",
+    "username": "Hosam.Mahdy",
+    "password": "Diamonrecta5mg",
+    "name": "HOSAM MAHDY SAID HANOUN",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u022",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u023",
+    "username": "Joseph.William",
+    "password": "Diamonrecta5mg",
+    "name": "JOSEPH WILLIAM AZMY SHENODA",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u023",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u024",
+    "username": "Ahmed.Abouzaid",
+    "password": "Diamonrecta5mg",
+    "name": "AHMED HASSAN IBRAHIM ABOUZAID",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u024",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u025",
+    "username": "Walid.Milad",
+    "password": "Diamonrecta5mg",
+    "name": "WALID MILAD SAID YOUSSEF",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u025",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u026",
+    "username": "Enmar.Habib",
+    "password": "Diamonrecta5mg",
+    "name": "ENMAR IBRAHIM MOHAMED HABIB",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u026",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u027",
+    "username": "Ahmed.Abdellatif",
+    "password": "Diamonrecta5mg",
+    "name": "Ahmed Elsayed Ahmed Abdellatif",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u027",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u028",
+    "username": "Mohamed.Elgammal",
+    "password": "Diamonrecta5mg",
+    "name": "Mohamed Youssef Abdelkader Elgammal",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u028",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u029",
+    "username": "Hussein.Aly",
+    "password": "Diamonrecta5mg",
+    "name": "HUSSEIN ALY HUSSEIN ALY",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u029",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u030",
+    "username": "Ayman.Ishak",
+    "password": "Diamonrecta5mg",
+    "name": "AYMAN ISHAK BUSHRA IBRAHIM",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u030",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u031",
+    "username": "Saber.Hassouna",
+    "password": "Diamonrecta5mg",
+    "name": "Saber Hassouna Hassan Mohamed",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u031",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u032",
+    "username": "Ahmed.Abosief",
+    "password": "Diamonrecta5mg",
+    "name": "Ahmed Fathy Mohamed Abosief",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u032",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
+  },
+  {
+    "id": "u033",
+    "username": "Amgad.Younis",
+    "password": "Diamonrecta5mg",
+    "name": "Amgad Mohammed Younis Hamed",
+    "role": "doctor",
+    "email": "",
+    "phone": "",
+    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u033",
+    "status": true,
+    "isActive": true,
+    "featureAccess": {
+      "sessions": {
+        "access": true,
+        "status": "full"
+      },
+      "schedule": {
+        "access": true,
+        "status": "full"
+      },
+      "socialProgram": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "awardsCeremony": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "photoGallery": {
+        "access": true,
+        "status": "coming_soon"
+      },
+      "documents": {
+        "access": true,
+        "status": "coming_soon"
+      }
+    },
+    "visibleFields": {
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true,
+      "hotelName": true,
+      "hotelAddress": true,
+      "checkIn": true,
+      "checkOut": true,
+      "roomNumber": true,
+      "mapsLink": true,
+      "transfers": true,
+      "email": true,
+      "phone": true
+    },
+    "flightDetails": {
+      "flightNumber": "",
+      "departureDate": "",
+      "departureTime": "",
+      "departureAirport": "",
+      "arrivalAirport": "",
+      "arrivalTime": "",
+      "returnFlight": "",
+      "returnDate": "",
+      "returnTime": ""
+    },
+    "hotel": {
+      "name": "",
+      "address": "",
+      "checkIn": "",
+      "checkOut": "",
+      "roomNumber": "",
+      "mapsLink": ""
+    },
+    "transfers": []
   }
 ]

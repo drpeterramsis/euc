@@ -1,22 +1,224 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { showToast } from './Toast';
-import { writeJSON } from '../utils/github';
-import { useApp } from '../context/AppContext';
+
+const DEFAULT_FEATURE_ACCESS = {
+  sessions:       { access: true,  status: "full" },
+  schedule:       { access: true,  status: "full" },
+  socialProgram:  { access: false, status: "coming_soon" },
+  awardsCeremony: { access: false, status: "coming_soon" },
+  photoGallery:   { access: false, status: "coming_soon" },
+  documents:      { access: false, status: "coming_soon" },
+};
+
+const DEFAULT_VISIBLE_FIELDS = {
+  flightNumber:    true,
+  departureDate:   true,
+  departureTime:   true,
+  departureAirport:true,
+  arrivalAirport:  true,
+  arrivalTime:     true,
+  hotelName:       true,
+  hotelAddress:    true,
+  checkIn:         true,
+  checkOut:        true,
+  roomNumber:      true,
+  mapsLink:        true,
+  transfers:       true,
+  email:           true,
+  phone:           true,
+};
+
+const FEATURES = [
+  { key: "sessions",       label: "Sessions",        icon: "🎓",
+    desc: "Scientific conference session access" },
+  { key: "schedule",       label: "Trip Schedule",   icon: "📅",
+    desc: "View trip itinerary" },
+  { key: "socialProgram",  label: "Social Program",  icon: "🎉",
+    desc: "Evening events and dinners" },
+  { key: "awardsCeremony", label: "Awards Ceremony", icon: "🏆",
+    desc: "Annual awards event" },
+  { key: "photoGallery",   label: "Photo Gallery",   icon: "📷",
+    desc: "Conference photos" },
+  { key: "documents",      label: "Documents",       icon: "📄",
+    desc: "Conference documents" },
+];
+
+const FIELD_SECTIONS = [
+  {
+    label: "✈️ Flight Details",
+    fields: [
+      { key: "flightNumber",      label: "Flight Number" },
+      { key: "departureDate",     label: "Departure Date" },
+      { key: "departureTime",     label: "Departure Time" },
+      { key: "departureAirport",  label: "Departure Airport" },
+      { key: "arrivalAirport",    label: "Arrival Airport" },
+      { key: "arrivalTime",       label: "Arrival Time" },
+    ]
+  },
+  {
+    label: "🏨 Hotel Details",
+    fields: [
+      { key: "hotelName",    label: "Hotel Name" },
+      { key: "hotelAddress", label: "Hotel Address" },
+      { key: "checkIn",      label: "Check-in Date" },
+      { key: "checkOut",     label: "Check-out Date" },
+      { key: "roomNumber",   label: "Room Number" },
+      { key: "mapsLink",     label: "Google Maps Link" },
+    ]
+  },
+  {
+    label: "🚌 Transfers",
+    fields: [
+      { key: "transfers", label: "Show Transfers Section" },
+    ]
+  },
+  {
+    label: "👤 Personal Info",
+    fields: [
+      { key: "email", label: "Show Email" },
+      { key: "phone", label: "Show Phone" },
+    ]
+  },
+];
 
 export default function UserControlCard({ isOpen, mode, user, onClose, onSave }: any) {
-  const { users, updateUsers } = useApp();
   const [activeTab, setActiveTab] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
-  const [formData, setFormData] = useState(user || {
-    id: Date.now().toString(), username: '', password: '', name: '', email: '', phone: '',
-    photo: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + Date.now(),
-    role: 'doctor', isActive: true, featureAccess: {}, visibleFields: {},
-    flightDetails: {}, hotel: {}, transfers: []
+
+  const [formData, setFormData] = useState(() => {
+    if (mode === "edit" && user) {
+      return {
+        id:           user.id           || "",
+        name:         user.name         || "",
+        username:     user.username     || "",
+        password:     user.password     || "",
+        role:         user.role         || "doctor",
+        email:        user.email        || "",
+        phone:        user.phone        || "",
+        photo:        user.photo        || "",
+        status:       user.status       ?? true,
+      };
+    }
+    return {
+      id:       "u" + Date.now(),
+      name:     "",
+      username: "",
+      password: "",
+      role:     "doctor",
+      email:    "",
+      phone:    "",
+      photo:    "",
+      status:   true,
+    };
   });
+
+  const [travelData, setTravelData] = useState(() => {
+    if (mode === "edit" && user) {
+      return {
+        flightNumber:     user.flightDetails?.flightNumber     || "",
+        departureDate:    user.flightDetails?.departureDate    || "",
+        departureTime:    user.flightDetails?.departureTime    || "",
+        departureAirport: user.flightDetails?.departureAirport || "",
+        arrivalAirport:   user.flightDetails?.arrivalAirport   || "",
+        arrivalTime:      user.flightDetails?.arrivalTime      || "",
+        returnFlight:     user.flightDetails?.returnFlight     || "",
+        returnDate:       user.flightDetails?.returnDate       || "",
+        returnTime:       user.flightDetails?.returnTime       || "",
+        hotelName:        user.hotel?.name                     || "",
+        hotelAddress:     user.hotel?.address                  || "",
+        checkIn:          user.hotel?.checkIn                  || "",
+        checkOut:         user.hotel?.checkOut                 || "",
+        roomNumber:       user.hotel?.roomNumber               || "",
+        mapsLink:         user.hotel?.mapsLink                 || "",
+        transfers:        user.transfers                       || [],
+      };
+    }
+    return {
+      flightNumber: "", departureDate: "", departureTime: "",
+      departureAirport: "", arrivalAirport: "", arrivalTime: "",
+      returnFlight: "", returnDate: "", returnTime: "",
+      hotelName: "", hotelAddress: "", checkIn: "",
+      checkOut: "", roomNumber: "", mapsLink: "", transfers: [],
+    };
+  });
+
+  const [featureAccess, setFeatureAccess] = useState(() => {
+    if (mode === "edit" && user?.featureAccess) {
+      return { ...DEFAULT_FEATURE_ACCESS, ...user.featureAccess };
+    }
+    return { ...DEFAULT_FEATURE_ACCESS };
+  });
+
+  const [visibleFields, setVisibleFields] = useState(() => {
+    if (mode === "edit" && user?.visibleFields) {
+      return { ...DEFAULT_VISIBLE_FIELDS, ...user.visibleFields };
+    }
+    return { ...DEFAULT_VISIBLE_FIELDS };
+  });
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (mode === "edit" && user) {
+      setFormData({
+        id:       user.id       || "",
+        name:     user.name     || "",
+        username: user.username || "",
+        password: user.password || "",
+        role:     user.role     || "doctor",
+        email:    user.email    || "",
+        phone:    user.phone    || "",
+        photo:    user.photo    || "",
+        status:   user.status   ?? true,
+      });
+
+      setTravelData({
+        flightNumber:     user.flightDetails?.flightNumber     || "",
+        departureDate:    user.flightDetails?.departureDate    || "",
+        departureTime:    user.flightDetails?.departureTime    || "",
+        departureAirport: user.flightDetails?.departureAirport || "",
+        arrivalAirport:   user.flightDetails?.arrivalAirport   || "",
+        arrivalTime:      user.flightDetails?.arrivalTime      || "",
+        returnFlight:     user.flightDetails?.returnFlight     || "",
+        returnDate:       user.flightDetails?.returnDate       || "",
+        returnTime:       user.flightDetails?.returnTime       || "",
+        hotelName:        user.hotel?.name                     || "",
+        hotelAddress:     user.hotel?.address                  || "",
+        checkIn:          user.hotel?.checkIn                  || "",
+        checkOut:         user.hotel?.checkOut                 || "",
+        roomNumber:       user.hotel?.roomNumber               || "",
+        mapsLink:         user.hotel?.mapsLink                 || "",
+        transfers:        user.transfers                       || [],
+      });
+
+      setFeatureAccess({
+        ...DEFAULT_FEATURE_ACCESS,
+        ...(user.featureAccess || {}),
+      });
+
+      setVisibleFields({
+        ...DEFAULT_VISIBLE_FIELDS,
+        ...(user.visibleFields || {}),
+      });
+
+    } else if (mode === "create") {
+      setFormData({
+        id: "u" + Date.now(),
+        name: "", username: "", password: "",
+        role: "doctor", email: "", phone: "",
+        photo: "", status: true,
+      });
+      setTravelData({
+        flightNumber: "", departureDate: "", departureTime: "",
+        departureAirport: "", arrivalAirport: "", arrivalTime: "",
+        returnFlight: "", returnDate: "", returnTime: "",
+        hotelName: "", hotelAddress: "", checkIn: "",
+        checkOut: "", roomNumber: "", mapsLink: "", transfers: [],
+      });
+      setFeatureAccess({ ...DEFAULT_FEATURE_ACCESS });
+      setVisibleFields({ ...DEFAULT_VISIBLE_FIELDS });
+    }
+  }, [isOpen, user, mode]);
 
   if (!isOpen) return null;
 
@@ -25,179 +227,116 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
     setFormData((prev: any) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
-  const handleNestedChange = (section: string, e: any) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev: any) => ({
-      ...prev,
-      [section]: { ...prev[section], [name]: type === 'checkbox' ? checked : value }
-    }));
+  const handleTravelChange = (e: any) => {
+    const { name, value } = e.target;
+    setTravelData((prev: any) => ({ ...prev, [name]: value }));
   };
 
-  const handleFeatureToggle = (feature: string, field: 'access' | 'status') => {
-    setFormData((prev: any) => {
-      const current = prev.featureAccess?.[feature] || (field === 'access' ? 'coming_soon' : false);
-      let newValue;
-      
-      if (field === 'access') {
-        newValue = current ? false : 'coming_soon';
-      } else {
-        newValue = current === 'coming_soon' ? true : 'coming_soon';
+  function toggleFeatureAccess(key: string) {
+    setFeatureAccess((prev: any) => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        access: !prev[key]?.access,
       }
-
-      return {
-        ...prev,
-        featureAccess: { ...prev.featureAccess, [feature]: newValue }
-      };
-    });
-  };
-
-  const handleVisibilityToggle = (field: string) => {
-    setFormData((prev: any) => ({
-      ...prev,
-      visibleFields: { ...prev.visibleFields, [field]: !prev.visibleFields?.[field] }
     }));
-  };
+  }
 
-  const onSaveClick = async () => {
+  function setFeatureStatus(key: string, status: string) {
+    setFeatureAccess((prev: any) => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        status,
+      }
+    }));
+  }
+
+  function toggleField(key: string) {
+    setVisibleFields((prev: any) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  }
+
+  function toggleSection(fields: {key: string}[], value: boolean) {
+    const updates: any = {};
+    fields.forEach(f => { updates[f.key] = value; });
+    setVisibleFields((prev: any) => ({ ...prev, ...updates }));
+  }
+
+  async function handleSave() {
+    if (!formData.name.trim()) {
+      showToast("Full name is required", "error");
+      setActiveTab(1);
+      return;
+    }
+    if (!formData.username.trim()) {
+      showToast("Username is required", "error");
+      setActiveTab(1);
+      return;
+    }
+    if (mode === "create" && !formData.password.trim()) {
+      showToast("Password is required", "error");
+      setActiveTab(1);
+      return;
+    }
+
     setIsSaving(true);
     try {
-      let newUsers;
-      if (mode === 'edit') {
-        newUsers = users.map(u => u.id === formData.id ? formData : u);
-      } else {
-        newUsers = [...users, formData];
-      }
-      
-      await writeJSON('users.json', newUsers);
-      updateUsers(newUsers);
-      showToast("User saved successfully ✓", "success");
-      onSave(formData);
+      const updatedUser = {
+        ...(mode === "edit" ? user : {}),
+        
+        id:       formData.id,
+        name:     formData.name.trim(),
+        username: formData.username.trim(),
+        password: formData.password.trim(),
+        role:     formData.role,
+        email:    formData.email.trim(),
+        phone:    formData.phone.trim(),
+        photo:    formData.photo.trim(),
+        status:   formData.status,
+        isActive: formData.status, // mapping status to isActive as used elsewhere possibly
+
+        flightDetails: {
+          flightNumber:     travelData.flightNumber,
+          departureDate:    travelData.departureDate,
+          departureTime:    travelData.departureTime,
+          departureAirport: travelData.departureAirport,
+          arrivalAirport:   travelData.arrivalAirport,
+          arrivalTime:      travelData.arrivalTime,
+          returnFlight:     travelData.returnFlight,
+          returnDate:       travelData.returnDate,
+          returnTime:       travelData.returnTime,
+        },
+        hotel: {
+          name:       travelData.hotelName,
+          address:    travelData.hotelAddress,
+          checkIn:    travelData.checkIn,
+          checkOut:   travelData.checkOut,
+          roomNumber: travelData.roomNumber,
+          mapsLink:   travelData.mapsLink,
+        },
+        transfers: travelData.transfers,
+        featureAccess: { ...featureAccess },
+        visibleFields: { ...visibleFields },
+      };
+
+      await onSave(updatedUser);
+
+      showToast(
+        mode === "edit"
+          ? `${updatedUser.name} updated successfully ✓`
+          : `${updatedUser.name} created successfully ✓`,
+        "success"
+      );
+      onClose();
     } catch (err) {
-      console.error(err);
-      showToast("Failed to save. Try again.", "error");
+      showToast("Failed to save changes. Please try again.", "error");
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const renderTab1 = () => (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <input name="name" value={formData.name || ''} onChange={handleChange} placeholder="Full Name" className="w-full p-2 border rounded" />
-        <input name="username" value={formData.username || ''} onChange={handleChange} placeholder="Username" className="w-full p-2 border rounded" />
-        <input name="password" type="text" value={formData.password || ''} onChange={handleChange} placeholder="Password" className="w-full p-2 border rounded" />
-        <select name="role" value={formData.role || ''} onChange={handleChange} className="w-full p-2 border rounded">
-          <option value="admin">Admin</option>
-          <option value="doctor">Doctor</option>
-          <option value="staff">Staff</option>
-        </select>
-        <input name="email" value={formData.email || ''} onChange={handleChange} placeholder="Email" className="w-full p-2 border rounded" />
-        <input name="phone" value={formData.phone || ''} onChange={handleChange} placeholder="Phone" className="w-full p-2 border rounded" />
-      </div>
-      <div className="flex items-center gap-4">
-        <img src={formData.photo} alt="Preview" className="w-12 h-12 rounded-full border bg-gray-100" />
-        <input name="photo" value={formData.photo || ''} onChange={handleChange} placeholder="Photo URL" className="flex-1 p-2 border rounded" />
-      </div>
-      <label className="flex items-center gap-2 cursor-pointer p-2 bg-gray-50 rounded border max-w-[150px]">
-        <input type="checkbox" name="isActive" checked={formData.isActive} onChange={handleChange} className="w-5 h-5 accent-yellow-500" />
-        <span className="font-semibold">{formData.isActive ? 'Active User' : 'Inactive'}</span>
-      </label>
-    </div>
-  );
-
-  const renderTab2 = () => (
-    <div className="space-y-6">
-      <div className="p-4 border rounded bg-gray-50">
-        <h3 className="font-bold mb-3">✈️ Flight Details</h3>
-        <div className="grid grid-cols-2 gap-3">
-          <input name="flightNumber" value={formData.flightDetails?.flightNumber || ''} onChange={e => handleNestedChange('flightDetails', e)} placeholder="Flight Number" className="w-full p-2 border rounded" />
-          <input name="departureDate" type="date" value={formData.flightDetails?.departureDate || ''} onChange={e => handleNestedChange('flightDetails', e)} className="w-full p-2 border rounded" />
-          <input name="departureTime" type="time" value={formData.flightDetails?.departureTime || ''} onChange={e => handleNestedChange('flightDetails', e)} className="w-full p-2 border rounded" />
-          <input name="departureAirport" value={formData.flightDetails?.departureAirport || ''} onChange={e => handleNestedChange('flightDetails', e)} placeholder="Departure Airport" className="w-full p-2 border rounded" />
-          <input name="arrivalAirport" value={formData.flightDetails?.arrivalAirport || ''} onChange={e => handleNestedChange('flightDetails', e)} placeholder="Arrival Airport" className="w-full p-2 border rounded" />
-          <input name="arrivalTime" type="time" value={formData.flightDetails?.arrivalTime || ''} onChange={e => handleNestedChange('flightDetails', e)} className="w-full p-2 border rounded" />
-        </div>
-      </div>
-      <div className="p-4 border rounded bg-gray-50">
-        <h3 className="font-bold mb-3">🏨 Hotel Details</h3>
-        <div className="grid grid-cols-2 gap-3">
-          <input name="name" value={formData.hotel?.name || ''} onChange={e => handleNestedChange('hotel', e)} placeholder="Hotel Name" className="w-full p-2 border rounded" />
-          <input name="roomNumber" value={formData.hotel?.roomNumber || ''} onChange={e => handleNestedChange('hotel', e)} placeholder="Room Number" className="w-full p-2 border rounded" />
-          <input name="checkIn" type="date" value={formData.hotel?.checkIn || ''} onChange={e => handleNestedChange('hotel', e)} className="w-full p-2 border rounded" />
-          <input name="checkOut" type="date" value={formData.hotel?.checkOut || ''} onChange={e => handleNestedChange('hotel', e)} className="w-full p-2 border rounded" />
-          <input name="address" value={formData.hotel?.address || ''} onChange={e => handleNestedChange('hotel', e)} placeholder="Address" className="col-span-2 w-full p-2 border rounded" />
-          <input name="mapsLink" value={formData.hotel?.mapsLink || ''} onChange={e => handleNestedChange('hotel', e)} placeholder="Google Maps Link" className="col-span-2 w-full p-2 border rounded" />
-        </div>
-      </div>
-    </div>
-  );
-
-  const featureList = [
-    { key: 'sessions', title: '🎓 Sessions', desc: 'Scientific conference session access' },
-    { key: 'schedule', title: '📅 Trip Schedule', desc: 'View trip itinerary' },
-    { key: 'social_program', title: '🎉 Social Program', desc: 'Evening events and dinners' },
-    { key: 'awards_ceremony', title: '🏆 Awards Ceremony', desc: 'Closing ceremony access' },
-    { key: 'photo_gallery', title: '📷 Photo Gallery', desc: 'Event photos' },
-    { key: 'documents', title: '📄 Documents', desc: 'Downloadable materials' },
-    { key: 'user_management', title: '👥 User Management', desc: 'Admin panel access' }
-  ];
-
-  const renderTab3 = () => (
-    <div className="space-y-4">
-      {featureList.map(feat => {
-        const value = formData.featureAccess?.[feat.key];
-        const isON = !!value;
-        const isFullAccess = value === true;
-        return (
-          <div key={feat.key} className="bg-[#1a1a1a] text-white p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <div className="font-bold">{feat.title}</div>
-              <div className="text-gray-400 text-sm">{feat.desc}</div>
-              {feat.key === 'user_management' && isON && formData.role !== 'admin' && (
-                <div className="text-yellow-500 text-xs mt-1">⚠️ Admin-only feature for a non-admin</div>
-              )}
-            </div>
-            <div className="flex flex-col gap-2 min-w-[200px]">
-              <div className="flex items-center justify-between bg-gray-900 p-2 rounded">
-                <span className="text-sm">Access</span>
-                <button onClick={() => handleFeatureToggle(feat.key, 'access')} className={`px-4 py-1 rounded text-sm font-bold transition-colors ${isON ? 'bg-yellow-500 text-black' : 'bg-gray-700 text-gray-300'}`}>
-                  {isON ? 'ON' : 'OFF'}
-                </button>
-              </div>
-              <div className={`flex items-center justify-between bg-gray-900 p-2 rounded transition-opacity ${!isON ? 'opacity-50 pointer-events-none' : ''}`}>
-                <span className="text-sm">Status</span>
-                <button onClick={() => handleFeatureToggle(feat.key, 'status')} className={`px-2 py-1 rounded text-xs font-bold transition-colors ${isFullAccess ? 'bg-green-600 text-white' : 'border border-yellow-500 text-yellow-500'}`}>
-                  {isFullAccess ? 'Full Access' : 'Coming Soon'}
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-
-  const visFields = [
-    { key: 'flightDetails', label: '✈️ Flight Details' },
-    { key: 'hotel', label: '🏨 Hotel Details' },
-    { key: 'transfers', label: '🚌 Transfers Content' },
-    { key: 'email', label: '👤 Show Email' },
-    { key: 'phone', label: '👤 Show Phone' }
-  ];
-
-  const renderTab4 = () => (
-    <div className="space-y-4 bg-gray-50 p-4 border rounded">
-      <h3 className="font-bold">Select fields visible to this user:</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {visFields.map(vf => (
-          <label key={vf.key} className="flex items-center gap-3 p-3 bg-white border rounded cursor-pointer hover:bg-gray-50">
-            <input type="checkbox" checked={!!formData.visibleFields?.[vf.key]} onChange={() => handleVisibilityToggle(vf.key)} className="w-5 h-5 accent-yellow-500" />
-            <span>{vf.label}</span>
-          </label>
-        ))}
-      </div>
-    </div>
-  );
+  }
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 overflow-y-auto">
@@ -216,15 +355,161 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         </div>
 
         <div className="flex-1 overflow-y-auto p-6">
-          {activeTab === 1 && renderTab1()}
-          {activeTab === 2 && renderTab2()}
-          {activeTab === 3 && renderTab3()}
-          {activeTab === 4 && renderTab4()}
+          {activeTab === 1 && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <input name="name" value={formData.name} onChange={handleChange} placeholder="Full Name" className="w-full p-2 border rounded" />
+                <input name="username" value={formData.username} onChange={handleChange} placeholder="Username" className="w-full p-2 border rounded" />
+                <input name="password" type="text" value={formData.password} onChange={handleChange} placeholder="Password" className="w-full p-2 border rounded" />
+                <select name="role" value={formData.role} onChange={handleChange} className="w-full p-2 border rounded">
+                  <option value="admin">Admin</option>
+                  <option value="doctor">Doctor</option>
+                  <option value="staff">Staff</option>
+                </select>
+                <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="w-full p-2 border rounded" />
+                <input name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone" className="w-full p-2 border rounded" />
+              </div>
+              <div className="flex items-center gap-4">
+                <img src={formData.photo || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + formData.id} alt="Preview" className="w-12 h-12 rounded-full border bg-gray-100 object-cover" />
+                <input name="photo" value={formData.photo} onChange={handleChange} placeholder="Photo URL" className="flex-1 p-2 border rounded" />
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer p-2 bg-gray-50 rounded border max-w-[150px]">
+                <input type="checkbox" name="status" checked={formData.status} onChange={handleChange} className="w-5 h-5 accent-yellow-500" />
+                <span className="font-semibold">{formData.status ? 'Active User' : 'Inactive'}</span>
+              </label>
+            </div>
+          )}
+
+          {activeTab === 2 && (
+            <div className="space-y-6">
+              <div className="p-4 border rounded bg-gray-50">
+                <h3 className="font-bold mb-3">✈️ Flight Details</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <input name="flightNumber" value={travelData.flightNumber} onChange={handleTravelChange} placeholder="Flight Number" className="w-full p-2 border rounded" />
+                  <input name="departureDate" type="date" value={travelData.departureDate} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                  <input name="departureTime" type="time" value={travelData.departureTime} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                  <input name="departureAirport" value={travelData.departureAirport} onChange={handleTravelChange} placeholder="Departure Airport" className="w-full p-2 border rounded" />
+                  <input name="arrivalAirport" value={travelData.arrivalAirport} onChange={handleTravelChange} placeholder="Arrival Airport" className="w-full p-2 border rounded" />
+                  <input name="arrivalTime" type="time" value={travelData.arrivalTime} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                </div>
+              </div>
+              <div className="p-4 border rounded bg-gray-50">
+                <h3 className="font-bold mb-3">🏨 Hotel Details</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <input name="hotelName" value={travelData.hotelName} onChange={handleTravelChange} placeholder="Hotel Name" className="w-full p-2 border rounded" />
+                  <input name="roomNumber" value={travelData.roomNumber} onChange={handleTravelChange} placeholder="Room Number" className="w-full p-2 border rounded" />
+                  <input name="checkIn" type="date" value={travelData.checkIn} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                  <input name="checkOut" type="date" value={travelData.checkOut} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                  <input name="hotelAddress" value={travelData.hotelAddress} onChange={handleTravelChange} placeholder="Address" className="col-span-2 w-full p-2 border rounded" />
+                  <input name="mapsLink" value={travelData.mapsLink} onChange={handleTravelChange} placeholder="Google Maps Link" className="col-span-2 w-full p-2 border rounded" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 3 && (
+            <div className="space-y-4">
+              {FEATURES.map(feature => {
+                const fa = featureAccess[feature.key] || { access: false, status: "coming_soon" };
+                const isOn = fa.access === true;
+
+                return (
+                  <div key={feature.key} className="bg-gray-800 border border-gray-700 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{feature.icon}</span>
+                        <div>
+                          <p className="text-white font-semibold text-sm">{feature.label}</p>
+                          <p className="text-gray-400 text-xs">{feature.desc}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleFeatureAccess(feature.key)}
+                        className={`relative inline-flex items-center w-14 h-7 rounded-full transition-colors duration-200 focus:outline-none ${isOn ? "bg-yellow-400" : "bg-gray-600"}`}
+                      >
+                        <span className={`inline-block w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200 ${isOn ? "translate-x-8" : "translate-x-1"}`} />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-400 text-xs">Access:</span>
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isOn ? "bg-yellow-400/20 text-yellow-400" : "bg-gray-600/50 text-gray-400"}`}>
+                        {isOn ? "ON" : "OFF"}
+                      </span>
+                    </div>
+                    {isOn && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-400 text-xs">Status:</span>
+                        <select
+                          value={fa.status || "full"}
+                          onChange={e => setFeatureStatus(feature.key, e.target.value)}
+                          className="bg-gray-700 border border-gray-600 text-white text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-yellow-400"
+                        >
+                          <option value="full">✅ Full Access</option>
+                          <option value="coming_soon">🔒 Coming Soon</option>
+                        </select>
+                        {fa.status === "full" && (
+                          <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">Full Access</span>
+                        )}
+                        {fa.status === "coming_soon" && (
+                          <span className="text-xs bg-yellow-400/20 text-yellow-400 px-2 py-0.5 rounded-full">Coming Soon</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {activeTab === 4 && (
+            <div className="space-y-4">
+              {FIELD_SECTIONS.map(section => (
+                <div key={section.label} className="bg-gray-800 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-white font-semibold text-sm">{section.label}</h4>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleSection(section.fields, true)}
+                        className="text-xs text-yellow-400 hover:underline"
+                      >
+                        All
+                      </button>
+                      <span className="text-gray-600">|</span>
+                      <button
+                        type="button"
+                        onClick={() => toggleSection(section.fields, false)}
+                        className="text-xs text-gray-400 hover:underline"
+                      >
+                        None
+                      </button>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {section.fields.map(field => (
+                      <label key={field.key} className="flex items-center gap-2 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={visibleFields[field.key] !== false}
+                          onChange={() => toggleField(field.key)}
+                          className="w-4 h-4 accent-yellow-400 cursor-pointer"
+                        />
+                        <span className="text-gray-300 text-sm group-hover:text-white transition-colors">
+                          {field.label}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="p-6 border-t bg-gray-50 rounded-b-xl flex justify-end gap-3">
           <button onClick={onClose} disabled={isSaving} className="px-6 py-2 bg-white border rounded shadow-sm hover:bg-gray-100 font-bold disabled:opacity-50">Cancel</button>
-          <button onClick={onSaveClick} disabled={isSaving} className="px-6 py-2 bg-yellow-500 rounded shadow hover:bg-yellow-600 text-black font-bold disabled:opacity-50 flex items-center justify-center min-w-[140px]">
+          <button onClick={handleSave} disabled={isSaving} className="px-6 py-2 bg-yellow-500 rounded shadow hover:bg-yellow-600 text-black font-bold disabled:opacity-50 flex items-center justify-center min-w-[140px]">
             {isSaving ? <span className="animate-pulse">Saving...</span> : 'Save Changes'}
           </button>
         </div>
