@@ -10,6 +10,7 @@ import { writeJSON } from '../utils/github';
 import UserControlCard from '../components/UserControlCard';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
 import { showToast } from '../components/Toast';
+import { compressImage } from '../utils/image';
 
 export default function Admin() {
   const { 
@@ -30,8 +31,7 @@ export default function Admin() {
 
   // Tab 3 State (Schedule & Sessions)
   const [scheduleItems, setScheduleItems] = useState<any[]>([]);
-  const [editingSchedule, setEditingSchedule] = useState<any | null>(null);
-  const [showScheduleForm, setShowScheduleForm] = useState(false);
+  const [editingScheduleId, setEditingScheduleId] = useState<string | null>(null);
   const [applyToAllSchedule, setApplyToAllSchedule] = useState(false);
   const [scheduleForm, setScheduleForm] = useState({
     id: "",
@@ -67,6 +67,7 @@ export default function Admin() {
   // Tab 5 State (Media)
   const [showMediaForm, setShowMediaForm] = useState(false);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
+  const [compressingProgress, setCompressingProgress] = useState(0);
   const [mediaForm, setMediaForm] = useState({
     id: "", category: "trips", title: "", description: "", caption: "", imageDataUrl: ""
   });
@@ -165,7 +166,7 @@ export default function Admin() {
 
   // --- TAB 3 METHODS (Schedule) ---
   function handleAddSchedule() {
-    setEditingSchedule(null);
+    setEditingScheduleId("new");
     setScheduleForm({
       id: "s" + Date.now(),
       date: "",
@@ -176,13 +177,11 @@ export default function Admin() {
       accessRoles: ["admin", "doctor", "staff"],
       accessUserIds: [],
     });
-    setShowScheduleForm(true);
   }
 
   function handleEditSchedule(item: any) {
-    setEditingSchedule(item);
+    setEditingScheduleId(item.id);
     setScheduleForm({ ...item, accessRoles: item.accessRoles || [], accessUserIds: item.accessUserIds || [] });
-    setShowScheduleForm(true);
   }
 
   async function handleSaveSchedule() {
@@ -202,14 +201,14 @@ export default function Admin() {
             accessUserIds: scheduleForm.accessUserIds
           })) || []
         }));
-      } else if (editingSchedule) {
+      } else if (editingScheduleId && editingScheduleId !== "new") {
         let found = false;
         updated = scheduleItems.map(day => {
-          if (day.items?.some((i: any) => i.id === editingSchedule.id)) {
+          if (day.items?.some((i: any) => i.id === editingScheduleId)) {
             found = true;
             return {
               ...day,
-              items: day.items.map((i: any) => i.id === editingSchedule.id ? { ...scheduleForm } : i)
+              items: day.items.map((i: any) => i.id === editingScheduleId ? { ...scheduleForm } : i)
             };
           }
           return day;
@@ -230,8 +229,7 @@ export default function Admin() {
       setScheduleItems(updated);
       await writeJSON("schedule.json", updated);
       updateSchedule(updated);
-      setShowScheduleForm(false);
-      setEditingSchedule(null);
+      setEditingScheduleId(null);
       setApplyToAllSchedule(false);
       showToast("Schedule saved successfully ✓", "success");
     } catch (err) {
@@ -551,126 +549,7 @@ export default function Admin() {
         </div>
       </div>
 
-      {showScheduleForm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl border border-gray-200 w-full max-w-lg p-6 space-y-4 my-8">
-            <div className="flex items-center justify-between border-b pb-3 border-gray-100">
-              <h3 className="text-gray-900 font-bold text-lg">
-                {editingSchedule ? "Edit Schedule Item" : "Add Schedule Item"}
-              </h3>
-              <button onClick={() => setShowScheduleForm(false)}
-                className="text-gray-400 hover:text-gray-600">✕</button>
-            </div>
-
-            <div>
-              <label className="text-gray-600 font-medium text-sm">Date</label>
-              <input type="date"
-                value={scheduleForm.date}
-                onChange={e => setScheduleForm({...scheduleForm, date: e.target.value})}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
-              />
-            </div>
-            <div>
-              <label className="text-gray-600 font-medium text-sm">Time</label>
-              <input type="time"
-                value={scheduleForm.time}
-                onChange={e => setScheduleForm({...scheduleForm, time: e.target.value})}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
-              />
-            </div>
-            <div>
-              <label className="text-gray-600 font-medium text-sm">Activity</label>
-              <input type="text"
-                value={scheduleForm.activity}
-                onChange={e => setScheduleForm({...scheduleForm, activity: e.target.value})}
-                placeholder="Activity title..."
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
-              />
-            </div>
-            <div>
-              <label className="text-gray-600 font-medium text-sm">Location</label>
-              <input type="text"
-                value={scheduleForm.location}
-                onChange={e => setScheduleForm({...scheduleForm, location: e.target.value})}
-                placeholder="Location..."
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
-              />
-            </div>
-            <div>
-              <label className="text-gray-600 font-medium text-sm">Notes</label>
-              <textarea
-                value={scheduleForm.notes}
-                onChange={e => setScheduleForm({...scheduleForm, notes: e.target.value})}
-                placeholder="Additional notes..."
-                rows={3}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
-              />
-            </div>
-            <div>
-              <label className="text-gray-600 font-medium text-sm">Visible to Roles</label>
-              <div className="flex gap-4 mt-2">
-                {["admin", "doctor", "staff"].map(role => (
-                  <label key={role} className="flex items-center gap-2 text-gray-800 font-medium text-sm cursor-pointer border px-3 py-1.5 rounded-lg hover:bg-gray-50">
-                    <input
-                      type="checkbox"
-                      checked={scheduleForm.accessRoles.includes(role)}
-                      onChange={e => {
-                        const roles = e.target.checked
-                          ? [...scheduleForm.accessRoles, role]
-                          : scheduleForm.accessRoles.filter(r => r !== role);
-                        setScheduleForm({...scheduleForm, accessRoles: roles});
-                      }}
-                      className="accent-yellow-500 w-4 h-4 cursor-pointer"
-                    />
-                    {role}
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="text-gray-600 font-medium text-sm">Individual User Access (override)</label>
-              <div className="space-y-1 mt-2 max-h-32 overflow-y-auto bg-gray-50 border border-gray-200 p-2 rounded-lg">
-                {users.map((u: any) => (
-                  <label key={u.id} className="flex items-center gap-2 text-gray-800 font-medium text-sm cursor-pointer hover:bg-gray-100 p-1 rounded">
-                    <input
-                      type="checkbox"
-                      checked={scheduleForm.accessUserIds.includes(u.id)}
-                      onChange={e => {
-                        const ids = e.target.checked
-                          ? [...scheduleForm.accessUserIds, u.id]
-                          : scheduleForm.accessUserIds.filter(id => id !== u.id);
-                        setScheduleForm({...scheduleForm, accessUserIds: ids});
-                      }}
-                      className="accent-yellow-500 w-4 h-4 cursor-pointer"
-                    />
-                    {u.name} ({u.role})
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <label className="flex items-center gap-2 cursor-pointer p-3 bg-yellow-50 text-yellow-900 border border-yellow-200 rounded-lg max-w-max mx-auto shadow-sm hover:bg-yellow-100 transition-colors mt-4">
-              <input type="checkbox" checked={applyToAllSchedule} onChange={(e) => setApplyToAllSchedule(e.target.checked)} className="accent-yellow-500 w-5 h-5"/>
-              <span className="font-bold text-sm">Apply to all schedule items</span>
-            </label>
-
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 mt-4">
-              <button
-                onClick={() => setShowScheduleForm(false)}
-                className="px-5 py-2 rounded-lg bg-white border border-gray-300 shadow-sm text-gray-700 font-bold hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveSchedule}
-                className="px-5 py-2 rounded-lg bg-yellow-500 border border-yellow-600 shadow-sm text-gray-900 font-bold hover:bg-yellow-400 transition-colors"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+{/* Modal removed as per requirements */}
 
       {showSessionForm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
@@ -884,18 +763,23 @@ export default function Admin() {
   };
 
   // --- TAB 5 METHODS (Media) ---
-  const handleImageSelect = (e: any) => {
+  const handleImageSelect = async (e: any) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 1.5 * 1024 * 1024) {
-      showToast("Image must be smaller than 1.5MB", "error");
-      return;
+    if (!file.type.startsWith('image/')) {
+        showToast("Please select an image file", "error");
+        return;
     }
-    const reader = new FileReader();
-    reader.onload = (ev: any) => {
-      setMediaForm({ ...mediaForm, imageDataUrl: ev.target.result });
-    };
-    reader.readAsDataURL(file);
+    
+    try {
+        setCompressingProgress(0);
+        const base64 = await compressImage(file, (p) => setCompressingProgress(p));
+        setMediaForm({ ...mediaForm, imageDataUrl: base64 });
+    } catch (e) {
+        showToast("Failed to compress image", "error");
+    } finally {
+        setCompressingProgress(0);
+    }
   };
 
   async function handleSaveMedia() {
@@ -966,6 +850,14 @@ export default function Admin() {
 
        {showMediaForm && (
          <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            {(isSavingMedia || compressingProgress > 0) && (
+               <div className="fixed inset-0 z-[60] bg-black/40 flex flex-col items-center justify-center gap-4">
+                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+                 <p className="text-white font-bold text-lg">
+                   {compressingProgress > 0 ? `Compressing image... ${Math.round(compressingProgress * 100)}%` : "Saving post..."}
+                 </p>
+               </div>
+            )}
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
               <div className="p-6 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
                 <h2 className="text-xl font-bold">{mediaForm.id ? "Edit Post" : "Create Post"}</h2>

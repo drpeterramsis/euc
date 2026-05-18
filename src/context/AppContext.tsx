@@ -166,6 +166,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setSettings(fresh.settings);
         setMedia(fresh.media);
         writeSessionCache(fresh);
+
+        // Deeply update currentUser if their data changed
+        if (currentUser) {
+          const freshCurrentUser = fresh.users.find((u: any) => u.id === currentUser.id);
+          if (JSON.stringify(freshCurrentUser) !== JSON.stringify(currentUser)) {
+            setCurrentUser(freshCurrentUser);
+            localStorage.setItem("euc_user", JSON.stringify(freshCurrentUser));
+          }
+        }
       }
     } catch {
       console.warn("Background refresh failed — using cached data");
