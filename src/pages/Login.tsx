@@ -72,7 +72,7 @@ export default function Login() {
         {/* Animated Wavy Logo */}
         <div className="relative w-48 h-48 sm:w-64 sm:h-64 animate-wave-strong">
           <img 
-            src="/src/assets/images/euc_logo.webp" 
+            src="/images/euc_logo.webp" 
             alt="EUC Logo" 
             className="w-full h-full object-contain"
             referrerPolicy="no-referrer"

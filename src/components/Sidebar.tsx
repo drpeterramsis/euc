@@ -77,7 +77,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
       <aside className={sidebarClass}>
         <div className="p-4 border-b border-gray-800 flex flex-col items-center gap-2 text-white bg-black">
             <img 
-              src="/src/assets/images/euc_ico.png" 
+              src="/images/euc_ico.png" 
               alt="EUC Logo" 
               className="h-16 w-auto object-contain"
               referrerPolicy="no-referrer"

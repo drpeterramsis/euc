@@ -21,7 +21,7 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
       <div className="flex items-center">
         <button className="lg:hidden p-2 text-white hover:text-yellow-500 transition-colors mr-2" onClick={onMenuClick}>☰</button>
         <img 
-          src="/src/assets/images/euc_ico.png" 
+          src="/images/euc_ico.png" 
           alt="Logo" 
           className="h-10 w-auto object-contain mr-3"
           referrerPolicy="no-referrer"
