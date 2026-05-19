@@ -39,6 +39,28 @@ export default function MediaPostViewerModal({ post, onClose }: { post: any, onC
             {post.caption && (
                 <p className="text-lg italic text-gray-600 font-serif">"{post.caption}"</p>
             )}
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+              {post.link && (
+                <a 
+                  href={post.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex-1 bg-black text-white text-center py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors"
+                >
+                  Join / Open Link
+                </a>
+              )}
+              {post.allowDownload !== false && (
+                <a 
+                  href={post.imageDataUrl} 
+                  download={`euc_post_${post.id}.jpg`}
+                  className="flex-1 border-2 border-gray-900 text-gray-900 text-center py-3 rounded-lg font-bold hover:bg-gray-50 transition-colors"
+                >
+                  Download Image
+                </a>
+              )}
+            </div>
         </div>
       </div>
     </div>

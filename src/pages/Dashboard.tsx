@@ -20,11 +20,33 @@ export default function Dashboard() {
   const vf = fullUser?.visibleFields || {};
   const isVisible = (key: string) => vf[key] !== false;
 
-  // Prague conference start date: 2025-09-10
-  const conferenceStart = new Date("2025-09-10");
-  const today = new Date();
-  const diffTime = conferenceStart.getTime() - today.getTime();
-  const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  // Prague conference flight departure: 2026-06-25 12:50 PM
+  const conferenceDeparture = new Date("2026-06-25T12:50:00");
+  const [timeLeft, setTimeLeft] = useState<{days: number, hours: number, mins: number, secs: number, finished: boolean}>({
+    days: 0, hours: 0, mins: 0, secs: 0, finished: false
+  });
+
+  useState(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const diff = conferenceDeparture.getTime() - now.getTime();
+      
+      if (diff <= 0) {
+        setTimeLeft(prev => ({ ...prev, finished: true }));
+        clearInterval(timer);
+      } else {
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / (1000 * 60)) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        setTimeLeft({ days: d, hours: h, mins: m, secs: s, finished: false });
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const flightDeparture = fullUser?.flightDetails?.departure || {};
+  const flightArrival = fullUser?.flightDetails?.arrival || {};
 
   return (
     <Layout>
@@ -44,37 +66,111 @@ export default function Dashboard() {
       )}
 
       {currentUser?.role === "admin" && !viewAs && (
-        <div className="bg-white text-gray-900 p-5 rounded-xl mb-8 shadow-md border border-gray-200">
-          <h2 className="text-yellow-600 font-bold mb-4 flex items-center gap-2">
+        <div className="bg-white text-gray-900 p-5 rounded-xl mb-8 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100">
+          <h2 className="text-yellow-600 font-extrabold mb-4 flex items-center gap-2 uppercase tracking-wider text-sm">
             <span>👑</span> Admin Quick Actions
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <button onClick={() => navigate("/admin?tab=users")} className="p-3 bg-gray-50 rounded hover:bg-gray-100 border border-gray-200 font-semibold text-sm transition-colors text-gray-800">👥 Manage Users</button>
-            <button onClick={() => navigate("/admin?tab=schedule")} className="p-3 bg-gray-50 rounded hover:bg-gray-100 border border-gray-200 font-semibold text-sm transition-colors text-gray-800">📅 Edit Schedule</button>
-            <button onClick={() => navigate("/admin?tab=schedule")} className="p-3 bg-gray-50 rounded hover:bg-gray-100 border border-gray-200 font-semibold text-sm transition-colors text-gray-800">🎓 Edit Sessions</button>
-            <button onClick={() => navigate("/admin?tab=features")} className="p-3 bg-gray-50 rounded hover:bg-gray-100 border border-gray-200 font-semibold text-sm transition-colors text-gray-800">⚙️ Feature Control</button>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button onClick={() => navigate("/admin?tab=users")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">👥 Users</button>
+            <button onClick={() => navigate("/admin?tab=schedule")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">📅 Schedule</button>
+            <button onClick={() => navigate("/admin?tab=schedule")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">🎓 Sessions</button>
+            <button onClick={() => navigate("/admin?tab=features")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">⚙️ Features</button>
           </div>
         </div>
       )}
 
-      <h1 className="text-2xl font-bold mb-6 text-gray-900">Dashboard</h1>
-      {fullUser && <p className="mb-6 text-gray-700">Welcome back, {fullUser.name}</p>}
+      <div className="mb-8">
+        <h1 className="text-3xl font-black text-gray-900 tracking-tight">Dashboard</h1>
+        {fullUser && <p className="text-gray-500 font-medium">Welcome back, <span className="text-gray-900">{fullUser.name}</span></p>}
+      </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
-        <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold">Latest Posts</h2>
-            <a href="/media" className="text-yellow-600 text-sm font-bold hover:underline">View all →</a>
+      {/* Countdown Redesign */}
+      <div className="bg-white p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 mb-8 overflow-hidden relative">
+        <div className="absolute top-0 left-0 w-1.5 h-full bg-yellow-500" />
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-center md:text-left transition-all">
+            <h2 className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-1">
+              {timeLeft.finished ? "Status" : (timeLeft.days > 0 ? "Until Conference" : "Until Departure")}
+            </h2>
+            <div className="text-2xl font-black text-gray-900">
+              {timeLeft.finished ? "Safe Travels! 🎉" : "Prague 2026 Countdown"}
+            </div>
+          </div>
+
+          <div className="flex gap-2 sm:gap-4">
+            {timeLeft.finished ? (
+              <div className="bg-yellow-50 text-yellow-700 px-6 py-4 rounded-xl font-black text-xl border border-yellow-200">
+                Conference has started! Safe travels 🎉
+              </div>
+            ) : (
+              <>
+                {timeLeft.days > 0 ? (
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                    <div className="flex flex-col items-center">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-gray-900 rounded-xl flex items-center justify-center text-white text-2xl sm:text-3xl font-black shadow-lg">
+                        {timeLeft.days}
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Days</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-gray-900 rounded-xl flex items-center justify-center text-white text-2xl sm:text-3xl font-black shadow-lg">
+                        {String(timeLeft.hours).padStart(2, '0')}
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Hours</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-gray-900 rounded-xl flex items-center justify-center text-white text-2xl sm:text-3xl font-black shadow-lg">
+                        {String(timeLeft.mins).padStart(2, '0')}
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Mins</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                     <div className="flex flex-col items-center">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-yellow-500 rounded-xl flex items-center justify-center text-black text-2xl sm:text-3xl font-black shadow-lg">
+                        {String(timeLeft.hours).padStart(2, '0')}
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Hours</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-yellow-500 rounded-xl flex items-center justify-center text-black text-2xl sm:text-3xl font-black shadow-lg">
+                        {String(timeLeft.mins).padStart(2, '0')}
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Mins</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-yellow-500 rounded-xl flex items-center justify-center text-black text-2xl sm:text-3xl font-black shadow-lg animate-pulse">
+                        {String(timeLeft.secs).padStart(2, '0')}
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Secs</span>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Latest Posts */}
+      <div className="bg-white p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 mb-8">
+        <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">Latest Community Moments</h2>
+            <button onClick={() => navigate("/media")} className="text-yellow-600 text-xs font-black hover:text-yellow-700 transition-colors uppercase tracking-widest">Explore Gallery →</button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {media.slice(0, 3).map((post: any) => (
-                <div key={post.id} className="border rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedPost(post)}>
-                    <img src={post.imageDataUrl} alt={post.title} className="w-full h-32 object-cover" />
-                    <div className="p-3">
-                        <h4 className="font-semibold text-sm truncate">{post.title}</h4>
+                <div key={post.id} className="group relative rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500" onClick={() => setSelectedPost(post)}>
+                    <img src={post.imageDataUrl} alt={post.title} className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                    <div className="absolute bottom-0 left-0 p-4">
+                        <h4 className="text-white font-bold text-sm truncate drop-shadow-md">{post.title}</h4>
+                        <p className="text-yellow-400 text-[10px] font-black uppercase tracking-widest">{post.category}</p>
                     </div>
                 </div>
             ))}
-            {media.length === 0 && <p className="text-gray-500">No posts yet.</p>}
+            {media.length === 0 && <div className="col-span-full py-10 text-center bg-gray-50 rounded-xl border-2 border-dashed border-gray-100 text-gray-400 font-bold italic">No stories shared yet...</div>}
         </div>
       </div>
 
@@ -82,144 +178,156 @@ export default function Dashboard() {
         <MediaPostViewerModal post={selectedPost} onClose={() => setSelectedPost(null)} />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Flight Card */}
-        <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
-          <div className="font-bold mb-4 text-lg border-b pb-2 text-gray-900 flex items-center gap-2">
-            <span>✈️</span> Flight Details
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Departure Card */}
+        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+          <div className="p-5 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">✈️</span>
+              <div>
+                <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">Departure Trip</h3>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">To Prague Conference</p>
+              </div>
+            </div>
+            {flightDeparture.flightNumber && <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-black">{flightDeparture.flightNumber}</span>}
           </div>
           
-          <div className="space-y-3 text-sm text-gray-700">
-            {isVisible('flightNumber') && (
-              <div className="flex flex-col">
-                <span className="text-gray-500 text-xs">Departure Flight</span>
-                <span className="font-semibold">{fullUser?.flightDetails?.flightNumber || "Not assigned"}</span>
-              </div>
-            )}
-            
-            <div className="grid grid-cols-2 gap-4">
-              {isVisible('departureDate') && (
+          <div className="p-6">
+            {!flightDeparture.flightNumber ? (
+              <p className="text-gray-400 italic text-sm text-center py-6">Departure flight details not assigned yet.</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-y-6 gap-x-4">
                 <div className="flex flex-col">
-                  <span className="text-gray-500 text-xs">Departure Date</span>
-                  <span className="font-medium">{fullUser?.flightDetails?.departureDate || "-"}</span>
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Date</span>
+                  <span className="text-sm font-bold text-gray-900">{flightDeparture.date || "TBA"}</span>
                 </div>
-              )}
-              {isVisible('departureTime') && (
                 <div className="flex flex-col">
-                  <span className="text-gray-500 text-xs">Departure Time</span>
-                  <span className="font-medium">{fullUser?.flightDetails?.departureTime || "-"}</span>
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Flight Number</span>
+                  <span className="text-sm font-bold text-gray-900">{flightDeparture.flightNumber || "TBA"}</span>
                 </div>
-              )}
-              {isVisible('departureAirport') && (
+                <div className="flex flex-col bg-gray-50 p-3 rounded-xl">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">From</span>
+                  <span className="text-sm font-black text-gray-900">{flightDeparture.departureAirport || "TBA"}</span>
+                </div>
+                <div className="flex flex-col bg-gray-50 p-3 rounded-xl">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">To</span>
+                  <span className="text-sm font-black text-gray-900">{flightDeparture.arrivalAirport || "PRG"}</span>
+                </div>
                 <div className="flex flex-col">
-                  <span className="text-gray-500 text-xs">Dep Airport</span>
-                  <span className="font-medium">{fullUser?.flightDetails?.departureAirport || "-"}</span>
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Departure Time</span>
+                  <span className="text-sm font-bold text-gray-800">{flightDeparture.time || "TBA"}</span>
                 </div>
-              )}
-              {isVisible('arrivalAirport') && (
                 <div className="flex flex-col">
-                  <span className="text-gray-500 text-xs">Arr Airport</span>
-                  <span className="font-medium">{fullUser?.flightDetails?.arrivalAirport || "-"}</span>
-                </div>
-              )}
-              {isVisible('arrivalTime') && (
-                <div className="flex flex-col">
-                  <span className="text-gray-500 text-xs">Arrival Time</span>
-                  <span className="font-medium">{fullUser?.flightDetails?.arrivalTime || "-"}</span>
-                </div>
-              )}
-            </div>
-
-            {(fullUser?.flightDetails?.returnFlight || fullUser?.flightDetails?.returnDate) && (
-              <div className="mt-4 pt-3 border-t">
-                <div className="flex flex-col mb-2">
-                  <span className="text-gray-500 text-xs">Return Flight</span>
-                  <span className="font-semibold">{fullUser?.flightDetails?.returnFlight || "Not assigned"}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col">
-                    <span className="text-gray-500 text-xs">Return Date</span>
-                    <span className="font-medium">{fullUser?.flightDetails?.returnDate || "-"}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-gray-500 text-xs">Return Time</span>
-                    <span className="font-medium">{fullUser?.flightDetails?.returnTime || "-"}</span>
-                  </div>
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Terminal / Gate</span>
+                  <span className="text-sm font-bold text-gray-800">
+                    {flightDeparture.terminal ? `T${flightDeparture.terminal}` : "TBA"} {flightDeparture.gate ? `/ G${flightDeparture.gate}` : ""}
+                  </span>
                 </div>
               </div>
-            )}
-            
-            {!isVisible('flightNumber') && !isVisible('departureDate') && !isVisible('departureAirport') && (
-              <p className="text-gray-500 italic">Flight details are currently hidden.</p>
             )}
           </div>
         </div>
-        
-        {/* Hotel Card */}
-        <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100 flex flex-col">
-          <div className="font-bold mb-4 text-lg border-b pb-2 text-gray-900 flex items-center gap-2">
-            <span>🏨</span> Hotel Details
-          </div>
-          <div className="space-y-3 text-sm text-gray-700 flex-1">
-            {isVisible('hotelName') ? (
-              <div className="flex flex-col">
-                <span className="text-gray-500 text-xs">Hotel Name</span>
-                <span className="font-semibold">{fullUser?.hotel?.name || "Not assigned"}</span>
-              </div>
-            ) : <span className="text-gray-500 italic">Hotel info is private</span>}
 
-            {isVisible('hotelAddress') && fullUser?.hotel?.address && (
-              <div className="flex flex-col">
-                <span className="text-gray-500 text-xs">Address</span>
-                <span className="font-medium">{fullUser.hotel.address}</span>
+        {/* Arrival Card (Return) */}
+        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+          <div className="p-5 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🛬</span>
+              <div>
+                <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">Arrival Trip (Return)</h3>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Back Home Safely</p>
               </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-4">
-              {isVisible('checkIn') && (
-                <div className="flex flex-col">
-                  <span className="text-gray-500 text-xs">Check-In</span>
-                  <span className="font-medium">{fullUser?.hotel?.checkIn || "-"}</span>
-                </div>
-              )}
-              {isVisible('checkOut') && (
-                <div className="flex flex-col">
-                  <span className="text-gray-500 text-xs">Check-Out</span>
-                  <span className="font-medium">{fullUser?.hotel?.checkOut || "-"}</span>
-                </div>
-              )}
             </div>
-
-            {isVisible('roomNumber') && fullUser?.hotel?.roomNumber && (
-              <div className="flex flex-col">
-                <span className="text-gray-500 text-xs">Room Number</span>
-                <span className="font-medium">{fullUser.hotel.roomNumber}</span>
-              </div>
-            )}
+            {flightArrival.flightNumber && <span className="bg-yellow-500 text-black px-3 py-1 rounded-full text-xs font-black">{flightArrival.flightNumber}</span>}
           </div>
           
-          {isVisible('mapsLink') && fullUser?.hotel?.mapsLink && (
-            <a 
-              href={fullUser.hotel.mapsLink} 
-              target="_blank" 
-              rel="noreferrer"
-              className="mt-4 block w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-lg font-medium transition-colors text-sm"
-            >
-              Google Maps
-            </a>
-          )}
+          <div className="p-6">
+            {!flightArrival.flightNumber ? (
+              <p className="text-gray-400 italic text-sm text-center py-6">Return flight details not assigned yet.</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Date</span>
+                  <span className="text-sm font-bold text-gray-900">{flightArrival.date || "TBA"}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Flight Number</span>
+                  <span className="text-sm font-bold text-gray-900">{flightArrival.flightNumber || "TBA"}</span>
+                </div>
+                <div className="flex flex-col bg-gray-50 p-3 rounded-xl">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">From Airport</span>
+                  <span className="text-sm font-black text-gray-900">{flightArrival.departureAirport || "PRG"}</span>
+                </div>
+                <div className="flex flex-col bg-gray-50 p-3 rounded-xl">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">To Airport</span>
+                  <span className="text-sm font-black text-gray-900">{flightArrival.arrivalAirport || "TBA"}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Departure Time</span>
+                  <span className="text-sm font-bold text-gray-800">{flightArrival.time || "TBA"}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Terminal / Gate</span>
+                  <span className="text-sm font-bold text-gray-800">
+                    {flightArrival.terminal ? `T${flightArrival.terminal}` : "TBA"} {flightArrival.gate ? `/ G${flightArrival.gate}` : ""}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Countdown Card */}
-        <div className="bg-white p-5 rounded-xl shadow-md border-l-4 border-l-yellow-500">
-          <div className="font-bold mb-4 text-lg border-b pb-2 text-gray-900 flex items-center gap-2">
-            <span>⏳</span> Prague Countdown
+        {/* Hotel Details */}
+        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden flex flex-col md:col-span-2">
+          <div className="p-5 bg-gray-50 border-b border-gray-100 flex items-center gap-3">
+            <span className="text-2xl">🏨</span>
+            <div>
+              <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">Accommodation Details</h3>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Your Stay in Prague</p>
+            </div>
           </div>
-          <div className="flex flex-col items-center justify-center h-full pb-8">
-            <span className="text-5xl font-extrabold text-yellow-500 drop-shadow-sm">
-              {daysUntil > 0 ? daysUntil : "0"}
-            </span>
-            <span className="text-gray-500 font-medium mt-2">{daysUntil > 0 ? "Days Remaining" : "Conference Ongoing"}</span>
+          
+          <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="md:col-span-2 space-y-6">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Hotel Name</span>
+                <span className="text-xl font-black text-gray-900">{fullUser?.hotel?.name || "Not assigned"}</span>
+                <p className="text-sm text-gray-500 font-medium mt-1">{fullUser?.hotel?.address || "Address will be provided soon"}</p>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                <div className="flex flex-col p-3 bg-yellow-50 rounded-xl border border-yellow-100">
+                  <span className="text-[10px] font-black text-yellow-700 uppercase tracking-widest mb-1">Check-In</span>
+                  <span className="text-sm font-black text-yellow-900">{fullUser?.hotel?.checkIn || "TBA"}</span>
+                </div>
+                <div className="flex flex-col p-3 bg-gray-50 rounded-xl border border-gray-100">
+                  <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Check-Out</span>
+                  <span className="text-sm font-black text-gray-900">{fullUser?.hotel?.checkOut || "TBA"}</span>
+                </div>
+                <div className="flex flex-col p-3 bg-black text-white rounded-xl shadow-lg">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Room</span>
+                  <span className="text-sm font-black">{fullUser?.hotel?.roomNumber || "TBA"}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-center gap-4">
+              {isVisible('mapsLink') && fullUser?.hotel?.mapsLink ? (
+                <a 
+                  href={fullUser.hotel.mapsLink} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="w-full bg-black text-white hover:bg-gray-800 py-4 rounded-xl font-black text-center transition-all shadow-xl flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+                >
+                  📍 Open in Maps
+                </a>
+              ) : (
+                <div className="w-full bg-gray-100 text-gray-400 py-4 rounded-xl font-black text-center uppercase tracking-widest text-xs border border-dashed border-gray-200">
+                  Map View Unavailable
+                </div>
+              )}
+              <p className="text-[9px] text-gray-400 font-bold text-center uppercase leading-tight">Please have your ID ready <br/> upon check-in</p>
+            </div>
           </div>
         </div>
       </div>

@@ -41,6 +41,8 @@ export default function Admin() {
     category: "other",
     activity: "",
     location: "",
+    link: "",
+    mapLocation: "",
     notes: "",
     accessRoles: ["admin", "doctor", "staff"],
     accessUserIds: [] as string[],
@@ -55,7 +57,9 @@ export default function Admin() {
     speaker: "",
     date: "",
     time: "",
+    toTime: "",
     hall: "",
+    link: "",
   });
 
   // Tab 4 State (Features)
@@ -77,7 +81,8 @@ export default function Admin() {
     status: "active"
   });
   const [mediaForm, setMediaForm] = useState({
-    id: "", category: "trips", title: "", description: "", caption: "", imageDataUrl: ""
+    id: "", category: "trips", title: "", description: "", caption: "", imageDataUrl: "",
+    link: "", allowDownload: true
   });
   const [selectedPost, setSelectedPost] = useState<any>(null);
 
@@ -101,7 +106,6 @@ export default function Admin() {
         socialProgram: "coming_soon",
         awardsCeremony: "coming_soon",
         photoGallery: "coming_soon",
-        documents: "coming_soon",
       });
     }
   }, [settings]);
@@ -183,6 +187,8 @@ export default function Admin() {
       category: "other",
       activity: "",
       location: "",
+      link: "",
+      mapLocation: "",
       notes: "",
       accessRoles: ["admin", "doctor", "staff"],
       accessUserIds: [],
@@ -223,6 +229,8 @@ export default function Admin() {
             date: scheduleForm.date,
             time: scheduleForm.time,
             location: scheduleForm.location,
+            link: scheduleForm.link,
+            mapLocation: scheduleForm.mapLocation,
             notes: scheduleForm.notes,
             accessRoles: scheduleForm.accessRoles,
             accessUserIds: scheduleForm.accessUserIds
@@ -311,7 +319,9 @@ export default function Admin() {
       speaker: "",
       date: "",
       time: "",
+      toTime: "",
       hall: "",
+      link: "",
     });
     setShowSessionForm(true);
   }
@@ -604,13 +614,35 @@ export default function Admin() {
             className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
           />
         </div>
+        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Location Name</label>
+            <input 
+              type="text" 
+              placeholder="e.g. Grand Ballroom"
+              value={scheduleForm.location}
+              onChange={e => setScheduleForm({...scheduleForm, location: e.target.value})}
+              className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Map Location (Coordinates or Link)</label>
+            <input 
+              type="text" 
+              placeholder="e.g. 50.0755, 14.4378"
+              value={scheduleForm.mapLocation}
+              onChange={e => setScheduleForm({...scheduleForm, mapLocation: e.target.value})}
+              className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
+            />
+          </div>
+        </div>
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Location</label>
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">External Link (Optional)</label>
           <input 
-            type="text" 
-            placeholder="e.g. Grand Ballroom"
-            value={scheduleForm.location}
-            onChange={e => setScheduleForm({...scheduleForm, location: e.target.value})}
+            type="url" 
+            placeholder="https://..."
+            value={scheduleForm.link}
+            onChange={e => setScheduleForm({...scheduleForm, link: e.target.value})}
             className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
           />
         </div>
@@ -759,10 +791,11 @@ export default function Admin() {
                     <button onClick={() => handleDeleteSession(session.id)} className="text-red-600 text-xs font-bold p-1 px-2 border border-red-200 rounded bg-white hover:bg-red-50">Del</button>
                   </div>
                 </div>
-                <div className="text-xs text-gray-500 mt-3 flex items-center gap-4">
-                    <span className="flex items-center gap-1">📅 {session.date}</span>
-                    <span className="flex items-center gap-1">⏰ {session.time}</span>
+                <div className="text-xs text-gray-500 mt-3 flex flex-wrap items-center gap-4">
+                    <span className="flex items-center gap-1 font-bold text-gray-700">📅 {session.date}</span>
+                    <span className="flex items-center gap-1 font-bold text-gray-700">⏰ {session.time}{session.toTime ? ` – ${session.toTime}` : ""}</span>
                     <span className="flex items-center gap-1">🏛 {session.hall}</span>
+                    {session.link && <span className="text-blue-600 truncate max-w-[200px]">🔗 {session.link}</span>}
                 </div>
               </div>
             ))}
@@ -807,19 +840,38 @@ export default function Admin() {
                 className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
-             <div>
-              <label className="text-gray-600 font-medium text-sm">Time</label>
-              <input type="time"
-                value={sessionForm.time}
-                onChange={e => setSessionForm({...sessionForm, time: e.target.value})}
+             <div className="grid grid-cols-2 gap-4">
+               <div>
+                 <label className="text-gray-600 font-medium text-sm">From Time</label>
+                 <input type="time"
+                   value={sessionForm.time}
+                   onChange={e => setSessionForm({...sessionForm, time: e.target.value})}
+                   className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
+                 />
+               </div>
+               <div>
+                 <label className="text-gray-600 font-medium text-sm">To Time</label>
+                 <input type="time"
+                   value={sessionForm.toTime}
+                   onChange={e => setSessionForm({...sessionForm, toTime: e.target.value})}
+                   className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
+                 />
+               </div>
+             </div>
+            <div>
+              <label className="text-gray-600 font-medium text-sm">Hall / Location</label>
+              <input type="text"
+                value={sessionForm.hall}
+                onChange={e => setSessionForm({...sessionForm, hall: e.target.value})}
                 className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
             <div>
-              <label className="text-gray-600 font-medium text-sm">Hall</label>
-              <input type="text"
-                value={sessionForm.hall}
-                onChange={e => setSessionForm({...sessionForm, hall: e.target.value})}
+              <label className="text-gray-600 font-medium text-sm">Session Link (Optional)</label>
+              <input type="url"
+                placeholder="https://..."
+                value={sessionForm.link}
+                onChange={e => setSessionForm({...sessionForm, link: e.target.value})}
                 className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               />
             </div>
@@ -850,7 +902,6 @@ export default function Admin() {
     { key: "socialProgram", label: "Social Program", icon: "🎉", desc: "Social events and activities" },
     { key: "awardsCeremony", label: "Awards Ceremony", icon: "🏆", desc: "Annual awards ceremony" },
     { key: "photoGallery", label: "Photo Gallery", icon: "📷", desc: "Conference photo gallery" },
-    { key: "documents", label: "Documents", icon: "📄", desc: "Conference documents and files" },
   ];
 
   async function handleApplyRoleGlobal() {
@@ -1136,7 +1187,7 @@ export default function Admin() {
     <div>
        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
          <h2 className="text-xl font-bold">Media / Posts</h2>
-         <button onClick={() => { setMediaForm({ id: "", title: "", description: "", caption: "", category: "trips", imageDataUrl: "" }); setShowMediaForm(true); }} className="bg-yellow-500 hover:bg-yellow-600 p-2 px-4 rounded font-bold transition-colors whitespace-nowrap">+ Create Post</button>
+         <button onClick={() => { setMediaForm({ id: "", title: "", description: "", caption: "", category: "trips", imageDataUrl: "", link: "", allowDownload: true }); setShowMediaForm(true); }} className="bg-yellow-500 hover:bg-yellow-600 p-2 px-4 rounded font-bold transition-colors whitespace-nowrap">+ Create Post</button>
        </div>
        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
          {media.length === 0 && <p className="text-gray-500 col-span-full text-center py-10">No posts. Create one to get started.</p>}
@@ -1144,10 +1195,13 @@ export default function Admin() {
             <div key={post.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedPost(post)}>
               <img src={post.imageDataUrl} alt={post.title} className="w-full h-48 object-cover" />
               <div className="p-4 flex-1 flex flex-col">
-                 <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between mb-2">
                     <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded capitalize">{post.category}</span>
-                    <button onClick={(e) => { e.stopPropagation(); handleDeleteMedia(post.id); }} className="text-red-500 hover:text-red-700 text-sm font-bold bg-red-50 px-2 py-1 rounded z-10">Delete</button>
-                 </div>
+                    <div className="flex gap-1 z-10">
+                      <button onClick={(e) => { e.stopPropagation(); setMediaForm({ ...post }); setShowMediaForm(true); }} className="text-blue-600 hover:text-blue-800 text-[10px] font-bold bg-blue-50 px-2 py-1 rounded">Edit</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleDeleteMedia(post.id); }} className="text-red-500 hover:text-red-700 text-[10px] font-bold bg-red-50 px-2 py-1 rounded">Delete</button>
+                    </div>
+                  </div>
                  <h3 className="font-bold text-gray-900 line-clamp-1">{post.title}</h3>
                  <p className="text-xs text-gray-400 mt-1">{new Date(post.createdAt || Date.now()).toLocaleDateString()}</p>
                  {post.description && <p className="text-sm text-gray-600 mt-2 line-clamp-2">{post.description}</p>}
@@ -1198,6 +1252,11 @@ export default function Admin() {
                  </div>
                  <textarea value={mediaForm.description} onChange={e => setMediaForm({...mediaForm, description: e.target.value})} placeholder="Description (Optional)" className="w-full p-2 border rounded h-20" />
                  <input value={mediaForm.caption} onChange={e => setMediaForm({...mediaForm, caption: e.target.value})} placeholder="Caption (Optional)" className="w-full p-2 border rounded" />
+                 <input value={mediaForm.link || ""} onChange={e => setMediaForm({...mediaForm, link: e.target.value})} placeholder="External Link (Optional)" className="w-full p-2 border rounded" />
+                 <label className="flex items-center gap-2 cursor-pointer bg-gray-50 p-2 rounded border">
+                    <input type="checkbox" checked={mediaForm.allowDownload !== false} onChange={e => setMediaForm({...mediaForm, allowDownload: e.target.checked})} className="accent-yellow-500 w-5 h-5" />
+                    <span className="text-sm font-bold">Allow users to download attachment</span>
+                 </label>
               </div>
               <div className="p-6 border-t bg-gray-50 rounded-b-xl flex justify-end gap-3">
                  <button onClick={() => setShowMediaForm(false)} disabled={isSavingMedia} className="px-5 py-2 bg-white border shadow-sm font-bold rounded hover:bg-gray-50 transition-colors disabled:opacity-50">Cancel</button>

@@ -8,7 +8,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { readJSON } from '../utils/github';
 import { useApp } from '../context/AppContext';
@@ -67,29 +67,21 @@ export default function Login() {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-yellow-400 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 pointer-events-none" />
 
-      {/* Flag Container */}
-      <div className="mb-10 relative z-10 flex flex-col items-center justify-center filter drop-shadow-xl">
-        {/* Flag pole */}
-        <div className="absolute left-0 top-0 bottom-[-20px] w-2 bg-gradient-to-b from-gray-300 to-gray-500 rounded-t-full shadow-lg z-20 border border-gray-400/50" />
-        {/* Czech Flag SVG */}
-        <div className="ml-2 w-32 h-20 sm:w-44 sm:h-28 relative overflow-hidden shadow-[2px_6px_15px_rgba(0,0,0,0.15)] animate-wave-strong rounded-r-md">
-          <svg viewBox="0 0 900 600" className="w-full h-full object-cover">
-            <rect width="900" height="600" fill="#D7141A" />
-            <rect width="900" height="300" fill="#FFFFFF" />
-            <polygon points="0,0 0,600 450,300" fill="#11457E" />
-            <line x1="0" y1="0" x2="900" y2="0" stroke="rgba(255,255,255,0.4)" strokeWidth="10" />
-            <line x1="0" y1="300" x2="900" y2="300" stroke="rgba(0,0,0,0.05)" strokeWidth="4" />
-          </svg>
-          {/* Shadow overlay to simulate folds during wave */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/5 via-transparent to-black/10 pointer-events-none select-none mix-blend-multiply" />
+      {/* Logo Container */}
+      <div className="mb-10 relative z-10 flex flex-col items-center justify-center filter drop-shadow-2xl">
+        {/* Animated Wavy Logo */}
+        <div className="relative w-48 h-48 sm:w-64 sm:h-64 animate-wave-strong">
+          <img 
+            src="/src/assets/images/euc_logo.webp" 
+            alt="EUC Logo" 
+            className="w-full h-full object-contain"
+            referrerPolicy="no-referrer"
+          />
         </div>
       </div>
 
       <div className="w-full max-w-md bg-white p-8 sm:p-10 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-yellow-200 relative z-10">
-        <h1 className="text-3xl font-extrabold text-center mb-2 tracking-tight text-gray-900">
-          EUC<span className="text-yellow-500">.</span>
-        </h1>
-        <p className="text-center text-gray-500 text-sm mb-8 font-semibold">EVA URO COMMUNITY • PRAGUE CONF</p>
+     
         
         {/* Simple login form */}
         <form className="space-y-5" onSubmit={handleLogin}>

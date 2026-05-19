@@ -7,16 +7,11 @@ const DEFAULT_FEATURE_ACCESS = {
   socialProgram:  { access: false, status: "coming_soon" },
   awardsCeremony: { access: false, status: "coming_soon" },
   photoGallery:   { access: false, status: "coming_soon" },
-  documents:      { access: false, status: "coming_soon" },
 };
 
 const DEFAULT_VISIBLE_FIELDS = {
-  flightNumber:    true,
-  departureDate:   true,
-  departureTime:   true,
-  departureAirport:true,
-  arrivalAirport:  true,
-  arrivalTime:     true,
+  departure:    true,
+  arrival:      true,
   hotelName:       true,
   hotelAddress:    true,
   checkIn:         true,
@@ -39,20 +34,14 @@ const FEATURES = [
     desc: "Annual awards event" },
   { key: "photoGallery",   label: "Photo Gallery",   icon: "📷",
     desc: "Conference photos" },
-  { key: "documents",      label: "Documents",       icon: "📄",
-    desc: "Conference documents" },
 ];
 
 const FIELD_SECTIONS = [
   {
     label: "✈️ Flight Details",
     fields: [
-      { key: "flightNumber",      label: "Flight Number" },
-      { key: "departureDate",     label: "Departure Date" },
-      { key: "departureTime",     label: "Departure Time" },
-      { key: "departureAirport",  label: "Departure Airport" },
-      { key: "arrivalAirport",    label: "Arrival Airport" },
-      { key: "arrivalTime",       label: "Arrival Time" },
+      { key: "departure",  label: "Departure Trip" },
+      { key: "arrival",    label: "Arrival Trip" },
     ]
   },
   {
@@ -177,15 +166,24 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
       });
 
       setTravelData({
-        flightNumber:     user.flightDetails?.flightNumber     || "",
-        departureDate:    user.flightDetails?.departureDate    || "",
-        departureTime:    user.flightDetails?.departureTime    || "",
-        departureAirport: user.flightDetails?.departureAirport || "",
-        arrivalAirport:   user.flightDetails?.arrivalAirport   || "",
-        arrivalTime:      user.flightDetails?.arrivalTime      || "",
-        returnFlight:     user.flightDetails?.returnFlight     || "",
-        returnDate:       user.flightDetails?.returnDate       || "",
-        returnTime:       user.flightDetails?.returnTime       || "",
+        departure: {
+          flightNumber:     user.flightDetails?.departure?.flightNumber     || "",
+          date:             user.flightDetails?.departure?.date             || "",
+          time:             user.flightDetails?.departure?.time             || "",
+          departureAirport: user.flightDetails?.departure?.departureAirport || "",
+          arrivalAirport:   user.flightDetails?.departure?.arrivalAirport   || "",
+          terminal:         user.flightDetails?.departure?.terminal         || "",
+          gate:             user.flightDetails?.departure?.gate             || "",
+        },
+        arrival: {
+          flightNumber:     user.flightDetails?.arrival?.flightNumber       || "",
+          date:             user.flightDetails?.arrival?.date               || "",
+          time:             user.flightDetails?.arrival?.time               || "",
+          departureAirport: user.flightDetails?.arrival?.departureAirport || "",
+          arrivalAirport:   user.flightDetails?.arrival?.arrivalAirport   || "",
+          terminal:         user.flightDetails?.arrival?.terminal           || "",
+          gate:             user.flightDetails?.arrival?.gate               || "",
+        },
         hotelName:        user.hotel?.name                     || "",
         hotelAddress:     user.hotel?.address                  || "",
         checkIn:          user.hotel?.checkIn                  || "",
@@ -213,9 +211,8 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         photo: "", status: true,
       });
       setTravelData({
-        flightNumber: "", departureDate: "", departureTime: "",
-        departureAirport: "", arrivalAirport: "", arrivalTime: "",
-        returnFlight: "", returnDate: "", returnTime: "",
+        departure: { flightNumber: "", date: "", time: "", departureAirport: "", arrivalAirport: "", terminal: "", gate: "" },
+        arrival: { flightNumber: "", date: "", time: "", departureAirport: "", arrivalAirport: "", terminal: "", gate: "" },
         hotelName: "", hotelAddress: "", checkIn: "",
         checkOut: "", roomNumber: "", mapsLink: "", transfers: [],
       });
@@ -234,7 +231,18 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
 
   const handleTravelChange = (e: any) => {
     const { name, value } = e.target;
-    setTravelData((prev: any) => ({ ...prev, [name]: value }));
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setTravelData((prev: any) => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
+        }
+      }));
+    } else {
+      setTravelData((prev: any) => ({ ...prev, [name]: value }));
+    }
   };
 
   function toggleFeatureAccess(key: string) {
@@ -301,18 +309,11 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         phone:    formData.phone.trim(),
         photo:    formData.photo.trim(),
         status:   formData.status,
-        isActive: formData.status, // mapping status to isActive as used elsewhere possibly
+        isActive: formData.status, 
 
         flightDetails: {
-          flightNumber:     travelData.flightNumber,
-          departureDate:    travelData.departureDate,
-          departureTime:    travelData.departureTime,
-          departureAirport: travelData.departureAirport,
-          arrivalAirport:   travelData.arrivalAirport,
-          arrivalTime:      travelData.arrivalTime,
-          returnFlight:     travelData.returnFlight,
-          returnDate:       travelData.returnDate,
-          returnTime:       travelData.returnTime,
+          departure: travelData.departure,
+          arrival:   travelData.arrival,
         },
         hotel: {
           name:       travelData.hotelName,
@@ -404,16 +405,35 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
           {activeTab === 2 && (
             <div className="space-y-6">
               <div className="p-4 border rounded bg-gray-50">
-                <h3 className="font-bold mb-3">✈️ Flight Details</h3>
+                <h3 className="font-bold mb-3">🛫 Departure Trip (To Prague)</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <input name="flightNumber" value={travelData.flightNumber} onChange={handleTravelChange} placeholder="Flight Number" className="w-full p-2 border rounded" />
-                  <input name="departureDate" type="date" value={travelData.departureDate} onChange={handleTravelChange} className="w-full p-2 border rounded" />
-                  <input name="departureTime" type="time" value={travelData.departureTime} onChange={handleTravelChange} className="w-full p-2 border rounded" />
-                  <input name="departureAirport" value={travelData.departureAirport} onChange={handleTravelChange} placeholder="Departure Airport" className="w-full p-2 border rounded" />
-                  <input name="arrivalAirport" value={travelData.arrivalAirport} onChange={handleTravelChange} placeholder="Arrival Airport" className="w-full p-2 border rounded" />
-                  <input name="arrivalTime" type="time" value={travelData.arrivalTime} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                  <input name="departure.flightNumber" value={travelData.departure?.flightNumber} onChange={handleTravelChange} placeholder="Flight Number" className="w-full p-2 border rounded" />
+                  <input name="departure.date" type="date" value={travelData.departure?.date} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                  <input name="departure.time" type="time" value={travelData.departure?.time} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                  <input name="departure.departureAirport" value={travelData.departure?.departureAirport} onChange={handleTravelChange} placeholder="Departure Airport" className="w-full p-2 border rounded" />
+                  <input name="departure.arrivalAirport" value={travelData.departure?.arrivalAirport} onChange={handleTravelChange} placeholder="Arrival Airport (PRG)" className="w-full p-2 border rounded" />
+                  <div className="grid grid-cols-2 gap-2">
+                    <input name="departure.terminal" value={travelData.departure?.terminal} onChange={handleTravelChange} placeholder="Terminal" className="w-full p-2 border rounded" />
+                    <input name="departure.gate" value={travelData.departure?.gate} onChange={handleTravelChange} placeholder="Gate" className="w-full p-2 border rounded" />
+                  </div>
                 </div>
               </div>
+
+              <div className="p-4 border rounded bg-gray-50">
+                <h3 className="font-bold mb-3">🛬 Arrival Trip (Return Home)</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input name="arrival.flightNumber" value={travelData.arrival?.flightNumber} onChange={handleTravelChange} placeholder="Flight Number" className="w-full p-2 border rounded" />
+                  <input name="arrival.date" type="date" value={travelData.arrival?.date} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                  <input name="arrival.time" type="time" value={travelData.arrival?.time} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                  <input name="arrival.departureAirport" value={travelData.arrival?.departureAirport} onChange={handleTravelChange} placeholder="Departure Airport (PRG)" className="w-full p-2 border rounded" />
+                  <input name="arrival.arrivalAirport" value={travelData.arrival?.arrivalAirport} onChange={handleTravelChange} placeholder="Arrival Home Airport" className="w-full p-2 border rounded" />
+                  <div className="grid grid-cols-2 gap-2">
+                    <input name="arrival.terminal" value={travelData.arrival?.terminal} onChange={handleTravelChange} placeholder="Terminal" className="w-full p-2 border rounded" />
+                    <input name="arrival.gate" value={travelData.arrival?.gate} onChange={handleTravelChange} placeholder="Gate" className="w-full p-2 border rounded" />
+                  </div>
+                </div>
+              </div>
+
               <div className="p-4 border rounded bg-gray-50">
                 <h3 className="font-bold mb-3">🏨 Hotel Details</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

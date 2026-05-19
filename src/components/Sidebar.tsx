@@ -75,9 +75,17 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
         />
       )}
       <aside className={sidebarClass}>
-        <div className="p-6 text-2xl font-bold border-b border-gray-800 flex justify-between items-center text-white bg-black">
-            <div>EUC <span className="text-yellow-500 text-base ml-1">EVA URO</span></div>
-            <button className="lg:hidden text-gray-400 hover:text-white" onClick={onClose}>✕</button>
+        <div className="p-4 border-b border-gray-800 flex flex-col items-center gap-2 text-white bg-black">
+            <img 
+              src="/src/assets/images/euc_ico.png" 
+              alt="EUC Logo" 
+              className="h-16 w-auto object-contain"
+              referrerPolicy="no-referrer"
+            />
+            <div className="flex justify-between items-center w-full">
+          
+              <button className="lg:hidden text-gray-400 hover:text-white" onClick={onClose}>✕</button>
+            </div>
         </div>
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {renderNav("Dashboard", "/dashboard", "📊")}
@@ -87,7 +95,6 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
           {renderNav("Sessions", "/sessions", "🎓", "sessions")}
           {renderNav("Social Program", "/coming-soon?feature=social_program", "🎉", "social_program")}
           {renderNav("Awards Ceremony", "/coming-soon?feature=awards_ceremony", "🏆", "awards_ceremony")}
-          {renderNav("Documents", "/coming-soon?feature=documents", "📄", "documents")}
           
           {currentUser?.role === 'admin' && (
             <>
