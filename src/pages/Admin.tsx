@@ -10,13 +10,14 @@ import { Navigate, useSearchParams, useNavigate } from 'react-router-dom';
 import { writeJSON } from '../utils/github';
 import UserControlCard from '../components/UserControlCard';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
+import MediaPostModal from '../components/MediaPostModal';
 import { showToast } from '../components/Toast';
 import { compressImage } from '../utils/image';
 
 export default function Admin() {
   const { 
-    currentUser, users, schedule, sessions, settings, media = [], staff = [],
-    updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia, updateStaff
+    currentUser, users, schedule, sessions, settings, media = [],
+    updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia
   } = useApp();
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get("tab") || "users";
@@ -72,37 +73,21 @@ export default function Admin() {
   const [isSavingFeatures, setIsSavingFeatures] = useState(false);
 
   // Tab 5 State (Media)
-  const [showMediaForm, setShowMediaForm] = useState(false);
+  const [showMediaModal, setShowMediaModal] = useState(false);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
-  const [compressingProgress, setCompressingProgress] = useState(0);
   const [isGlobalLoading, setIsGlobalLoading] = useState(false);
   const [roleGlobalConfig, setRoleGlobalConfig] = useState({
     role: "doctor",
     feature: "schedule",
     status: "active"
   });
-  const [mediaForm, setMediaForm] = useState({
-    id: "", category: "trips", title: "", description: "", caption: "", imageDataUrl: "",
-    link: "", linkLabel: "", allowDownload: true
-  });
+  const [editingMediaPost, setEditingMediaPost] = useState<any>(null);
   const [selectedPost, setSelectedPost] = useState<any>(null);
 
   // Tab 6 State (Categories)
   const [newSchedCat, setNewSchedCat] = useState("");
   const [newMediaCat, setNewMediaCat] = useState("");
   const [isSavingCats, setIsSavingCats] = useState(false);
-
-  // Tab 7 State (Staff)
-  const [showStaffForm, setShowStaffForm] = useState(false);
-  const [editingStaffId, setEditingStaffId] = useState<string | null>(null);
-  const [staffForm, setStaffForm] = useState({
-    id: "",
-    name: "",
-    title: "",
-    phone: "",
-    email: "",
-    photoUrl: ""
-  });
 
   useEffect(() => {
     if (schedule && schedule.length > 0) {
@@ -1210,166 +1195,101 @@ export default function Admin() {
   };
 
   // --- TAB 5 METHODS (Media) ---
-  const handleImageSelect = async (e: any) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-        showToast("Please select an image file", "error");
-        return;
-    }
-    
+  const handleAddMedia = () => {
+    setEditingMediaPost(null);
+    setShowMediaModal(true);
+  };
+
+  const handleEditMedia = (post: any) => {
+    setEditingMediaPost(post);
+    setShowMediaModal(true);
+  };
+
+  const handleSaveMedia = async (postForm: any) => {
     try {
-        setCompressingProgress(0);
-        const base64 = await compressImage(file, (p) => setCompressingProgress(p));
-        setMediaForm({ ...mediaForm, imageDataUrl: base64 });
+      setIsGlobalLoading(true);
+      let updated: any[];
+      if (editingMediaPost) {
+        updated = media.map(m => m.id === editingMediaPost.id ? { ...postForm, id: editingMediaPost.id } : m);
+      } else {
+        updated = [...media, { ...postForm, id: "p" + Date.now() }];
+      }
+      await writeJSON("media.json", updated);
+      updateMedia(updated);
+      showToast("Media post saved successfully ✓", "success");
     } catch (e) {
-        showToast("Failed to compress image", "error");
+      showToast("Failed to save media", "error");
     } finally {
-        setCompressingProgress(0);
+      setIsGlobalLoading(false);
     }
   };
 
-  async function handleSaveMedia() {
+  const handleDeleteMedia = async (id: string) => {
+    if (!confirm("Delete this media post?")) return;
     try {
-      if (!mediaForm.title.trim() || !mediaForm.imageDataUrl) {
-         showToast("Title and Photo are required", "error");
-         return;
-      }
-      setIsSavingMedia(true);
-
-      // Link formatting
-      let formattedLink = mediaForm.link?.trim() || "";
-      if (formattedLink && !formattedLink.startsWith("http://") && !formattedLink.startsWith("https://")) {
-        formattedLink = `https://${formattedLink}`;
-      }
-
-      const postData = {
-        ...mediaForm,
-        link: formattedLink,
-        linkLabel: mediaForm.linkLabel?.trim() || "Open Link"
-      };
-
-      let updated: any[];
-      if (mediaForm.id.startsWith("m_")) { 
-        updated = media.map(m => m.id === mediaForm.id ? { ...postData } : m);
-      } else {
-        updated = [{ ...postData, id: "m_" + Date.now(), createdAt: new Date().toISOString(), createdByUserId: currentUser.id }, ...media];
-      }
-      await writeJSON("media.json", updated);
-      updateMedia(updated);
-      setShowMediaForm(false);
-      showToast("Post saved successfully ✓", "success");
-    } catch (e) {
-      showToast("Failed to save post", "error");
-    } finally {
-      setIsSavingMedia(false);
-    }
-  }
-
-  async function handleDeleteMedia(id: string) {
-    if (!confirm("Delete this post?")) return;
-    try {
+      setIsGlobalLoading(true);
       const updated = media.filter(m => m.id !== id);
       await writeJSON("media.json", updated);
       updateMedia(updated);
-      showToast("Post deleted", "success");
+      showToast("Media deleted successfully", "success");
     } catch (e) {
-      showToast("Failed to delete post", "error");
+      showToast("Delete failed", "error");
+    } finally {
+      setIsGlobalLoading(false);
     }
-  }
+  };
 
   const renderTab5 = () => {
     return (
-    <div>
-       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
-         <h2 className="text-xl font-bold">Media / Posts</h2>
-         <button onClick={() => { setMediaForm({ id: "", title: "", description: "", caption: "", category: "trips", imageDataUrl: "", link: "", linkLabel: "", allowDownload: true }); setShowMediaForm(true); }} className="bg-yellow-500 hover:bg-yellow-600 p-2 px-4 rounded font-bold transition-colors whitespace-nowrap">+ Create Post</button>
+    <div className="bg-white p-6 rounded-lg shadow min-h-[400px]">
+       <div className="flex justify-between items-center mb-6">
+         <h2 className="text-xl font-bold flex items-center gap-2">
+           <span>🖼️</span> Media / Posts
+         </h2>
+         <button onClick={handleAddMedia} className="bg-black text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-800 shadow-sm transition-all">+ Create Post</button>
        </div>
-       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
          {media.length === 0 && <p className="text-gray-500 col-span-full text-center py-10">No posts. Create one to get started.</p>}
          {media.map((post: any) => (
-            <div key={post.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedPost(post)}>
-              <img src={post.imageDataUrl} alt={post.title} className="w-full h-48 object-cover" />
+            <div key={post.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col group h-full hover:shadow-md transition-all">
+              <div className="relative aspect-video bg-gray-200">
+                 <img src={post.imageDataUrl} alt={post.title} className="w-full h-full object-cover" />
+                 <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                    <button onClick={() => handleEditMedia(post)} className="p-2 bg-white text-blue-600 rounded-lg shadow hover:bg-blue-50">✏️</button>
+                    <button onClick={() => handleDeleteMedia(post.id)} className="p-2 bg-white text-red-600 rounded-lg shadow hover:bg-red-50">🗑</button>
+                 </div>
+              </div>
               <div className="p-4 flex-1 flex flex-col">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded capitalize">{post.category}</span>
-                    <div className="flex gap-1 z-10">
-                      <button onClick={(e) => { e.stopPropagation(); setMediaForm({ ...post }); setShowMediaForm(true); }} className="text-blue-600 hover:text-blue-800 text-[10px] font-bold bg-blue-50 px-2 py-1 rounded">Edit</button>
-                      <button onClick={(e) => { e.stopPropagation(); handleDeleteMedia(post.id); }} className="text-red-500 hover:text-red-700 text-[10px] font-bold bg-red-50 px-2 py-1 rounded">Delete</button>
-                    </div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[10px] font-black uppercase text-yellow-600 bg-yellow-50 px-1.5 py-0.5 rounded border border-yellow-200">{post.category}</span>
+                    <span className="text-[10px] text-gray-400 font-bold">{new Date(post.createdAt || Date.now()).toLocaleDateString()}</span>
                   </div>
-                 <h3 className="font-bold text-gray-900 line-clamp-1">{post.title}</h3>
-                 <p className="text-xs text-gray-400 mt-1">{new Date(post.createdAt || Date.now()).toLocaleDateString()}</p>
-                 {post.description && <p className="text-sm text-gray-600 mt-2 line-clamp-2">{post.description}</p>}
-                 {post.caption && <p className="text-sm italic text-gray-500 mt-2 bg-gray-50 p-2 rounded line-clamp-2">"{post.caption}"</p>}
+                 <h3 className="font-bold text-gray-900 line-clamp-1 mb-1">{post.title}</h3>
+                 <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">{post.caption || "No caption provided."}</p>
+                 
+                 {/* Audience Badge */}
+                 <div className="mt-auto">
+                    <div className="px-2 py-1 bg-[#FFBF00] text-black text-[9px] font-black rounded inline-flex items-center gap-1 uppercase tracking-tighter shadow-sm border border-yellow-600/20">
+                      {(!post.audienceType || post.audienceType === "all") && <>🌍 All Users</>}
+                      {post.audienceType === "roles" && <>👥 Roles: {(post.audienceRoles || []).join(", ")}</>}
+                      {post.audienceType === "users" && <>👤 {(post.audienceUserIds || []).length} Specific Users</>}
+                    </div>
+                 </div>
               </div>
             </div>
          ))}
        </div>
 
-       {selectedPost && (
-         <MediaPostViewerModal post={selectedPost} onClose={() => setSelectedPost(null)} />
-       )}
-
-       {showMediaForm && (
-         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 overflow-y-auto">
-            {(isSavingMedia || compressingProgress > 0) && (
-               <div className="fixed inset-0 z-[60] bg-black/40 flex flex-col items-center justify-center gap-4">
-                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-                 <p className="text-white font-bold text-lg">
-                   {compressingProgress > 0 ? `Compressing image... ${Math.round(compressingProgress * 100)}%` : "Saving post..."}
-                 </p>
-               </div>
-            )}
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
-              <div className="p-6 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
-                <h2 className="text-xl font-bold">{mediaForm.id ? "Edit Post" : "Create Post"}</h2>
-                <button onClick={() => setShowMediaForm(false)} className="text-xl font-bold p-2 text-gray-500 hover:text-gray-800 leading-none">✕</button>
-              </div>
-              <div className="p-6 overflow-y-auto space-y-4">
-                 <div>
-                    <label className="block text-sm font-bold mb-1">Upload Photo (Max 1.5MB)</label>
-                    <input type="file" accept="image/*" onChange={handleImageSelect} className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-800 hover:file:bg-yellow-100" />
-                    {mediaForm.imageDataUrl && <img src={mediaForm.imageDataUrl} className="mt-3 w-full h-40 object-cover rounded-lg border shadow-sm" alt="Preview"/>}
-                 </div>
-                 <div className="grid grid-cols-2 gap-4">
-                    <div className="col-span-2">
-                       <input value={mediaForm.title} onChange={e => setMediaForm({...mediaForm, title: e.target.value})} placeholder="Title *" className="w-full p-2 border rounded" />
-                    </div>
-                    <div className="col-span-2">
-                       <select value={mediaForm.category} onChange={e => setMediaForm({...mediaForm, category: e.target.value})} className="w-full p-2 border rounded font-semibold text-gray-700">
-                         {(settings?.mediaCategories || DEFAULT_MEDIA_CATEGORIES).map((cat: string) => (
-                           <option key={cat} value={cat}>{cat}</option>
-                         ))}
-                       </select>
-                    </div>
-                 </div>
-                 <textarea value={mediaForm.description} onChange={e => setMediaForm({...mediaForm, description: e.target.value})} placeholder="Description (Optional)" className="w-full p-2 border rounded h-20" />
-                 <input value={mediaForm.caption} onChange={e => setMediaForm({...mediaForm, caption: e.target.value})} placeholder="Caption (Optional)" className="w-full p-2 border rounded" />
-                 <div className="grid grid-cols-2 gap-4">
-                    <div className="col-span-1">
-                       <input value={mediaForm.link || ""} onChange={e => setMediaForm({...mediaForm, link: e.target.value})} placeholder="Button Link (Optional)" className="w-full p-2 border rounded" />
-                    </div>
-                    <div className="col-span-1">
-                       <input value={mediaForm.linkLabel || ""} onChange={e => setMediaForm({...mediaForm, linkLabel: e.target.value})} placeholder="Button Label (Open Link)" className="w-full p-2 border rounded" />
-                    </div>
-                 </div>
-                 <label className="flex items-center gap-2 cursor-pointer bg-gray-50 p-2 rounded border">
-                    <input type="checkbox" checked={mediaForm.allowDownload !== false} onChange={e => setMediaForm({...mediaForm, allowDownload: e.target.checked})} className="accent-yellow-500 w-5 h-5" />
-                    <span className="text-sm font-bold">Allow users to download attachment</span>
-                 </label>
-              </div>
-              <div className="p-6 border-t bg-gray-50 rounded-b-xl flex justify-end gap-3">
-                 <button onClick={() => setShowMediaForm(false)} disabled={isSavingMedia} className="px-5 py-2 bg-white border shadow-sm font-bold rounded hover:bg-gray-50 transition-colors disabled:opacity-50">Cancel</button>
-                 <button onClick={handleSaveMedia} disabled={isSavingMedia} className="px-5 py-2 bg-yellow-500 text-black font-bold rounded shadow hover:bg-yellow-600 transition-colors disabled:opacity-50 min-w-[120px] flex items-center justify-center">
-                    {isSavingMedia ? "Saving..." : "Save Post"}
-                 </button>
-              </div>
-            </div>
-         </div>
+       {showMediaModal && (
+          <MediaPostModal 
+            isOpen={showMediaModal}
+            onClose={() => setShowMediaModal(false)}
+            onSave={handleSaveMedia}
+            post={editingMediaPost}
+          />
        )}
     </div>
-  );
+    );
   };
 
   const renderTab6 = () => {
@@ -1458,161 +1378,6 @@ export default function Admin() {
     );
   };
 
-  // --- TAB 7 METHODS (Staff) ---
-  const handleAddStaff = () => {
-    setEditingStaffId(null);
-    setStaffForm({ id: "st" + Date.now(), name: "", title: "", phone: "", email: "", photoUrl: "" });
-    setShowStaffForm(true);
-  };
-
-  const handleEditStaff = (member: any) => {
-    setEditingStaffId(member.id);
-    setStaffForm({ ...member });
-    setShowStaffForm(true);
-  };
-
-  const handleSaveStaff = async () => {
-    if (!staffForm.name || !staffForm.phone) {
-      showToast("Name and Phone are required", "error");
-      return;
-    }
-
-    try {
-      setIsGlobalLoading(true);
-      let updated: any[];
-      if (editingStaffId) {
-        updated = staff.map(s => s.id === editingStaffId ? staffForm : s);
-      } else {
-        updated = [...staff, staffForm];
-      }
-      await writeJSON("staff.json", updated);
-      updateStaff(updated);
-      setShowStaffForm(false);
-      showToast("Staff saved successfully", "success");
-    } catch (e) {
-      showToast("Failed to save staff", "error");
-    } finally {
-      setIsGlobalLoading(false);
-    }
-  };
-
-  const handleDeleteStaff = async (id: string) => {
-    if (!confirm("Delete this staff member?")) return;
-    try {
-      setIsGlobalLoading(true);
-      const updated = staff.filter(s => s.id !== id);
-      await writeJSON("staff.json", updated);
-      updateStaff(updated);
-      showToast("Staff deleted", "success");
-    } catch (e) {
-      showToast("Failed to delete staff", "error");
-    } finally {
-      setIsGlobalLoading(false);
-    }
-  };
-
-  const renderTab7 = () => (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">👥 Staff Management</h2>
-        <button 
-          onClick={handleAddStaff}
-          className="bg-black text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-800 shadow-sm"
-        >
-          + Add Staff Member
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {staff.map((member: any) => (
-          <div key={member.id} className="border border-gray-100 rounded-xl p-4 bg-gray-50 flex items-center gap-4 group">
-            <div className="w-12 h-12 bg-yellow-400 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-black border border-gray-200">
-               {member.photoUrl ? (
-                 <img src={member.photoUrl} className="w-full h-full rounded-full object-cover" />
-               ) : (
-                 member.name.charAt(0)
-               )}
-            </div>
-            <div className="flex-1 min-w-0">
-               <h4 className="font-bold text-gray-900 truncate">{member.name}</h4>
-               <p className="text-xs text-gray-500 truncate">{member.title}</p>
-            </div>
-            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-               <button onClick={() => handleEditStaff(member)} className="p-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">✏️</button>
-               <button onClick={() => handleDeleteStaff(member.id)} className="p-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">🗑</button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {showStaffForm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-200 animate-in zoom-in-95 duration-200">
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-               <span>👤</span> {editingStaffId ? "Edit Staff Member" : "New Staff Member"}
-            </h3>
-            <div className="space-y-4">
-               <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Full Name</label>
-                  <input 
-                    type="text" 
-                    value={staffForm.name}
-                    onChange={e => setStaffForm({...staffForm, name: e.target.value})}
-                    className="w-full p-2.5 bg-gray-50 border rounded-lg outline-none focus:ring-2 focus:ring-yellow-500"
-                    placeholder="e.g. Dr. Peter Ramsis"
-                  />
-               </div>
-               <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Job Title</label>
-                  <input 
-                    type="text" 
-                    value={staffForm.title}
-                    onChange={e => setStaffForm({...staffForm, title: e.target.value})}
-                    className="w-full p-2.5 bg-gray-50 border rounded-lg outline-none focus:ring-2 focus:ring-yellow-500"
-                    placeholder="e.g. Trip Coordinator"
-                  />
-               </div>
-               <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Phone Number (WhatsApp)</label>
-                  <input 
-                    type="text" 
-                    value={staffForm.phone}
-                    onChange={e => setStaffForm({...staffForm, phone: e.target.value})}
-                    className="w-full p-2.5 bg-gray-50 border rounded-lg outline-none focus:ring-2 focus:ring-yellow-500"
-                    placeholder="e.g. +201069996672"
-                  />
-               </div>
-               <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Email Address</label>
-                  <input 
-                    type="email" 
-                    value={staffForm.email}
-                    onChange={e => setStaffForm({...staffForm, email: e.target.value})}
-                    className="w-full p-2.5 bg-gray-50 border rounded-lg outline-none focus:ring-2 focus:ring-yellow-500"
-                    placeholder="peter@evapharma.com"
-                  />
-               </div>
-               <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Photo URL (Optional)</label>
-                  <input 
-                    type="url" 
-                    value={staffForm.photoUrl}
-                    onChange={e => setStaffForm({...staffForm, photoUrl: e.target.value})}
-                    className="w-full p-2.5 bg-gray-50 border rounded-lg outline-none focus:ring-2 focus:ring-yellow-500"
-                    placeholder="https://..."
-                  />
-               </div>
-            </div>
-            <div className="flex gap-3 mt-8">
-               <button onClick={() => setShowStaffForm(false)} className="flex-1 py-2.5 border rounded-xl font-bold bg-white hover:bg-gray-50 transition-colors">Cancel</button>
-               <button onClick={handleSaveStaff} className="flex-1 py-2.5 bg-yellow-500 text-black rounded-xl font-bold hover:bg-yellow-400 shadow-md transition-all">Save Changes</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <Layout>
       {/* Admin Version Badge */}
@@ -1644,8 +1409,7 @@ export default function Admin() {
           { key: 'schedule', label: '📅 Schedule & Sessions' },
           { key: 'features', label: '⚙️ Feature Flags' },
           { key: 'media', label: '🖼️ Media / Posts' },
-          { key: 'categories', label: '🎨 Categories' },
-          { key: 'staff', label: '👥 Staff Management' }
+          { key: 'categories', label: '🎨 Categories' }
         ].map(tab => (
           <button 
             key={tab.key}
@@ -1666,7 +1430,6 @@ export default function Admin() {
         {activeTab === 'features' && renderTab4()}
         {activeTab === 'media' && renderTab5()}
         {activeTab === 'categories' && renderTab6()}
-        {activeTab === 'staff' && renderTab7()}
       </div>
     </Layout>
   );

@@ -5,11 +5,13 @@ import { useApp } from '../context/AppContext';
  * Staff Directory page displaying conference staff members with contact options.
  */
 export default function Staff() {
-  const { staff } = useApp();
+  const { users } = useApp();
+  const staffMembers = users.filter((u: any) => u.role === "staff");
 
   const getInitials = (name: string) => {
     return name
       .split(' ')
+      .filter(Boolean)
       .map(n => n[0])
       .join('')
       .toUpperCase()
@@ -24,8 +26,8 @@ export default function Staff() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {staff.map((member: any) => {
-          const waNumber = member.phone.replace(/\D/g, "");
+        {staffMembers.map((member: any) => {
+          const waNumber = (member.phone || "").replace(/\D/g, "");
           const waMessage = encodeURIComponent(
             "Hello, I am contacting you from the EUC Conference App."
           );
@@ -37,9 +39,9 @@ export default function Staff() {
             >
               {/* Photo / Initials */}
               <div className="mb-4">
-                {member.photoUrl ? (
+                {member.photoUrl || member.photo ? (
                   <img 
-                    src={member.photoUrl} 
+                    src={member.photoUrl || member.photo} 
                     alt={member.name} 
                     className="w-24 h-24 rounded-full border-4 border-yellow-50 object-cover shadow-sm"
                     onError={(e) => {
@@ -50,45 +52,51 @@ export default function Staff() {
                     }}
                   />
                 ) : null}
-                <div className={`${member.photoUrl ? 'hidden' : 'flex'} w-24 h-24 bg-yellow-400 items-center justify-center rounded-full text-2xl font-black text-black border-4 border-yellow-50 shadow-sm`}>
-                  {getInitials(member.name)}
+                <div className={`${(member.photoUrl || member.photo) ? 'hidden' : 'flex'} w-24 h-24 bg-yellow-400 items-center justify-center rounded-full text-2xl font-black text-black border-4 border-yellow-50 shadow-sm`}>
+                  {getInitials(member.name || "")}
                 </div>
               </div>
 
               {/* Info */}
               <h3 className="text-lg font-bold text-gray-900">{member.name}</h3>
               <p className="text-yellow-600 font-bold text-xs uppercase tracking-widest mt-1">
-                {member.title}
+                {member.title || "Staff Member"}
               </p>
-              <a 
-                href={`mailto:${member.email}`} 
-                className="text-gray-500 text-sm mt-3 hover:text-yellow-600 transition-colors break-all"
-              >
-                {member.email}
-              </a>
+              {member.email && (
+                <a 
+                  href={`mailto:${member.email}`} 
+                  className="text-gray-500 text-sm mt-3 hover:text-yellow-600 transition-colors break-all"
+                >
+                  {member.email}
+                </a>
+              )}
 
               {/* Actions */}
               <div className="mt-6 flex w-full gap-3">
-                <a 
-                  href={`tel:${member.phone}`}
-                  className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-black transition-colors"
-                >
-                  📞 Call
-                </a>
-                <a 
-                  href={`https://wa.me/${waNumber}?text=${waMessage}`}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex-1 bg-[#25D366] text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-[#128C7E] transition-colors"
-                >
-                  💬 WhatsApp
-                </a>
+                {member.phone && (
+                  <>
+                    <a 
+                      href={`tel:${member.phone}`}
+                      className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-black transition-colors"
+                    >
+                      📞 Call
+                    </a>
+                    <a 
+                      href={`https://wa.me/${waNumber}?text=${waMessage}`}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex-1 bg-[#25D366] text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-[#128C7E] transition-colors"
+                    >
+                      💬 WhatsApp
+                    </a>
+                  </>
+                )}
               </div>
             </div>
           );
         })}
 
-        {staff.length === 0 && (
+        {staffMembers.length === 0 && (
           <div className="col-span-full py-20 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
             <span className="text-4xl mb-3 block">👥</span>
             <p className="text-gray-500 font-bold">No staff members listed yet.</p>

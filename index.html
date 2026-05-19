@@ -1,6 +1,34 @@
 <!doctype html>
-<html lang="en" class="light" style="color-scheme: light;">
+<html lang="en" class="light" style="color-scheme: light only;" data-color-scheme="light">
   <head>
+    <meta name="color-scheme" content="light only" />
+    <meta name="supported-color-schemes" content="light" />
+    <style>
+      :root { color-scheme: light only !important; }
+    </style>
+    <script>
+      // Force light mode before React mounts — blocks Chrome dark mode injection
+      (function() {
+        document.documentElement.style.colorScheme = 'light';
+        document.documentElement.setAttribute('data-color-scheme', 'light');
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+
+        // Override matchMedia to always report light mode
+        const originalMatchMedia = window.matchMedia.bind(window);
+        window.matchMedia = function(query) {
+          if (query === '(prefers-color-scheme: dark)') {
+            return Object.assign(originalMatchMedia(query), {
+              matches: false,
+              media: query,
+              addEventListener: () => {},
+              removeEventListener: () => {},
+            });
+          }
+          return originalMatchMedia(query);
+        };
+      })();
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

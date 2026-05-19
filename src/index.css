@@ -1,13 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: light !important;
+  color-scheme: light only !important;
 }
 
 html, body {
   background-color: #ffffff !important;
   color: #111111 !important;
-  color-scheme: light !important;
+  color-scheme: light only !important;
+}
+
+/* Force all elements to respect light scheme */
+*, *::before, *::after {
+  color-scheme: light only !important;
 }
 
 @theme {
@@ -15,7 +20,7 @@ html, body {
 }
 
 input, select, textarea, button {
-  color-scheme: light !important;
+  color-scheme: light only !important;
   background-color: #ffffff;
   color: #111111;
 }

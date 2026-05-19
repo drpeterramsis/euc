@@ -4,20 +4,35 @@ import { useApp, DEFAULT_MEDIA_CATEGORIES } from '../context/AppContext';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
 
 export default function Media() {
-  const { media, settings } = useApp();
+  const { media, settings, currentUser } = useApp();
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("latest"); // latest, oldest, category
 
-  // Derive categories from settings + posts
+  const canUserSeePost = (user: any, post: any) => {
+    if (user?.role === 'admin') return true;
+    if (!post.audienceType || post.audienceType === 'all') return true;
+    if (post.audienceType === 'roles') {
+      return (post.audienceRoles || []).includes(user?.role);
+    }
+    if (post.audienceType === 'users') {
+      return (post.audienceUserIds || []).includes(user?.id);
+    }
+    return true; // Default fallback
+  };
+
+  // Derive categories from settings + posts (filtered by visibility)
   const categories = useMemo(() => {
     const fromSettings = settings?.mediaCategories || DEFAULT_MEDIA_CATEGORIES;
-    const fromPosts = media.map(p => p.category).filter(Boolean);
+    const fromPosts = media
+      .filter(p => canUserSeePost(currentUser, p))
+      .map(p => p.category)
+      .filter(Boolean);
     return ["All", ...new Set([...fromSettings, ...fromPosts])];
-  }, [settings, media]);
+  }, [settings, media, currentUser]);
 
   const filteredMedia = useMemo(() => {
-    let filtered = [...media];
+    let filtered = media.filter(p => canUserSeePost(currentUser, p));
 
     // Apply category filter
     if (activeCategory !== "All") {
@@ -34,7 +49,7 @@ export default function Media() {
     }
 
     return filtered;
-  }, [media, activeCategory, sortBy]);
+  }, [media, activeCategory, sortBy, currentUser]);
 
   return (
     <Layout>
@@ -88,15 +103,22 @@ export default function Media() {
         {filteredMedia.map((post: any) => (
           <div 
             key={post.id} 
-            className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col cursor-pointer transition-all hover:shadow-md hover:border-yellow-200"
+            className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col cursor-pointer transition-all hover:shadow-md hover:border-yellow-200 group"
             onClick={() => setSelectedPost(post)}
           >
             <div className="relative aspect-video overflow-hidden">
               <img src={post.imageDataUrl} alt={post.title} className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
-              <div className="absolute top-2 left-2">
-                <span className="px-2 py-1 bg-white/90 backdrop-blur-sm text-yellow-800 text-[10px] font-bold rounded shadow-sm capitalize border border-yellow-100">
+              <div className="absolute top-2 left-2 flex flex-col gap-1">
+                <span className="px-2 py-1 bg-white/90 backdrop-blur-sm text-yellow-800 text-[10px] font-bold rounded shadow-sm capitalize border border-yellow-100 w-max">
                   {post.category}
                 </span>
+
+                {/* Private / Group Indicator for Admin */}
+                {currentUser?.role === 'admin' && post.audienceType && post.audienceType !== 'all' && (
+                  <span className="px-1.5 py-0.5 bg-black/80 backdrop-blur-sm text-[#FFBF00] text-[8px] font-black rounded border border-yellow-500/50 flex items-center gap-1 w-max">
+                    {post.audienceType === 'roles' ? `👥 ${(post.audienceRoles || []).join(', ')}` : `👤 Targeting ${post.audienceUserIds?.length} users`}
+                  </span>
+                )}
               </div>
             </div>
             <div className="p-4 flex-1 flex flex-col">
@@ -134,7 +156,7 @@ export default function Media() {
           </div>
         ))}
       </div>
-      
+
       {selectedPost && (
         <MediaPostViewerModal 
           post={selectedPost} 

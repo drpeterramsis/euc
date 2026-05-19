@@ -115,21 +115,18 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
               </NavLink>
             </>
           )}
-        </nav>
-        {/* Help Link & User info and Logout button */}
-        <div className="p-4 border-t border-gray-800 bg-black">
+
           <a
             href={`https://wa.me/201069996672?text=${encodeURIComponent("Hello EUC Support Team, I need technical assistance with the EUC Conference App.")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full p-2.5 mb-4 rounded-xl font-bold bg-yellow-500 text-black hover:bg-yellow-600 transition-all shadow-sm group"
+            className="flex items-center gap-1.5 text-xs text-green-400 hover:text-green-300 px-3 py-1.5 mt-3 opacity-70 hover:opacity-100 transition-opacity whitespace-nowrap"
           >
-            <span className="text-lg group-hover:scale-110 transition-transform">💬</span>
-            <span className="text-xs uppercase tracking-wider">Need Help? Contact Support</span>
+            💬 <span>Need Help?</span>
           </a>
-
-          <div className="border-t border-gray-800 mb-4 pt-4" />
-
+        </nav>
+        {/* User info and Logout button */}
+        <div className="p-4 border-t border-gray-800 bg-black">
           {fullUser && (
             <div className="flex items-center space-x-3 mb-4">
               {(fullUser.photoUrl || fullUser.photo) ? (

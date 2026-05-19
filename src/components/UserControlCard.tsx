@@ -86,6 +86,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         username:     user.username     || "",
         password:     user.password     || "",
         role:         user.role         || "doctor",
+        title:        user.title        || "",
         email:        user.email        || "",
         phone:        user.phone        || "",
         photoUrl:     user.photoUrl     || user.photo || "",
@@ -98,6 +99,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
       username: "",
       password: "",
       role:     "doctor",
+      title:    "",
       email:    "",
       phone:    "",
       photoUrl: "",
@@ -159,6 +161,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         username: user.username || "",
         password: user.password || "",
         role:     user.role     || "doctor",
+        title:    user.title    || "",
         email:    user.email    || "",
         phone:    user.phone    || "",
         photoUrl: user.photoUrl || user.photo || "",
@@ -305,6 +308,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         username: formData.username.trim(),
         password: formData.password.trim(),
         role:     formData.role,
+        title:    formData.title.trim(),
         email:    formData.email.trim(),
         phone:    formData.phone.trim(),
         photoUrl: formData.photoUrl.trim(),
@@ -389,8 +393,9 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                   <option value="doctor">Doctor</option>
                   <option value="staff">Staff</option>
                 </select>
+                <input name="title" value={formData.title} onChange={handleChange} placeholder="Job Title / Role (e.g. Trip Coordinator)" className="w-full p-2 border rounded" />
                 <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="w-full p-2 border rounded" />
-                <input name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone" className="w-full p-2 border rounded" />
+                <input name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone (with country code)" className="w-full p-2 border rounded" />
               </div>
               <div className="flex flex-col gap-2">
                 <label className="block text-xs font-bold text-gray-400 uppercase">Profile Photo URL</label>
