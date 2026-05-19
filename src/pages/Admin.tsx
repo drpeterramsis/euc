@@ -4,7 +4,7 @@
  */
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { useApp } from '../context/AppContext';
+import { useApp, DEFAULT_SCHEDULE_CATEGORIES, DEFAULT_MEDIA_CATEGORIES } from '../context/AppContext';
 import { Navigate, useSearchParams, useNavigate } from 'react-router-dom';
 import { writeJSON } from '../utils/github';
 import UserControlCard from '../components/UserControlCard';
@@ -82,9 +82,14 @@ export default function Admin() {
   });
   const [mediaForm, setMediaForm] = useState({
     id: "", category: "trips", title: "", description: "", caption: "", imageDataUrl: "",
-    link: "", allowDownload: true
+    link: "", linkLabel: "", allowDownload: true
   });
   const [selectedPost, setSelectedPost] = useState<any>(null);
+
+  // Tab 6 State (Categories)
+  const [newSchedCat, setNewSchedCat] = useState("");
+  const [newMediaCat, setNewMediaCat] = useState("");
+  const [isSavingCats, setIsSavingCats] = useState(false);
 
   useEffect(() => {
     if (schedule && schedule.length > 0) {
@@ -121,6 +126,72 @@ export default function Admin() {
   if (currentUser?.role !== "admin") {
     return <Navigate to="/dashboard" replace />;
   }
+
+  // --- TAB 6 METHODS (Categories) ---
+  const handleAddCategory = async (type: 'schedule' | 'media') => {
+    const val = type === 'schedule' ? newSchedCat.trim() : newMediaCat.trim();
+    if (!val) return;
+
+    const key = type === 'schedule' ? 'scheduleCategories' : 'mediaCategories';
+    const current = settings?.[key] || (type === 'schedule' ? ["Scientific", "Social", "Transport", "Other"] : ["Conference", "Social", "Tours", "Awards"]);
+    
+    if (current.includes(val)) {
+      showToast("Category already exists", "error");
+      return;
+    }
+
+    try {
+      setIsSavingCats(true);
+      const updatedSettings = {
+        ...settings,
+        [key]: [...current, val]
+      };
+      await writeJSON("settings.json", updatedSettings);
+      updateSettings(updatedSettings);
+      if (type === 'schedule') setNewSchedCat("");
+      else setNewMediaCat("");
+      showToast("Category added", "success");
+    } catch (e) {
+      showToast("Failed to add category", "error");
+    } finally {
+      setIsSavingCats(false);
+    }
+  };
+
+  const handleDeleteCategory = async (type: 'schedule' | 'media', cat: string) => {
+    // Check if in use
+    let inUse = false;
+    if (type === 'schedule') {
+      inUse = schedule.some(day => day.items?.some((i: any) => i.category === cat));
+    } else {
+      inUse = media.some(m => m.category === cat);
+    }
+
+    if (inUse) {
+      alert(`Category "${cat}" is currently in use and cannot be deleted.`);
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete "${cat}"?`)) return;
+
+    const key = type === 'schedule' ? 'scheduleCategories' : 'mediaCategories';
+    const current = settings?.[key] || [];
+
+    try {
+      setIsSavingCats(true);
+      const updatedSettings = {
+        ...settings,
+        [key]: current.filter((c: string) => c !== cat)
+      };
+      await writeJSON("settings.json", updatedSettings);
+      updateSettings(updatedSettings);
+      showToast("Category deleted", "success");
+    } catch (e) {
+      showToast("Failed to delete category", "error");
+    } finally {
+      setIsSavingCats(false);
+    }
+  };
 
   // --- TAB 1 METHODS ---
   const handleSaveUser = async (updatedUser: any, applyToAllTravel: boolean = false, applyFeaturesToAll: boolean = false, applyFieldsToAll: boolean = false) => {
@@ -590,10 +661,9 @@ export default function Admin() {
             onChange={e => setScheduleForm({...scheduleForm, category: e.target.value})}
             className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
           >
-            <option value="Scientific">Scientific</option>
-            <option value="Social">Social</option>
-            <option value="Transport">Transport</option>
-            <option value="Other">Other</option>
+            {(settings?.scheduleCategories || DEFAULT_SCHEDULE_CATEGORIES).map((cat: string) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
           </select>
         </div>
         <div>
@@ -1153,11 +1223,24 @@ export default function Admin() {
          return;
       }
       setIsSavingMedia(true);
+
+      // Link formatting
+      let formattedLink = mediaForm.link?.trim() || "";
+      if (formattedLink && !formattedLink.startsWith("http://") && !formattedLink.startsWith("https://")) {
+        formattedLink = `https://${formattedLink}`;
+      }
+
+      const postData = {
+        ...mediaForm,
+        link: formattedLink,
+        linkLabel: mediaForm.linkLabel?.trim() || "Open Link"
+      };
+
       let updated: any[];
       if (mediaForm.id.startsWith("m_")) { 
-        updated = media.map(m => m.id === mediaForm.id ? { ...mediaForm } : m);
+        updated = media.map(m => m.id === mediaForm.id ? { ...postData } : m);
       } else {
-        updated = [{ ...mediaForm, id: "m_" + Date.now(), createdAt: new Date().toISOString(), createdByUserId: currentUser.id }, ...media];
+        updated = [{ ...postData, id: "m_" + Date.now(), createdAt: new Date().toISOString(), createdByUserId: currentUser.id }, ...media];
       }
       await writeJSON("media.json", updated);
       updateMedia(updated);
@@ -1187,7 +1270,7 @@ export default function Admin() {
     <div>
        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
          <h2 className="text-xl font-bold">Media / Posts</h2>
-         <button onClick={() => { setMediaForm({ id: "", title: "", description: "", caption: "", category: "trips", imageDataUrl: "", link: "", allowDownload: true }); setShowMediaForm(true); }} className="bg-yellow-500 hover:bg-yellow-600 p-2 px-4 rounded font-bold transition-colors whitespace-nowrap">+ Create Post</button>
+         <button onClick={() => { setMediaForm({ id: "", title: "", description: "", caption: "", category: "trips", imageDataUrl: "", link: "", linkLabel: "", allowDownload: true }); setShowMediaForm(true); }} className="bg-yellow-500 hover:bg-yellow-600 p-2 px-4 rounded font-bold transition-colors whitespace-nowrap">+ Create Post</button>
        </div>
        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
          {media.length === 0 && <p className="text-gray-500 col-span-full text-center py-10">No posts. Create one to get started.</p>}
@@ -1242,17 +1325,22 @@ export default function Admin() {
                     </div>
                     <div className="col-span-2">
                        <select value={mediaForm.category} onChange={e => setMediaForm({...mediaForm, category: e.target.value})} className="w-full p-2 border rounded font-semibold text-gray-700">
-                         <option value="program">Program</option>
-                         <option value="trips">Trips</option>
-                         <option value="places">Places</option>
-                         <option value="meetings">Meetings</option>
-                         <option value="photos">Photos</option>
+                         {(settings?.mediaCategories || DEFAULT_MEDIA_CATEGORIES).map((cat: string) => (
+                           <option key={cat} value={cat}>{cat}</option>
+                         ))}
                        </select>
                     </div>
                  </div>
                  <textarea value={mediaForm.description} onChange={e => setMediaForm({...mediaForm, description: e.target.value})} placeholder="Description (Optional)" className="w-full p-2 border rounded h-20" />
                  <input value={mediaForm.caption} onChange={e => setMediaForm({...mediaForm, caption: e.target.value})} placeholder="Caption (Optional)" className="w-full p-2 border rounded" />
-                 <input value={mediaForm.link || ""} onChange={e => setMediaForm({...mediaForm, link: e.target.value})} placeholder="External Link (Optional)" className="w-full p-2 border rounded" />
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="col-span-1">
+                       <input value={mediaForm.link || ""} onChange={e => setMediaForm({...mediaForm, link: e.target.value})} placeholder="Button Link (Optional)" className="w-full p-2 border rounded" />
+                    </div>
+                    <div className="col-span-1">
+                       <input value={mediaForm.linkLabel || ""} onChange={e => setMediaForm({...mediaForm, linkLabel: e.target.value})} placeholder="Button Label (Open Link)" className="w-full p-2 border rounded" />
+                    </div>
+                 </div>
                  <label className="flex items-center gap-2 cursor-pointer bg-gray-50 p-2 rounded border">
                     <input type="checkbox" checked={mediaForm.allowDownload !== false} onChange={e => setMediaForm({...mediaForm, allowDownload: e.target.checked})} className="accent-yellow-500 w-5 h-5" />
                     <span className="text-sm font-bold">Allow users to download attachment</span>
@@ -1271,6 +1359,92 @@ export default function Admin() {
   );
   };
 
+  const renderTab6 = () => {
+    const schedCats = settings?.scheduleCategories || DEFAULT_SCHEDULE_CATEGORIES;
+    const medCats = settings?.mediaCategories || DEFAULT_MEDIA_CATEGORIES;
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {(isSavingCats || isGlobalLoading) && (
+          <div className="fixed inset-0 z-[100] bg-black/40 flex flex-col items-center justify-center gap-4 backdrop-blur-sm">
+            <div className="animate-spin rounded-full h-12 w-12 border-2 border-white border-t-transparent"></div>
+            <p className="text-white font-bold">Saving categories...</p>
+          </div>
+        )}
+
+        {/* Schedule Categories */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+            <span>📅</span> Schedule Categories
+          </h3>
+          <div className="space-y-2 mb-6 max-h-60 overflow-y-auto pr-2">
+            {schedCats.map((cat: string) => (
+              <div key={cat} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group">
+                <span className="font-bold text-gray-700">{cat}</span>
+                <button 
+                  onClick={() => handleDeleteCategory('schedule', cat)}
+                  className="text-red-400 hover:text-red-600 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input 
+              type="text" 
+              placeholder="New Schedule Category" 
+              value={newSchedCat} 
+              onChange={e => setNewSchedCat(e.target.value)}
+              className="flex-1 p-2 border rounded focus:ring-1 focus:ring-yellow-500 outline-none"
+            />
+            <button 
+              onClick={() => handleAddCategory('schedule')}
+              className="bg-black text-white px-4 py-2 rounded font-bold hover:bg-gray-800"
+            >
+              Add
+            </button>
+          </div>
+        </div>
+
+        {/* Gallery Categories */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+            <span>🖼️</span> Gallery Categories
+          </h3>
+          <div className="space-y-2 mb-6 max-h-60 overflow-y-auto pr-2">
+            {medCats.map((cat: string) => (
+              <div key={cat} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group">
+                <span className="font-bold text-gray-700">{cat}</span>
+                <button 
+                  onClick={() => handleDeleteCategory('media', cat)}
+                  className="text-red-400 hover:text-red-600 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input 
+              type="text" 
+              placeholder="New Gallery Category" 
+              value={newMediaCat} 
+              onChange={e => setNewMediaCat(e.target.value)}
+              className="flex-1 p-2 border rounded focus:ring-1 focus:ring-yellow-500 outline-none"
+            />
+            <button 
+              onClick={() => handleAddCategory('media')}
+              className="bg-black text-white px-4 py-2 rounded font-bold hover:bg-gray-800"
+            >
+              Add
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Layout>
       {/* Global Saving Overlay */}
@@ -1287,7 +1461,8 @@ export default function Admin() {
           { key: 'data', label: '📊 User Data Control' },
           { key: 'schedule', label: '📅 Schedule & Sessions' },
           { key: 'features', label: '⚙️ Feature Flags' },
-          { key: 'media', label: '🖼️ Media / Posts' }
+          { key: 'media', label: '🖼️ Media / Posts' },
+          { key: 'categories', label: '🎨 Categories' }
         ].map(tab => (
           <button 
             key={tab.key}
@@ -1307,6 +1482,7 @@ export default function Admin() {
         {activeTab === 'schedule' && renderTab3()}
         {activeTab === 'features' && renderTab4()}
         {activeTab === 'media' && renderTab5()}
+        {activeTab === 'categories' && renderTab6()}
       </div>
     </Layout>
   );

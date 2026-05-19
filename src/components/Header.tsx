@@ -16,23 +16,41 @@ import { useApp } from "../context/AppContext";
 export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const { currentUser } = useApp();
 
+  const userPhoto = currentUser?.photoUrl || currentUser?.photo;
+  const initials = currentUser?.name ? currentUser.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().substring(0, 2) : "U";
+
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-black border-b border-gray-800 flex items-center justify-between px-4 z-40 shadow-sm">
-      <div className="flex items-center">
+      <div className="flex items-center overflow-hidden">
         <button className="lg:hidden p-2 text-white hover:text-yellow-500 transition-colors mr-2" onClick={onMenuClick}>☰</button>
         <img 
           src="/images/euc_ico.png" 
           alt="Logo" 
-          className="h-10 w-auto object-contain mr-3"
+          className="h-7 w-7 sm:h-9 sm:w-9 object-contain mr-3 shrink-0"
           referrerPolicy="no-referrer"
         />
-        <div className="font-bold text-white hidden sm:block">EVA UROLOGY COMMUNITY</div>
-        <div className="font-bold text-white sm:hidden">EUC</div>
+        <span className="text-white font-bold tracking-wide whitespace-nowrap text-sm sm:text-base">
+          EVA UROLOGY COMMUNITY
+        </span>
       </div>
       <div className="flex items-center space-x-4">
         <span className="hidden sm:inline text-sm font-medium text-gray-200 truncate max-w-[150px]">{currentUser?.name}</span>
-        {/* Placeholder for user avatar */}
-        <img src={currentUser?.photo} className="w-10 h-10 bg-yellow-100 border border-gray-600 rounded-full object-cover shadow-sm" alt="Avatar" />
+        {userPhoto ? (
+          <img 
+            src={userPhoto} 
+            className="w-10 h-10 bg-yellow-100 border border-gray-600 rounded-full object-cover shadow-sm" 
+            alt="Avatar"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+              e.currentTarget.nextElementSibling?.classList.add('flex');
+            }}
+          />
+        ) : null}
+        <div className={`${userPhoto ? 'hidden' : 'flex'} w-10 h-10 bg-yellow-400 items-center justify-center rounded-full font-bold text-black border border-gray-600`}>
+          {initials}
+        </div>
       </div>
     </header>
   );

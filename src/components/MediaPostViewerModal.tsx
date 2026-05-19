@@ -48,7 +48,7 @@ export default function MediaPostViewerModal({ post, onClose }: { post: any, onC
                   rel="noopener noreferrer"
                   className="flex-1 bg-black text-white text-center py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors"
                 >
-                  Join / Open Link
+                  {post.linkLabel || "Open Link"}
                 </a>
               )}
               {post.allowDownload !== false && (

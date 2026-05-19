@@ -42,6 +42,9 @@ export const CACHE = {
   lastFetch: "euc_last_fetch_time",
 };
 
+export const DEFAULT_SCHEDULE_CATEGORIES = ["Scientific", "Social", "Transport", "Other"];
+export const DEFAULT_MEDIA_CATEGORIES = ["Conference", "Social", "Tours", "Awards"];
+
 const REFRESH_INTERVAL = 10 * 60 * 1000;
 
 interface AppContextType {
@@ -128,10 +131,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       readJSON("users.json"),
       readJSON("schedule.json"),
       readJSON("sessions.json"),
-      readJSON("settings.json"),
-      readJSON("media.json").catch(() => []), // gracefully handle missing media file
+      readJSON("settings.json").catch(() => ({})),
+      readJSON("media.json").catch(() => []), 
     ]);
-    return { users: u, schedule: sc, sessions: se, settings: st, media: md };
+
+    // Merge settings with defaults
+    const s = st as any;
+    const mergedSettings = {
+      ...s,
+      scheduleCategories: [...new Set([...DEFAULT_SCHEDULE_CATEGORIES, ...(s.scheduleCategories || [])])],
+      mediaCategories: [...new Set([...DEFAULT_MEDIA_CATEGORIES, ...(s.mediaCategories || [])])],
+    };
+
+    return { users: u, schedule: sc, sessions: se, settings: mergedSettings, media: md };
   }, []);
 
   const backgroundRefresh = useCallback(async () => {

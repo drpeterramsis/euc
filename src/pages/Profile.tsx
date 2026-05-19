@@ -24,7 +24,22 @@ export default function Profile() {
       <h1 className="text-2xl font-bold mb-6 text-gray-900">My Profile</h1>
       <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
         <div className="flex flex-col sm:flex-row items-center space-x-0 sm:space-x-6 space-y-4 sm:space-y-0 pb-6 border-b border-gray-100">
-          <img src={fullUser.photo} className="w-24 h-24 rounded-full shadow-sm border border-gray-200" alt="Profile" />
+          {(fullUser.photoUrl || fullUser.photo) ? (
+            <img 
+              src={fullUser.photoUrl || fullUser.photo} 
+              className="w-24 h-24 rounded-full shadow-sm border border-gray-200 object-cover" 
+              alt="Profile" 
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                e.currentTarget.nextElementSibling?.classList.add('flex');
+              }}
+            />
+          ) : null}
+          <div className={`${(fullUser.photoUrl || fullUser.photo) ? 'hidden' : 'flex'} w-24 h-24 bg-yellow-400 items-center justify-center rounded-full font-bold text-black border border-gray-200 text-3xl shadow-sm`}>
+            {fullUser.name ? fullUser.name.charAt(0).toUpperCase() : "U"}
+          </div>
           <div className="text-center sm:text-left">
             <h2 className="text-2xl font-bold text-gray-900">{fullUser.name}</h2>
             <p className="text-yellow-600 font-semibold tracking-wide text-sm mt-1">{fullUser.role.toUpperCase()}</p>

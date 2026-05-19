@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 // ─────────────────────────────────────────────
 // FILE: src/utils/github.ts
 // PURPOSE: Handles read/write operations with caching.

@@ -69,8 +69,8 @@ export default function Login() {
 
       {/* Logo Container */}
       <div className="mb-10 relative z-10 flex flex-col items-center justify-center filter drop-shadow-2xl">
-        {/* Animated Wavy Logo */}
-        <div className="relative w-48 h-48 sm:w-64 sm:h-64 animate-wave-strong">
+        {/* Static Logo */}
+        <div className="relative w-48 h-48 sm:w-64 sm:h-64">
           <img 
             src="/images/euc_logo.webp" 
             alt="EUC Logo" 

@@ -88,7 +88,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         role:         user.role         || "doctor",
         email:        user.email        || "",
         phone:        user.phone        || "",
-        photo:        user.photo        || "",
+        photoUrl:     user.photoUrl     || user.photo || "",
         status:       user.status       ?? true,
       };
     }
@@ -100,7 +100,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
       role:     "doctor",
       email:    "",
       phone:    "",
-      photo:    "",
+      photoUrl: "",
       status:   true,
     };
   });
@@ -161,7 +161,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         role:     user.role     || "doctor",
         email:    user.email    || "",
         phone:    user.phone    || "",
-        photo:    user.photo    || "",
+        photoUrl: user.photoUrl || user.photo || "",
         status:   user.status   ?? true,
       });
 
@@ -208,7 +208,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         id: "u" + Date.now(),
         name: "", username: "", password: "",
         role: "doctor", email: "", phone: "",
-        photo: "", status: true,
+        photoUrl: "", status: true,
       });
       setTravelData({
         departure: { flightNumber: "", date: "", time: "", departureAirport: "", arrivalAirport: "", terminal: "", gate: "" },
@@ -307,7 +307,8 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         role:     formData.role,
         email:    formData.email.trim(),
         phone:    formData.phone.trim(),
-        photo:    formData.photo.trim(),
+        photoUrl: formData.photoUrl.trim(),
+        photo:    formData.photoUrl.trim(), // Keep sync with legacy photo field
         status:   formData.status,
         isActive: formData.status, 
 
@@ -391,9 +392,27 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                 <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="w-full p-2 border rounded" />
                 <input name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone" className="w-full p-2 border rounded" />
               </div>
-              <div className="flex items-center gap-4">
-                <img src={formData.photo || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + formData.id} alt="Preview" className="w-12 h-12 rounded-full border bg-gray-100 object-cover" />
-                <input name="photo" value={formData.photo} onChange={handleChange} placeholder="Photo URL" className="flex-1 p-2 border rounded" />
+              <div className="flex flex-col gap-2">
+                <label className="block text-xs font-bold text-gray-400 uppercase">Profile Photo URL</label>
+                <div className="flex items-center gap-4">
+                  {formData.photoUrl ? (
+                    <img 
+                      src={formData.photoUrl} 
+                      alt="Preview" 
+                      className="w-12 h-12 rounded-full border bg-gray-100 object-cover shrink-0 shadow-sm" 
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                        e.currentTarget.nextElementSibling?.classList.add('flex');
+                      }}
+                    />
+                  ) : null}
+                  <div className={`${formData.photoUrl ? 'hidden' : 'flex'} w-12 h-12 bg-yellow-400 items-center justify-center rounded-full font-bold text-black border border-gray-200 shadow-sm shrink-0`}>
+                    {formData.name ? formData.name.charAt(0).toUpperCase() : "U"}
+                  </div>
+                  <input name="photoUrl" value={formData.photoUrl} onChange={handleChange} placeholder="https://example.com/photo.jpg" className="flex-1 p-2 border rounded focus:ring-1 focus:ring-yellow-500 outline-none" />
+                </div>
               </div>
               <label className="flex items-center gap-2 cursor-pointer p-2 bg-gray-50 rounded border max-w-[150px]">
                 <input type="checkbox" name="status" checked={formData.status} onChange={handleChange} className="w-5 h-5 accent-yellow-500" />

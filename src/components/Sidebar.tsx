@@ -119,7 +119,22 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
         <div className="p-4 border-t border-gray-800 bg-black">
           {fullUser && (
             <div className="flex items-center space-x-3 mb-4">
-              <img src={fullUser.photo} className="w-10 h-10 rounded-full border border-gray-700 shadow-sm" alt="Avatar" />
+              {(fullUser.photoUrl || fullUser.photo) ? (
+                <img 
+                  src={fullUser.photoUrl || fullUser.photo} 
+                  className="w-10 h-10 rounded-full border border-gray-700 shadow-sm object-cover" 
+                  alt="Avatar" 
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                    e.currentTarget.nextElementSibling?.classList.add('flex');
+                  }}
+                />
+              ) : null}
+              <div className={`${(fullUser.photoUrl || fullUser.photo) ? 'hidden' : 'flex'} w-10 h-10 bg-yellow-400 items-center justify-center rounded-full font-bold text-black border border-gray-700 shadow-sm shrink-0`}>
+                {fullUser.name ? fullUser.name.charAt(0).toUpperCase() : "U"}
+              </div>
               <div className="flex flex-col truncate">
                 <span className="text-sm font-bold text-white truncate">{fullUser.name || fullUser.username}</span>
                 <span className="text-xs text-yellow-500 font-semibold">{fullUser.role.toUpperCase()}</span>
