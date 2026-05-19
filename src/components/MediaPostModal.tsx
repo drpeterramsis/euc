@@ -28,7 +28,9 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
     allowDownload: true,
     audienceType: "all" as "all" | "roles" | "users",
     audienceRoles: [] as string[],
-    audienceUserIds: [] as string[]
+    audienceUserIds: [] as string[],
+    comingSoon: false,
+    scheduledAt: null as string | null
   });
 
   useEffect(() => {
@@ -38,7 +40,9 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
           ...post,
           audienceType: post.audienceType || "all",
           audienceRoles: post.audienceRoles || [],
-          audienceUserIds: post.audienceUserIds || []
+          audienceUserIds: post.audienceUserIds || [],
+          comingSoon: post.comingSoon || false,
+          scheduledAt: post.scheduledAt || null
         });
       } else {
         setForm({
@@ -53,7 +57,9 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
           allowDownload: true,
           audienceType: "all",
           audienceRoles: [],
-          audienceUserIds: []
+          audienceUserIds: [],
+          comingSoon: false,
+          scheduledAt: null
         });
       }
     }
@@ -311,6 +317,58 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
                       ))}
                       {filteredUsers.length === 0 && <p className="text-center text-[10px] text-gray-400 py-2">No users found</p>}
                     </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Visibility & Timing */}
+              <div className="pt-4 border-t border-gray-100">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Visibility & Timing</label>
+                
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.comingSoon}
+                    onChange={e => setForm(f => ({ ...f, comingSoon: e.target.checked }))}
+                    className="w-4 h-4 accent-yellow-400"
+                  />
+                  <span className="font-medium text-sm text-gray-800">Mark as "Coming Soon"</span>
+                </label>
+                <p className="text-[10px] text-gray-500 ml-6 mb-4 font-medium">
+                  Hidden from Dashboard. Appears in Gallery with a "Coming Soon" badge.
+                </p>
+
+                <label className="flex items-center gap-2 cursor-pointer mt-3">
+                  <input
+                    type="checkbox"
+                    checked={!!form.scheduledAt}
+                    onChange={e => setForm(f => ({
+                      ...f,
+                      scheduledAt: e.target.checked
+                        ? new Date().toISOString()
+                        : null
+                    }))}
+                    className="w-4 h-4 accent-yellow-400"
+                  />
+                  <span className="font-medium text-sm text-gray-800">Schedule Publishing</span>
+                </label>
+
+                {!!form.scheduledAt && (
+                  <div className="ml-6 mt-2 animate-in fade-in duration-300">
+                    <input
+                      type="datetime-local"
+                      value={form.scheduledAt ? form.scheduledAt.slice(0, 16) : ""}
+                      onChange={e => setForm(f => ({
+                        ...f,
+                        scheduledAt: e.target.value
+                          ? new Date(e.target.value).toISOString()
+                          : null
+                      }))}
+                      className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-full font-bold focus:ring-1 focus:ring-yellow-500 outline-none"
+                    />
+                    <p className="text-[10px] font-medium text-gray-500 mt-1">
+                      Post will not be visible to users until this date and time.
+                    </p>
                   </div>
                 )}
               </div>

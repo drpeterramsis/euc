@@ -7,27 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
-
-function canUserSeePost(post: any, currentUser: any): boolean {
-  if (currentUser?.role === "admin") return true;
-  if (!post.audienceType || post.audienceType === "all") return true;
-  if (post.audienceType === "roles") {
-    return (post.audienceRoles ?? []).includes(currentUser?.role);
-  }
-  if (post.audienceType === "users") {
-    return (post.audienceUserIds ?? []).includes(currentUser?.id);
-  }
-  return true;
-}
-
-function isComingSoon(post: any): boolean {
-  if (post.status === "coming_soon") return true;
-  if (post.isComingSoon === true) return true;
-  if (post.comingSoon === true) return true;
-  if (post.visibility === "coming_soon" || post.visibility === "comingSoon") return true;
-  if (typeof post.category === 'string' && post.category.toLowerCase() === 'coming soon') return true;
-  return false;
-}
+import { shouldShowOnDashboard } from '../utils/postVisibility';
 
 export default function Dashboard() {
   const { currentUser, users, media = [] } = useApp();
@@ -42,8 +22,7 @@ export default function Dashboard() {
   const isVisible = (key: string) => vf[key] !== false;
 
   const dashboardMedia = [...media]
-    .filter(p => canUserSeePost(p, fullUser))
-    .filter(p => !isComingSoon(p))
+    .filter(p => shouldShowOnDashboard(p, fullUser))
     .sort((a, b) => new Date(b.createdAt || Date.now()).getTime() - new Date(a.createdAt || Date.now()).getTime())
     .slice(0, 3);
 

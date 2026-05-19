@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import Layout from '../components/Layout';
 import { useApp, DEFAULT_MEDIA_CATEGORIES } from '../context/AppContext';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
+import { isPostVisible } from '../utils/postVisibility';
 
 export default function Media() {
   const { media, settings, currentUser } = useApp();
@@ -9,38 +10,18 @@ export default function Media() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("latest"); // latest, oldest, category
 
-function canUserSeePost(post: any, currentUser: any): boolean {
-  // Admin sees everything
-  if (currentUser.role === "admin") return true;
-
-  // No targeting set — visible to all
-  if (!post.audienceType || post.audienceType === "all") return true;
-
-  // Role-based targeting
-  if (post.audienceType === "roles") {
-    return (post.audienceRoles ?? []).includes(currentUser.role);
-  }
-
-  // User-specific targeting
-  if (post.audienceType === "users") {
-    return (post.audienceUserIds ?? []).includes(currentUser.id);
-  }
-
-  return true;
-}
-
   // Derive categories from settings + posts (filtered by visibility)
   const categories = useMemo(() => {
     const fromSettings = settings?.mediaCategories || DEFAULT_MEDIA_CATEGORIES;
     const fromPosts = media
-      .filter(p => canUserSeePost(p, currentUser))
+      .filter(p => isPostVisible(p, currentUser))
       .map(p => p.category)
       .filter(Boolean);
     return ["All", ...new Set([...fromSettings, ...fromPosts])];
   }, [settings, media, currentUser]);
 
   const filteredMedia = useMemo(() => {
-    let filtered = media.filter(p => canUserSeePost(p, currentUser));
+    let filtered = media.filter(p => isPostVisible(p, currentUser));
 
     // Apply category filter
     if (activeCategory !== "All") {
@@ -117,6 +98,11 @@ function canUserSeePost(post: any, currentUser: any): boolean {
             <div className="relative aspect-video overflow-hidden">
               <img src={post.imageDataUrl} alt={post.title} className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
               <div className="absolute top-2 left-2 flex flex-col gap-1">
+                {post.comingSoon && (
+                  <div className="bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded-full shadow w-max">
+                    🕐 Coming Soon
+                  </div>
+                )}
                 <span className="px-2 py-1 bg-white/90 backdrop-blur-sm text-yellow-800 text-[10px] font-bold rounded shadow-sm capitalize border border-yellow-100 w-max">
                   {post.category}
                 </span>
@@ -128,6 +114,12 @@ function canUserSeePost(post: any, currentUser: any): boolean {
                   </span>
                 )}
               </div>
+              
+              {currentUser?.role === "admin" && post.scheduledAt && new Date(post.scheduledAt) > new Date() && (
+                <div className="absolute top-2 right-2 bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
+                  📅 Scheduled
+                </div>
+              )}
             </div>
             <div className="p-4 flex-1 flex flex-col">
               <h3 className="font-bold text-gray-900 line-clamp-1 mb-1">{post.title}</h3>

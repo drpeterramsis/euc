@@ -85,7 +85,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
             <div className="flex justify-between items-center w-full">
               <button
                 onClick={onClose}
-                className="lg:hidden text-white hover:text-yellow-400 transition-colors p-2"
+                className="lg:hidden text-white hover:text-yellow-400 transition-colors p-2 bg-transparent border-none outline-none"
                 aria-label="Close menu"
               >
                 ✕

@@ -1267,12 +1267,24 @@ export default function Admin() {
                  <h3 className="font-bold text-gray-900 line-clamp-1 mb-1">{post.title}</h3>
                  <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">{post.caption || "No caption provided."}</p>
                  
-                 {/* Audience Badge */}
+                 {/* Status & Audience Badges */}
                  <div className="mt-auto">
-                    <div className="px-2 py-1 bg-[#FFBF00] text-black text-[9px] font-black rounded inline-flex items-center gap-1 uppercase tracking-tighter shadow-sm border border-yellow-600/20">
-                      {(!post.audienceType || post.audienceType === "all") && <>🌍 All Users</>}
-                      {post.audienceType === "roles" && <>👥 Roles: {(post.audienceRoles || []).join(", ")}</>}
-                      {post.audienceType === "users" && <>👤 {(post.audienceUserIds || []).length} Specific Users</>}
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {post.comingSoon && (
+                        <span className="text-[9px] bg-yellow-400 text-black px-2 py-1 flex items-center justify-center font-black rounded uppercase tracking-tighter shadow-sm border border-yellow-500">
+                          🕐 Coming Soon
+                        </span>
+                      )}
+                      {post.scheduledAt && (
+                        <span className="text-[9px] bg-blue-100 text-blue-700 px-2 py-1 flex items-center justify-center font-black rounded uppercase tracking-tighter shadow-sm border border-blue-200">
+                          📅 {new Date(post.scheduledAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                        </span>
+                      )}
+                      <div className="px-2 py-1 bg-[#FFBF00] text-black text-[9px] font-black rounded inline-flex items-center gap-1 uppercase tracking-tighter shadow-sm border border-yellow-600/20">
+                        {(!post.audienceType || post.audienceType === "all") && <>🌍 All Users</>}
+                        {post.audienceType === "roles" && <>👥 Roles: {(post.audienceRoles || []).join(", ")}</>}
+                        {post.audienceType === "users" && <>👤 {(post.audienceUserIds || []).length} Specific Users</>}
+                      </div>
                     </div>
                  </div>
               </div>
