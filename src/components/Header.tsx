@@ -10,6 +10,7 @@
 import { useApp } from "../context/AppContext";
 import { Link } from "react-router-dom";
 import { getLabel } from "../utils/labels";
+import UserAvatar from "./UserAvatar";
 
 /**
  * Header component displays page context and user avatar.
@@ -47,25 +48,10 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
         <span className="hidden sm:inline text-sm font-medium text-gray-200 truncate max-w-[150px]">{currentUser?.name}</span>
         <Link 
           to="/profile"
-          className="cursor-pointer hover:ring-2 hover:ring-yellow-400 rounded-full transition-all"
+          className="cursor-pointer hover:ring-2 hover:ring-yellow-400 rounded-full transition-all flex-shrink-0"
           title={getLabel(appConfig, "profile")}
         >
-          {userPhoto ? (
-            <img 
-              src={userPhoto} 
-              className="w-10 h-10 bg-yellow-100 border border-gray-600 rounded-full object-cover shadow-sm" 
-              alt="Avatar"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                e.currentTarget.nextElementSibling?.classList.add('flex');
-              }}
-            />
-          ) : null}
-          <div className={`${userPhoto ? 'hidden' : 'flex'} w-10 h-10 bg-yellow-400 items-center justify-center rounded-full font-bold text-black border border-gray-600`}>
-            {initials}
-          </div>
+          <UserAvatar user={currentUser} size="md" className="border border-gray-600" />
         </Link>
       </div>
     </header>

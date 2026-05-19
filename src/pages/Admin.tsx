@@ -9,6 +9,8 @@ import { APP_VERSION } from "../version";
 import { Navigate, useSearchParams, useNavigate } from 'react-router-dom';
 import { writeJSON } from '../utils/github';
 import UserControlCard from '../components/UserControlCard';
+import UserGridCard from '../components/UserGridCard';
+import UserAvatar from '../components/UserAvatar';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
 import MediaPostModal from '../components/MediaPostModal';
 import { showToast } from '../components/Toast';
@@ -23,6 +25,24 @@ export default function Admin() {
   const defaultTab = searchParams.get("tab") || "users";
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [userSearchQuery, setUserSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"list" | "grid">(() => {
+    const saved = localStorage.getItem("adminUserViewMode");
+    return saved === "grid" ? "grid" : "list";
+  });
+  const [roleFilter, setRoleFilter] = useState<string>(() => {
+    return localStorage.getItem("adminRoleFilter") || "all";
+  });
+
+  const handleViewModeChange = (mode: "list" | "grid") => {
+    setViewMode(mode);
+    localStorage.setItem("adminUserViewMode", mode);
+  };
+
+  const handleRoleFilterChange = (role: string) => {
+    setRoleFilter(role);
+    localStorage.setItem("adminRoleFilter", role);
+  };
+
   const navigate = useNavigate();
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -685,136 +705,227 @@ export default function Admin() {
     }
   }
 
-  const filteredUsers = users.filter((u: any) => {
-    if (!userSearchQuery) return true;
-    const q = userSearchQuery.trim().toLowerCase();
-    const hay = [
-      u.name, u.username, u.role, u.email, u.id
-    ].filter(Boolean).join(" ").toLowerCase();
-    return hay.includes(q);
-  });
+  const filteredUsers = users
+    .filter((u: any) => roleFilter === "all" || u.role === roleFilter)
+    .filter((u: any) => {
+      if (!userSearchQuery) return true;
+      const q = userSearchQuery.trim().toLowerCase();
+      const hay = [
+        u.name, u.username, u.role, u.email, u.id
+      ].filter(Boolean).join(" ").toLowerCase();
+      return hay.includes(q);
+    });
 
-  const renderTab1 = () => (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
-        <h2 className="text-xl font-bold">User Management</h2>
-        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          <input 
-            type="text" 
-            placeholder="🔍 Search users..." 
-            value={userSearchQuery}
-            onChange={(e) => setUserSearchQuery(e.target.value)}
-            className="p-2 border rounded w-full sm:w-64" 
-          />
-          <button onClick={() => { setEditingUser(null); setModalOpen(true); }} className="bg-yellow-500 hover:bg-yellow-600 p-2 px-4 rounded font-bold cursor-pointer transition-colors whitespace-nowrap">+ Create New User</button>
+  const renderTab1 = () => {
+    return (
+      <div>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+          <h2 className="text-xl font-bold">User Management</h2>
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto font-bold">
+            <input 
+              type="text" 
+              placeholder="🔍 Search users..." 
+              value={userSearchQuery}
+              onChange={(e) => setUserSearchQuery(e.target.value)}
+              className="p-2 border rounded w-full sm:w-64 font-medium" 
+            />
+            <button onClick={() => { setEditingUser(null); setModalOpen(true); }} className="bg-yellow-500 hover:bg-yellow-600 p-2 px-4 rounded font-bold cursor-pointer transition-colors whitespace-nowrap">+ Create New User</button>
+          </div>
         </div>
-      </div>
-      
-      <UserControlCard 
-        isOpen={modalOpen} 
-        mode={editingUser ? 'edit' : 'create'}
-        user={editingUser} 
-        onClose={() => setModalOpen(false)} 
-        onSave={handleSaveUser} 
-      />
 
-      <div className="bg-white rounded-lg shadow">
-        {/* Mobile View */}
-        <div className="md:hidden divide-y text-sm">
-          {filteredUsers.map((u: any) => (
-            <div key={u.id} className="p-4 space-y-3">
-              <div className="flex items-center gap-3">
-                <img src={u.photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id}`} alt={u.name} className="w-12 h-12 rounded-full border bg-gray-100 object-cover flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-bold text-gray-900 truncate">{u.name}</h4>
-                  <p className="text-gray-500 truncate">{u.username}</p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className={`px-2 py-1 rounded text-xs font-bold ${
-                  u.role === 'admin' ? 'bg-yellow-200 text-yellow-800' : 
-                  u.role === 'doctor' ? 'bg-blue-100 text-blue-800' : 'bg-gray-200 text-gray-800'
-                }`}>
-                  {u.role.toUpperCase()}
-                </span>
-                <span className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
-                  <span className={`w-2 h-2 rounded-full ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                  {u.isActive ? "Active" : "Inactive"}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
-                <button onClick={() => handleImpersonate(u)} className="flex-1 py-1.5 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold text-center">👁 View</button>
-                <button onClick={() => { setEditingUser(u); setModalOpen(true); }} className="flex-1 py-1.5 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs text-center font-bold">✏️ Edit</button> 
-                <button onClick={() => handleDeleteUser(u.id)} className="flex-1 py-1.5 text-red-600 hover:bg-red-50 bg-red-50 rounded text-xs text-center font-bold">🗑 Delete</button>
-              </div>
+        {/* Filters and View Toggle Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Filter:</span>
+            <select
+              value={roleFilter}
+              onChange={e => handleRoleFilterChange(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm font-black bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400 cursor-pointer"
+            >
+              <option value="all">📁 All Roles</option>
+              <option value="admin">🔧 Admin</option>
+              <option value="doctor">🩺 Doctor</option>
+              <option value="staff">💼 Staff</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-black text-gray-400 uppercase tracking-widest">View:</span>
+            <div className="flex items-center gap-1.5 bg-white p-1 rounded-lg border border-gray-200 font-bold text-xs">
+              <button
+                onClick={() => handleViewModeChange("list")}
+                className={`px-3 py-1.5 rounded-md text-xs font-black transition-all ${
+                  viewMode === "list"
+                    ? "bg-yellow-400 text-black shadow-sm"
+                    : "text-gray-600 hover:text-black hover:bg-gray-100"
+                }`}
+                title="List View"
+              >
+                ≡ List
+              </button>
+              <button
+                onClick={() => handleViewModeChange("grid")}
+                className={`px-3 py-1.5 rounded-md text-xs font-black transition-all ${
+                  viewMode === "grid"
+                    ? "bg-yellow-400 text-black shadow-sm"
+                    : "text-gray-600 hover:text-black hover:bg-gray-100"
+                }`}
+                title="Grid View"
+              >
+                ⊞ Grid
+              </button>
             </div>
-          ))}
-          {filteredUsers.length === 0 && (
-            <div className="p-8 text-center text-gray-500">No users found.</div>
-          )}
+          </div>
         </div>
+        
+        <UserControlCard 
+          isOpen={modalOpen} 
+          mode={editingUser ? 'edit' : 'create'}
+          user={editingUser} 
+          onClose={() => setModalOpen(false)} 
+          onSave={handleSaveUser} 
+        />
 
-        {/* Desktop View */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left min-w-[800px]">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="p-4 rounded-tl-lg">Photo</th>
-                <th className="p-4">Name</th>
-                <th className="p-4">Username</th>
-                <th className="p-4">Role</th>
-                <th className="p-4">Status</th>
-                <th className="p-4 rounded-tr-lg">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y text-sm">
+        {viewMode === "list" ? (
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            {/* Mobile List View */}
+            <div className="md:hidden divide-y text-sm">
               {filteredUsers.map((u: any) => (
-                <tr key={u.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="p-4"><img src={u.photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id}`} alt={u.name} className="w-10 h-10 rounded-full border bg-gray-100 object-cover" /></td>
-                  <td className="p-4 font-semibold">{u.name}</td>
-                  <td className="p-4 text-gray-500">{u.username}</td>
-                  <td className="p-4">
+                <div key={u.id} className="p-4 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <UserAvatar user={u} size="md" />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-gray-900 truncate">{u.name}</h4>
+                      <p className="text-gray-500 truncate">{u.username}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
                     <span className={`px-2 py-1 rounded text-xs font-bold ${
                       u.role === 'admin' ? 'bg-yellow-200 text-yellow-800' : 
                       u.role === 'doctor' ? 'bg-blue-100 text-blue-800' : 'bg-gray-200 text-gray-800'
                     }`}>
                       {u.role.toUpperCase()}
                     </span>
-                  </td>
-                  <td className="p-4">
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
                       <span className={`w-2 h-2 rounded-full ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`}></span>
                       {u.isActive ? "Active" : "Inactive"}
                     </span>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => handleImpersonate(u)} className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold flex items-center gap-1">👁 View</button>
-                      <button onClick={() => { setEditingUser(u); setModalOpen(true); }} className="px-2 py-1 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs font-bold">✏️ Edit</button> 
-                      <button onClick={() => handleDeleteUser(u.id)} className="px-2 py-1 text-red-600 hover:bg-red-50 bg-red-50 rounded text-xs font-bold">🗑 Delete</button>
-                    </div>
-                  </td>
-                </tr>
+                  </div>
+                  <div className="flex items-center gap-2 pt-2 border-t border-gray-100 font-bold">
+                    <button onClick={() => handleImpersonate(u)} className="flex-1 py-1.5 bg-gray-100 hover:bg-gray-200 rounded text-xs text-center font-bold">👁 View</button>
+                    <button onClick={() => { setEditingUser(u); setModalOpen(true); }} className="flex-1 py-1.5 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs text-center font-bold">✏️ Edit</button> 
+                    <button onClick={() => handleDeleteUser(u.id)} className="flex-1 py-1.5 text-red-600 hover:bg-red-50 bg-red-50 rounded text-xs text-center font-bold">🗑 Delete</button>
+                  </div>
+                </div>
               ))}
               {filteredUsers.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center text-gray-500">No users found.</td>
-                </tr>
+                <div className="p-8 text-center text-gray-500">No users found.</div>
               )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
+            </div>
 
-  const renderTab2 = () => {
-    // For Data Control, you usually select a user, then view details.
-    return (
-      <div>
-         <h2 className="text-xl font-bold mb-4">User Data Control</h2>
-         <p className="text-gray-600 mb-6 border-b pb-4">Select a user to edit their specific data (handled directly within the full Edit panel of User Management).</p>
-         <button onClick={() => setActiveTab("users")} className="px-4 py-2 border rounded bg-white hover:bg-gray-50 shadow-sm font-bold">Go to User Management</button>
+            {/* Desktop List View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left min-w-[800px]">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="p-4 rounded-tl-lg">Photo</th>
+                    <th className="p-4">Name</th>
+                    <th className="p-4">Username</th>
+                    <th className="p-4">Role</th>
+                    <th className="p-4">Status</th>
+                    <th className="p-4 rounded-tr-lg">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y text-sm">
+                  {filteredUsers.map((u: any) => (
+                    <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="p-4">
+                        <UserAvatar user={u} size="md" />
+                      </td>
+                      <td className="p-4 font-semibold">{u.name}</td>
+                      <td className="p-4 text-gray-500">{u.username}</td>
+                      <td className="p-4">
+                        <span className={`px-2 py-1 rounded text-xs font-bold ${
+                          u.role === 'admin' ? 'bg-yellow-200 text-yellow-800' : 
+                          u.role === 'doctor' ? 'bg-blue-100 text-blue-800' : 'bg-gray-200 text-gray-800'
+                        }`}>
+                          {u.role.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <span className="flex items-center gap-2">
+                          <span className={`w-2 h-2 rounded-full ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                          {u.isActive ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2 font-bold font-sans">
+                          <button onClick={() => handleImpersonate(u)} className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold flex items-center gap-1">👁 View</button>
+                          <button onClick={() => { setEditingUser(u); setModalOpen(true); }} className="px-2 py-1 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs font-bold">✏️ Edit</button> 
+                          <button onClick={() => handleDeleteUser(u.id)} className="px-2 py-1 text-red-600 hover:bg-red-0 hover:bg-red-50 bg-red-50 rounded text-xs font-bold">🗑 Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredUsers.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="p-8 text-center text-gray-500">No users found.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          /* Grid View Layout */
+          <div>
+            {roleFilter === "all" ? (
+              /* Grouped by Role */
+              ["admin", "doctor", "staff"].map(role => {
+                const group = filteredUsers.filter(u => u.role === role);
+                if (group.length === 0) return null;
+                return (
+                  <div key={role} className="mb-8 font-sans">
+                    <h3 className="text-xs font-black uppercase text-gray-400 tracking-widest mb-4 px-1 border-b pb-2 flex justify-between items-center">
+                      <span>{role === 'admin' ? '🔧 Admin' : role === 'doctor' ? '🩺 Doctor' : '💼 Staff'}</span>
+                      <span className="bg-gray-100 px-2 py-0.5 rounded-full text-[10px] text-gray-500">{group.length} users</span>
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {group.map(user => (
+                        <UserGridCard 
+                          key={user.id} 
+                          user={user} 
+                          onView={handleImpersonate} 
+                          onEdit={(u) => { setEditingUser(u); setModalOpen(true); }} 
+                          onDelete={handleDeleteUser} 
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              /* Flat Grid View when specific role filtered */
+              <div>
+                {filteredUsers.length === 0 ? (
+                  <div className="p-12 text-center text-gray-500 bg-white border rounded-xl shadow-sm">No users found for this role filter.</div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-fade-in font-sans">
+                    {filteredUsers.map(user => (
+                      <UserGridCard 
+                        key={user.id} 
+                        user={user} 
+                        onView={handleImpersonate} 
+                        onEdit={(u) => { setEditingUser(u); setModalOpen(true); }} 
+                        onDelete={handleDeleteUser} 
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -1608,10 +1719,30 @@ export default function Admin() {
         </div>
       )}
 
-      <div className="mb-6 flex gap-2 border-b overflow-x-auto pb-[-1px]">
+      {/* Mobile: Tab Dropdown Selection */}
+      <div className="md:hidden mb-6">
+        <select
+          value={activeTab}
+          onChange={(e) => setActiveTab(e.target.value)}
+          className="w-full border-2 border-yellow-400 rounded-lg px-4 py-2.5
+                     text-sm font-bold text-gray-900 bg-white
+                     focus:outline-none focus:ring-2 focus:ring-yellow-400
+                     appearance-none cursor-pointer"
+        >
+          <option value="users">👥 User Management</option>
+          <option value="appConfig">⚙️ App Settings</option>
+          <option value="tripInfo">✈️ Trip Info</option>
+          <option value="schedule">📅 Schedule & Sessions</option>
+          <option value="features">⚙️ Feature Flags</option>
+          <option value="media">🖼️ Media / Posts</option>
+          <option value="categories">🎨 Categories</option>
+        </select>
+      </div>
+
+      {/* Desktop/Tablet: Horizontal Tab Bar */}
+      <div className="hidden md:flex mb-6 gap-2 border-b overflow-x-auto pb-[1px]">
         {[
           { key: 'users', label: '👥 User Management' },
-          { key: 'data', label: '📊 User Data Control' },
           { key: 'appConfig', label: '⚙️ App Settings' },
           { key: 'tripInfo', label: '✈️ Trip Info' },
           { key: 'schedule', label: '📅 Schedule & Sessions' },
@@ -1633,7 +1764,6 @@ export default function Admin() {
 
       <div className="pb-12">
         {activeTab === 'users' && renderTab1()}
-        {activeTab === 'data' && renderTab2()}
         {activeTab === 'appConfig' && renderAppConfigTab()}
         {activeTab === 'tripInfo' && renderTripInfoTab()}
         {activeTab === 'schedule' && renderTab3()}

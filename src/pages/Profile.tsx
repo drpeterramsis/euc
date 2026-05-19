@@ -87,9 +87,30 @@ export default function Profile() {
               <span className="font-black text-gray-900 uppercase tracking-tight text-xs">Hotel Assignment</span>
             </div>
             <div className="p-6">
-              <div>
-                <p className="font-semibold">🏨 Hotel</p>
-                <p>Name: <a href={tripInfo.hotel.mapUrl} target="_blank" rel="noreferrer" className="text-blue-500 underline">{tripInfo.hotel.name}</a></p>
+              <div className="flex flex-col gap-1">
+                {/* Section label */}
+                <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+                  🏨 Hotel
+                </p>
+
+                {/* Hotel name — plain, non-clickable */}
+                <p className="font-semibold text-gray-900 text-base leading-snug">
+                  {tripInfo.hotel.name}
+                </p>
+
+                {/* Map button — clearly separate from the name */}
+                <a
+                  href={tripInfo.hotel.mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 mt-2
+                             bg-yellow-400 hover:bg-yellow-500
+                             text-black font-semibold text-sm
+                             px-4 py-1.5 rounded-lg border border-yellow-500
+                             transition-colors shadow-sm w-fit cursor-pointer"
+                >
+                  📍 View on Map
+                </a>
               </div>
             </div>
           </div>
