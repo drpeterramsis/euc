@@ -151,6 +151,17 @@ export default function Login() {
             ) : 'Sign In'}
           </button>
         </form>
+
+        <div className="mt-8 text-center bg-gray-50/50 p-4 rounded-xl border border-dashed border-gray-200">
+          <a
+            href={`https://wa.me/201069996672?text=${encodeURIComponent("Hello EUC Team, I need help logging into the EUC Conference App.")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-yellow-600 font-bold text-sm hover:underline flex items-center justify-center gap-2"
+          >
+            <span>💬</span> Can't login? Need help — Contact Support
+          </a>
+        </div>
       </div>
     </div>
   );

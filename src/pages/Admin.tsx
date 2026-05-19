@@ -5,6 +5,7 @@
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { useApp, DEFAULT_SCHEDULE_CATEGORIES, DEFAULT_MEDIA_CATEGORIES } from '../context/AppContext';
+import { APP_VERSION } from "../version";
 import { Navigate, useSearchParams, useNavigate } from 'react-router-dom';
 import { writeJSON } from '../utils/github';
 import UserControlCard from '../components/UserControlCard';
@@ -14,8 +15,8 @@ import { compressImage } from '../utils/image';
 
 export default function Admin() {
   const { 
-    currentUser, users, schedule, sessions, settings, media = [],
-    updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia
+    currentUser, users, schedule, sessions, settings, media = [], staff = [],
+    updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia, updateStaff
   } = useApp();
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get("tab") || "users";
@@ -90,6 +91,18 @@ export default function Admin() {
   const [newSchedCat, setNewSchedCat] = useState("");
   const [newMediaCat, setNewMediaCat] = useState("");
   const [isSavingCats, setIsSavingCats] = useState(false);
+
+  // Tab 7 State (Staff)
+  const [showStaffForm, setShowStaffForm] = useState(false);
+  const [editingStaffId, setEditingStaffId] = useState<string | null>(null);
+  const [staffForm, setStaffForm] = useState({
+    id: "",
+    name: "",
+    title: "",
+    phone: "",
+    email: "",
+    photoUrl: ""
+  });
 
   useEffect(() => {
     if (schedule && schedule.length > 0) {
@@ -1445,8 +1458,177 @@ export default function Admin() {
     );
   };
 
+  // --- TAB 7 METHODS (Staff) ---
+  const handleAddStaff = () => {
+    setEditingStaffId(null);
+    setStaffForm({ id: "st" + Date.now(), name: "", title: "", phone: "", email: "", photoUrl: "" });
+    setShowStaffForm(true);
+  };
+
+  const handleEditStaff = (member: any) => {
+    setEditingStaffId(member.id);
+    setStaffForm({ ...member });
+    setShowStaffForm(true);
+  };
+
+  const handleSaveStaff = async () => {
+    if (!staffForm.name || !staffForm.phone) {
+      showToast("Name and Phone are required", "error");
+      return;
+    }
+
+    try {
+      setIsGlobalLoading(true);
+      let updated: any[];
+      if (editingStaffId) {
+        updated = staff.map(s => s.id === editingStaffId ? staffForm : s);
+      } else {
+        updated = [...staff, staffForm];
+      }
+      await writeJSON("staff.json", updated);
+      updateStaff(updated);
+      setShowStaffForm(false);
+      showToast("Staff saved successfully", "success");
+    } catch (e) {
+      showToast("Failed to save staff", "error");
+    } finally {
+      setIsGlobalLoading(false);
+    }
+  };
+
+  const handleDeleteStaff = async (id: string) => {
+    if (!confirm("Delete this staff member?")) return;
+    try {
+      setIsGlobalLoading(true);
+      const updated = staff.filter(s => s.id !== id);
+      await writeJSON("staff.json", updated);
+      updateStaff(updated);
+      showToast("Staff deleted", "success");
+    } catch (e) {
+      showToast("Failed to delete staff", "error");
+    } finally {
+      setIsGlobalLoading(false);
+    }
+  };
+
+  const renderTab7 = () => (
+    <div className="bg-white p-6 rounded-lg shadow">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold">👥 Staff Management</h2>
+        <button 
+          onClick={handleAddStaff}
+          className="bg-black text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-800 shadow-sm"
+        >
+          + Add Staff Member
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {staff.map((member: any) => (
+          <div key={member.id} className="border border-gray-100 rounded-xl p-4 bg-gray-50 flex items-center gap-4 group">
+            <div className="w-12 h-12 bg-yellow-400 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-black border border-gray-200">
+               {member.photoUrl ? (
+                 <img src={member.photoUrl} className="w-full h-full rounded-full object-cover" />
+               ) : (
+                 member.name.charAt(0)
+               )}
+            </div>
+            <div className="flex-1 min-w-0">
+               <h4 className="font-bold text-gray-900 truncate">{member.name}</h4>
+               <p className="text-xs text-gray-500 truncate">{member.title}</p>
+            </div>
+            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+               <button onClick={() => handleEditStaff(member)} className="p-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">✏️</button>
+               <button onClick={() => handleDeleteStaff(member.id)} className="p-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">🗑</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {showStaffForm && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-200 animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+               <span>👤</span> {editingStaffId ? "Edit Staff Member" : "New Staff Member"}
+            </h3>
+            <div className="space-y-4">
+               <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Full Name</label>
+                  <input 
+                    type="text" 
+                    value={staffForm.name}
+                    onChange={e => setStaffForm({...staffForm, name: e.target.value})}
+                    className="w-full p-2.5 bg-gray-50 border rounded-lg outline-none focus:ring-2 focus:ring-yellow-500"
+                    placeholder="e.g. Dr. Peter Ramsis"
+                  />
+               </div>
+               <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Job Title</label>
+                  <input 
+                    type="text" 
+                    value={staffForm.title}
+                    onChange={e => setStaffForm({...staffForm, title: e.target.value})}
+                    className="w-full p-2.5 bg-gray-50 border rounded-lg outline-none focus:ring-2 focus:ring-yellow-500"
+                    placeholder="e.g. Trip Coordinator"
+                  />
+               </div>
+               <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Phone Number (WhatsApp)</label>
+                  <input 
+                    type="text" 
+                    value={staffForm.phone}
+                    onChange={e => setStaffForm({...staffForm, phone: e.target.value})}
+                    className="w-full p-2.5 bg-gray-50 border rounded-lg outline-none focus:ring-2 focus:ring-yellow-500"
+                    placeholder="e.g. +201069996672"
+                  />
+               </div>
+               <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Email Address</label>
+                  <input 
+                    type="email" 
+                    value={staffForm.email}
+                    onChange={e => setStaffForm({...staffForm, email: e.target.value})}
+                    className="w-full p-2.5 bg-gray-50 border rounded-lg outline-none focus:ring-2 focus:ring-yellow-500"
+                    placeholder="peter@evapharma.com"
+                  />
+               </div>
+               <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Photo URL (Optional)</label>
+                  <input 
+                    type="url" 
+                    value={staffForm.photoUrl}
+                    onChange={e => setStaffForm({...staffForm, photoUrl: e.target.value})}
+                    className="w-full p-2.5 bg-gray-50 border rounded-lg outline-none focus:ring-2 focus:ring-yellow-500"
+                    placeholder="https://..."
+                  />
+               </div>
+            </div>
+            <div className="flex gap-3 mt-8">
+               <button onClick={() => setShowStaffForm(false)} className="flex-1 py-2.5 border rounded-xl font-bold bg-white hover:bg-gray-50 transition-colors">Cancel</button>
+               <button onClick={handleSaveStaff} className="flex-1 py-2.5 bg-yellow-500 text-black rounded-xl font-bold hover:bg-yellow-400 shadow-md transition-all">Save Changes</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <Layout>
+      {/* Admin Version Badge */}
+      <div className="mb-6 flex justify-between items-center bg-black p-4 rounded-xl shadow-lg border border-gray-800">
+        <div>
+          <h1 className="text-2xl font-black text-white tracking-tight uppercase">Admin Control Panel</h1>
+          <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Management Suite</p>
+        </div>
+        <div className="flex flex-col items-end">
+          <span className="bg-yellow-500 text-black px-3 py-1 rounded-full text-xs font-black shadow-sm">
+            v{APP_VERSION}
+          </span>
+          <span className="text-[10px] text-gray-500 font-bold mt-1 uppercase tracking-tighter">Current Build</span>
+        </div>
+      </div>
+
       {/* Global Saving Overlay */}
       {isGlobalLoading && (
         <div className="fixed inset-0 z-[100] bg-black/40 flex flex-col items-center justify-center gap-4 backdrop-blur-sm">
@@ -1462,7 +1644,8 @@ export default function Admin() {
           { key: 'schedule', label: '📅 Schedule & Sessions' },
           { key: 'features', label: '⚙️ Feature Flags' },
           { key: 'media', label: '🖼️ Media / Posts' },
-          { key: 'categories', label: '🎨 Categories' }
+          { key: 'categories', label: '🎨 Categories' },
+          { key: 'staff', label: '👥 Staff Management' }
         ].map(tab => (
           <button 
             key={tab.key}
@@ -1483,6 +1666,7 @@ export default function Admin() {
         {activeTab === 'features' && renderTab4()}
         {activeTab === 'media' && renderTab5()}
         {activeTab === 'categories' && renderTab6()}
+        {activeTab === 'staff' && renderTab7()}
       </div>
     </Layout>
   );

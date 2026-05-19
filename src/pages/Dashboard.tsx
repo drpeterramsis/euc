@@ -107,43 +107,43 @@ export default function Dashboard() {
                 {timeLeft.days > 0 ? (
                   <div className="grid grid-cols-3 gap-2 sm:gap-4">
                     <div className="flex flex-col items-center">
-                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-gray-900 rounded-xl flex items-center justify-center text-white text-2xl sm:text-3xl font-black shadow-lg">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-black border border-gray-800 rounded-xl flex items-center justify-center text-[#FFBF00] text-2xl sm:text-3xl font-black shadow-lg">
                         {timeLeft.days}
                       </div>
-                      <span className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Days</span>
+                      <span className="text-[10px] font-bold text-yellow-500/80 mt-2 uppercase tracking-tighter">Days</span>
                     </div>
                     <div className="flex flex-col items-center">
-                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-gray-900 rounded-xl flex items-center justify-center text-white text-2xl sm:text-3xl font-black shadow-lg">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-black border border-gray-800 rounded-xl flex items-center justify-center text-[#FFBF00] text-2xl sm:text-3xl font-black shadow-lg">
                         {String(timeLeft.hours).padStart(2, '0')}
                       </div>
-                      <span className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Hours</span>
+                      <span className="text-[10px] font-bold text-yellow-500/80 mt-2 uppercase tracking-tighter">Hours</span>
                     </div>
                     <div className="flex flex-col items-center">
-                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-gray-900 rounded-xl flex items-center justify-center text-white text-2xl sm:text-3xl font-black shadow-lg">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-black border border-gray-800 rounded-xl flex items-center justify-center text-[#FFBF00] text-2xl sm:text-3xl font-black shadow-lg">
                         {String(timeLeft.mins).padStart(2, '0')}
                       </div>
-                      <span className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Mins</span>
+                      <span className="text-[10px] font-bold text-yellow-500/80 mt-2 uppercase tracking-tighter">Mins</span>
                     </div>
                   </div>
                 ) : (
                   <div className="grid grid-cols-3 gap-2 sm:gap-4">
                      <div className="flex flex-col items-center">
-                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-yellow-500 rounded-xl flex items-center justify-center text-black text-2xl sm:text-3xl font-black shadow-lg">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-black border border-gray-800 rounded-xl flex items-center justify-center text-[#FFBF00] text-2xl sm:text-3xl font-black shadow-lg">
                         {String(timeLeft.hours).padStart(2, '0')}
                       </div>
-                      <span className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Hours</span>
+                      <span className="text-[10px] font-bold text-yellow-500/80 mt-2 uppercase tracking-tighter">Hours</span>
                     </div>
                     <div className="flex flex-col items-center">
-                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-yellow-500 rounded-xl flex items-center justify-center text-black text-2xl sm:text-3xl font-black shadow-lg">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-black border border-gray-800 rounded-xl flex items-center justify-center text-[#FFBF00] text-2xl sm:text-3xl font-black shadow-lg">
                         {String(timeLeft.mins).padStart(2, '0')}
                       </div>
-                      <span className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Mins</span>
+                      <span className="text-[10px] font-bold text-yellow-500/80 mt-2 uppercase tracking-tighter">Mins</span>
                     </div>
                     <div className="flex flex-col items-center">
-                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-yellow-500 rounded-xl flex items-center justify-center text-black text-2xl sm:text-3xl font-black shadow-lg animate-pulse">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-black border border-gray-800 rounded-xl flex items-center justify-center text-[#FFBF00] text-2xl sm:text-3xl font-black shadow-lg animate-pulse">
                         {String(timeLeft.secs).padStart(2, '0')}
                       </div>
-                      <span className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Secs</span>
+                      <span className="text-[10px] font-bold text-yellow-500/80 mt-2 uppercase tracking-tighter">Secs</span>
                     </div>
                   </div>
                 )}

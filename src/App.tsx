@@ -18,6 +18,7 @@ import Sessions from './pages/Sessions';
 import Admin from './pages/Admin';
 import ComingSoon from './pages/ComingSoon';
 import Media from './pages/Media';
+import Staff from './pages/Staff';
 import { useApp } from './context/AppContext';
 import { getFeatureStatus } from './utils/featureAccess';
 
@@ -102,6 +103,7 @@ export default function App() {
           <Route path="/sessions" element={<ProtectedRoute><FeatureRoute featureKey="sessions"><Sessions /></FeatureRoute></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
           <Route path="/media" element={<ProtectedRoute><FeatureRoute featureKey="photoGallery"><Media /></FeatureRoute></ProtectedRoute>} />
+          <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
           <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

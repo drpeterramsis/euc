@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { useApp } from "../context/AppContext";
+import { Link } from "react-router-dom";
 
 /**
  * Header component displays page context and user avatar.
@@ -23,15 +24,17 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
     <header className="fixed top-0 left-0 right-0 h-16 bg-black border-b border-gray-800 flex items-center justify-between px-4 z-40 shadow-sm">
       <div className="flex items-center overflow-hidden">
         <button className="lg:hidden p-2 text-white hover:text-yellow-500 transition-colors mr-2" onClick={onMenuClick}>☰</button>
-        <img 
-          src="/images/euc_ico.png" 
-          alt="Logo" 
-          className="h-7 w-7 sm:h-9 sm:w-9 object-contain mr-3 shrink-0"
-          referrerPolicy="no-referrer"
-        />
-        <span className="text-white font-bold tracking-wide whitespace-nowrap text-sm sm:text-base">
-          EVA UROLOGY COMMUNITY
-        </span>
+        <Link to="/dashboard" className="flex items-center cursor-pointer overflow-hidden group">
+          <img 
+            src="/images/euc_ico.png" 
+            alt="Logo" 
+            className="h-7 w-7 sm:h-9 sm:w-9 object-contain mr-3 shrink-0"
+            referrerPolicy="no-referrer"
+          />
+          <span className="text-white font-bold tracking-wide whitespace-nowrap text-sm sm:text-base group-hover:text-yellow-500 transition-colors">
+            EVA UROLOGY COMMUNITY
+          </span>
+        </Link>
       </div>
       <div className="flex items-center space-x-4">
         <span className="hidden sm:inline text-sm font-medium text-gray-200 truncate max-w-[150px]">{currentUser?.name}</span>
