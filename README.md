@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.873
+Version: 1.0.875
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -24,7 +24,7 @@ Current event: Prague Conference 2026.
 | staff   | Profile, Flight, Hotel, Schedule                  |
 
 ## Project Structure
-/data              → JSON files (users, schedule, sessions, settings)
+/data              → JSON files (users, schedule, sessions, settings, etc.)
 /src/components    → Reusable UI components (Sidebar, Header, Footer, Layout)
 /src/pages         → App pages (Login, Dashboard, Profile, etc.)
 /src/utils         → Helper functions (auth, github read/write)
@@ -37,6 +37,9 @@ Current event: Prague Conference 2026.
 | schedule.json    | Trip and conference daily schedule |
 | sessions.json    | Scientific conference sessions     |
 | settings.json    | Feature flags and coming soon list |
+| media.json       | Posts and gallery                  |
+| tripInfo.json    | Global flight and hotel values     |
+| appConfig.json   | Global app settings (navigation)   |
 
 ## Environment Variables (set in Vercel)
 VITE_GITHUB_TOKEN          → Your GitHub Personal Access Token
@@ -81,6 +84,8 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.871 | 2026-05-19 | Implemented Scheduled Publishing & Coming Soon media checkboxes with appropriate badges |
 | v1.0.872 | 2026-05-19 | Updated users.json with 35 specific doctors, fixed Hamburger and Close buttons pure white transparent style. |
 | v1.0.873 | 2026-05-19 | Wrap avatar in link to Profile, custom swipe back React hook for iOS/Android, updating JSON with Prague flight & hotel config. |
+| v1.0.874 | 2026-05-19 | Migrated hardcoded flight & hotel components into tripInfo context, unified layout rendering across Dashboard and Profile, expanded Admin to edit Global Trip Info. |
+| v1.0.875 | 2026-05-19 | Implemented Admin-Editable Navigation Item Labels via appConfig.json and redesigned Dashboard with user-specific welcome header. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

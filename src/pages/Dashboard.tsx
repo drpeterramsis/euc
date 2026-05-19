@@ -10,7 +10,7 @@ import MediaPostViewerModal from '../components/MediaPostViewerModal';
 import { shouldShowOnDashboard } from '../utils/postVisibility';
 
 export default function Dashboard() {
-  const { currentUser, users, media = [] } = useApp();
+  const { currentUser, users, media = [], tripInfo } = useApp();
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const navigate = useNavigate();
   
@@ -26,8 +26,8 @@ export default function Dashboard() {
     .sort((a, b) => new Date(b.createdAt || Date.now()).getTime() - new Date(a.createdAt || Date.now()).getTime())
     .slice(0, 3);
 
-  // Prague conference flight departure: 2026-06-25 12:50 PM
-  const conferenceDeparture = new Date("2026-06-25T12:50:00");
+  // Prague conference flight departure
+  const conferenceDeparture = new Date(`${tripInfo.departure.date} 12:50:00`);
   const [timeLeft, setTimeLeft] = useState<{days: number, hours: number, mins: number, secs: number, finished: boolean}>({
     days: 0, hours: 0, mins: 0, secs: 0, finished: false
   });
@@ -50,9 +50,6 @@ export default function Dashboard() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
-  const flightDeparture = fullUser?.flightDetails?.departure || {};
-  const flightArrival = fullUser?.flightDetails?.arrival || {};
 
   return (
     <Layout>
@@ -85,9 +82,13 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-black text-gray-900 tracking-tight">Dashboard</h1>
-        {fullUser && <p className="text-gray-500 font-medium">Welcome back, <span className="text-gray-900">{fullUser.name}</span></p>}
+      <div className="mb-6">
+        <p className="text-sm font-normal text-gray-500 leading-tight">
+          Welcome Back,
+        </p>
+        <h1 className="text-2xl font-bold text-gray-900 leading-tight mt-0.5">
+          {fullUser?.name ?? "Guest"}
+        </h1>
       </div>
 
       {/* Countdown Redesign */}
@@ -195,42 +196,15 @@ export default function Dashboard() {
                 <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">To Prague Conference</p>
               </div>
             </div>
-            {flightDeparture.flightNumber && <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-black">{flightDeparture.flightNumber}</span>}
           </div>
           
           <div className="p-6">
-            {!flightDeparture.flightNumber ? (
-              <p className="text-gray-400 italic text-sm text-center py-6">Departure flight details not assigned yet.</p>
-            ) : (
-              <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Date</span>
-                  <span className="text-sm font-bold text-gray-900">{flightDeparture.date || "TBA"}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Flight Number</span>
-                  <span className="text-sm font-bold text-gray-900">{flightDeparture.flightNumber || "TBA"}</span>
-                </div>
-                <div className="flex flex-col bg-gray-50 p-3 rounded-xl">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">From</span>
-                  <span className="text-sm font-black text-gray-900">{flightDeparture.departureAirport || "TBA"}</span>
-                </div>
-                <div className="flex flex-col bg-gray-50 p-3 rounded-xl">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">To</span>
-                  <span className="text-sm font-black text-gray-900">{flightDeparture.arrivalAirport || "PRG"}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Departure Time</span>
-                  <span className="text-sm font-bold text-gray-800">{flightDeparture.time || "TBA"}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Terminal / Gate</span>
-                  <span className="text-sm font-bold text-gray-800">
-                    {flightDeparture.terminal ? `T${flightDeparture.terminal}` : "TBA"} {flightDeparture.gate ? `/ G${flightDeparture.gate}` : ""}
-                  </span>
-                </div>
-              </div>
-            )}
+            <div>
+              <p className="font-semibold">✈️ Departure</p>
+              <p>Flight: {tripInfo.departure.flightNumber}</p>
+              <p>Date: {tripInfo.departure.date}</p>
+              <p>Terminal: {tripInfo.departure.terminal}</p>
+            </div>
           </div>
         </div>
 
@@ -244,42 +218,15 @@ export default function Dashboard() {
                 <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Back Home Safely</p>
               </div>
             </div>
-            {flightArrival.flightNumber && <span className="bg-yellow-500 text-black px-3 py-1 rounded-full text-xs font-black">{flightArrival.flightNumber}</span>}
           </div>
           
           <div className="p-6">
-            {!flightArrival.flightNumber ? (
-              <p className="text-gray-400 italic text-sm text-center py-6">Return flight details not assigned yet.</p>
-            ) : (
-              <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Date</span>
-                  <span className="text-sm font-bold text-gray-900">{flightArrival.date || "TBA"}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Flight Number</span>
-                  <span className="text-sm font-bold text-gray-900">{flightArrival.flightNumber || "TBA"}</span>
-                </div>
-                <div className="flex flex-col bg-gray-50 p-3 rounded-xl">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">From Airport</span>
-                  <span className="text-sm font-black text-gray-900">{flightArrival.departureAirport || "PRG"}</span>
-                </div>
-                <div className="flex flex-col bg-gray-50 p-3 rounded-xl">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">To Airport</span>
-                  <span className="text-sm font-black text-gray-900">{flightArrival.arrivalAirport || "TBA"}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Departure Time</span>
-                  <span className="text-sm font-bold text-gray-800">{flightArrival.time || "TBA"}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Terminal / Gate</span>
-                  <span className="text-sm font-bold text-gray-800">
-                    {flightArrival.terminal ? `T${flightArrival.terminal}` : "TBA"} {flightArrival.gate ? `/ G${flightArrival.gate}` : ""}
-                  </span>
-                </div>
-              </div>
-            )}
+            <div>
+              <p className="font-semibold">✈️ Return</p>
+              <p>Flight: {tripInfo.arrival.flightNumber}</p>
+              <p>Date: {tripInfo.arrival.date}</p>
+              <p>Terminal: {tripInfo.arrival.terminal}</p>
+            </div>
           </div>
         </div>
 
@@ -293,55 +240,10 @@ export default function Dashboard() {
             </div>
           </div>
           
-          <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2 space-y-6">
-              <div className="flex flex-col">
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Hotel Name</span>
-                <span className="text-xl font-black">
-                  <a 
-                    href={fullUser?.hotel?.mapsLink || "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-yellow-600 underline hover:text-yellow-500 transition-colors"
-                  >
-                    📍 {fullUser?.hotel?.name || "Vienna House Diplomat Prague"}
-                  </a>
-                </span>
-                <p className="text-sm text-gray-500 font-medium mt-1">{fullUser?.hotel?.address || "Address will be provided soon"}</p>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-                <div className="flex flex-col p-3 bg-yellow-50 rounded-xl border border-yellow-100">
-                  <span className="text-[10px] font-black text-yellow-700 uppercase tracking-widest mb-1">Check-In</span>
-                  <span className="text-sm font-black text-yellow-900">{fullUser?.hotel?.checkIn || "TBA"}</span>
-                </div>
-                <div className="flex flex-col p-3 bg-gray-50 rounded-xl border border-gray-100">
-                  <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Check-Out</span>
-                  <span className="text-sm font-black text-gray-900">{fullUser?.hotel?.checkOut || "TBA"}</span>
-                </div>
-                <div className="flex flex-col p-3 bg-black text-white rounded-xl shadow-lg">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Room</span>
-                  <span className="text-sm font-black">{fullUser?.hotel?.roomNumber || "TBA"}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-center gap-4">
-              {isVisible('mapsLink') && fullUser?.hotel?.mapsLink ? (
-                <a 
-                  href={fullUser.hotel.mapsLink} 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="w-full bg-black text-white hover:bg-gray-800 py-4 rounded-xl font-black text-center transition-all shadow-xl flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
-                >
-                  📍 Open in Maps
-                </a>
-              ) : (
-                <div className="w-full bg-gray-100 text-gray-400 py-4 rounded-xl font-black text-center uppercase tracking-widest text-xs border border-dashed border-gray-200">
-                  Map View Unavailable
-                </div>
-              )}
-              <p className="text-[9px] text-gray-400 font-bold text-center uppercase leading-tight">Please have your ID ready <br/> upon check-in</p>
+          <div className="p-6">
+            <div>
+              <p className="font-semibold">🏨 Hotel</p>
+              <p>Name: <a href={tripInfo.hotel.mapUrl} target="_blank" rel="noreferrer" className="text-blue-500 underline">{tripInfo.hotel.name}</a></p>
             </div>
           </div>
         </div>

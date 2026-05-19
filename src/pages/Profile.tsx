@@ -9,7 +9,7 @@ import { useApp } from '../context/AppContext';
  * Profile component renders user information and trip details.
  */
 export default function Profile() {
-  const { currentUser, users } = useApp();
+  const { currentUser, users, tripInfo } = useApp();
   const viewAs = sessionStorage.getItem("euc_view_as");
   const displayUser = viewAs ? JSON.parse(viewAs) : currentUser;
   const fullUser = users.find(u => u.id === displayUser?.id) || displayUser;
@@ -54,38 +54,11 @@ export default function Profile() {
               <span className="font-black text-gray-900 uppercase tracking-tight text-xs">Departure Trip</span>
             </div>
             <div className="p-5 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Date</span>
-                  <span className="text-sm font-bold text-gray-900">{fullUser.flightDetails?.departure?.date || "TBA"}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Flight NO.</span>
-                  <span className="text-sm font-bold text-gray-900">{fullUser.flightDetails?.departure?.flightNumber || "TBA"}</span>
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3 grid grid-cols-2 gap-4">
-                 <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">From Airport</span>
-                  <span className="text-sm font-black text-gray-900">{fullUser.flightDetails?.departure?.departureAirport || "TBA"}</span>
-                </div>
-                 <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">To Airport</span>
-                  <span className="text-sm font-black text-gray-900">{fullUser.flightDetails?.departure?.arrivalAirport || "PRG"}</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Time</span>
-                    <span className="text-sm font-bold text-gray-800">{fullUser.flightDetails?.departure?.time || "TBA"}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Terminal/Gate</span>
-                    <span className="text-sm font-bold text-gray-800">
-                      {fullUser.flightDetails?.departure?.terminal ? `T${fullUser.flightDetails.departure.terminal}` : "TBA"} 
-                      {fullUser.flightDetails?.departure?.gate ? ` / G${fullUser.flightDetails.departure.gate}` : ""}
-                    </span>
-                  </div>
+              <div>
+                <p className="font-semibold">✈️ Departure</p>
+                <p>Flight: {tripInfo.departure.flightNumber}</p>
+                <p>Date: {tripInfo.departure.date}</p>
+                <p>Terminal: {tripInfo.departure.terminal}</p>
               </div>
             </div>
           </div>
@@ -97,38 +70,11 @@ export default function Profile() {
               <span className="font-black text-gray-900 uppercase tracking-tight text-xs">Arrival Trip (Return)</span>
             </div>
             <div className="p-5 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Date</span>
-                  <span className="text-sm font-bold text-gray-900">{fullUser.flightDetails?.arrival?.date || "TBA"}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Flight NO.</span>
-                  <span className="text-sm font-bold text-gray-900">{fullUser.flightDetails?.arrival?.flightNumber || "TBA"}</span>
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3 grid grid-cols-2 gap-4">
-                 <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">From Airport</span>
-                  <span className="text-sm font-black text-gray-900">{fullUser.flightDetails?.arrival?.departureAirport || "PRG"}</span>
-                </div>
-                 <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">To Airport</span>
-                  <span className="text-sm font-black text-gray-900">{fullUser.flightDetails?.arrival?.arrivalAirport || "TBA"}</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Time</span>
-                    <span className="text-sm font-bold text-gray-800">{fullUser.flightDetails?.arrival?.time || "TBA"}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Terminal/Gate</span>
-                    <span className="text-sm font-bold text-gray-800">
-                      {fullUser.flightDetails?.arrival?.terminal ? `T${fullUser.flightDetails.arrival.terminal}` : "TBA"} 
-                      {fullUser.flightDetails?.arrival?.gate ? ` / G${fullUser.flightDetails.arrival.gate}` : ""}
-                    </span>
-                  </div>
+              <div>
+                <p className="font-semibold">✈️ Return</p>
+                <p>Flight: {tripInfo.arrival.flightNumber}</p>
+                <p>Date: {tripInfo.arrival.date}</p>
+                <p>Terminal: {tripInfo.arrival.terminal}</p>
               </div>
             </div>
           </div>
@@ -140,45 +86,10 @@ export default function Profile() {
               <span className="font-black text-gray-900 uppercase tracking-tight text-xs">Hotel Assignment</span>
             </div>
             <div className="p-6">
-              <div className="flex flex-col mb-6">
-                <h3 className="text-lg font-black text-gray-900">
-                  <a 
-                    href={fullUser.hotel?.mapsLink || "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-yellow-600 underline hover:text-yellow-500 transition-colors"
-                  >
-                    📍 {fullUser.hotel?.name || "Vienna House Diplomat Prague"}
-                  </a>
-                </h3>
-                <p className="text-xs text-gray-500 font-medium">{fullUser.hotel?.address || "Address will be announced soon"}</p>
+              <div>
+                <p className="font-semibold">🏨 Hotel</p>
+                <p>Name: <a href={tripInfo.hotel.mapUrl} target="_blank" rel="noreferrer" className="text-blue-500 underline">{tripInfo.hotel.name}</a></p>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Check-In</span>
-                    <span className="text-sm font-bold text-gray-900">{fullUser.hotel?.checkIn || "TBA"}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Check-Out</span>
-                    <span className="text-sm font-bold text-gray-900">{fullUser.hotel?.checkOut || "TBA"}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Room</span>
-                    <span className="text-sm font-bold text-gray-900">{fullUser.hotel?.roomNumber || "TBA"}</span>
-                  </div>
-              </div>
-              {isVisible('mapsLink') && fullUser.hotel?.mapsLink && (
-                  <div className="mt-6 border-t pt-4">
-                  <a 
-                    href={fullUser.hotel.mapsLink} 
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 bg-black text-white hover:bg-gray-800 px-6 py-2 rounded-xl font-bold transition-all text-xs shadow-lg uppercase tracking-widest"
-                  >
-                    📍 Open in Google Maps
-                  </a>
-                </div>
-              )}
             </div>
           </div>
         </div>

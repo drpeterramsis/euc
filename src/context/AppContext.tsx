@@ -39,11 +39,62 @@ export const CACHE = {
   sessions:  "euc_session_sessions",
   settings:  "euc_session_settings",
   media:     "euc_session_media",
+  tripInfo:  "euc_session_tripInfo",
+  appConfig: "euc_session_appConfig",
   lastFetch: "euc_last_fetch_time",
 };
 
 export const DEFAULT_SCHEDULE_CATEGORIES = ["Scientific", "Social", "Transport", "Other"];
 export const DEFAULT_MEDIA_CATEGORIES = ["Conference", "Social", "Tours", "Awards"];
+
+export interface TripInfo {
+  hotel: {
+    name: string;
+    mapUrl: string;
+  };
+  departure: {
+    flightNumber: string;
+    date: string;
+    terminal: string;
+  };
+  arrival: {
+    flightNumber: string;
+    date: string;
+    terminal: string;
+  };
+}
+
+export const DEFAULT_TRIP_INFO: TripInfo = {
+  hotel: {
+    name: "Vienna House Diplomat Prague",
+    mapUrl: "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
+  },
+  departure: {
+    flightNumber: "MS.789",
+    date: "25 June 2026",
+    terminal: "3"
+  },
+  arrival: {
+    flightNumber: "MS.790",
+    date: "28 June 2026",
+    terminal: "1"
+  }
+};
+
+export interface AppConfig {
+  navLabels: Record<string, string>;
+}
+
+export const DEFAULT_APP_CONFIG: AppConfig = {
+  navLabels: {
+    dashboard: "Home Page",
+    schedule: "Trip Schedule",
+    sessions: "Sessions",
+    media: "News Feed",
+    staff: "Staff Directory",
+    profile: "My Profile"
+  }
+};
 
 const REFRESH_INTERVAL = 10 * 60 * 1000;
 
@@ -53,6 +104,8 @@ interface AppContextType {
   sessions:    any[];
   settings:    any;
   media:       any[];
+  tripInfo:    TripInfo;
+  appConfig:   AppConfig;
   currentUser: any;
   loading:     boolean;
   isFirstLoad: boolean;
@@ -63,6 +116,8 @@ interface AppContextType {
   updateSessions: (data: any[])  => void;
   updateSettings: (data: any)    => void;
   updateMedia:    (data: any[])  => void;
+  updateTripInfo: (data: TripInfo) => void;
+  updateAppConfig: (data: AppConfig) => void;
   refreshData:    () => Promise<void>;
   loginUser:      (user: any) => void;
 }
@@ -76,6 +131,18 @@ function readSessionCache() {
     const se = sessionStorage.getItem(CACHE.sessions);
     const st = sessionStorage.getItem(CACHE.settings);
     const md = sessionStorage.getItem(CACHE.media);
+    const ti = sessionStorage.getItem(CACHE.tripInfo);
+    const ac = sessionStorage.getItem(CACHE.appConfig);
+    
+    // Fallback if tripInfo is missing from cache but everything else is there
+    const parsedTripInfo = ti ? JSON.parse(ti) : null;
+    const parsedAppConfig = ac ? JSON.parse(ac) : null;
+    
+    // Optional safety: If tripInfo in sessionStorage is missing required fields → clear it
+    if (parsedTripInfo && (!parsedTripInfo?.hotel?.name || !parsedTripInfo?.departure?.flightNumber)) {
+      sessionStorage.removeItem(CACHE.tripInfo);
+    }
+    
     if (u && sc && se && st && md) {
       return {
         users:    JSON.parse(u),
@@ -83,19 +150,23 @@ function readSessionCache() {
         sessions: JSON.parse(se),
         settings: JSON.parse(st),
         media:    JSON.parse(md),
+        tripInfo: parsedTripInfo && parsedTripInfo?.hotel?.name ? parsedTripInfo : DEFAULT_TRIP_INFO,
+        appConfig: parsedAppConfig || DEFAULT_APP_CONFIG,
       };
     }
   } catch { }
   return null;
 }
 
-function writeSessionCache(data: { users: any[], schedule: any[], sessions: any[], settings: any, media: any[] }) {
+function writeSessionCache(data: { users: any[], schedule: any[], sessions: any[], settings: any, media: any[], tripInfo: TripInfo, appConfig: AppConfig }) {
   try {
     sessionStorage.setItem(CACHE.users,    JSON.stringify(data.users));
     sessionStorage.setItem(CACHE.schedule, JSON.stringify(data.schedule));
     sessionStorage.setItem(CACHE.sessions, JSON.stringify(data.sessions));
     sessionStorage.setItem(CACHE.settings, JSON.stringify(data.settings));
     sessionStorage.setItem(CACHE.media,    JSON.stringify(data.media));
+    sessionStorage.setItem(CACHE.tripInfo, JSON.stringify(data.tripInfo));
+    sessionStorage.setItem(CACHE.appConfig, JSON.stringify(data.appConfig));
     localStorage.setItem(CACHE.lastFetch,  Date.now().toString());
   } catch { }
 }
@@ -112,6 +183,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [sessions, setSessions] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>({});
   const [media,    setMedia]    = useState<any[]>([]);
+  const [tripInfo, setTripInfo] = useState<TripInfo>(DEFAULT_TRIP_INFO);
+  const [appConfig, setAppConfig] = useState<AppConfig>(DEFAULT_APP_CONFIG);
   const [loading,  setLoading]  = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [error,    setError]    = useState<string | null>(null);
@@ -127,12 +200,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   });
 
   const fetchFreshData = useCallback(async () => {
-    const [u, sc, se, st, md] = await Promise.all([
+    const [u, sc, se, st, md, ti, ac] = await Promise.all([
       readJSON("users.json"),
       readJSON("schedule.json"),
       readJSON("sessions.json"),
       readJSON("settings.json").catch(() => ({})),
       readJSON("media.json").catch(() => []), 
+      readJSON("tripInfo.json").catch(() => DEFAULT_TRIP_INFO),
+      readJSON("appConfig.json").catch(() => DEFAULT_APP_CONFIG),
     ]);
 
     // Merge settings with defaults
@@ -143,7 +218,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       mediaCategories: [...new Set([...DEFAULT_MEDIA_CATEGORIES, ...(s.mediaCategories || [])])],
     };
 
-    return { users: u, schedule: sc, sessions: se, settings: mergedSettings, media: md };
+    return { users: u, schedule: sc, sessions: se, settings: mergedSettings, media: md, tripInfo: ti, appConfig: ac };
   }, []);
 
   const backgroundRefresh = useCallback(async () => {
@@ -160,6 +235,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setSessions(fresh.sessions);
         setSettings(fresh.settings);
         setMedia(fresh.media);
+        setTripInfo(fresh.tripInfo);
+        setAppConfig(fresh.appConfig);
         writeSessionCache(fresh);
         return;
       }
@@ -169,7 +246,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         stableStringify(fresh.schedule) !== stableStringify(cached.schedule) ||
         stableStringify(fresh.sessions) !== stableStringify(cached.sessions) ||
         stableStringify(fresh.settings) !== stableStringify(cached.settings) ||
-        stableStringify(fresh.media) !== stableStringify(cached.media);
+        stableStringify(fresh.media) !== stableStringify(cached.media) ||
+        stableStringify(fresh.tripInfo) !== stableStringify(cached.tripInfo) ||
+        stableStringify(fresh.appConfig) !== stableStringify(cached.appConfig);
 
       if (changed) {
         setUsers(fresh.users);
@@ -177,6 +256,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setSessions(fresh.sessions);
         setSettings(fresh.settings);
         setMedia(fresh.media);
+        setTripInfo(fresh.tripInfo);
+        setAppConfig(fresh.appConfig);
         writeSessionCache(fresh);
 
         // Deeply update currentUser if their data changed
@@ -213,6 +294,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setSessions(cached.sessions);
       setSettings(cached.settings);
       setMedia(cached.media);
+      setTripInfo(cached.tripInfo);
+      setAppConfig(cached.appConfig);
       setLoading(false);
       setIsFirstLoad(false);
 
@@ -227,6 +310,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setSessions(fresh.sessions);
           setSettings(fresh.settings);
           setMedia(fresh.media);
+          setTripInfo(fresh.tripInfo);
+          setAppConfig(fresh.appConfig);
           writeSessionCache(fresh);
         })
         .catch(() => {
@@ -237,7 +322,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setIsFirstLoad(false);
         });
     }
-  }, [currentUser]); // using currentUser instead of empty array so login sets state
+  }, [currentUser, backgroundRefresh, fetchFreshData]); // using currentUser instead of empty array so login sets state
 
   const loginUser = useCallback((user: any) => {
     localStorage.setItem("euc_user", JSON.stringify(user));
@@ -286,6 +371,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, []);
 
+  const updateTripInfo = useCallback((data: TripInfo) => {
+    setTripInfo(data);
+    try { 
+      sessionStorage.setItem(CACHE.tripInfo, JSON.stringify(data));
+      localStorage.setItem(CACHE.lastFetch, Date.now().toString());
+    } catch {}
+  }, []);
+
+  const updateAppConfig = useCallback((data: AppConfig) => {
+    setAppConfig(data);
+    try { 
+      sessionStorage.setItem(CACHE.appConfig, JSON.stringify(data));
+      localStorage.setItem(CACHE.lastFetch, Date.now().toString());
+    } catch {}
+  }, []);
+
   const refreshData = useCallback(async () => {
     setLoading(true);
     try {
@@ -295,6 +396,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setSessions(fresh.sessions);
       setSettings(fresh.settings);
       setMedia(fresh.media);
+      setTripInfo(fresh.tripInfo);
+      setAppConfig(fresh.appConfig);
       writeSessionCache(fresh);
     } catch {
       setError("Failed to refresh data.");
@@ -305,9 +408,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      users, schedule, sessions, settings, media,
+      users, schedule, sessions, settings, media, tripInfo, appConfig,
       currentUser, loading, isFirstLoad, error, isBackgroundRefreshing,
-      updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia,
+      updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia, updateTripInfo, updateAppConfig,
       refreshData, loginUser,
     }}>
       {children}

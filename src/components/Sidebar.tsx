@@ -18,8 +18,17 @@ import { getFeatureStatus } from "../utils/featureAccess";
  * Displays current logged-in user's name and avatar read from context.
  */
 export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
-  const { currentUser, users } = useApp();
+  const { currentUser, users, appConfig } = useApp();
   const fullUser = users.find(u => u.id === currentUser?.id) || currentUser;
+
+  const labels = appConfig?.navLabels || {
+    dashboard: "Dashboard",
+    schedule: "Trip Schedule",
+    sessions: "Sessions",
+    media: "Media",
+    staff: "Staff Directory",
+    profile: "My Profile"
+  };
 
   const sidebarClass = `
   fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-black z-30 flex flex-col
@@ -94,12 +103,12 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
             </div>
         </div>
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {renderNav("Dashboard", "/dashboard", "📊")}
-          {renderNav("Media", "/media", "🖼️", "photoGallery")}
-          {renderNav("My Profile", "/profile", "👤")}
-          {renderNav("Trip Schedule", "/schedule", "📅", "schedule")}
-          {renderNav("Sessions", "/sessions", "🎓", "sessions")}
-          {renderNav("Staff Directory", "/staff", "👥")}
+          {renderNav(labels.dashboard, "/dashboard", "📊")}
+          {renderNav(labels.media, "/media", "🖼️", "photoGallery")}
+          {renderNav(labels.profile, "/profile", "👤")}
+          {renderNav(labels.schedule, "/schedule", "📅", "schedule")}
+          {renderNav(labels.sessions, "/sessions", "🎓", "sessions")}
+          {renderNav(labels.staff, "/staff", "👥")}
           {renderNav("Social Program", "/coming-soon?feature=social_program", "🎉", "social_program")}
           {renderNav("Awards Ceremony", "/coming-soon?feature=awards_ceremony", "🏆", "awards_ceremony")}
           

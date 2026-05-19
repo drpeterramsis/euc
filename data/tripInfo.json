@@ -1,0 +1,16 @@
+{
+  "hotel": {
+    "name": "Vienna House Diplomat Prague",
+    "mapUrl": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
+  },
+  "departure": {
+    "flightNumber": "MS.789",
+    "date": "25 June 2026",
+    "terminal": "3"
+  },
+  "arrival": {
+    "flightNumber": "MS.790",
+    "date": "28 June 2026",
+    "terminal": "1"
+  }
+}

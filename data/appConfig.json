@@ -1,0 +1,10 @@
+{
+  "navLabels": {
+    "dashboard": "Home Page",
+    "schedule": "Trip Schedule",
+    "sessions": "Sessions",
+    "media": "News Feed",
+    "staff": "Staff Directory",
+    "profile": "My Profile"
+  }
+}

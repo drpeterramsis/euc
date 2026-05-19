@@ -16,8 +16,8 @@ import { compressImage } from '../utils/image';
 
 export default function Admin() {
   const { 
-    currentUser, users, schedule, sessions, settings, media = [],
-    updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia
+    currentUser, users, schedule, sessions, settings, media = [], tripInfo, appConfig,
+    updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia, updateTripInfo, updateAppConfig
   } = useApp();
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get("tab") || "users";
@@ -88,6 +88,200 @@ export default function Admin() {
   const [newSchedCat, setNewSchedCat] = useState("");
   const [newMediaCat, setNewMediaCat] = useState("");
   const [isSavingCats, setIsSavingCats] = useState(false);
+
+  // App Settings Tab state
+  const [navLabelsForm, setNavLabelsForm] = useState(() => (appConfig?.navLabels || {
+    dashboard: "Home Page",
+    schedule: "Trip Schedule",
+    sessions: "Sessions",
+    media: "News Feed",
+    staff: "Staff Directory",
+    profile: "My Profile"
+  }));
+
+  useEffect(() => {
+    if (appConfig?.navLabels) setNavLabelsForm(appConfig.navLabels);
+  }, [appConfig]);
+
+  const handleAppConfigSave = async () => {
+    setIsGlobalLoading(true);
+    try {
+      const newConfig = { ...appConfig, navLabels: navLabelsForm };
+      await writeJSON('appConfig.json', newConfig);
+      updateAppConfig(newConfig);
+      showToast('Navigation labels successfully saved!', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save', 'error');
+    } finally {
+      setIsGlobalLoading(false);
+    }
+  };
+
+  const renderAppConfigTab = () => (
+    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-8">
+      <div>
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><span>⚙️</span> Navigation Menu Labels</h2>
+        <p className="text-sm text-gray-500 mb-6 font-medium">Rename your sidebar navigation items. Changes reflect for all users instantly.</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8">
+          {[
+            { key: 'dashboard', id: 'Dashboard Key' },
+            { key: 'schedule', id: 'Schedule Key' },
+            { key: 'sessions', id: 'Sessions Key' },
+            { key: 'media', id: 'Media Key' },
+            { key: 'staff', id: 'Staff Key' },
+            { key: 'profile', id: 'Profile Key' }
+          ].map(item => (
+            <div key={item.key} className="flex flex-col">
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">{item.id}</label>
+              <input 
+                type="text" 
+                className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-yellow-500/20 focus:border-yellow-500 outline-none transition-all font-bold" 
+                value={navLabelsForm[item.key] || ""}
+                onChange={e => setNavLabelsForm(p => ({...p, [item.key]: e.target.value}))}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="pt-6 border-t flex justify-end">
+        <button 
+          onClick={handleAppConfigSave}
+          className="bg-black text-white px-8 py-3 rounded-xl font-black hover:bg-gray-800 transition-all shadow-lg active:scale-95 w-full sm:w-auto uppercase tracking-widest text-xs"
+        >
+          Save Labels
+        </button>
+      </div>
+    </div>
+  );
+
+  // Trip Info Tab state
+  const [tripInfoForm, setTripInfoForm] = useState(() => (tripInfo || {
+    hotel: { name: "", mapUrl: "" },
+    departure: { flightNumber: "", date: "", terminal: "" },
+    arrival: { flightNumber: "", date: "", terminal: "" }
+  }));
+
+  useEffect(() => {
+    if (tripInfo) setTripInfoForm(tripInfo);
+  }, [tripInfo]);
+
+  const handleTripInfoSave = async () => {
+    setIsGlobalLoading(true);
+    try {
+      await writeJSON('tripInfo.json', tripInfoForm);
+      updateTripInfo(tripInfoForm);
+      showToast('Trip Info successfully saved!', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save', 'error');
+    } finally {
+      setIsGlobalLoading(false);
+    }
+  };
+
+  const renderTripInfoTab = () => (
+    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-8">
+      <div>
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><span>🏨</span> Global Hotel Info</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Hotel Name</label>
+            <input 
+              type="text" 
+              className="w-full border p-2 rounded" 
+              value={tripInfoForm.hotel.name}
+              onChange={e => setTripInfoForm(p => ({...p, hotel: {...p.hotel, name: e.target.value}}))}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Hotel Map URL</label>
+            <input 
+              type="text" 
+              className="w-full border p-2 rounded" 
+              value={tripInfoForm.hotel.mapUrl}
+              onChange={e => setTripInfoForm(p => ({...p, hotel: {...p.hotel, mapUrl: e.target.value}}))}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><span>🛫</span> Global Departure Flight</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Flight Number</label>
+            <input 
+              type="text" 
+              className="w-full border p-2 rounded" 
+              value={tripInfoForm.departure.flightNumber}
+              onChange={e => setTripInfoForm(p => ({...p, departure: {...p.departure, flightNumber: e.target.value}}))}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Date</label>
+            <input 
+              type="text" 
+              className="w-full border p-2 rounded" 
+              value={tripInfoForm.departure.date}
+              onChange={e => setTripInfoForm(p => ({...p, departure: {...p.departure, date: e.target.value}}))}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Terminal</label>
+            <input 
+              type="text" 
+              className="w-full border p-2 rounded" 
+              value={tripInfoForm.departure.terminal}
+              onChange={e => setTripInfoForm(p => ({...p, departure: {...p.departure, terminal: e.target.value}}))}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><span>🛬</span> Global Return Flight</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Flight Number</label>
+            <input 
+              type="text" 
+              className="w-full border p-2 rounded" 
+              value={tripInfoForm.arrival.flightNumber}
+              onChange={e => setTripInfoForm(p => ({...p, arrival: {...p.arrival, flightNumber: e.target.value}}))}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Date</label>
+            <input 
+              type="text" 
+              className="w-full border p-2 rounded" 
+              value={tripInfoForm.arrival.date}
+              onChange={e => setTripInfoForm(p => ({...p, arrival: {...p.arrival, date: e.target.value}}))}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Terminal</label>
+            <input 
+              type="text" 
+              className="w-full border p-2 rounded" 
+              value={tripInfoForm.arrival.terminal}
+              onChange={e => setTripInfoForm(p => ({...p, arrival: {...p.arrival, terminal: e.target.value}}))}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="pt-4 border-t">
+        <button 
+          onClick={handleTripInfoSave}
+          className="bg-black text-white px-8 py-3 rounded font-bold hover:bg-gray-800 transition-colors w-full sm:w-auto"
+        >
+          Save Trip Info
+        </button>
+      </div>
+    </div>
+  );
 
   useEffect(() => {
     if (schedule && schedule.length > 0) {
@@ -1418,6 +1612,8 @@ export default function Admin() {
         {[
           { key: 'users', label: '👥 User Management' },
           { key: 'data', label: '📊 User Data Control' },
+          { key: 'appConfig', label: '⚙️ App Settings' },
+          { key: 'tripInfo', label: '✈️ Trip Info' },
           { key: 'schedule', label: '📅 Schedule & Sessions' },
           { key: 'features', label: '⚙️ Feature Flags' },
           { key: 'media', label: '🖼️ Media / Posts' },
@@ -1438,6 +1634,8 @@ export default function Admin() {
       <div className="pb-12">
         {activeTab === 'users' && renderTab1()}
         {activeTab === 'data' && renderTab2()}
+        {activeTab === 'appConfig' && renderAppConfigTab()}
+        {activeTab === 'tripInfo' && renderTripInfoTab()}
         {activeTab === 'schedule' && renderTab3()}
         {activeTab === 'features' && renderTab4()}
         {activeTab === 'media' && renderTab5()}

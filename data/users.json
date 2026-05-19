@@ -8,8 +8,22 @@
     "email": "admin@evapharma.com",
     "phone": "+20 100 000 0001",
     "photo": "https://i.pravatar.cc/150?u=u000",
-    "flightDetails": {},
-    "hotel": {},
+    "flightDetails": {
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
+    },
+    "hotel": {
+      "name": "Vienna House Diplomat Prague",
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
+    },
     "transfers": [],
     "visibleFields": {},
     "featureAccess": {
@@ -74,23 +88,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/8teq72655v75wp8qb37ck/Abdelnasser.Elgamasy.jpg?rlkey=qwy0205rbk6oe3y02jjrl03yq&st=jyaq66jb"
@@ -150,23 +165,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/o1ejp22gisyzww8kjszqa/Ahmed.Abouelez.jpeg?rlkey=loaltbh0x25m5d2dqrj67dwdk&st=ggvepm4w"
@@ -226,23 +242,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/qkujcyjin2fvn4xu22b32/Ahmed.Abdellatif.jpg?rlkey=c7s0bzweg7r2jbmtx5k6c5pup&st=t84h1k9c"
@@ -302,23 +319,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/zsw5o58lsb088fx434g1g/Ahmed.Abosief.jpg?rlkey=farxh8tmu6fxw5rrf1jrg9kb5&st=94qc7qsi"
@@ -378,23 +396,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/o1nltt93quwd3cv58g09v/Ahmed.Abouzaid.jpg?rlkey=yvzglk084l4xrzz8cd28sznu5&st=jq24yyxg"
@@ -454,23 +473,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/7iyazn1y9332fwpernzy0/Ahmed.Abouzamel.jpg?rlkey=mrzv0mcb1ojwgpefopczmr8ne&st=9ywgqfsz"
@@ -530,23 +550,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/q6eeph6ho8dojj2atvnmf/Amgad.Younis.png?rlkey=wmb4ategiiswzrqup2v2n6b5i&st=oa3wn3wz"
@@ -606,23 +627,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": ""
@@ -682,23 +704,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": ""
@@ -758,23 +781,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": ""
@@ -834,23 +858,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": ""
@@ -910,23 +935,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/8amofrvt7zxj8de8bdtu9/Ayman.Rashed.jpg?rlkey=3j5pv1p6zkua1gf6zgda88gl2&st=hly2yhp3"
@@ -986,23 +1012,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/59sauqkh8ixz6f00gk74o/Emad.Moustafa.jpg?rlkey=3bkhzcm2dxli2iq7px7kgimjk&st=2e09z7dc"
@@ -1062,23 +1089,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/m4qundu3nks2eelmrrxib/Enmar.Habib.jpg?rlkey=ihi1dj3we6d4um0k6zj2ecm5y&st=hlaxqgy2"
@@ -1138,23 +1166,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/mu2jh87erbpi4i210y5lb/Hamada.Youssof.jpg?rlkey=ghjcavtqwsdqrskpybm3gcygy&st=xetrtpbs"
@@ -1214,23 +1243,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/vvb0rqe5fsrrpe8edgbk6/Hany.Fathy.jpg?rlkey=mts2linftcxahy36k8btz1y2y&st=vfr8kegu"
@@ -1290,23 +1320,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/rhq5p6zb4ogz8gfwe4jva/Hazem.Rashad.jpg?rlkey=d0kgg5sptu2voidrwf0xb103r&st=j57e7fei"
@@ -1366,23 +1397,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": ""
@@ -1442,23 +1474,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/fwrv7ff8vadqynvt00255/Hisham.Elshawaf.jpg?rlkey=kbge1hpsz0d46147gq3mua3t5&st=n4e3769k"
@@ -1518,23 +1551,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": ""
@@ -1594,23 +1628,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/huq532epoxgrbwoq2dnbi/Hussein.Aly.jpg?rlkey=bxijem1bo7s7c6i3nqqeiwuby&st=gefz3xjm"
@@ -1670,23 +1705,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/4q16ograox4v365xe20ro/Joseph.William.jpg?rlkey=m0kww8624k4ljusknyrmdutso&st=tjie1oin"
@@ -1746,23 +1782,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/fl0205mb1qsswjtr7iim1/Karim.Saad.jpg?rlkey=nxke92zb86ucuvtn92gnj7ztn&st=597amkut"
@@ -1822,23 +1859,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/xlm0o5y92yyb6l4jifxl8/Mahmoud.Mobark.jpeg?rlkey=3g69nthonteq9q6yeeacoel4w&st=62lw7juz"
@@ -1898,23 +1936,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": ""
@@ -1974,23 +2013,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/1lgthp425jwqvyygaymxt/Mohamed.elgahawy.jpg?rlkey=icnv8i9jny9lguaatjzfearg0&st=o0fbwf7u"
@@ -2050,23 +2090,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/oowq48vuoidlffqggghhe/Mohamed.Shabayek.jpg?rlkey=epg934gmmjz3dgxsa29mdwdsy&st=5w182jeu"
@@ -2126,23 +2167,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/v6ig4sbmsfoeqwm4ashgd/Mohamed.Elgammal.jpg?rlkey=4vizvk7u3r0mzabkppirmyrkf&st=9kfgd5oc"
@@ -2202,23 +2244,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/26ccz29f3qvwybred9v1z/Saber.Hassouna.jpg?rlkey=a4b8t04dpj4vnf6fpme0gdltj&st=raacflye"
@@ -2278,23 +2321,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/spgbwpaeml0fymkwbkmdh/Salah.Elhamshary.jpg?rlkey=r3u0yehdo6rv3y8q6y662d9vo&st=z7yq19pa"
@@ -2354,23 +2398,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/sotz9320qn3ni3f6l0gsi/Sultan.Fakhry.jpg?rlkey=4c25mivv8lii16a5dfc2e9yta&st=nlwzjzts"
@@ -2430,23 +2475,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/yqpeo2k4wug7ai3akinyj/Tamer.Helmy.jpg?rlkey=ab6fkf07tvg19q94j9lo6zmgt&st=jov1xidp"
@@ -2506,23 +2552,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/q0ux4ruevcx1fghulfnp9/Wael.Farahat.jpg?rlkey=n6zi99qrsxqt93vr4e1vkxuxg&st=t8vpa1oz"
@@ -2582,23 +2629,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/3jn07ce9n64eet5wl9k5r/Wael.Sameh.jpg?rlkey=cbpdhif95zwnt2arvn5jz0edp&st=12g6cvn5"
@@ -2658,23 +2706,24 @@
       "phone": true
     },
     "flightDetails": {
-      "flightNumber": "",
-      "departureDate": "",
-      "departureTime": "",
-      "departureAirport": "",
-      "arrivalAirport": "",
-      "arrivalTime": "",
-      "returnFlight": "",
-      "returnDate": "",
-      "returnTime": ""
+      "departure": {
+        "flightNumber": "MS.789",
+        "date": "25 June 2026",
+        "terminal": "3"
+      },
+      "arrival": {
+        "flightNumber": "MS.790",
+        "date": "28 June 2026",
+        "terminal": "1"
+      }
     },
     "hotel": {
-      "name": "",
+      "name": "Vienna House Diplomat Prague",
       "address": "",
       "checkIn": "",
       "checkOut": "",
       "roomNumber": "",
-      "mapsLink": ""
+      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
     },
     "transfers": [],
     "photoUrl": ""
