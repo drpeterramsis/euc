@@ -23,7 +23,13 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-black border-b border-gray-800 flex items-center justify-between px-4 z-40 shadow-sm">
       <div className="flex items-center overflow-hidden">
-        <button className="lg:hidden p-2 text-white hover:text-yellow-500 transition-colors mr-2" onClick={onMenuClick}>☰</button>
+        <button
+          onClick={onMenuClick}
+          className="lg:hidden text-white hover:text-yellow-400 transition-colors p-2 mr-2"
+          aria-label="Toggle menu"
+        >
+          ☰
+        </button>
         <Link to="/dashboard" className="flex items-center cursor-pointer overflow-hidden group">
           <img 
             src="/images/euc_ico.png" 

@@ -83,8 +83,13 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
               referrerPolicy="no-referrer"
             />
             <div className="flex justify-between items-center w-full">
-          
-              <button className="lg:hidden text-gray-400 hover:text-white" onClick={onClose}>✕</button>
+              <button
+                onClick={onClose}
+                className="lg:hidden text-white hover:text-yellow-400 transition-colors p-2"
+                aria-label="Close menu"
+              >
+                ✕
+              </button>
             </div>
         </div>
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">

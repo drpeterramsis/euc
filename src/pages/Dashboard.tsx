@@ -42,8 +42,8 @@ export default function Dashboard() {
   const isVisible = (key: string) => vf[key] !== false;
 
   const dashboardMedia = [...media]
-    .filter(p => !isComingSoon(p))
     .filter(p => canUserSeePost(p, fullUser))
+    .filter(p => !isComingSoon(p))
     .sort((a, b) => new Date(b.createdAt || Date.now()).getTime() - new Date(a.createdAt || Date.now()).getTime())
     .slice(0, 3);
 

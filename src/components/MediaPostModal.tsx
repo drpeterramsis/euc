@@ -132,7 +132,7 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
           <h2 className="text-xl font-bold flex items-center gap-2">
             <span>🖼️</span> {post ? "Edit Media Post" : "Create New Post"}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">✕</button>
+          <button onClick={onClose} className="text-white hover:text-yellow-400 transition-colors">✕</button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
