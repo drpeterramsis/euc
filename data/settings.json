@@ -1,7 +1,5 @@
 {
   "features": {
-    "social_program": { "label": "Social Program", "status": "coming_soon" },
-    "awards": { "label": "Awards Ceremony", "status": "coming_soon" },
     "gallery": { "label": "Photo Gallery", "status": "coming_soon" },
     "documents": { "label": "Documents", "status": "coming_soon" }
   }

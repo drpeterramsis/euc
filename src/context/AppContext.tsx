@@ -88,6 +88,7 @@ export interface PageConfig {
 
 export interface AppConfig {
   navLabels: Record<string, string>;
+  navOrder?: string[];
   pages?: Record<string, PageConfig>;
 }
 
@@ -100,6 +101,14 @@ export const DEFAULT_APP_CONFIG: AppConfig = {
     directory: "Staff Directory",
     profile: "My Profile"
   },
+  navOrder: [
+    "dashboard",
+    "schedule",
+    "sessions",
+    "media",
+    "directory",
+    "profile"
+  ],
   pages: {
     directory: { visible: true,  comingSoon: false },
     media:     { visible: true,  comingSoon: false },

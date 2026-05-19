@@ -4,8 +4,6 @@ import { showToast } from './Toast';
 const DEFAULT_FEATURE_ACCESS = {
   sessions:       { access: true,  status: "full" },
   schedule:       { access: true,  status: "full" },
-  socialProgram:  { access: false, status: "coming_soon" },
-  awardsCeremony: { access: false, status: "coming_soon" },
   photoGallery:   { access: false, status: "coming_soon" },
 };
 
@@ -28,10 +26,6 @@ const FEATURES = [
     desc: "Scientific conference session access" },
   { key: "schedule",       label: "Trip Schedule",   icon: "📅",
     desc: "View trip itinerary" },
-  { key: "socialProgram",  label: "Social Program",  icon: "🎉",
-    desc: "Evening events and dinners" },
-  { key: "awardsCeremony", label: "Awards Ceremony", icon: "🏆",
-    desc: "Annual awards event" },
   { key: "photoGallery",   label: "Photo Gallery",   icon: "📷",
     desc: "Conference photos" },
 ];

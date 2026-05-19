@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, DragEvent } from 'react';
 import Layout from '../components/Layout';
 import { useApp, DEFAULT_SCHEDULE_CATEGORIES, DEFAULT_MEDIA_CATEGORIES } from '../context/AppContext';
 import { APP_VERSION } from "../version";
@@ -124,9 +124,19 @@ export default function Admin() {
     media: { visible: true, comingSoon: false }
   }));
 
+  const [navOrder, setNavOrder] = useState<string[]>(() => (appConfig?.navOrder || [
+    "dashboard",
+    "schedule",
+    "sessions",
+    "media",
+    "directory",
+    "profile"
+  ]));
+
   useEffect(() => {
     if (appConfig?.navLabels) setNavLabelsForm(appConfig.navLabels);
     if (appConfig?.pages) setPageConfigs(appConfig.pages);
+    if (appConfig?.navOrder) setNavOrder(appConfig.navOrder);
   }, [appConfig]);
 
   const handleAppConfigSave = async () => {
@@ -138,6 +148,23 @@ export default function Admin() {
       showToast('Navigation labels successfully saved!', 'success');
     } catch (err: any) {
       showToast(err.message || 'Failed to save', 'error');
+    } finally {
+      setIsGlobalLoading(false);
+    }
+  };
+
+  const handleSaveNavOrder = async () => {
+    setIsGlobalLoading(true);
+    try {
+      const updated = {
+        ...appConfig,
+        navOrder: navOrder
+      };
+      await writeJSON('appConfig.json', updated);
+      updateAppConfig(updated);
+      showToast("Navigation order successfully saved!", "success");
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save navigation order', 'error');
     } finally {
       setIsGlobalLoading(false);
     }
@@ -280,6 +307,127 @@ export default function Admin() {
             className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-6 py-2.5 rounded-xl transition duration-200 outline-none shadow-md cursor-pointer"
           >
             Save Page Settings
+          </button>
+        </div>
+      </div>
+
+      {/* Sidebar Navigation Order (Drag-to-Reorder & Up/Down Buttons) */}
+      <div className="pt-8 border-t border-gray-100">
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><span>📂</span> Sidebar Navigation Order</h2>
+        <p className="text-sm text-gray-500 mb-6 font-medium font-sans">
+          Reorder the sidebar navigation links. Drag and drop items into your preferred sequence, or use the <strong>▲ Up</strong> / <strong>▼ Down</strong> buttons. Click <strong>Save Order</strong> to apply changes.
+        </p>
+
+        <div className="max-w-md space-y-2">
+          {navOrder.map((key, index) => {
+            // Retrieve label from labels form or fall back to standard labels
+            const label = navLabelsForm[key] || {
+              dashboard: "Home Page",
+              schedule: "Trip Schedule",
+              sessions: "Sessions",
+              media: "News Feed",
+              directory: "Staff Directory",
+              profile: "My Profile"
+            }[key] || key;
+
+            // Simple map of icons corresponding to each key
+            const icon = {
+              dashboard: "🏠",
+              schedule: "📅",
+              sessions: "🎓",
+              media: "🖼️",
+              directory: "👥",
+              profile: "👤"
+            }[key] || "📍";
+
+            // HTML5 Drag-and-drop Handlers
+            const handleDragStart = (e: DragEvent) => {
+              e.dataTransfer.setData("text/plain", index.toString());
+            };
+
+            const handleDragOver = (e: DragEvent) => {
+              e.preventDefault();
+            };
+
+            const handleDrop = (e: DragEvent) => {
+              const sourceIndex = parseInt(e.dataTransfer.getData("text/plain"), 10);
+              if (isNaN(sourceIndex) || sourceIndex === index) return;
+              
+              const updatedOrder = [...navOrder];
+              const [removed] = updatedOrder.splice(sourceIndex, 1);
+              updatedOrder.splice(index, 0, removed);
+              setNavOrder(updatedOrder);
+            };
+
+            // Manual fallback controls
+            const moveUp = () => {
+              if (index === 0) return;
+              const updatedOrder = [...navOrder];
+              const temp = updatedOrder[index];
+              updatedOrder[index] = updatedOrder[index - 1];
+              updatedOrder[index - 1] = temp;
+              setNavOrder(updatedOrder);
+            };
+
+            const moveDown = () => {
+              if (index === navOrder.length - 1) return;
+              const updatedOrder = [...navOrder];
+              const temp = updatedOrder[index];
+              updatedOrder[index] = updatedOrder[index + 1];
+              updatedOrder[index + 1] = temp;
+              setNavOrder(updatedOrder);
+            };
+
+            return (
+              <div 
+                key={key}
+                draggable
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg cursor-grab active:cursor-grabbing transition-colors"
+                id={`nav-order-item-${key}`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-gray-400 select-none cursor-grab">⠿</span>
+                  <span className="text-xl">{icon}</span>
+                  <span className="font-bold text-gray-800 text-sm">{label}</span>
+                </div>
+                
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <button
+                    onClick={moveUp}
+                    disabled={index === 0}
+                    type="button"
+                    className="p-1 px-2.5 bg-white border rounded hover:bg-gray-50 border-gray-200 text-gray-600 disabled:opacity-40 disabled:hover:bg-white text-xs font-bold transition-all cursor-pointer"
+                    id={`nav-order-up-${key}`}
+                    title="Move Up"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    onClick={moveDown}
+                    disabled={index === navOrder.length - 1}
+                    type="button"
+                    className="p-1 px-2.5 bg-white border rounded hover:bg-gray-50 border-gray-200 text-gray-600 disabled:opacity-40 disabled:hover:bg-white text-xs font-bold transition-all cursor-pointer"
+                    id={`nav-order-down-${key}`}
+                    title="Move Down"
+                  >
+                    ▼
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <button 
+            onClick={handleSaveNavOrder}
+            className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-6 py-2.5 rounded-xl transition duration-200 outline-none shadow-md cursor-pointer uppercase tracking-wider text-xs"
+            id="save-nav-order-btn"
+          >
+            Save Navigation Order
           </button>
         </div>
       </div>
@@ -430,8 +578,6 @@ export default function Admin() {
       setFeatureSettings(settings?.globalFeatures || {
         sessions: "active",
         schedule: "active",
-        socialProgram: "coming_soon",
-        awardsCeremony: "coming_soon",
         photoGallery: "coming_soon",
       });
     }
@@ -1382,8 +1528,6 @@ export default function Admin() {
   const FEATURES = [
     { key: "sessions", label: "Sessions", icon: "🎓", desc: "Scientific conference sessions" },
     { key: "schedule", label: "Schedule", icon: "📅", desc: "Trip and conference schedule" },
-    { key: "socialProgram", label: "Social Program", icon: "🎉", desc: "Social events and activities" },
-    { key: "awardsCeremony", label: "Awards Ceremony", icon: "🏆", desc: "Annual awards ceremony" },
     { key: "photoGallery", label: "Photo Gallery", icon: "📷", desc: "Conference photo gallery" },
   ];
 

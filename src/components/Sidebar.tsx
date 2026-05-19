@@ -32,22 +32,40 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
   };
 
   const sidebarClass = `
-  fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-black z-30 flex flex-col
-  border-r border-gray-800 overflow-y-auto shadow-sm
-  transform transition-transform duration-300
-  ${isOpen ? "translate-x-0" : "-translate-x-full"}
-  lg:translate-x-0
-`;
+    fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-black z-30 flex flex-col
+    border-r border-gray-800 overflow-y-auto shadow-sm
+    transform transition-transform duration-300
+    ${isOpen ? "translate-x-0" : "-translate-x-full"}
+    lg:translate-x-0
+  `;
 
-  // Filter and display nav items matching configurations
-  const navItems = [
-    { key: "dashboard",  path: "/dashboard", icon: "🏠", label: labels.dashboard },
-    { key: "schedule",   path: "/schedule",    icon: "📅", label: labels.schedule, featureKey: "schedule" },
-    { key: "sessions",   path: "/sessions",    icon: "🎓", label: labels.sessions, featureKey: "sessions" },
-    { key: "media",      path: "/media",       icon: "🖼️", label: labels.media, featureKey: "photoGallery" },
-    { key: "directory",  path: "/directory",   icon: "👥", label: labels.directory },
-    { key: "profile",    path: "/profile",     icon: "👤", label: labels.profile },
+  // All possible nav items (master list — never changes)
+  const ALL_NAV_ITEMS = [
+    { key: "dashboard",  path: "/dashboard",   icon: "🏠" },
+    { key: "schedule",   path: "/schedule",    icon: "📅", featureKey: "schedule" },
+    { key: "sessions",   path: "/sessions",    icon: "🎓", featureKey: "sessions" },
+    { key: "media",      path: "/media",       icon: "🖼️", featureKey: "photoGallery" },
+    { key: "directory",  path: "/directory",   icon: "👥" },
+    { key: "profile",    path: "/profile",     icon: "👤" },
   ];
+
+  // Get order from config, fallback to default
+  const navOrder = appConfig?.navOrder ?? ALL_NAV_ITEMS.map(i => i.key);
+
+  // Sort nav items by navOrder
+  const orderedNavItems = [
+    ...navOrder
+      .map(key => ALL_NAV_ITEMS.find(i => i.key === key))
+      .filter(Boolean),
+    // Append any items not in navOrder
+    ...ALL_NAV_ITEMS.filter(i => !navOrder.includes(i.key)),
+  ] as typeof ALL_NAV_ITEMS;
+
+  // Apply labels from config
+  const navItems = orderedNavItems.map(item => ({
+    ...item,
+    label: (appConfig?.navLabels as any)?.[item.key] ?? labels[item.key as keyof typeof labels] ?? item.key,
+  }));
 
   // Visibility Filter logic for pages
   const visibleNavItems = navItems.filter(item => {
@@ -145,33 +163,6 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
               </NavLink>
             );
           })}
-
-          {/* Social Program & Awards Ceremony coming soon placeholders */}
-          <NavLink
-            to="/coming-soon?feature=social_program"
-            onClick={onClose}
-            className={({ isActive }) =>
-              `block p-3 rounded-lg transition-colors font-medium flex items-center gap-2 ${
-                isActive ? "bg-yellow-500/10 text-[#FFBF00] border-l-4 border-[#FFBF00]" : "text-white hover:bg-gray-800 hover:text-[#FFBF00]"
-              }`
-            }
-          >
-            <span>🎉</span> <span className="flex-1 truncate">Social Program</span>
-            <span className="ml-auto text-xs bg-gray-600 text-white px-1.5 py-0.5 rounded-full">Soon</span>
-          </NavLink>
-
-          <NavLink
-            to="/coming-soon?feature=awards_ceremony"
-            onClick={onClose}
-            className={({ isActive }) =>
-              `block p-3 rounded-lg transition-colors font-medium flex items-center gap-2 ${
-                isActive ? "bg-yellow-500/10 text-[#FFBF00] border-l-4 border-[#FFBF00]" : "text-white hover:bg-gray-800 hover:text-[#FFBF00]"
-              }`
-            }
-          >
-            <span>🏆</span> <span className="flex-1 truncate">Awards Ceremony</span>
-            <span className="ml-auto text-xs bg-gray-600 text-white px-1.5 py-0.5 rounded-full">Soon</span>
-          </NavLink>
           
           {currentUser?.role === 'admin' && (
             <>
@@ -183,7 +174,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                   `flex items-center gap-3 px-4 py-3 rounded-lg transition-all font-bold ${
                     isActive
                       ? "bg-yellow-500 text-black shadow-sm"
-                      : "bg-yellow-50 text-yellow-700 hover:bg-yellow-100 border border-yellow-200"
+                      : "bg-yellow-50 text-yellow-700 hover:bg-yellow-10 border border-yellow-200"
                   }`
                 }
               >

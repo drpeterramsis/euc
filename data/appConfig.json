@@ -7,6 +7,14 @@
     "directory": "Staff Directory",
     "profile": "My Profile"
   },
+  "navOrder": [
+    "dashboard",
+    "schedule",
+    "sessions",
+    "media",
+    "directory",
+    "profile"
+  ],
   "pages": {
     "directory": {
       "visible": true,

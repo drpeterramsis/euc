@@ -315,8 +315,6 @@ for (const newUser of updatedList) {
             featureAccess: {
                 sessions: { access: true, status: "full" },
                 schedule: { access: true, status: "full" },
-                socialProgram: { access: true, status: "coming_soon" },
-                awardsCeremony: { access: true, status: "coming_soon" },
                 photoGallery: { access: true, status: "coming_soon" },
                 documents: { access: true, status: "coming_soon" }
             },
