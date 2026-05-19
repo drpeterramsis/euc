@@ -297,7 +297,16 @@ export default function Dashboard() {
             <div className="md:col-span-2 space-y-6">
               <div className="flex flex-col">
                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Hotel Name</span>
-                <span className="text-xl font-black text-gray-900">{fullUser?.hotel?.name || "Not assigned"}</span>
+                <span className="text-xl font-black">
+                  <a 
+                    href={fullUser?.hotel?.mapsLink || "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-yellow-600 underline hover:text-yellow-500 transition-colors"
+                  >
+                    📍 {fullUser?.hotel?.name || "Vienna House Diplomat Prague"}
+                  </a>
+                </span>
                 <p className="text-sm text-gray-500 font-medium mt-1">{fullUser?.hotel?.address || "Address will be provided soon"}</p>
               </div>
 

@@ -22,6 +22,8 @@ import Staff from './pages/Staff';
 import { useApp } from './context/AppContext';
 import { getFeatureStatus } from './utils/featureAccess';
 
+import { useSwipeBack } from './hooks/useSwipeBack';
+
 /**
  * ProtectedRoute component verifies authentication synchronously.
  */
@@ -66,6 +68,25 @@ const FeatureRoute = ({ children, featureKey }: { children: React.ReactNode, fea
   return <>{children}</>;
 };
 
+function AppRoutes() {
+  useSwipeBack(); // global swipe-back
+  
+  return (
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <Route path="/schedule" element={<ProtectedRoute><FeatureRoute featureKey="schedule"><Schedule /></FeatureRoute></ProtectedRoute>} />
+      <Route path="/sessions" element={<ProtectedRoute><FeatureRoute featureKey="sessions"><Sessions /></FeatureRoute></ProtectedRoute>} />
+      <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+      <Route path="/media" element={<ProtectedRoute><FeatureRoute featureKey="photoGallery"><Media /></FeatureRoute></ProtectedRoute>} />
+      <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
+      <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
 /**
  * App component manages the application routing and global loading state.
  */
@@ -95,18 +116,7 @@ export default function App() {
         </div>
       )}
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/schedule" element={<ProtectedRoute><FeatureRoute featureKey="schedule"><Schedule /></FeatureRoute></ProtectedRoute>} />
-          <Route path="/sessions" element={<ProtectedRoute><FeatureRoute featureKey="sessions"><Sessions /></FeatureRoute></ProtectedRoute>} />
-          <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-          <Route path="/media" element={<ProtectedRoute><FeatureRoute featureKey="photoGallery"><Media /></FeatureRoute></ProtectedRoute>} />
-          <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
-          <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <AppRoutes />
       </BrowserRouter>
     </>
   );

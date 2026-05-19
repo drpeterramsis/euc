@@ -45,22 +45,28 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
       </div>
       <div className="flex items-center space-x-4">
         <span className="hidden sm:inline text-sm font-medium text-gray-200 truncate max-w-[150px]">{currentUser?.name}</span>
-        {userPhoto ? (
-          <img 
-            src={userPhoto} 
-            className="w-10 h-10 bg-yellow-100 border border-gray-600 rounded-full object-cover shadow-sm" 
-            alt="Avatar"
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.style.display = 'none';
-              e.currentTarget.nextElementSibling?.classList.remove('hidden');
-              e.currentTarget.nextElementSibling?.classList.add('flex');
-            }}
-          />
-        ) : null}
-        <div className={`${userPhoto ? 'hidden' : 'flex'} w-10 h-10 bg-yellow-400 items-center justify-center rounded-full font-bold text-black border border-gray-600`}>
-          {initials}
-        </div>
+        <Link 
+          to="/profile"
+          className="cursor-pointer hover:ring-2 hover:ring-yellow-400 rounded-full transition-all"
+          title="My Profile"
+        >
+          {userPhoto ? (
+            <img 
+              src={userPhoto} 
+              className="w-10 h-10 bg-yellow-100 border border-gray-600 rounded-full object-cover shadow-sm" 
+              alt="Avatar"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                e.currentTarget.nextElementSibling?.classList.add('flex');
+              }}
+            />
+          ) : null}
+          <div className={`${userPhoto ? 'hidden' : 'flex'} w-10 h-10 bg-yellow-400 items-center justify-center rounded-full font-bold text-black border border-gray-600`}>
+            {initials}
+          </div>
+        </Link>
       </div>
     </header>
   );

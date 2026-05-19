@@ -141,7 +141,16 @@ export default function Profile() {
             </div>
             <div className="p-6">
               <div className="flex flex-col mb-6">
-                <h3 className="text-lg font-black text-gray-900">{fullUser.hotel?.name || "Not Assigned"}</h3>
+                <h3 className="text-lg font-black text-gray-900">
+                  <a 
+                    href={fullUser.hotel?.mapsLink || "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-yellow-600 underline hover:text-yellow-500 transition-colors"
+                  >
+                    📍 {fullUser.hotel?.name || "Vienna House Diplomat Prague"}
+                  </a>
+                </h3>
                 <p className="text-xs text-gray-500 font-medium">{fullUser.hotel?.address || "Address will be announced soon"}</p>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
