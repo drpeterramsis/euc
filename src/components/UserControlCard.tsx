@@ -388,14 +388,26 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                   </button>
                 </div>
 
-                <select name="role" value={formData.role} onChange={handleChange} className="w-full p-2 border rounded">
-                  <option value="admin">Admin</option>
-                  <option value="doctor">Doctor</option>
-                  <option value="staff">Staff</option>
-                </select>
-                <input name="title" value={formData.title} onChange={handleChange} placeholder="Job Title / Role (e.g. Trip Coordinator)" className="w-full p-2 border rounded" />
-                <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="w-full p-2 border rounded" />
-                <input name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone (with country code)" className="w-full p-2 border rounded" />
+                <div className="flex flex-col">
+                  <label className="text-xs font-bold text-gray-500 mb-1">Role</label>
+                  <select name="role" value={formData.role} onChange={handleChange} className="w-full p-2 border rounded">
+                    <option value="admin">Admin</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="staff">Staff</option>
+                  </select>
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-xs font-bold text-gray-500 mb-1">Job Title</label>
+                  <input name="title" value={formData.title} onChange={handleChange} placeholder="Job Title" className="w-full p-2 border rounded" />
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-xs font-bold text-gray-500 mb-1">Email Address</label>
+                  <input name="email" value={formData.email} onChange={handleChange} placeholder="Email Address" className="w-full p-2 border rounded" />
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-xs font-bold text-gray-500 mb-1">Phone Number</label>
+                  <input name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone Number" className="w-full p-2 border rounded" />
+                </div>
               </div>
               <div className="flex flex-col gap-2">
                 <label className="block text-xs font-bold text-gray-400 uppercase">Profile Photo URL</label>

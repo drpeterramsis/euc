@@ -246,7 +246,16 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
                    ].map(opt => (
                      <button
                        key={opt.id}
-                       onClick={() => setForm({ ...form, audienceType: opt.id as any })}
+                       onClick={() => {
+                         const newType = opt.id as any;
+                         if (newType === 'all') {
+                           setForm({ ...form, audienceType: newType, audienceRoles: [], audienceUserIds: [] });
+                         } else if (newType === 'roles') {
+                           setForm({ ...form, audienceType: newType, audienceUserIds: [] });
+                         } else if (newType === 'users') {
+                           setForm({ ...form, audienceType: newType, audienceRoles: [] });
+                         }
+                       }}
                        className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
                          form.audienceType === opt.id 
                            ? "bg-yellow-500 border-yellow-600 text-black shadow-sm" 

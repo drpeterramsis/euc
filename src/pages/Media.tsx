@@ -9,30 +9,38 @@ export default function Media() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("latest"); // latest, oldest, category
 
-  const canUserSeePost = (user: any, post: any) => {
-    if (user?.role === 'admin') return true;
-    if (!post.audienceType || post.audienceType === 'all') return true;
-    if (post.audienceType === 'roles') {
-      return (post.audienceRoles || []).includes(user?.role);
-    }
-    if (post.audienceType === 'users') {
-      return (post.audienceUserIds || []).includes(user?.id);
-    }
-    return true; // Default fallback
-  };
+function canUserSeePost(post: any, currentUser: any): boolean {
+  // Admin sees everything
+  if (currentUser.role === "admin") return true;
+
+  // No targeting set — visible to all
+  if (!post.audienceType || post.audienceType === "all") return true;
+
+  // Role-based targeting
+  if (post.audienceType === "roles") {
+    return (post.audienceRoles ?? []).includes(currentUser.role);
+  }
+
+  // User-specific targeting
+  if (post.audienceType === "users") {
+    return (post.audienceUserIds ?? []).includes(currentUser.id);
+  }
+
+  return true;
+}
 
   // Derive categories from settings + posts (filtered by visibility)
   const categories = useMemo(() => {
     const fromSettings = settings?.mediaCategories || DEFAULT_MEDIA_CATEGORIES;
     const fromPosts = media
-      .filter(p => canUserSeePost(currentUser, p))
+      .filter(p => canUserSeePost(p, currentUser))
       .map(p => p.category)
       .filter(Boolean);
     return ["All", ...new Set([...fromSettings, ...fromPosts])];
   }, [settings, media, currentUser]);
 
   const filteredMedia = useMemo(() => {
-    let filtered = media.filter(p => canUserSeePost(currentUser, p));
+    let filtered = media.filter(p => canUserSeePost(p, currentUser));
 
     // Apply category filter
     if (activeCategory !== "All") {
