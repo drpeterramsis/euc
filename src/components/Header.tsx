@@ -25,8 +25,9 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
       <div className="flex items-center overflow-hidden">
         <button
           onClick={onMenuClick}
-          className="lg:hidden text-white hover:text-yellow-400 transition-colors p-2 mr-2 bg-transparent border-none outline-none"
+          className="lg:hidden text-white hover:text-yellow-400 transition-colors p-2 mr-2 bg-transparent border-none outline-none shadow-none focus:outline-none"
           aria-label="Toggle menu"
+          style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
         >
           ☰
         </button>

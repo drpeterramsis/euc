@@ -19,10 +19,13 @@ html, body {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
-input, select, textarea, button {
+input, select, textarea {
   color-scheme: light only !important;
   background-color: #ffffff !important;
   color: #111111 !important;
+}
+button {
+  color-scheme: light only !important;
 }
 
 .login-code-bg {
