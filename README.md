@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.868
+Version: 1.0.869
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -76,6 +76,7 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.866 | 2026-05-19 | Removed staff.json; Staff Directory now derived from users role="staff"; Media Post Audience targeting (Everyone/Roles/Specific Users) implemented. |
 | v1.0.867 | 2026-05-19 | Repositioned and restyled Sidebar "Need Help?" button to be smaller (text-xs) and placed after last nav item. |
 | v1.0.868 | 2026-05-19 | Force Light Mode Multi-Layer Override applied against Chrome. |
+| v1.0.869 | 2026-05-19 | Implemented Coming Soon masking on Dashboard + strict Light Mode config locking. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

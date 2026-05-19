@@ -8,6 +8,27 @@ import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
 
+function canUserSeePost(post: any, currentUser: any): boolean {
+  if (currentUser?.role === "admin") return true;
+  if (!post.audienceType || post.audienceType === "all") return true;
+  if (post.audienceType === "roles") {
+    return (post.audienceRoles ?? []).includes(currentUser?.role);
+  }
+  if (post.audienceType === "users") {
+    return (post.audienceUserIds ?? []).includes(currentUser?.id);
+  }
+  return true;
+}
+
+function isComingSoon(post: any): boolean {
+  if (post.status === "coming_soon") return true;
+  if (post.isComingSoon === true) return true;
+  if (post.comingSoon === true) return true;
+  if (post.visibility === "coming_soon" || post.visibility === "comingSoon") return true;
+  if (typeof post.category === 'string' && post.category.toLowerCase() === 'coming soon') return true;
+  return false;
+}
+
 export default function Dashboard() {
   const { currentUser, users, media = [] } = useApp();
   const [selectedPost, setSelectedPost] = useState<any>(null);
@@ -19,6 +40,12 @@ export default function Dashboard() {
 
   const vf = fullUser?.visibleFields || {};
   const isVisible = (key: string) => vf[key] !== false;
+
+  const dashboardMedia = [...media]
+    .filter(p => !isComingSoon(p))
+    .filter(p => canUserSeePost(p, fullUser))
+    .sort((a, b) => new Date(b.createdAt || Date.now()).getTime() - new Date(a.createdAt || Date.now()).getTime())
+    .slice(0, 3);
 
   // Prague conference flight departure: 2026-06-25 12:50 PM
   const conferenceDeparture = new Date("2026-06-25T12:50:00");
@@ -160,7 +187,7 @@ export default function Dashboard() {
             <button onClick={() => navigate("/media")} className="text-yellow-600 text-xs font-black hover:text-yellow-700 transition-colors uppercase tracking-widest">Explore Gallery →</button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {media.slice(0, 3).map((post: any) => (
+            {dashboardMedia.map((post: any) => (
                 <div key={post.id} className="group relative rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500" onClick={() => setSelectedPost(post)}>
                     <img src={post.imageDataUrl} alt={post.title} className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-700" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
@@ -170,7 +197,7 @@ export default function Dashboard() {
                     </div>
                 </div>
             ))}
-            {media.length === 0 && <div className="col-span-full py-10 text-center bg-gray-50 rounded-xl border-2 border-dashed border-gray-100 text-gray-400 font-bold italic">No stories shared yet...</div>}
+            {dashboardMedia.length === 0 && <div className="col-span-full py-10 text-center bg-gray-50 rounded-xl border-2 border-dashed border-gray-100 text-gray-400 font-bold italic">No stories shared yet...</div>}
         </div>
       </div>
 

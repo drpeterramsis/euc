@@ -21,8 +21,8 @@ html, body {
 
 input, select, textarea, button {
   color-scheme: light only !important;
-  background-color: #ffffff;
-  color: #111111;
+  background-color: #ffffff !important;
+  color: #111111 !important;
 }
 
 .login-code-bg {
