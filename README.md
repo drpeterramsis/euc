@@ -86,6 +86,7 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.873 | 2026-05-19 | Wrap avatar in link to Profile, custom swipe back React hook for iOS/Android, updating JSON with Prague flight & hotel config. |
 | v1.0.874 | 2026-05-19 | Migrated hardcoded flight & hotel components into tripInfo context, unified layout rendering across Dashboard and Profile, expanded Admin to edit Global Trip Info. |
 | v1.0.875 | 2026-05-19 | Implemented Admin-Editable Navigation Item Labels via appConfig.json and redesigned Dashboard with user-specific welcome header. |
+| v1.0.876 | 2026-05-19 | Replaced all hardcoded page titles, feature headings, and back buttons with dynamic labels from appConfig. Defined centralized labels utility with fallbacks. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

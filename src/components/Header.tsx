@@ -9,13 +9,13 @@
  */
 import { useApp } from "../context/AppContext";
 import { Link } from "react-router-dom";
+import { getLabel } from "../utils/labels";
 
 /**
  * Header component displays page context and user avatar.
- * Contains hamburger button for sidebar toggle on mobile.
  */
 export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
-  const { currentUser } = useApp();
+  const { currentUser, appConfig } = useApp();
 
   const userPhoto = currentUser?.photoUrl || currentUser?.photo;
   const initials = currentUser?.name ? currentUser.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().substring(0, 2) : "U";
@@ -48,7 +48,7 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
         <Link 
           to="/profile"
           className="cursor-pointer hover:ring-2 hover:ring-yellow-400 rounded-full transition-all"
-          title="My Profile"
+          title={getLabel(appConfig, "profile")}
         >
           {userPhoto ? (
             <img 

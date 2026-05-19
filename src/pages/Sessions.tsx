@@ -4,12 +4,13 @@
  */
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
+import { getLabel } from '../utils/labels';
 
 /**
  * Sessions component renders the list/grid of scientific sessions.
  */
 export default function Sessions() {
-  const { sessions, currentUser } = useApp();
+  const { sessions, currentUser, appConfig } = useApp();
 
   const viewAs = sessionStorage.getItem("euc_view_as");
   const displayUser = viewAs ? JSON.parse(viewAs) : currentUser;
@@ -28,7 +29,7 @@ export default function Sessions() {
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Scientific Sessions</h1>
+        <h1 className="text-2xl font-bold">{getLabel(appConfig, "sessions")}</h1>
         <span className="text-sm bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold border border-yellow-200">
           {sessions.length} sessions
         </span>

@@ -4,12 +4,13 @@
  */
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
+import { getLabel } from '../utils/labels';
 
 /**
  * Schedule component renders the trip schedule timeline.
  */
 export default function Schedule() {
-  const { schedule, currentUser } = useApp();
+  const { schedule, currentUser, appConfig } = useApp();
 
   const viewAs = sessionStorage.getItem("euc_view_as");
   const displayUser = viewAs ? JSON.parse(viewAs) : currentUser;
@@ -26,7 +27,7 @@ export default function Schedule() {
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Trip Schedule</h1>
+        <h1 className="text-2xl font-bold">{getLabel(appConfig, "schedule")}</h1>
         <div className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded">PRAGUE-2026</div>
       </div>
       

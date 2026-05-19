@@ -1,11 +1,12 @@
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
+import { getLabel } from '../utils/labels';
 
 /**
  * Staff Directory page displaying conference staff members with contact options.
  */
 export default function Staff() {
-  const { users } = useApp();
+  const { users, appConfig } = useApp();
   const staffMembers = users.filter((u: any) => u.role === "staff");
 
   const getInitials = (name: string) => {
@@ -21,7 +22,7 @@ export default function Staff() {
   return (
     <Layout>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Staff Directory</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{getLabel(appConfig, "staff")}</h1>
         <p className="text-gray-500 text-sm mt-1">Contact the organizational team for assistance</p>
       </div>
 

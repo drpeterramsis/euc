@@ -4,12 +4,13 @@
  */
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
+import { getLabel } from '../utils/labels';
 
 /**
  * Profile component renders user information and trip details.
  */
 export default function Profile() {
-  const { currentUser, users, tripInfo } = useApp();
+  const { currentUser, users, tripInfo, appConfig } = useApp();
   const viewAs = sessionStorage.getItem("euc_view_as");
   const displayUser = viewAs ? JSON.parse(viewAs) : currentUser;
   const fullUser = users.find(u => u.id === displayUser?.id) || displayUser;
@@ -21,7 +22,7 @@ export default function Profile() {
 
   return (
     <Layout>
-      <h1 className="text-2xl font-bold mb-6 text-gray-900">My Profile</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-900">{getLabel(appConfig, "profile")}</h1>
       <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
         <div className="flex flex-col sm:flex-row items-center space-x-0 sm:space-x-6 space-y-4 sm:space-y-0 pb-6 border-b border-gray-100">
           {(fullUser.photoUrl || fullUser.photo) ? (

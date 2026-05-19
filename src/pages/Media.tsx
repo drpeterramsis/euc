@@ -3,9 +3,10 @@ import Layout from '../components/Layout';
 import { useApp, DEFAULT_MEDIA_CATEGORIES } from '../context/AppContext';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
 import { isPostVisible } from '../utils/postVisibility';
+import { getLabel } from '../utils/labels';
 
 export default function Media() {
-  const { media, settings, currentUser } = useApp();
+  const { media, settings, currentUser, appConfig } = useApp();
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("latest"); // latest, oldest, category
@@ -43,7 +44,7 @@ export default function Media() {
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Gallery & Posts</h1>
+        <h1 className="text-2xl font-bold">{getLabel(appConfig, "media")}</h1>
         <div className="text-xs font-bold text-gray-400">PRAGUE-2026</div>
       </div>
 

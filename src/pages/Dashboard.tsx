@@ -8,9 +8,10 @@ import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
 import { shouldShowOnDashboard } from '../utils/postVisibility';
+import { getLabel } from '../utils/labels';
 
 export default function Dashboard() {
-  const { currentUser, users, media = [], tripInfo } = useApp();
+  const { currentUser, users, media = [], tripInfo, appConfig } = useApp();
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const navigate = useNavigate();
   
@@ -75,8 +76,8 @@ export default function Dashboard() {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <button onClick={() => navigate("/admin?tab=users")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">👥 Users</button>
-            <button onClick={() => navigate("/admin?tab=schedule")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">📅 Schedule</button>
-            <button onClick={() => navigate("/admin?tab=schedule")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">🎓 Sessions</button>
+            <button onClick={() => navigate("/admin?tab=schedule")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">📅 {getLabel(appConfig, "schedule")}</button>
+            <button onClick={() => navigate("/admin?tab=schedule")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">🎓 {getLabel(appConfig, "sessions")}</button>
             <button onClick={() => navigate("/admin?tab=features")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">⚙️ Features</button>
           </div>
         </div>
@@ -164,7 +165,7 @@ export default function Dashboard() {
       <div className="bg-white p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 mb-8">
         <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">Latest Community Moments</h2>
-            <button onClick={() => navigate("/media")} className="text-yellow-600 text-xs font-black hover:text-yellow-700 transition-colors uppercase tracking-widest">Explore Gallery →</button>
+            <button onClick={() => navigate("/media")} className="text-yellow-600 text-xs font-black hover:text-yellow-700 transition-colors uppercase tracking-widest">Explore {getLabel(appConfig, "media")} →</button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {dashboardMedia.map((post: any) => (
