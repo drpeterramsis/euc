@@ -19,6 +19,7 @@ import Admin from './pages/Admin';
 import ComingSoon from './pages/ComingSoon';
 import Media from './pages/Media';
 import Staff from './pages/Staff';
+import Directory from './pages/Directory'; // ← NEW
 import { useApp } from './context/AppContext';
 import { getFeatureStatus } from './utils/featureAccess';
 
@@ -81,6 +82,7 @@ function AppRoutes() {
       <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
       <Route path="/media" element={<ProtectedRoute><FeatureRoute featureKey="photoGallery"><Media /></FeatureRoute></ProtectedRoute>} />
       <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
+      <Route path="/directory" element={<ProtectedRoute><Directory /></ProtectedRoute>} /> {/* ← NEW */}
       <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

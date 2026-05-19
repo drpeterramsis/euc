@@ -4,7 +4,17 @@
     "schedule": "Trip Schedule",
     "sessions": "Sessions",
     "media": "News Feed",
-    "staff": "Staff Directory",
+    "directory": "Staff Directory",
     "profile": "My Profile"
+  },
+  "pages": {
+    "directory": {
+      "visible": true,
+      "comingSoon": false
+    },
+    "media": {
+      "visible": true,
+      "comingSoon": false
+    }
   }
 }

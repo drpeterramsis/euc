@@ -1,12 +1,13 @@
 import { AppConfig } from "../context/AppContext";
 
 export const DEFAULT_LABELS = {
-  dashboard: "Home Page",
-  schedule:  "Trip Schedule",
-  sessions:  "Sessions",
-  media:     "News Feed",
-  staff:     "Staff Directory",
-  profile:   "My Profile",
+  dashboard:  "Home Page",
+  schedule:   "Trip Schedule",
+  sessions:   "Sessions",
+  media:      "News Feed",
+  directory:  "Staff Directory",
+  staff:      "Staff Directory", // ← LEGACY BACKWARD-COMPATIBILITY LOCK
+  profile:    "My Profile",
 };
 
 /**
@@ -27,7 +28,7 @@ export function featureToLabelKey(featureKey: string): keyof typeof DEFAULT_LABE
   if (featureKey === "photoGallery") return "media";
   if (featureKey === "sessions") return "sessions";
   if (featureKey === "schedule") return "schedule";
-  // Fallback for others (like social_program etc if they were labels)
-  // For now, these are the main ones we want to rename.
+  if (featureKey === "directory") return "directory";
+  if (featureKey === "staff") return "staff";
   return featureKey as keyof typeof DEFAULT_LABELS;
 }

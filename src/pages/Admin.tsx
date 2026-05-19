@@ -110,17 +110,23 @@ export default function Admin() {
   const [isSavingCats, setIsSavingCats] = useState(false);
 
   // App Settings Tab state
-  const [navLabelsForm, setNavLabelsForm] = useState(() => (appConfig?.navLabels || {
+  const [navLabelsForm, setNavLabelsForm] = useState<Record<string, string>>(() => (appConfig?.navLabels || {
     dashboard: "Home Page",
     schedule: "Trip Schedule",
     sessions: "Sessions",
     media: "News Feed",
-    staff: "Staff Directory",
+    directory: "Staff Directory",
     profile: "My Profile"
+  }));
+
+  const [pageConfigs, setPageConfigs] = useState<Record<string, any>>(() => (appConfig?.pages || {
+    directory: { visible: true, comingSoon: false },
+    media: { visible: true, comingSoon: false }
   }));
 
   useEffect(() => {
     if (appConfig?.navLabels) setNavLabelsForm(appConfig.navLabels);
+    if (appConfig?.pages) setPageConfigs(appConfig.pages);
   }, [appConfig]);
 
   const handleAppConfigSave = async () => {
@@ -132,6 +138,23 @@ export default function Admin() {
       showToast('Navigation labels successfully saved!', 'success');
     } catch (err: any) {
       showToast(err.message || 'Failed to save', 'error');
+    } finally {
+      setIsGlobalLoading(false);
+    }
+  };
+
+  const handleSavePageSettings = async () => {
+    setIsGlobalLoading(true);
+    try {
+      const updated = {
+        ...appConfig,
+        pages: pageConfigs
+      };
+      await writeJSON('appConfig.json', updated);
+      updateAppConfig(updated);
+      showToast("Page settings successfully saved!", "success");
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save page settings', 'error');
     } finally {
       setIsGlobalLoading(false);
     }
@@ -149,29 +172,116 @@ export default function Admin() {
             { key: 'schedule', id: 'Schedule Key' },
             { key: 'sessions', id: 'Sessions Key' },
             { key: 'media', id: 'Media Key' },
-            { key: 'staff', id: 'Staff Key' },
+            { key: 'directory', id: 'Directory Key' },
             { key: 'profile', id: 'Profile Key' }
           ].map(item => (
             <div key={item.key} className="flex flex-col">
               <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">{item.id}</label>
               <input 
                 type="text" 
-                className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-yellow-500/20 focus:border-yellow-500 outline-none transition-all font-bold" 
+                className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-yellow-500/20 focus:border-yellow-500 outline-none transition-all font-bold text-gray-900 bg-white" 
                 value={navLabelsForm[item.key] || ""}
                 onChange={e => setNavLabelsForm(p => ({...p, [item.key]: e.target.value}))}
               />
             </div>
           ))}
         </div>
+
+        <div className="pt-6 flex justify-end">
+          <button 
+            onClick={handleAppConfigSave}
+            className="bg-black text-white px-8 py-3 rounded-xl font-black hover:bg-gray-800 transition-all shadow-lg active:scale-95 w-full sm:w-auto uppercase tracking-widest text-xs"
+          >
+            Save Labels
+          </button>
+        </div>
       </div>
 
-      <div className="pt-6 border-t flex justify-end">
-        <button 
-          onClick={handleAppConfigSave}
-          className="bg-black text-white px-8 py-3 rounded-xl font-black hover:bg-gray-800 transition-all shadow-lg active:scale-95 w-full sm:w-auto uppercase tracking-widest text-xs"
-        >
-          Save Labels
-        </button>
+      {/* Page Visibility & Status section */}
+      <div className="pt-8 border-t border-gray-100">
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><span>🛡️</span> Page Visibility & Status</h2>
+        <p className="text-sm text-gray-500 mb-6 font-medium">Control whether specific sections of the app are visible to end users or flagged as coming soon.</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {Object.entries(pageConfigs).map(([pageKey, config]: [string, any]) => (
+            <div key={pageKey} className="border border-gray-200 rounded-xl p-5 bg-gray-50 flex flex-col gap-4">
+              <p className="font-bold text-gray-800 capitalize text-sm tracking-wider uppercase">
+                {pageKey === "directory" ? "Staff Directory" : "News Feed (Media)"}
+              </p>
+
+              {/* Visible toggle */}
+              <div className="flex items-center gap-4">
+                <span className="text-xs font-bold text-gray-500 w-20 uppercase tracking-wider">Visible:</span>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name={`visible-${pageKey}`}
+                    checked={config.visible === true}
+                    onChange={() => setPageConfigs(p => ({
+                      ...p,
+                      [pageKey]: { ...p[pageKey], visible: true }
+                    }))}
+                    className="accent-yellow-400 h-4 w-4"
+                  />
+                  <span className="text-sm text-gray-700 font-medium">Show</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name={`visible-${pageKey}`}
+                    checked={config.visible === false}
+                    onChange={() => setPageConfigs(p => ({
+                      ...p,
+                      [pageKey]: { ...p[pageKey], visible: false }
+                    }))}
+                    className="accent-yellow-400 h-4 w-4"
+                  />
+                  <span className="text-sm text-gray-700 font-medium">Hide</span>
+                </label>
+              </div>
+
+              {/* Coming Soon toggle */}
+              <div className="flex items-center gap-4">
+                <span className="text-xs font-bold text-gray-500 w-20 uppercase tracking-wider">Status:</span>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name={`soon-${pageKey}`}
+                    checked={config.comingSoon === false}
+                    onChange={() => setPageConfigs(p => ({
+                      ...p,
+                      [pageKey]: { ...p[pageKey], comingSoon: false }
+                    }))}
+                    className="accent-yellow-400 h-4 w-4"
+                  />
+                  <span className="text-sm text-gray-700 font-medium">Live</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name={`soon-${pageKey}`}
+                    checked={config.comingSoon === true}
+                    onChange={() => setPageConfigs(p => ({
+                      ...p,
+                      [pageKey]: { ...p[pageKey], comingSoon: true }
+                    }))}
+                    className="accent-yellow-400 h-4 w-4"
+                  />
+                  <span className="text-sm text-gray-700 font-medium">Coming Soon</span>
+                </label>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={handleSavePageSettings}
+            className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-6 py-2.5 rounded-xl transition duration-200 outline-none shadow-md cursor-pointer"
+          >
+            Save Page Settings
+          </button>
+        </div>
       </div>
     </div>
   );

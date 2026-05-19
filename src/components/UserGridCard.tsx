@@ -40,12 +40,25 @@ export default function UserGridCard({ user, onView, onEdit, onDelete }: UserGri
               }}
             />
           ) : null}
-          <div
-            className="w-full h-full bg-yellow-400 items-center justify-center text-black font-bold text-5xl"
-            style={{ display: photo ? "none" : "flex" }}
-          >
-            {user.name?.charAt(0).toUpperCase()}
-          </div>
+          
+          {/* Fallback space when photo is missing or fails to load */}
+          {user.role === "admin" ? (
+            <div
+              className="absolute inset-0 w-full h-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-4xl"
+              style={{ display: photo ? "none" : "flex" }}
+              title="Super User"
+            >
+              🛡️
+            </div>
+          ) : (
+            <div
+              className="absolute inset-0 w-full h-full bg-yellow-400 flex items-center justify-center text-black font-bold text-5xl animate-fade-in"
+              style={{ display: photo ? "none" : "flex" }}
+            >
+              {user.name?.charAt(0).toUpperCase()}
+            </div>
+          )}
+
           {/* Role badge overlay top-right */}
           <span className="absolute top-2 right-2 text-[10px] font-black px-2 py-0.5 rounded-full bg-black/60 text-white uppercase tracking-wider">
             {user.role}

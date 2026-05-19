@@ -18,9 +18,6 @@ import UserAvatar from "./UserAvatar";
 export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const { currentUser, appConfig } = useApp();
 
-  const userPhoto = currentUser?.photoUrl || currentUser?.photo;
-  const initials = currentUser?.name ? currentUser.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().substring(0, 2) : "U";
-
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-black border-b border-gray-800 flex items-center justify-between px-4 z-40 shadow-sm">
       <div className="flex items-center overflow-hidden">
@@ -51,7 +48,7 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           className="cursor-pointer hover:ring-2 hover:ring-yellow-400 rounded-full transition-all flex-shrink-0"
           title={getLabel(appConfig, "profile")}
         >
-          <UserAvatar user={currentUser} size="md" className="border border-gray-600" />
+          <UserAvatar user={currentUser} size="sm" className="border border-gray-600" />
         </Link>
       </div>
     </header>

@@ -81,8 +81,14 @@ export const DEFAULT_TRIP_INFO: TripInfo = {
   }
 };
 
+export interface PageConfig {
+  visible: boolean;
+  comingSoon: boolean;
+}
+
 export interface AppConfig {
   navLabels: Record<string, string>;
+  pages?: Record<string, PageConfig>;
 }
 
 export const DEFAULT_APP_CONFIG: AppConfig = {
@@ -91,8 +97,12 @@ export const DEFAULT_APP_CONFIG: AppConfig = {
     schedule: "Trip Schedule",
     sessions: "Sessions",
     media: "News Feed",
-    staff: "Staff Directory",
+    directory: "Staff Directory",
     profile: "My Profile"
+  },
+  pages: {
+    directory: { visible: true,  comingSoon: false },
+    media:     { visible: true,  comingSoon: false },
   }
 };
 
@@ -138,7 +148,6 @@ function readSessionCache() {
     const parsedTripInfo = ti ? JSON.parse(ti) : null;
     const parsedAppConfig = ac ? JSON.parse(ac) : null;
     
-    // Optional safety: If tripInfo in sessionStorage is missing required fields → clear it
     if (parsedTripInfo && (!parsedTripInfo?.hotel?.name || !parsedTripInfo?.departure?.flightNumber)) {
       sessionStorage.removeItem(CACHE.tripInfo);
     }
@@ -169,12 +178,6 @@ function writeSessionCache(data: { users: any[], schedule: any[], sessions: any[
     sessionStorage.setItem(CACHE.appConfig, JSON.stringify(data.appConfig));
     localStorage.setItem(CACHE.lastFetch,  Date.now().toString());
   } catch { }
-}
-
-function needsBackgroundRefresh(): boolean {
-  const last = localStorage.getItem(CACHE.lastFetch);
-  if (!last) return true;
-  return Date.now() - parseInt(last) > REFRESH_INTERVAL;
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -263,10 +266,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         // Deeply update currentUser if their data changed
         if (currentUser) {
           const freshCurrentUser = fresh.users.find((u: any) => u.id === currentUser.id);
-          if (JSON.stringify(freshCurrentUser) !== JSON.stringify(currentUser)) {
+          if (freshCurrentUser && JSON.stringify(freshCurrentUser) !== JSON.stringify(currentUser)) {
             setCurrentUser(freshCurrentUser);
             localStorage.setItem("euc_user", JSON.stringify(freshCurrentUser));
-            sessionStorage.setItem("euc_view_as", JSON.stringify(freshCurrentUser)); // ensure impersonation also syncs if it was active
+            sessionStorage.setItem("euc_view_as", JSON.stringify(freshCurrentUser));
           }
         }
       }
@@ -275,7 +278,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsBackgroundRefreshing(false);
     }
-  }, [fetchFreshData]);
+  }, [fetchFreshData, currentUser]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -299,7 +302,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
       setIsFirstLoad(false);
 
-      // ALWAYS run a background refresh on mount when user is logged in
+      // Deeply update/propagate currentUser fields on browser refresh
+      if (currentUser) {
+        const matchedUser = cached.users.find((u: any) => u.username === currentUser.username);
+        if (matchedUser) {
+          const updatedUser = {
+            ...currentUser,
+            ...matchedUser,
+            photoUrl: matchedUser.photoUrl || matchedUser.photo || currentUser.photoUrl || ""
+          };
+          setCurrentUser(updatedUser);
+          localStorage.setItem("euc_user", JSON.stringify(updatedUser));
+        }
+      }
+
+      // ALWAYS run a background refresh on mount when user is logged in after a short delay
       setTimeout(() => backgroundRefresh(), 2000);
     } else {
       setLoading(true);
@@ -313,6 +330,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setTripInfo(fresh.tripInfo);
           setAppConfig(fresh.appConfig);
           writeSessionCache(fresh);
+
+          // Deeply update/propagate currentUser fields on initial fetch
+          if (currentUser) {
+            const matchedUser = fresh.users.find((u: any) => u.username === currentUser.username);
+            if (matchedUser) {
+              const updatedUser = {
+                ...currentUser,
+                ...matchedUser,
+                photoUrl: matchedUser.photoUrl || matchedUser.photo || currentUser.photoUrl || ""
+              };
+              setCurrentUser(updatedUser);
+              localStorage.setItem("euc_user", JSON.stringify(updatedUser));
+            }
+          }
         })
         .catch(() => {
           setError("Failed to load data. Please refresh.");
@@ -322,14 +353,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setIsFirstLoad(false);
         });
     }
-  }, [currentUser, backgroundRefresh, fetchFreshData]); // using currentUser instead of empty array so login sets state
+  }, [currentUser, backgroundRefresh, fetchFreshData]);
 
   const loginUser = useCallback((user: any) => {
-    localStorage.setItem("euc_user", JSON.stringify(user));
-    setCurrentUser(user);
-    // Remove fetchedRef bypass on login if re-logging in same session
+    const matchedUser = users.find(u => u.username === user.username) || user;
+    const finalUser = {
+      ...user,
+      ...matchedUser,
+      photoUrl: matchedUser.photoUrl || matchedUser.photo || user.photoUrl || ""
+    };
+    localStorage.setItem("euc_user", JSON.stringify(finalUser));
+    setCurrentUser(finalUser);
     fetchedRef.current = false;
-  }, []);
+  }, [users]);
 
   const updateUsers = useCallback((data: any[]) => {
     setUsers(data);
@@ -423,3 +459,5 @@ export function useApp() {
   if (!ctx) throw new Error("useApp must be used inside AppProvider");
   return ctx;
 }
+
+export const useAppContext = useApp;

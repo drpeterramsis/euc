@@ -7,7 +7,8 @@
     "name": "EUC Administrator",
     "email": "admin@evapharma.com",
     "phone": "+20 100 000 0001",
-    "photo": "https://i.pravatar.cc/150?u=u000",
+    "photo": "https://dl.dropboxusercontent.com/scl/fi/recbwf2vnm1mozd215yao/admin_user.png?rlkey=lcqh3maby8q47s4u3g4zlj19m&st=ss8ukqko",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/recbwf2vnm1mozd215yao/admin_user.png?rlkey=lcqh3maby8q47s4u3g4zlj19m&st=ss8ukqko",
     "flightDetails": {
       "departure": {
         "flightNumber": "MS.789",
