@@ -108,7 +108,7 @@ export default function Directory() {
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filtered.map(user => (
-              <DirectoryCard key={user.id} user={user} />
+              <DirectoryCard key={user.id} user={user} currentUser={currentUser} />
             ))}
           </div>
         )}

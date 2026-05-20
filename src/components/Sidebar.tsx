@@ -33,7 +33,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
 
   const sidebarClass = `
     fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-black z-30 flex flex-col
-    border-r border-gray-800 overflow-y-auto shadow-sm
+    border-r border-gray-800 shadow-sm
     transform transition-transform duration-300
     ${isOpen ? "translate-x-0" : "-translate-x-full"}
     lg:translate-x-0
@@ -89,7 +89,8 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
         />
       )}
       <aside className={sidebarClass}>
-        <div className="p-4 border-b border-gray-800 flex flex-col items-center gap-2 text-white bg-black">
+        {/* Zone 1 — Logo: fixed, never scrolls */}
+        <div className="flex-shrink-0 p-4 border-b border-gray-800 flex flex-col items-center gap-2 text-white bg-black">
           <img 
             src="/images/euc_ico.png" 
             alt="EUC Logo" 
@@ -108,7 +109,8 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
           </div>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        {/* Zone 2 — Nav items: scrollable if overflow */}
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
           {visibleNavItems.map(item => {
             // Determine path and checking status
             const isDir = item.key === "directory";
@@ -173,7 +175,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-lg transition-all font-bold ${
                     isActive
-                      ? "bg-yellow-500 text-black shadow-sm"
+                      ? "bg-yellow-50 text-black shadow-sm"
                       : "bg-yellow-50 text-yellow-700 hover:bg-yellow-10 border border-yellow-200"
                   }`
                 }
@@ -193,8 +195,8 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
           </a>
         </nav>
 
-        {/* User info and Logout button */}
-        <div className="p-4 border-t border-gray-800 bg-black">
+        {/* Zone 3 — User card + Logout: fixed at bottom, NEVER scrolls */}
+        <div className="flex-shrink-0 p-4 border-t border-gray-800 bg-black">
           {fullUser && (
             <div className="flex items-center space-x-3 mb-4">
               <UserAvatar user={fullUser} size="md" className="border border-gray-700" />

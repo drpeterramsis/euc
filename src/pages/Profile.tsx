@@ -5,6 +5,7 @@
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import { getLabel } from '../utils/labels';
+import { displayPhone } from '../utils/phone';
 
 /**
  * Profile component renders user information and trip details.
@@ -44,6 +45,11 @@ export default function Profile() {
           <div className="text-center sm:text-left">
             <h2 className="text-2xl font-bold text-gray-900">{fullUser.name}</h2>
             <p className="text-yellow-600 font-semibold tracking-wide text-sm mt-1">{fullUser.role.toUpperCase()}</p>
+            {fullUser?.phone && (
+              <p className="text-sm text-gray-600 mt-2">
+                📞 {displayPhone(fullUser.phone)}
+              </p>
+            )}
           </div>
         </div>
         

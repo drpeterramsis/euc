@@ -1,2452 +1,431 @@
 [
   {
-    "id": "u000",
-    "username": "admin",
-    "password": "admin123",
-    "role": "admin",
+    "id": "ADMIN",
     "name": "EUC Administrator",
-    "email": "admin@evapharma.com",
-    "phone": "+20 100 000 0001",
-    "photo": "https://dl.dropboxusercontent.com/scl/fi/recbwf2vnm1mozd215yao/admin_user.png?rlkey=lcqh3maby8q47s4u3g4zlj19m&st=ss8ukqko",
+    "role": "admin",
+    "username": "admin",
+    "password": "EUC@dm1n2026",
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/recbwf2vnm1mozd215yao/admin_user.png?rlkey=lcqh3maby8q47s4u3g4zlj19m&st=ss8ukqko",
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "visibleFields": {},
-    "featureAccess": {
-      "sessions": true,
-      "schedule": true,
-      "comingSoon": []
-    },
-    "isActive": true
+    "title": "System Administrator",
+    "email": "",
+    "phone": ""
   },
   {
     "id": "U001",
-    "username": "Abdelnasser.Elgamasy",
-    "password": "Diamonrecta5mg",
     "name": "Abdel Naser Khalifa Soliman Elgamasy",
     "role": "doctor",
+    "username": "Abdelnasser.Elgamasy",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/8teq72655v75wp8qb37ck/Abdelnasser.Elgamasy.jpg?rlkey=qwy0205rbk6oe3y02jjrl03yq&st=jyaq66jb",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u001",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/8teq72655v75wp8qb37ck/Abdelnasser.Elgamasy.jpg?rlkey=qwy0205rbk6oe3y02jjrl03yq&st=jyaq66jb"
+    "phone": ""
   },
   {
     "id": "U002",
-    "username": "Ahmed.Abouelez",
-    "password": "Diamonrecta5mg",
     "name": "Ahmed Abouelez Abdelfattah Abdalla",
     "role": "doctor",
+    "username": "Ahmed.Abouelez",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/o1ejp22gisyzww8kjszqa/Ahmed.Abouelez.jpeg?rlkey=loaltbh0x25m5d2dqrj67dwdk&st=ggvepm4w",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u002",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/o1ejp22gisyzww8kjszqa/Ahmed.Abouelez.jpeg?rlkey=loaltbh0x25m5d2dqrj67dwdk&st=ggvepm4w"
+    "phone": ""
   },
   {
     "id": "U003",
-    "username": "Ahmed.Abdellatif",
-    "password": "Diamonrecta5mg",
     "name": "Ahmed Elsayed Ahmed Abdellatif",
     "role": "doctor",
+    "username": "Ahmed.Abdellatif",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/qkujcyjin2fvn4xu22b32/Ahmed.Abdellatif.jpg?rlkey=c7s0bzweg7r2jbmtx5k6c5pup&st=t84h1k9c",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u003",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/qkujcyjin2fvn4xu22b32/Ahmed.Abdellatif.jpg?rlkey=c7s0bzweg7r2jbmtx5k6c5pup&st=t84h1k9c"
+    "phone": ""
   },
   {
     "id": "U004",
-    "username": "Ahmed.Abosief",
-    "password": "Diamonrecta5mg",
     "name": "Ahmed Fathy Mohamed Abosief",
     "role": "doctor",
+    "username": "Ahmed.Abosief",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/zsw5o58lsb088fx434g1g/Ahmed.Abosief.jpg?rlkey=farxh8tmu6fxw5rrf1jrg9kb5&st=94qc7qsi",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u004",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/zsw5o58lsb088fx434g1g/Ahmed.Abosief.jpg?rlkey=farxh8tmu6fxw5rrf1jrg9kb5&st=94qc7qsi"
+    "phone": ""
   },
   {
     "id": "U005",
-    "username": "Ahmed.Abouzaid",
-    "password": "Diamonrecta5mg",
     "name": "Ahmed Hassan Ibrahim Abouzaid",
     "role": "doctor",
+    "username": "Ahmed.Abouzaid",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/o1nltt93quwd3cv58g09v/Ahmed.Abouzaid.jpg?rlkey=yvzglk084l4xrzz8cd28sznu5&st=jq24yyxg",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u005",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/o1nltt93quwd3cv58g09v/Ahmed.Abouzaid.jpg?rlkey=yvzglk084l4xrzz8cd28sznu5&st=jq24yyxg"
+    "phone": ""
   },
   {
     "id": "U006",
-    "username": "Ahmed.Abouzamel",
-    "password": "Diamonrecta5mg",
     "name": "Ahmed Hossameldin Ferig Mohamed Abouzamel",
     "role": "doctor",
+    "username": "Ahmed.Abouzamel",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/7iyazn1y9332fwpernzy0/Ahmed.Abouzamel.jpg?rlkey=mrzv0mcb1ojwgpefopczmr8ne&st=9ywgqfsz",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u006",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/7iyazn1y9332fwpernzy0/Ahmed.Abouzamel.jpg?rlkey=mrzv0mcb1ojwgpefopczmr8ne&st=9ywgqfsz"
+    "phone": ""
   },
   {
     "id": "U007",
-    "username": "Amgad.Younis",
-    "password": "Diamonrecta5mg",
     "name": "Amgad Mohammed Younis Hamed",
     "role": "doctor",
+    "username": "Amgad.Younis",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/q6eeph6ho8dojj2atvnmf/Amgad.Younis.png?rlkey=wmb4ategiiswzrqup2v2n6b5i&st=oa3wn3wz",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u007",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/q6eeph6ho8dojj2atvnmf/Amgad.Younis.png?rlkey=wmb4ategiiswzrqup2v2n6b5i&st=oa3wn3wz"
+    "phone": ""
   },
   {
     "id": "U008",
-    "username": "Amr.Elkholy",
-    "password": "Diamonrecta5mg",
     "name": "Amr Ahmed Badawi Mohamed Elkholy",
     "role": "doctor",
+    "username": "Amr.Elkholy",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/ebo5fn1cktn2n5h5e12x6/Amr.Elkholy.jpg?rlkey=pub14oazc937wwettea0vvk7l&st=uiol67df",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u008",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": ""
+    "phone": ""
   },
   {
     "id": "U009",
-    "username": "Aref.Maarouf",
-    "password": "Diamonrecta5mg",
     "name": "Aref Mohamed Maarouf Eid",
     "role": "doctor",
+    "username": "Aref.Maarouf",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/gp1hkjls6kp4mornlbe6j/Aref.Maarouf.jpg?rlkey=spkbhgshjdyt1j0uw31vr83g9&st=3h9umsb9",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u009",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": ""
+    "phone": ""
   },
   {
     "id": "U010",
-    "username": "Ashraf.Shahin",
-    "password": "Diamonrecta5mg",
     "name": "Ashraf Mohamed Samy Shahin",
     "role": "doctor",
+    "username": "Ashraf.Shahin",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/i067wl6hwgim0pqq5ozxs/Ashraf.Shahin.jpg?rlkey=7s5e2yniapjwag7atg2tp8952&st=iva3rh7w",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u003",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": ""
+    "phone": ""
   },
   {
     "id": "U011",
-    "username": "Ayman.Ishak",
-    "password": "Diamonrecta5mg",
     "name": "Ayman Ishak Bushra Ibrahim",
     "role": "doctor",
+    "username": "Ayman.Ishak",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/qya46jo8ceiv1yrpk6h8b/Ayman.Ishak.jpg?rlkey=ddln00egyextpsyhoo6l71h5l&st=dvef4xll",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u011",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": ""
+    "phone": ""
   },
   {
     "id": "U012",
-    "username": "Ayman.Rashed",
-    "password": "Diamonrecta5mg",
     "name": "Ayman Sayed Ahmed Rashed",
     "role": "doctor",
+    "username": "Ayman.Rashed",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/8amofrvt7zxj8de8bdtu9/Ayman.Rashed.jpg?rlkey=3j5pv1p6zkua1gf6zgda88gl2&st=hly2yhp3",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u012",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/8amofrvt7zxj8de8bdtu9/Ayman.Rashed.jpg?rlkey=3j5pv1p6zkua1gf6zgda88gl2&st=hly2yhp3"
+    "phone": ""
   },
   {
     "id": "U013",
-    "username": "Emad.Moustafa",
-    "password": "Diamonrecta5mg",
     "name": "Emad Moustafa Gaber Ibrahim",
     "role": "doctor",
+    "username": "Emad.Moustafa",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/59sauqkh8ixz6f00gk74o/Emad.Moustafa.jpg?rlkey=3bkhzcm2dxli2iq7px7kgimjk&st=2e09z7dc",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u008",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/59sauqkh8ixz6f00gk74o/Emad.Moustafa.jpg?rlkey=3bkhzcm2dxli2iq7px7kgimjk&st=2e09z7dc"
+    "phone": ""
   },
   {
     "id": "U014",
-    "username": "Enmar.Habib",
-    "password": "Diamonrecta5mg",
     "name": "Enmar Ibrahim Mohamed Habib",
     "role": "doctor",
+    "username": "Enmar.Habib",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/m4qundu3nks2eelmrrxib/Enmar.Habib.jpg?rlkey=ihi1dj3we6d4um0k6zj2ecm5y&st=hlaxqgy2",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u014",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/m4qundu3nks2eelmrrxib/Enmar.Habib.jpg?rlkey=ihi1dj3we6d4um0k6zj2ecm5y&st=hlaxqgy2"
+    "phone": ""
   },
   {
     "id": "U015",
-    "username": "Hamada.Youssof",
-    "password": "Diamonrecta5mg",
     "name": "Hamada Ahmed Youssof Abdelhameed",
     "role": "doctor",
+    "username": "Hamada.Youssof",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/mu2jh87erbpi4i210y5lb/Hamada.Youssof.jpg?rlkey=ghjcavtqwsdqrskpybm3gcygy&st=xetrtpbs",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u015",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/mu2jh87erbpi4i210y5lb/Hamada.Youssof.jpg?rlkey=ghjcavtqwsdqrskpybm3gcygy&st=xetrtpbs"
+    "phone": ""
   },
   {
     "id": "U016",
-    "username": "Hany.Fathy",
-    "password": "Diamonrecta5mg",
     "name": "Hany Fathy Mohamed Ahmed",
     "role": "doctor",
+    "username": "Hany.Fathy",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/vvb0rqe5fsrrpe8edgbk6/Hany.Fathy.jpg?rlkey=mts2linftcxahy36k8btz1y2y&st=vfr8kegu",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u016",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/vvb0rqe5fsrrpe8edgbk6/Hany.Fathy.jpg?rlkey=mts2linftcxahy36k8btz1y2y&st=vfr8kegu"
+    "phone": ""
   },
   {
     "id": "U017",
-    "username": "Hazem.Rashad",
-    "password": "Diamonrecta5mg",
     "name": "Hazem Rashad",
     "role": "doctor",
+    "username": "Hazem.Rashad",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/rhq5p6zb4ogz8gfwe4jva/Hazem.Rashad.jpg?rlkey=d0kgg5sptu2voidrwf0xb103r&st=j57e7fei",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u017",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/rhq5p6zb4ogz8gfwe4jva/Hazem.Rashad.jpg?rlkey=d0kgg5sptu2voidrwf0xb103r&st=j57e7fei"
+    "phone": ""
   },
   {
     "id": "U018",
-    "username": "Hisham.Mansour",
-    "password": "Diamonrecta5mg",
     "name": "Hisham Ibrahim Mohamed Hussein",
     "role": "doctor",
+    "username": "Hisham.Mansour",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/xf3p3uan52uia8vm0ykmh/Hisham.Mansour.jpg?rlkey=yq71goh2wn5b6klxxd6gel3ss&st=vlk8vlj4",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u014",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": ""
+    "phone": ""
   },
   {
     "id": "U019",
-    "username": "Hisham.Elshawaf",
-    "password": "Diamonrecta5mg",
     "name": "Hisham Mohamed Fathey Salama Elshawaf",
     "role": "doctor",
+    "username": "Hisham.Elshawaf",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/fwrv7ff8vadqynvt00255/Hisham.Elshawaf.jpg?rlkey=kbge1hpsz0d46147gq3mua3t5&st=n4e3769k",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u015",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/fwrv7ff8vadqynvt00255/Hisham.Elshawaf.jpg?rlkey=kbge1hpsz0d46147gq3mua3t5&st=n4e3769k"
+    "phone": ""
   },
   {
     "id": "U020",
-    "username": "Hosam.Mahdy",
-    "password": "Diamonrecta5mg",
     "name": "Hosam Mahdy Said Hanoun",
     "role": "doctor",
+    "username": "Hosam.Mahdy",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/ngddul1ayaehxgqxccmvw/Hosam.Mahdy.jpg?rlkey=jru3flp8giihappywix076cg5&st=euqhz0wl",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u020",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": ""
+    "phone": ""
   },
   {
     "id": "U021",
-    "username": "Hussein.Aly",
-    "password": "Diamonrecta5mg",
     "name": "Hussein Aly Hussein Aly",
     "role": "doctor",
+    "username": "Hussein.Aly",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/huq532epoxgrbwoq2dnbi/Hussein.Aly.jpg?rlkey=bxijem1bo7s7c6i3nqqeiwuby&st=gefz3xjm",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u021",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/huq532epoxgrbwoq2dnbi/Hussein.Aly.jpg?rlkey=bxijem1bo7s7c6i3nqqeiwuby&st=gefz3xjm"
+    "phone": ""
   },
   {
     "id": "U022",
-    "username": "Joseph.William",
-    "password": "Diamonrecta5mg",
     "name": "Joseph William Azmy Shenoda",
     "role": "doctor",
+    "username": "Joseph.William",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/4q16ograox4v365xe20ro/Joseph.William.jpg?rlkey=m0kww8624k4ljusknyrmdutso&st=tjie1oin",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u022",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/4q16ograox4v365xe20ro/Joseph.William.jpg?rlkey=m0kww8624k4ljusknyrmdutso&st=tjie1oin"
+    "phone": ""
   },
   {
     "id": "U023",
-    "username": "Karim.Saad",
-    "password": "Diamonrecta5mg",
     "name": "Karim Saad Mohamed Saad",
     "role": "doctor",
+    "username": "Karim.Saad",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/fl0205mb1qsswjtr7iim1/Karim.Saad.jpg?rlkey=nxke92zb86ucuvtn92gnj7ztn&st=597amkut",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u004",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/fl0205mb1qsswjtr7iim1/Karim.Saad.jpg?rlkey=nxke92zb86ucuvtn92gnj7ztn&st=597amkut"
+    "phone": ""
   },
   {
     "id": "U024",
-    "username": "Mahmoud.Mobark",
-    "password": "Diamonrecta5mg",
     "name": "Mahmoud Elsayed Hassanein Abdelaziz Mobark",
     "role": "doctor",
+    "username": "Mahmoud.Mobark",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/xlm0o5y92yyb6l4jifxl8/Mahmoud.Mobark.jpeg?rlkey=3g69nthonteq9q6yeeacoel4w&st=62lw7juz",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u010",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/xlm0o5y92yyb6l4jifxl8/Mahmoud.Mobark.jpeg?rlkey=3g69nthonteq9q6yeeacoel4w&st=62lw7juz"
+    "phone": ""
   },
   {
     "id": "U025",
-    "username": "Mohamed.Abdelrassoul",
-    "password": "Diamonrecta5mg",
     "name": "Mohamed Abdou Abdelrassoul Elogairy",
     "role": "doctor",
+    "username": "Mohamed.Abdelrassoul",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/q792qt9qdnyuhelnh66so/Mohamed.Abdelrassoul.jpg?rlkey=lmjkz2e6n08in8wzgyhpjxqvl&st=dfg5v6ev",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u007",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": ""
+    "phone": ""
   },
   {
     "id": "U026",
-    "username": "Mohamed.Elgahawy",
-    "password": "Diamonrecta5mg",
     "name": "Mohamed Eissa Ali Elgahawy",
     "role": "doctor",
+    "username": "Mohamed.Elgahawy",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/1lgthp425jwqvyygaymxt/Mohamed.elgahawy.jpg?rlkey=icnv8i9jny9lguaatjzfearg0&st=o0fbwf7u",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u002",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/1lgthp425jwqvyygaymxt/Mohamed.elgahawy.jpg?rlkey=icnv8i9jny9lguaatjzfearg0&st=o0fbwf7u"
+    "phone": ""
   },
   {
     "id": "U027",
-    "username": "Mohamed.Shabayek",
-    "password": "Diamonrecta5mg",
     "name": "Mohamed Ismail Abdellatif Aboshabayek",
     "role": "doctor",
+    "username": "Mohamed.Shabayek",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/oowq48vuoidlffqggghhe/Mohamed.Shabayek.jpg?rlkey=epg934gmmjz3dgxsa29mdwdsy&st=5w182jeu",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u020",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/oowq48vuoidlffqggghhe/Mohamed.Shabayek.jpg?rlkey=epg934gmmjz3dgxsa29mdwdsy&st=5w182jeu"
+    "phone": ""
   },
   {
     "id": "U028",
-    "username": "Mohamed.Elgammal",
-    "password": "Diamonrecta5mg",
     "name": "Mohamed Youssef Abdelkader Elgammal",
     "role": "doctor",
+    "username": "Mohamed.Elgammal",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/v6ig4sbmsfoeqwm4ashgd/Mohamed.Elgammal.jpg?rlkey=4vizvk7u3r0mzabkppirmyrkf&st=9kfgd5oc",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u028",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/v6ig4sbmsfoeqwm4ashgd/Mohamed.Elgammal.jpg?rlkey=4vizvk7u3r0mzabkppirmyrkf&st=9kfgd5oc"
+    "phone": ""
   },
   {
     "id": "U029",
-    "username": "Saber.Hassouna",
-    "password": "Diamonrecta5mg",
     "name": "Saber Hassouna Hassan Mohamed",
     "role": "doctor",
+    "username": "Saber.Hassouna",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/26ccz29f3qvwybred9v1z/Saber.Hassouna.jpg?rlkey=a4b8t04dpj4vnf6fpme0gdltj&st=raacflye",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u029",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/26ccz29f3qvwybred9v1z/Saber.Hassouna.jpg?rlkey=a4b8t04dpj4vnf6fpme0gdltj&st=raacflye"
+    "phone": ""
   },
   {
     "id": "U030",
-    "username": "Salah.Elhamshary",
-    "password": "Diamonrecta5mg",
     "name": "Salah Abdelhamid Mohamed Salaheldin Abdelhamid",
     "role": "doctor",
+    "username": "Salah.Elhamshary",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/spgbwpaeml0fymkwbkmdh/Salah.Elhamshary.jpg?rlkey=r3u0yehdo6rv3y8q6y662d9vo&st=z7yq19pa",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u011",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/spgbwpaeml0fymkwbkmdh/Salah.Elhamshary.jpg?rlkey=r3u0yehdo6rv3y8q6y662d9vo&st=z7yq19pa"
+    "phone": ""
   },
   {
     "id": "U031",
-    "username": "Sultan.Fakhry",
-    "password": "Diamonrecta5mg",
     "name": "Sultan Fakhry Khalifa Soliman",
     "role": "doctor",
+    "username": "Sultan.Fakhry",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/sotz9320qn3ni3f6l0gsi/Sultan.Fakhry.jpg?rlkey=4c25mivv8lii16a5dfc2e9yta&st=nlwzjzts",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u001",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/sotz9320qn3ni3f6l0gsi/Sultan.Fakhry.jpg?rlkey=4c25mivv8lii16a5dfc2e9yta&st=nlwzjzts"
+    "phone": ""
   },
   {
     "id": "U032",
-    "username": "Tamer.Helmy",
-    "password": "Diamonrecta5mg",
     "name": "Tamer Elsayed Helmy Elsayed",
     "role": "doctor",
+    "username": "Tamer.Helmy",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/yqpeo2k4wug7ai3akinyj/Tamer.Helmy.jpg?rlkey=ab6fkf07tvg19q94j9lo6zmgt&st=jov1xidp",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u017",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/yqpeo2k4wug7ai3akinyj/Tamer.Helmy.jpg?rlkey=ab6fkf07tvg19q94j9lo6zmgt&st=jov1xidp"
+    "phone": ""
   },
   {
     "id": "U033",
-    "username": "Wael.Farahat",
-    "password": "Diamonrecta5mg",
     "name": "Wael Mohamed Farhat Ali",
     "role": "doctor",
+    "username": "Wael.Farahat",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/q0ux4ruevcx1fghulfnp9/Wael.Farahat.jpg?rlkey=n6zi99qrsxqt93vr4e1vkxuxg&st=t8vpa1oz",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u009",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/q0ux4ruevcx1fghulfnp9/Wael.Farahat.jpg?rlkey=n6zi99qrsxqt93vr4e1vkxuxg&st=t8vpa1oz"
+    "phone": ""
   },
   {
     "id": "U034",
-    "username": "Wael.Sameh",
-    "password": "Diamonrecta5mg",
     "name": "Wael Mohamed Sameh Taha Abdelmoneim Khalil",
     "role": "doctor",
+    "username": "Wael.Sameh",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/3jn07ce9n64eet5wl9k5r/Wael.Sameh.jpg?rlkey=cbpdif95zwnt2arvn5jz0edp&st=12g6cvn5",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u005",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/3jn07ce9n64eet5wl9k5r/Wael.Sameh.jpg?rlkey=cbpdhif95zwnt2arvn5jz0edp&st=12g6cvn5"
+    "phone": ""
   },
   {
     "id": "U035",
-    "username": "Walid.Milad",
-    "password": "Diamonrecta5mg",
     "name": "Walid Milad Said Youssef",
     "role": "doctor",
+    "username": "Walid.Milad",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/fewx0ku3tfj4ia19ddepr/Walid.Milad.jpg?rlkey=5t3gzyx71t1ju9jpgfhcx7akq&st=jub360wp",
+    "title": "",
     "email": "",
-    "phone": "",
-    "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=u025",
-    "status": true,
-    "isActive": true,
-    "featureAccess": {
-      "sessions": {
-        "access": true,
-        "status": "full"
-      },
-      "schedule": {
-        "access": true,
-        "status": "full"
-      },
-      "photoGallery": {
-        "access": true,
-        "status": "coming_soon"
-      },
-      "documents": {
-        "access": true,
-        "status": "coming_soon"
-      }
-    },
-    "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
-      "hotelName": true,
-      "hotelAddress": true,
-      "checkIn": true,
-      "checkOut": true,
-      "roomNumber": true,
-      "mapsLink": true,
-      "transfers": true,
-      "email": true,
-      "phone": true
-    },
-    "flightDetails": {
-      "departure": {
-        "flightNumber": "MS.789",
-        "date": "25 June 2026",
-        "terminal": "3"
-      },
-      "arrival": {
-        "flightNumber": "MS.790",
-        "date": "28 June 2026",
-        "terminal": "1"
-      }
-    },
-    "hotel": {
-      "name": "Vienna House Diplomat Prague",
-      "address": "",
-      "checkIn": "",
-      "checkOut": "",
-      "roomNumber": "",
-      "mapsLink": "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
-    },
-    "transfers": [],
-    "photoUrl": ""
+    "phone": ""
+  },
+  {
+    "id": "U036",
+    "name": "Michael Melad Kamel",
+    "role": "staff",
+    "username": "Michael.Melad",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/8ul5psuqgtdcl76td5b4q/Michael.Melad.jpg?rlkey=c5c30icwhfzpe51dh3mjvc49r&st=t7mgyw2r",
+    "title": "Marketing Lead",
+    "email": "",
+    "phone": "201069993301"
+  },
+  {
+    "id": "U037",
+    "name": "Happy Raafat",
+    "role": "staff",
+    "username": "Happy.Raafat",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/p0ii8vt9kyr5q41gveo6j/Happy.Raafat.jpg?rlkey=nt196kht64wtos2v0v75mszio&st=i4bvq0rr",
+    "title": "Senior Line Sales Manager",
+    "email": "",
+    "phone": "201061777718"
+  },
+  {
+    "id": "U038",
+    "name": "Mahmoud Abdelaty Ramadan",
+    "role": "admin",
+    "username": "Mahmoud.Abdelaty",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/gez2bkappvxz7aarrjypb/Mahmoud.Abdelaty.jpg?rlkey=horls6oycffole2ze9ahuwfhg&st=f4tl4hkb",
+    "title": "Product Manager",
+    "email": "",
+    "phone": "201026060462"
   }
 ]

@@ -11,6 +11,7 @@ import { writeJSON } from '../utils/github';
 import UserControlCard from '../components/UserControlCard';
 import UserGridCard from '../components/UserGridCard';
 import UserAvatar from '../components/UserAvatar';
+import { callHref, whatsappHref, displayPhone } from '../utils/phone';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
 import MediaPostModal from '../components/MediaPostModal';
 import { showToast } from '../components/Toast';
@@ -1053,6 +1054,15 @@ export default function Admin() {
                     <div className="flex-1 min-w-0">
                       <h4 className="font-bold text-gray-900 truncate">{u.name}</h4>
                       <p className="text-gray-500 truncate">{u.username}</p>
+                      {u.phone && (
+                        <p className="text-xs text-gray-500 mt-1 flex flex-wrap gap-x-2 gap-y-1 items-center">
+                          <span>📞 {displayPhone(u.phone)}</span>
+                          <span className="text-gray-300">|</span>
+                          <a href={callHref(u.phone)} className="text-blue-600 hover:text-blue-800 font-bold">Call</a>
+                          <span className="text-gray-300">|</span>
+                          <a href={whatsappHref(u.phone)} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:text-green-800 font-bold">WhatsApp</a>
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
@@ -1098,7 +1108,18 @@ export default function Admin() {
                       <td className="p-4">
                         <UserAvatar user={u} size="md" />
                       </td>
-                      <td className="p-4 font-semibold">{u.name}</td>
+                      <td className="p-4 font-semibold">
+                        <div>{u.name}</div>
+                        {u.phone && (
+                          <div className="text-xs text-gray-500 font-normal flex items-center gap-2 mt-1">
+                            <span>📞 {displayPhone(u.phone)}</span>
+                            <span className="text-gray-300">|</span>
+                            <a href={callHref(u.phone)} className="text-blue-600 hover:text-blue-800 font-bold">Call</a>
+                            <span className="text-gray-300">|</span>
+                            <a href={whatsappHref(u.phone)} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:text-green-800 font-bold">WhatsApp</a>
+                          </div>
+                        )}
+                      </td>
                       <td className="p-4 text-gray-500">{u.username}</td>
                       <td className="p-4">
                         <span className={`px-2 py-1 rounded text-xs font-bold ${
