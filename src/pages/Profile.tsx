@@ -94,18 +94,6 @@ export default function Profile() {
             )}
           </div>
         </div>
-        
-        {/* Core Profile Static Information */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-4 bg-gray-50 border border-gray-100 rounded-xl">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Username/Email</p>
-            <p className="text-sm font-semibold text-gray-800">{fullUser.username || "—"}</p>
-          </div>
-          <div className="p-4 bg-gray-50 border border-gray-100 rounded-xl">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Assigned Role</p>
-            <p className="text-sm font-semibold text-gray-800 capitalize">{fullUser.role || "—"}</p>
-          </div>
-        </div>
       </div>
 
       {/* COMPREHENSIVE DYNAMIC TRAVEL & LODGING LOGISTICS SECTION (System 1) */}

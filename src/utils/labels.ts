@@ -2,7 +2,7 @@ import { AppConfig } from "../context/AppContext";
 
 export const DEFAULT_LABELS = {
   dashboard:  "Home Page",
-  schedule:   "Trip Schedule",
+  schedule:   "Schedule",
   sessions:   "Sessions",
   media:      "News Feed",
   directory:  "Staff Directory",

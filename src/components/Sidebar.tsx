@@ -26,7 +26,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
 
   const labels = appConfig?.navLabels || {
     dashboard: "Home Page",
-    schedule: "Trip Schedule",
+    schedule: "Schedule",
     sessions: "Sessions",
     media: "News Feed",
     directory: "Staff Directory",

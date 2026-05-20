@@ -139,7 +139,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
   // App Settings Tab state
   const [navLabelsForm, setNavLabelsForm] = useState<Record<string, string>>(() => (appConfig?.navLabels || {
     dashboard: "Home Page",
-    schedule: "Trip Schedule",
+    schedule: "Schedule",
     sessions: "Sessions",
     media: "News Feed",
     directory: "Staff Directory",
@@ -359,7 +359,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
             // Retrieve label from labels form or fall back to standard labels
             const label = navLabelsForm[key] || {
               dashboard: "Home Page",
-              schedule: "Trip Schedule",
+              schedule: "Schedule",
               sessions: "Sessions",
               media: "News Feed",
               directory: "Staff Directory",

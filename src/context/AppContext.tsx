@@ -95,7 +95,7 @@ export interface AppConfig {
 export const DEFAULT_APP_CONFIG: AppConfig = {
   navLabels: {
     dashboard: "Home Page",
-    schedule: "Trip Schedule",
+    schedule: "Schedule",
     sessions: "Sessions",
     media: "News Feed",
     directory: "Staff Directory",

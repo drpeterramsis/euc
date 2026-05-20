@@ -152,7 +152,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <button onClick={() => navigate("/admin?tab=users")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-with-all text-gray-800 flex items-center justify-center gap-2">👥 Users</button>
             <button onClick={() => navigate("/admin?tab=schedule")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-with-all text-gray-800 flex items-center justify-center gap-2">📅 {getLabel(appConfig, "schedule")}</button>
-            <button onClick={() => navigate("/admin?tab=sessions")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-with-all text-gray-800 flex items-center justify-center gap-2">🎓 {getLabel(appConfig, "sessions")}</button>
+  <button onClick={() => navigate("/admin?tab=media")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">{"\uD83D\uDCF8"} {getLabel(appConfig, "media")}</button>
             <button onClick={() => navigate("/admin?tab=features")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-with-all text-gray-800 flex items-center justify-center gap-2">⚙️ Features</button>
           </div>
         </div>
@@ -166,30 +166,6 @@ export default function Dashboard() {
           {fullUser?.name ?? "Guest"}
         </h1>
       </div>
-
-      {/* Dynamic Smart Countdown from configuration & schedule */}
-      <div className="mb-8">
-        <SmartCountdown
-          scheduleItems={scheduleItems}
-          countdownConfig={countdownConfig}
-        />
-      </div>
-
-      {/* Your Trip Logistics Compact Highlights */}
-      {scheduleItems.length > 0 && (
-        <div className="mb-8">
-          <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3 block">
-            Your Trip
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {scheduleItems.map(item =>
-              item.type === "hotel"
-                ? <HotelSummaryCard  key={item.id} item={item} />
-                : <FlightSummaryCard key={item.id} item={item} />
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Latest Posts */}
       <div className="bg-white p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 mb-8">
@@ -212,90 +188,41 @@ export default function Dashboard() {
         </div>
       </div>
 
+
+      {/* Your Trip Logistics Compact Highlights */}
+      {scheduleItems.length > 0 && (
+        <div className="mb-8">
+          <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3 block">
+            Your Trip
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {scheduleItems.map(item =>
+              item.type === "hotel"
+                ? <HotelSummaryCard  key={item.id} item={item} />
+                : <FlightSummaryCard key={item.id} item={item} />
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Dynamic Smart Countdown from configuration & schedule */}
+      <div className="mb-8">
+        <SmartCountdown
+          scheduleItems={scheduleItems}
+          countdownConfig={countdownConfig}
+        />
+      </div>
+
+      
+
+      
+
       {selectedPost && (
         <MediaPostViewerModal post={selectedPost} onClose={() => setSelectedPost(null)} />
       )}
 
       {/* Legacy/Classic Fallback Detail Row Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Departure Card */}
-        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
-          <div className="p-5 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">{"\u2708\uFE0F"}</span>
-              <div>
-                <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">Departure Trip</h3>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">To Prague Conference</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="p-6">
-            <div className="text-sm text-gray-700 space-y-1">
-              <p className="font-semibold text-gray-900">✈️ Departure</p>
-              <p><span className="font-medium text-gray-500">Flight:</span> {tripInfo.departure.flightNumber}</p>
-              <p><span className="font-medium text-gray-500">Date:</span> {tripInfo.departure.date}</p>
-              <p><span className="font-medium text-gray-500">Terminal:</span> {tripInfo.departure.terminal}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Arrival Card (Return) */}
-        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
-          <div className="p-5 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">{"\uD83D\uDEEC"}</span>
-              <div>
-                <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">Arrival Trip (Return)</h3>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Back Home Safely</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="p-6">
-            <div className="text-sm text-gray-700 space-y-1">
-              <p className="font-semibold text-gray-900">✈️ Return</p>
-              <p><span className="font-medium text-gray-500">Flight:</span> {tripInfo.arrival.flightNumber}</p>
-              <p><span className="font-medium text-gray-500">Date:</span> {tripInfo.arrival.date}</p>
-              <p><span className="font-medium text-gray-500">Terminal:</span> {tripInfo.arrival.terminal}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Hotel Details */}
-        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden flex flex-col md:col-span-2">
-          <div className="p-5 bg-gray-50 border-b border-gray-100 flex items-center gap-3">
-            <span className="text-2xl">{"\uD83C\uDFE8"}</span>
-            <div>
-              <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">Accommodation Details</h3>
-              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Your Stay in Prague</p>
-            </div>
-          </div>
-          
-          <div className="p-6">
-            <div className="flex flex-col gap-1">
-              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
-                🏨 Hotel
-              </p>
-              <p className="font-semibold text-gray-900 text-base leading-snug">
-                {tripInfo.hotel.name}
-              </p>
-              <a
-                href={tripInfo.hotel.mapUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-2
-                           bg-yellow-400 hover:bg-yellow-500
-                           text-black font-semibold text-sm
-                           px-4 py-1.5 rounded-lg border border-yellow-500
-                           transition-colors shadow-sm w-fit cursor-pointer font-sans"
-              >
-                📍 View on Map
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+      
     </Layout>
   );
 }

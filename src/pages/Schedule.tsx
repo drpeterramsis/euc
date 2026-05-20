@@ -33,7 +33,7 @@ const typeDotMap: Record<string, string> = {
 
 export default function Schedule() {
   const { appConfig, currentUser } = useAppContext();
-  const pageTitle = getLabel(appConfig, "schedule") || "Trip Schedule";
+  const pageTitle = getLabel(appConfig, "schedule") || "Schedule";
   const access = getPageAccess("schedule", currentUser?.role, appConfig);
 
   const [tripDays, setTripDays] = useState<any[]>([]);

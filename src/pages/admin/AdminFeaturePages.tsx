@@ -3,7 +3,7 @@ export const AdminUsers = () => <AdminPlaceholder title="User Management" />;
 export const AdminPosts = () => <AdminPlaceholder title="News Feed Posts" />;
 export const AdminCategories = () => <AdminPlaceholder title="Post Categories" />;
 export const AdminSessions = () => <AdminPlaceholder title="Conference Sessions" />;
-export const AdminTripSchedule = () => <AdminPlaceholder title="Trip Schedule" />;
+export const AdminTripSchedule = () => <AdminPlaceholder title="Schedule" />;
 export const AdminFlightHotel = () => <AdminPlaceholder title="Flight & Hotel Logistics" />;
 export const AdminCountdown = () => <AdminPlaceholder title="Countdown & Timeline" />;
 export const AdminMedia = () => <AdminPlaceholder title="Media & Gallery" />;

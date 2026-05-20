@@ -24,7 +24,7 @@ const DEFAULT_VISIBLE_FIELDS = {
 const FEATURES = [
   { key: "sessions",       label: "Sessions",        icon: "🎓",
     desc: "Scientific conference session access" },
-  { key: "schedule",       label: "Trip Schedule",   icon: "📅",
+  { key: "schedule",       label: "Schedule",   icon: "📅",
     desc: "View trip itinerary" },
   { key: "photoGallery",   label: "Photo Gallery",   icon: "📷",
     desc: "Conference photos" },

@@ -7,7 +7,7 @@ const adminQuickActions = [
   { id: "posts", label: "Posts", description: "Manage news feed posts", icon: "\uD83D\uDCDD", iconBg: "bg-blue-50", route: "/admin/posts", countKey: "posts" },
   { id: "categories", label: "Categories", description: "Manage post categories", icon: "\uD83D\uDDC2\uFE0F", iconBg: "bg-purple-50", route: "/admin/categories", countKey: "categories" },
   { id: "sessions", label: "Sessions", description: "Manage conference sessions", icon: "\uD83C\uDFA4", iconBg: "bg-pink-50", route: "/admin/sessions", countKey: "sessions" },
-  { id: "tripSchedule", label: "Trip Schedule", description: "Edit daily agenda", icon: "\uD83D\uDDD3\uFE0F", iconBg: "bg-orange-50", route: "/admin/trip-schedule", countKey: null },
+  { id: "tripSchedule", label: "Schedule", description: "Edit daily agenda", icon: "\uD83D\uDDD3\uFE0F", iconBg: "bg-orange-50", route: "/admin/trip-schedule", countKey: null },
   { id: "flightHotel", label: "Flight & Hotel", description: "Edit trip logistics", icon: "\u2708\uFE0F", iconBg: "bg-sky-50", route: "/admin/flight-hotel", countKey: null },
   { id: "countdown", label: "Countdown", description: "Edit countdown & timeline", icon: "\u23F1\uFE0F", iconBg: "bg-green-50", route: "/admin/countdown", countKey: null },
   { id: "media", label: "Media", description: "Manage photos & videos", icon: "\uD83D\uDCF8", iconBg: "bg-rose-50", route: "/admin/media", countKey: "media" },
