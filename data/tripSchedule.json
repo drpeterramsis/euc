@@ -1,0 +1,111 @@
+[
+  {
+    "id": "TS001",
+    "day": "Day 1",
+    "date": "2026-06-25",
+    "title": "Arrival Day",
+    "events": [
+      {
+        "id": "TS001-E1",
+        "time": "12:50",
+        "label": "Depart Cairo — EgyptAir MS 789",
+        "icon": "✈️",
+        "type": "travel"
+      },
+      {
+        "id": "TS001-E2",
+        "time": "17:00",
+        "label": "Arrive Prague Airport",
+        "icon": "🛬",
+        "type": "travel"
+      },
+      {
+        "id": "TS001-E3",
+        "time": "19:00",
+        "label": "Check-in — Vienna House Diplomat Prague",
+        "icon": "🏨",
+        "type": "hotel"
+      }
+    ]
+  },
+  {
+    "id": "TS002",
+    "day": "Day 2",
+    "date": "2026-06-26",
+    "title": "Conference Day 1",
+    "events": [
+      {
+        "id": "TS002-E1",
+        "time": "09:00",
+        "label": "Opening Session",
+        "icon": "🎤",
+        "type": "session"
+      },
+      {
+        "id": "TS002-E2",
+        "time": "13:00",
+        "label": "Lunch Break",
+        "icon": "🍽️",
+        "type": "break"
+      },
+      {
+        "id": "TS002-E3",
+        "time": "15:00",
+        "label": "City Tour — Prague Old Town",
+        "icon": "🏛️",
+        "type": "activity"
+      }
+    ]
+  },
+  {
+    "id": "TS003",
+    "day": "Day 3",
+    "date": "2026-06-27",
+    "title": "Conference Day 2",
+    "events": [
+      {
+        "id": "TS003-E1",
+        "time": "09:00",
+        "label": "Morning Sessions",
+        "icon": "🎤",
+        "type": "session"
+      },
+      {
+        "id": "TS003-E2",
+        "time": "13:00",
+        "label": "Lunch Break",
+        "icon": "🍽️",
+        "type": "break"
+      },
+      {
+        "id": "TS003-E3",
+        "time": "19:00",
+        "label": "Gala Dinner",
+        "icon": "🥂",
+        "type": "activity"
+      }
+    ]
+  },
+  {
+    "id": "TS004",
+    "day": "Day 4",
+    "date": "2026-06-28",
+    "title": "Departure Day",
+    "events": [
+      {
+        "id": "TS004-E1",
+        "time": "12:00",
+        "label": "Check-out — Vienna House Diplomat Prague",
+        "icon": "🏨",
+        "type": "hotel"
+      },
+      {
+        "id": "TS004-E2",
+        "time": "16:45",
+        "label": "Depart Prague — MS 790",
+        "icon": "✈️",
+        "type": "travel"
+      }
+    ]
+  }
+]

@@ -76,6 +76,27 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     accessUserIds: [] as string[],
   });
 
+  // --- SMART COUNTDOWN STATE ---
+  const [countdownConfig, setCountdownConfig] = useState<any>({
+    customMessage: "",
+    showTimeline: true,
+    customTimelineEntries: []
+  });
+
+  // --- FLIGHT & HOTEL STATE DIRECTLY FROM schedule.json ---
+  const [flightHotelForm, setFlightHotelForm] = useState<any[]>([]);
+
+  // --- TRIP SCHEDULE DAILY AGENDA STATE ---
+  const [tripSchedule, setTripSchedule] = useState<any[]>([]);
+
+  // Simple state for customized timeline entries add-form
+  const [newTimelineEntry, setNewTimelineEntry] = useState({
+    label: "",
+    datetime: "",
+    icon: "📌",
+    color: "gray" as "yellow" | "green" | "blue" | "red" | "gray"
+  });
+
   const [sessionItems, setSessionItems] = useState<any[]>([]);
   const [editingSession, setEditingSession] = useState<any | null>(null);
   const [showSessionForm, setShowSessionForm] = useState(false);
@@ -616,6 +637,26 @@ export default function Admin({ initialTab }: AdminProps = {}) {
       }
     }
   }, [schedule]);
+
+  // Synchronize flightHotelForm deep copy whenever the schedule state update triggers
+  useEffect(() => {
+    if (schedule && schedule.length > 0) {
+      setFlightHotelForm(JSON.parse(JSON.stringify(schedule)));
+    }
+  }, [schedule]);
+
+  // Load countdown config & day-by-day trip agenda on component load
+  useEffect(() => {
+    fetch("/data/countdownConfig.json")
+      .then(r => r.json())
+      .then(setCountdownConfig)
+      .catch(() => {});
+
+    fetch("/data/tripSchedule.json")
+      .then(r => r.json())
+      .then(setTripSchedule)
+      .catch(() => setTripSchedule([]));
+  }, []);
 
   useEffect(() => {
     if (sessions && sessions.length > 0) {
@@ -1346,225 +1387,686 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     );
   };
 
-  const ScheduleForm = () => (
-    <div className="bg-white border-2 border-yellow-400 rounded-xl p-6 shadow-lg mb-6 animate-in slide-in-from-top duration-300">
-      <div className="flex items-center gap-2 mb-6 border-b pb-3">
-        <span className="text-xl">📅</span>
-        <h4 className="font-bold text-lg">{editingScheduleId === "new" ? "Add New Item" : "Edit Item"}</h4>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-        <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Title / Activity</label>
-          <input 
-            type="text" 
-            placeholder="e.g. Welcome Reception"
-            value={scheduleForm.activity}
-            onChange={e => setScheduleForm({...scheduleForm, activity: e.target.value})}
-            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Date</label>
-          <input 
-            type="date" 
-            value={scheduleForm.date}
-            onChange={e => setScheduleForm({...scheduleForm, date: e.target.value})}
-            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Category</label>
-          <select 
-            value={scheduleForm.category}
-            onChange={e => setScheduleForm({...scheduleForm, category: e.target.value})}
-            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
-          >
-            {(settings?.scheduleCategories || DEFAULT_SCHEDULE_CATEGORIES).map((cat: string) => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Start Time</label>
-          <input 
-            type="time" 
-            value={scheduleForm.time}
-            onChange={e => setScheduleForm({...scheduleForm, time: e.target.value})}
-            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">End Time</label>
-          <input 
-            type="time" 
-            value={scheduleForm.endTime}
-            onChange={e => setScheduleForm({...scheduleForm, endTime: e.target.value})}
-            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
-          />
-        </div>
-        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Location Name</label>
-            <input 
-              type="text" 
-              placeholder="e.g. Grand Ballroom"
-              value={scheduleForm.location}
-              onChange={e => setScheduleForm({...scheduleForm, location: e.target.value})}
-              className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Map Location (Coordinates or Link)</label>
-            <input 
-              type="text" 
-              placeholder="e.g. 50.0755, 14.4378"
-              value={scheduleForm.mapLocation}
-              onChange={e => setScheduleForm({...scheduleForm, mapLocation: e.target.value})}
-              className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
-            />
-          </div>
-        </div>
-        <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">External Link (Optional)</label>
-          <input 
-            type="url" 
-            placeholder="https://..."
-            value={scheduleForm.link}
-            onChange={e => setScheduleForm({...scheduleForm, link: e.target.value})}
-            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
-          />
-        </div>
-        <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Notes</label>
-          <textarea 
-            rows={2}
-            placeholder="Any additional details..."
-            value={scheduleForm.notes}
-            onChange={e => setScheduleForm({...scheduleForm, notes: e.target.value})}
-            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none font-medium text-gray-900"
-          />
-        </div>
+  // --- SMART COUNTDOWN HANDLERS ---
+  const handleSaveCountdownConfig = async (updatedConfig?: any) => {
+    setIsGlobalLoading(true);
+    const toSave = updatedConfig || countdownConfig;
+    try {
+      await writeJSON("countdownConfig.json", toSave);
+      setCountdownConfig(toSave);
+      showToast("Countdown settings saved successfully ✓", "success");
+    } catch (e) {
+      showToast("Failed to save countdown settings", "error");
+    } finally {
+      setIsGlobalLoading(false);
+    }
+  };
 
-        <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Visible To Roles</label>
-          <div className="flex flex-wrap gap-3">
-            {["admin", "doctor", "staff"].map(role => (
-              <label key={role} className={`flex items-center gap-2 border px-3 py-1.5 rounded-lg cursor-pointer transition-colors ${scheduleForm.accessRoles.includes(role) ? "bg-yellow-50 border-yellow-400 text-yellow-900" : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
-                <input 
-                  type="checkbox"
-                  checked={scheduleForm.accessRoles.includes(role)}
-                  onChange={e => {
-                    const roles = e.target.checked 
-                      ? [...scheduleForm.accessRoles, role] 
-                      : scheduleForm.accessRoles.filter(r => r !== role);
-                    setScheduleForm({...scheduleForm, accessRoles: roles});
-                  }}
-                  className="accent-yellow-500 w-4 h-4"
-                />
-                <span className="font-bold text-sm uppercase tracking-wider">{role}</span>
-              </label>
-            ))}
-          </div>
-        </div>
+  // --- FLIGHT & HOTEL LOGISTICS HANDLERS ---
+  const updateFlightHotelField = (id: string, field: string, value: any) => {
+    setFlightHotelForm(prev => prev.map(item => {
+      if (item.id === id) {
+        return {
+          ...item,
+          details: {
+            ...(item.details || {}),
+            [field]: value
+          }
+        };
+      }
+      return item;
+    }));
+  };
 
-        <div className="md:col-span-2 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input 
-              type="checkbox" 
-              checked={applyToAllSchedule}
-              onChange={e => setApplyToAllSchedule(e.target.checked)}
-              className="accent-yellow-500 w-5 h-5 shadow-sm"
-            />
-            <span className="font-bold text-sm text-yellow-900 font-bold">Apply these changes (Role/Access/Notes/Location) to ALL items</span>
-          </label>
-        </div>
-      </div>
-      
-      <div className="flex justify-end gap-3 mt-8 pt-4 border-t">
-        <button 
-          onClick={() => setEditingScheduleId(null)}
-          className="px-6 py-2 rounded-lg bg-white border border-gray-300 font-bold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
-        >
-          Cancel
-        </button>
-        <button 
-          onClick={handleSaveSchedule}
-          className="px-8 py-2 rounded-lg bg-yellow-500 border border-yellow-600 font-bold text-black hover:bg-yellow-400 transition-colors shadow-md"
-        >
-          Save Item
-        </button>
-      </div>
-    </div>
-  );
+  const handleSaveFlightHotelDetails = async () => {
+    setIsGlobalLoading(true);
+    try {
+      await writeJSON("schedule.json", flightHotelForm);
+      updateSchedule(flightHotelForm);
+      showToast("Flight & Hotel Logistics saved successfully ✓", "success");
+    } catch (e) {
+      showToast("Failed to save Flight & Hotel Logistics", "error");
+    } finally {
+      setIsGlobalLoading(false);
+    }
+  };
+
+  // --- TRIP SCHEDULE DAILY AGENDA HANDLERS ---
+  const handleAddTripDay = () => {
+    const newDay = {
+      id: "TSD_" + Date.now(),
+      day: `Day ${tripSchedule.length + 1}`,
+      date: "2026-06-25",
+      title: "New Day Title",
+      events: []
+    };
+    const updated = [...tripSchedule, newDay];
+    setTripSchedule(updated);
+  };
+
+  const handleDeleteTripDay = (dayId: string) => {
+    if (!confirm("Are you sure you want to delete this full day card and all its nested events?")) return;
+    const updated = tripSchedule.filter(d => d.id !== dayId);
+    setTripSchedule(updated);
+  };
+
+  const handleUpdateTripDayHeader = (dayId: string, field: string, value: any) => {
+    const updated = tripSchedule.map(d => {
+      if (d.id === dayId) {
+        return { ...d, [field]: value };
+      }
+      return d;
+    });
+    setTripSchedule(updated);
+  };
+
+  const handleAddTripEvent = (dayId: string) => {
+    const newEvent = {
+      id: "TSE_" + Date.now(),
+      time: "12:00",
+      label: "New Event Activity",
+      icon: "📌",
+      type: "session"
+    };
+    const updated = tripSchedule.map(d => {
+      if (d.id === dayId) {
+        return {
+          ...d,
+          events: [...(d.events || []), newEvent]
+        };
+      }
+      return d;
+    });
+    setTripSchedule(updated);
+  };
+
+  const handleDeleteTripEvent = (dayId: string, eventId: string) => {
+    const updated = tripSchedule.map(d => {
+      if (d.id === dayId) {
+        return {
+          ...d,
+          events: (d.events || []).filter((e: any) => e.id !== eventId)
+        };
+      }
+      return d;
+    });
+    setTripSchedule(updated);
+  };
+
+  const handleUpdateTripEventField = (dayId: string, eventId: string, field: string, value: any) => {
+    const updated = tripSchedule.map(d => {
+      if (d.id === dayId) {
+        return {
+          ...d,
+          events: (d.events || []).map((e: any) => {
+            if (e.id === eventId) {
+              return { ...e, [field]: value };
+            }
+            return e;
+          })
+        };
+      }
+      return d;
+    });
+    setTripSchedule(updated);
+  };
+
+  const handleSaveTripSchedule = async () => {
+    setIsGlobalLoading(true);
+    // Sort day cards and events inside days
+    let sorted = tripSchedule.map(d => ({
+      ...d,
+      events: [...(d.events || [])].sort((a, b) => (a.time || "").localeCompare(b.time || ""))
+    }));
+    sorted.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+
+    try {
+      await writeJSON("tripSchedule.json", sorted);
+      setTripSchedule(sorted);
+      showToast("Trip Schedule Agenda saved successfully ✓", "success");
+    } catch (e) {
+      showToast("Failed to save Trip Schedule Agenda", "error");
+    } finally {
+      setIsGlobalLoading(false);
+    }
+  };
 
   const renderTab3 = () => (
     <div>
       <h2 className="text-xl font-bold mb-6">Schedule & Sessions Control</h2>
-      
-      {/* Inline Form for NEW Item */}
-      {editingScheduleId === "new" && <ScheduleForm />}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Schedule Manager */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-lg">📅 Schedule Manager</h3>
-            <button 
-              onClick={handleAddSchedule} 
-              disabled={editingScheduleId === "new"}
-              className="bg-black text-white hover:bg-gray-800 px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm disabled:opacity-50"
-            >
-              + Add Schedule Item
-            </button>
+      {/* ── 1. COUNTDOWN & TIMELINE SETTINGS ──────────────── */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-150 mb-8 font-sans">
+        <h3 className="font-extrabold text-lg text-gray-900 border-b pb-3 mb-4 flex items-center gap-2">
+          <span>⏱️</span> Smart Countdown & Timeline Settings
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-xs font-bold text-gray-400 uppercase mb-1">
+              Custom Alert Bar Message / Supplemental Announcement
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Please make sure to fill out the pre-arrival survey!"
+              value={countdownConfig?.customMessage || ""}
+              onChange={e => setCountdownConfig({
+                ...countdownConfig,
+                customMessage: e.target.value
+              })}
+              className="w-full p-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:ring-2 focus:ring-yellow-500 outline-none text-sm text-gray-950"
+            />
+            <p className="text-xs text-gray-400 mt-1.5 leading-relaxed">
+              This message overlays the active countdown with an italicized secondary banner on the guest dashboard.
+            </p>
           </div>
-          <div className="space-y-6">
-            {scheduleItems.length === 0 && <p className="text-gray-400 text-center py-4">No schedule items yet.</p>}
-            {[...scheduleItems].sort((a, b) => a.date.localeCompare(b.date)).map((day: any) => (
-              <div key={day.id} className="border border-gray-200 rounded-xl overflow-hidden">
-                <div className="bg-gray-50 p-3 font-bold flex justify-between items-center border-b border-gray-200">
-                  <span className="text-sm font-bold text-gray-700">{new Date(day.date).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                </div>
-                <div className="p-3 space-y-3">
-                  {day.items?.map((item: any) => (
-                    <div key={item.id}>
-                      {editingScheduleId === item.id ? (
-                        <ScheduleForm />
-                      ) : (
-                        <div className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-lg hover:border-gray-300 transition-colors shadow-sm">
-                          <div className="flex flex-col gap-0.5 min-w-0">
-                            <div className="flex items-center gap-2">
-                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                                    item.category === "Scientific" ? "bg-blue-100 text-blue-700" :
-                                    item.category === "Social" ? "bg-purple-100 text-purple-700" :
-                                    item.category === "Transport" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
-                                }`}>{item.category || "Other"}</span>
-                                <span className="font-bold text-gray-900 truncate">{item.activity}</span>
-                            </div>
-                            <div className="flex items-center gap-3 text-xs text-gray-500 font-medium">
-                                <span>⏰ {item.time} {item.endTime ? ` - ${item.endTime}` : ""}</span>
-                                <span className="truncate max-w-[150px]">📍 {item.location || "No location"}</span>
-                            </div>
-                          </div>
-                          <div className="flex gap-2 flex-shrink-0">
-                            <button onClick={() => handleEditSchedule(item)} className="p-1 px-3 bg-blue-50 text-blue-600 rounded font-bold text-xs hover:bg-blue-100">Edit</button>
-                            <button onClick={() => handleDeleteSchedule(item.id)} className="p-1 px-3 bg-red-50 text-red-600 rounded font-bold text-xs hover:bg-red-100">Delete</button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+
+          <div>
+            <label className="block text-xs font-bold text-gray-400 uppercase mb-2">
+              Timeline Visibility
+            </label>
+            <label className="flex items-center gap-2.5 cursor-pointer bg-gray-50 border border-gray-200 rounded-lg p-3 w-fit">
+              <input
+                type="checkbox"
+                checked={countdownConfig?.showTimeline}
+                onChange={e => setCountdownConfig({
+                  ...countdownConfig,
+                  showTimeline: e.target.checked
+                })}
+                className="accent-yellow-500 w-5 h-5 shadow-sm"
+              />
+              <span className="text-sm font-semibold text-gray-800">
+                Show Live Timeline List on Guest Dashboard
+              </span>
+            </label>
           </div>
         </div>
 
+        {/* Custom Entries manager */}
+        <div className="mt-6 border-t border-gray-100 pt-6">
+          <p className="text-xs font-bold text-gray-400 uppercase mb-2">
+            Add Custom Marker to Timeline (E.g. Visa Deadline, Visa App, Luggage Drop-off)
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 text-xs">
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase">Label / Description</label>
+              <input
+                type="text"
+                placeholder="e.g. Visa Deadline"
+                value={newTimelineEntry.label}
+                onChange={e => setNewTimelineEntry({...newTimelineEntry, label: e.target.value})}
+                className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-950 font-semibold"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase">Date & Time</label>
+              <input
+                type="datetime-local"
+                value={newTimelineEntry.datetime}
+                onChange={e => setNewTimelineEntry({...newTimelineEntry, datetime: e.target.value})}
+                className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-950 font-semibold"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase">Icon</label>
+              <select
+                value={newTimelineEntry.icon}
+                onChange={e => setNewTimelineEntry({...newTimelineEntry, icon: e.target.value})}
+                className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-950 font-semibold"
+              >
+                <option value="📋">📋 Note/Visa</option>
+                <option value="🧳">🧳 Luggage</option>
+                <option value="🎟️">🎟️ Ticket</option>
+                <option value="📌">📌 Pin</option>
+                <option value="🚨">🚨 Alert</option>
+                <option value="🥂">🥂 Celebration</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase">Badge Color</label>
+              <select
+                value={newTimelineEntry.color}
+                onChange={e => setNewTimelineEntry({...newTimelineEntry, color: e.target.value as any})}
+                className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-950 font-semibold"
+              >
+                <option value="gray">Gray</option>
+                <option value="yellow">Yellow</option>
+                <option value="green">Green</option>
+                <option value="blue">Blue</option>
+                <option value="red">Red</option>
+              </select>
+            </div>
+            <div className="flex items-end">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!newTimelineEntry.label || !newTimelineEntry.datetime) {
+                    showToast("Label and Date-Time are required for timeline marker", "error");
+                    return;
+                  }
+                  const entry = {
+                    id: "CT_" + Date.now(),
+                    ...newTimelineEntry
+                  };
+                  const updated = {
+                    ...countdownConfig,
+                    customTimelineEntries: [
+                      ...(countdownConfig.customTimelineEntries || []),
+                      entry
+                    ]
+                  };
+                  setCountdownConfig(updated);
+                  setNewTimelineEntry({ label: "", datetime: "", icon: "📌", color: "gray" });
+                  showToast("Marker appended locally. Press Save to persist.", "info");
+                }}
+                className="w-full bg-black text-white px-4 py-2 rounded text-xs font-bold hover:bg-gray-800 transition-colors cursor-pointer"
+              >
+                ＋ Append Entry
+              </button>
+            </div>
+          </div>
+
+          {/* Markers List */}
+          <div className="space-y-2 mt-4 max-h-52 overflow-y-auto pr-2">
+            {(countdownConfig?.customTimelineEntries || []).map((entry: any) => (
+              <div key={entry.id} className="flex items-center justify-between p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">{entry.icon}</span>
+                  <div>
+                    <span className="font-bold text-gray-950">{entry.label}</span>
+                    <span className="text-gray-400 ml-2 font-mono">{entry.datetime.replace("T", " ")}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const filtered = countdownConfig.customTimelineEntries.filter((e: any) => e.id !== entry.id);
+                    setCountdownConfig({ ...countdownConfig, customTimelineEntries: filtered });
+                  }}
+                  className="text-red-500 hover:text-red-700 font-bold px-2 py-1 bg-red-50 hover:bg-red-100 rounded cursor-pointer"
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+            {(countdownConfig?.customTimelineEntries || []).length === 0 && (
+              <p className="text-xs text-center p-3 text-gray-400 bg-gray-50 border border-dashed rounded italic">
+                No custom timeline entries defined.
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-5 border-t border-gray-100 mt-6">
+          <button
+            type="button"
+            onClick={() => handleSaveCountdownConfig()}
+            className="px-6 py-2 rounded bg-black text-white hover:bg-gray-800 font-bold transition-all text-sm flex items-center gap-2 cursor-pointer shadow-sm"
+          >
+            💾 Save Countdown Configuration
+          </button>
+        </div>
+      </div>
+
+      {/* ── 2. SECTION A: FLIGHT & HOTEL LOGISTICS (schedule.json) ── */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-150 mb-8 font-sans">
+        <h3 className="font-extrabold text-lg text-gray-900 border-b pb-3 mb-4 flex items-center gap-2">
+          <span>✈️</span> Section A: Flight & Hotel Details (schedule.json)
+        </h3>
+        
+        <p className="text-sm text-gray-500 mb-6">
+          These details populate the personal trip info summary cards on the Dashboard and the beautiful full summary cards on user Profiles.
+        </p>
+
+        {flightHotelForm.map((item) => {
+          const isFlight = item.type === "flight";
+          const isOutbound = item.direction === "outbound";
+          
+          return (
+            <div key={item.id} className="border border-gray-200 rounded-xl overflow-hidden mb-6">
+              <div className="bg-gray-50 px-4 py-2.5 font-bold text-sm text-gray-800 border-b border-gray-200 flex items-center justify-between">
+                <span>{item.title || (isFlight ? (isOutbound ? "✈️ Outbound Flight" : "✈️ Inbound Flight") : "🏨 Accommodation")}</span>
+                <span className="text-[10px] bg-yellow-400 text-black px-2 py-0.5 rounded font-mono font-bold">{item.id}</span>
+              </div>
+              
+              <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-sans">
+                {isFlight ? (
+                  <>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Flight Number</label>
+                      <input
+                        type="text"
+                        value={item.details?.flightNumber || ""}
+                        onChange={e => updateFlightHotelField(item.id, "flightNumber", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Date (YYYY-MM-DD)</label>
+                      <input
+                        type="date"
+                        value={item.details?.date || ""}
+                        onChange={e => updateFlightHotelField(item.id, "date", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Time (HH:MM)</label>
+                      <input
+                        type="time"
+                        value={item.details?.time || ""}
+                        onChange={e => updateFlightHotelField(item.id, "time", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Departure Airport</label>
+                      <input
+                        type="text"
+                        value={item.details?.departureAirport || ""}
+                        onChange={e => updateFlightHotelField(item.id, "departureAirport", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Departure Airport Map Link</label>
+                      <input
+                        type="url"
+                        value={item.details?.departureAirportLocation || ""}
+                        onChange={e => updateFlightHotelField(item.id, "departureAirportLocation", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Arrival Airport</label>
+                      <input
+                        type="text"
+                        value={item.details?.arrivalAirport || ""}
+                        onChange={e => updateFlightHotelField(item.id, "arrivalAirport", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Arrival Airport Map Link</label>
+                      <input
+                        type="url"
+                        value={item.details?.arrivalAirportLocation || ""}
+                        onChange={e => updateFlightHotelField(item.id, "arrivalAirportLocation", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Terminal</label>
+                      <input
+                        type="text"
+                        value={item.details?.departureTerminal || ""}
+                        onChange={e => updateFlightHotelField(item.id, "departureTerminal", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Gate</label>
+                      <input
+                        type="text"
+                        value={item.details?.departureGate || ""}
+                        onChange={e => updateFlightHotelField(item.id, "departureGate", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Hotel Name</label>
+                      <input
+                        type="text"
+                        value={item.details?.hotelName || ""}
+                        onChange={e => updateFlightHotelField(item.id, "hotelName", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Check-In Date</label>
+                      <input
+                        type="date"
+                        value={item.details?.checkInDate || ""}
+                        onChange={e => updateFlightHotelField(item.id, "checkInDate", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Check-In Time</label>
+                      <input
+                        type="time"
+                        value={item.details?.checkInTime || ""}
+                        onChange={e => updateFlightHotelField(item.id, "checkInTime", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Check-Out Date</label>
+                      <input
+                        type="date"
+                        value={item.details?.checkOutDate || ""}
+                        onChange={e => updateFlightHotelField(item.id, "checkOutDate", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Check-Out Time</label>
+                      <input
+                        type="time"
+                        value={item.details?.checkOutTime || ""}
+                        onChange={e => updateFlightHotelField(item.id, "checkOutTime", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                    <div className="md:col-span-3">
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Hotel Full Address</label>
+                      <textarea
+                        rows={2}
+                        value={item.details?.address || ""}
+                        onChange={e => updateFlightHotelField(item.id, "address", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900 font-sans"
+                      />
+                    </div>
+                    <div className="md:col-span-3">
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Google Maps coordinates/URL</label>
+                      <input
+                        type="url"
+                        value={item.details?.googleMapLocation || ""}
+                        onChange={e => updateFlightHotelField(item.id, "googleMapLocation", e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded mt-1 bg-white font-semibold text-gray-900"
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })}
+
+        <div className="flex justify-end pt-5 border-t border-gray-100 mt-6">
+          <button
+            type="button"
+            onClick={handleSaveFlightHotelDetails}
+            className="px-6 py-2.5 rounded bg-yellow-500 hover:bg-yellow-400 font-bold text-black border border-yellow-600 transition-all text-sm flex items-center gap-2 cursor-pointer shadow-sm"
+          >
+            💾 Save Flight & Hotel Details
+          </button>
+        </div>
+      </div>
+
+      {/* ── 3. SECTION B: TRIP SCHEDULE (tripSchedule.json) ── */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-150 mb-8 font-sans">
+        <div className="flex justify-between items-center mb-4 border-b pb-3">
+          <h3 className="font-extrabold text-lg text-gray-900 flex items-center gap-2">
+            <span>🗓️</span> Section B: Trip Daily Itinerary (tripSchedule.json)
+          </h3>
+          <button
+            type="button"
+            onClick={handleAddTripDay}
+            className="px-4 py-1.5 bg-black text-white hover:bg-gray-800 text-xs font-bold rounded-lg transition cursor-pointer"
+          >
+            ➕ Add Day Card
+          </button>
+        </div>
+
+        <p className="text-sm text-gray-500 mb-6">
+          This organizes the day-by-day agendas and activities rendered exclusively on the central Itinerary (Schedule) Tab.
+        </p>
+
+        <div className="space-y-6">
+          {tripSchedule.map((day) => (
+            <div key={day.id} className="border border-gray-200 rounded-xl overflow-hidden shadow-sm bg-gray-50/50">
+              
+              <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex flex-col md:flex-row items-center gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1 w-full text-xs font-sans">
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase">Day Label</label>
+                    <input
+                      type="text"
+                      value={day.day || ""}
+                      onChange={e => handleUpdateTripDayHeader(day.id, "day", e.target.value)}
+                      placeholder="e.g. Day 1"
+                      className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-900 font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase">Date (YYYY-MM-DD)</label>
+                    <input
+                      type="date"
+                      value={day.date || ""}
+                      onChange={e => handleUpdateTripDayHeader(day.id, "date", e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-900 font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase">Theme / Title Description</label>
+                    <input
+                      type="text"
+                      value={day.title || ""}
+                      onChange={e => handleUpdateTripDayHeader(day.id, "title", e.target.value)}
+                      placeholder="e.g. Opening Day"
+                      className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-900 font-bold"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteTripDay(day.id)}
+                  className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded text-xs font-bold flex-shrink-0 self-end md:self-center cursor-pointer"
+                >
+                  ✕ Delete Day
+                </button>
+              </div>
+
+              <div className="p-4 space-y-4">
+                <div className="flex justify-between items-center bg-white border border-gray-105 p-2 rounded-lg">
+                  <p className="text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    Day Events ({day.events?.length || 0})
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => handleAddTripEvent(day.id)}
+                    className="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold text-xs rounded transition-all cursor-pointer"
+                  >
+                    ➕ New Event
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {(day.events || []).map((event: any) => (
+                    <div key={event.id} className="flex flex-col md:flex-row items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 flex-1 w-full text-xs font-sans">
+                        <div>
+                          <label className="text-[9px] font-bold text-gray-400 uppercase">Time</label>
+                          <input
+                            type="time"
+                            value={event.time || ""}
+                            onChange={e => handleUpdateTripEventField(day.id, event.id, "time", e.target.value)}
+                            className="w-full p-1.5 border border-gray-200 rounded bg-gray-50 font-semibold text-gray-905"
+                          />
+                        </div>
+                        <div className="col-span-1 md:col-span-2">
+                          <label className="text-[9px] font-bold text-gray-400 uppercase">Label Description</label>
+                          <input
+                            type="text"
+                            value={event.label || ""}
+                            onChange={e => handleUpdateTripEventField(day.id, event.id, "label", e.target.value)}
+                            className="w-full p-1.5 border border-gray-200 rounded bg-gray-50 font-semibold text-gray-905"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-[9px] font-bold text-gray-400 uppercase">Icon</label>
+                            <input
+                              type="text"
+                              value={event.icon || ""}
+                              onChange={e => handleUpdateTripEventField(day.id, event.id, "icon", e.target.value)}
+                              className="w-full p-1.5 border border-gray-200 rounded bg-gray-50 font-semibold text-center text-gray-905"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-bold text-gray-400 uppercase">Type</label>
+                            <select
+                              value={event.type || "session"}
+                              onChange={e => handleUpdateTripEventField(day.id, event.id, "type", e.target.value)}
+                              className="w-full p-1.5 border border-gray-200 rounded bg-gray-50 font-semibold text-gray-905"
+                            >
+                              <option value="travel">Travel</option>
+                              <option value="hotel">Hotel</option>
+                              <option value="session">Session</option>
+                              <option value="activity">Activity</option>
+                              <option value="break">Break</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteTripEvent(day.id, event.id)}
+                        className="px-2.5 py-1 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded text-xs font-bold cursor-pointer self-end md:self-center"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+
+                  {(day.events || []).length === 0 && (
+                    <p className="text-xs text-center p-3 text-gray-400 italic bg-white/40 border border-dashed rounded">
+                      No events listed for this day.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {tripSchedule.length === 0 && (
+            <div className="text-center py-10 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-gray-400 font-bold">
+              No Days configured. Click "Add Day Card" to begin.
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-end pt-5 border-t border-gray-100 mt-6">
+          <button
+            type="button"
+            onClick={handleSaveTripSchedule}
+            className="px-6 py-2.5 rounded bg-black text-white hover:bg-gray-800 font-bold transition-all text-sm flex items-center gap-2 cursor-pointer shadow-sm"
+          >
+            💾 Save Trip Schedule Agenda
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-8">
         {/* Sessions Manager */}
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-6 rounded-lg shadow border border-gray-150">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-lg">🎓 Sessions Manager</h3>
-            <button onClick={handleAddSession} className="bg-black text-white hover:bg-gray-800 px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm">+ Add Session</button>
+            <button onClick={handleAddSession} className="bg-black text-white hover:bg-gray-800 px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm cursor-pointer">+ Add Session</button>
           </div>
           <div className="space-y-4">
             {sessionItems.length === 0 && <p className="text-gray-400 text-center py-4">No sessions yet.</p>}
@@ -1576,8 +2078,8 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                     <span className="text-xs text-blue-600 font-bold uppercase mt-1">🗣 {session.speaker}</span>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => handleEditSession(session)} className="text-blue-600 text-xs font-bold p-1 px-2 border border-blue-200 rounded bg-white hover:bg-blue-50">Edit</button>
-                    <button onClick={() => handleDeleteSession(session.id)} className="text-red-600 text-xs font-bold p-1 px-2 border border-red-200 rounded bg-white hover:bg-red-50">Del</button>
+                    <button onClick={() => handleEditSession(session)} className="text-blue-600 text-xs font-bold p-1 px-2 border border-blue-200 rounded bg-white hover:bg-blue-50 cursor-pointer">Edit</button>
+                    <button onClick={() => handleDeleteSession(session.id)} className="text-red-600 text-xs font-bold p-1 px-2 border border-red-200 rounded bg-white hover:bg-red-50 cursor-pointer">Del</button>
                   </div>
                 </div>
                 <div className="text-xs text-gray-500 mt-3 flex flex-wrap items-center gap-4">
