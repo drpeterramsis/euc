@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.887
+Version: 1.0.888
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -98,6 +98,7 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.885 | 2026-05-20 | EUC App — Modify U038 to Staff, Add U039 Admin, Move Sidebar User Card to Top, Staff Visible Pages. |
 | v1.0.886 | 2026-05-20 | Implemented Role-Based Page Visibility Matrix, created page access utilities, removed email display from directory cards, and added Admin warning informational note. |
 | v1.0.887 | 2026-05-20 | Added seconds display to the existing countdown component for precise four-block real-time tracking (Days, Hours, Minutes, Seconds). |
+| v1.0.888 | 2026-05-20 | Normalized role checks in pageAccess.ts to handle casing and whitespace robustly for admin, staff, and doctors. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

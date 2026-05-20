@@ -6,10 +6,18 @@ export type AccessResult = "active" | "coming-soon" | "hidden";
 const DOCTOR_COMING_SOON_PAGES = ["schedule", "sessions", "media"];
 
 // Pages that staff always see as active
-const STAFF_ALWAYS_ACTIVE_PAGES = ["dashboard", "schedule", "sessions", "media", "directory", "profile"];
+const STAFF_ALWAYS_ACTIVE_PAGES = [
+  "dashboard", "schedule", "sessions",
+  "media", "directory", "profile"
+];
 
-// Pages that admin always sees as active
-const ADMIN_ALWAYS_ACTIVE_PAGES = ["dashboard", "schedule", "sessions", "media", "directory", "profile"];
+/**
+ * Normalizes role string — trims whitespace and lowercases.
+ * Prevents "Admin", "ADMIN", "admin " from breaking role checks.
+ */
+function normalizeRole(role: string | undefined | null): string {
+  return role?.trim().toLowerCase() ?? "";
+}
 
 /**
  * Returns the effective access level for a given page + role combination.
@@ -23,16 +31,18 @@ export function getPageAccess(
   appConfig: AppConfig | null
 ): AccessResult {
 
+  const r = normalizeRole(role);
+
   // ADMIN — everything always active, no restrictions
-  if (role === "admin") return "active";
+  if (r === "admin") return "active";
 
   // STAFF — always active for all standard pages
-  if (role === "staff") {
+  if (r === "staff") {
     if (STAFF_ALWAYS_ACTIVE_PAGES.includes(pageKey)) return "active";
   }
 
   // DOCTOR — Coming Soon for restricted pages
-  if (role === "doctor") {
+  if (r === "doctor") {
     if (DOCTOR_COMING_SOON_PAGES.includes(pageKey)) return "coming-soon";
   }
 
