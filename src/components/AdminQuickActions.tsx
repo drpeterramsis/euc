@@ -18,12 +18,12 @@ const adminQuickActions = [
 ];
 
 const COUNT_SOURCES: Record<string, string> = {
-  users:      "/data/users.json",
-  posts:      "/data/posts.json",
-  categories: "/data/categories.json",
-  sessions:   "/data/sessions.json",
-  media:      "/data/media.json",
-  directory:  "/data/directory.json",
+  users:      "users.json",
+  posts:      "posts.json",
+  categories: "categories.json",
+  sessions:   "sessions.json",
+  media:      "media.json",
+  directory:  "directory.json",
 };
 
 export default function AdminQuickActions() {
@@ -33,11 +33,12 @@ export default function AdminQuickActions() {
   useEffect(() => {
     const entries = Object.entries(COUNT_SOURCES);
     Promise.allSettled(
-      entries.map(([key, url]) =>
-        fetch(url)
-          .then(r => r.json())
-          .then(data => ({ key, count: Array.isArray(data) ? data.length : 0 }))
-          .catch(() => ({ key, count: 0 }))
+      entries.map(([key, file]) =>
+        import('../utils/github').then(({ readJSON }) => 
+          readJSON(file)
+            .then(data => ({ key, count: Array.isArray(data) ? data.length : 0 }))
+            .catch(() => ({ key, count: 0 }))
+        )
       )
     ).then(results => {
       const newCounts: Record<string, number> = {};

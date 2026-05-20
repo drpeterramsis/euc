@@ -87,7 +87,7 @@ export default function Sessions() {
               
               <div className="space-y-2 mb-6 flex-1">
                 <div className="flex items-center gap-2 text-sm text-gray-650">
-                   <span className="font-bold">⏰ {s.time}{s.toTime ? ` – ${s.toTime}` : ""}</span>
+                   <span className="font-bold">⏰ {s.time}{s.toTime ? ` - ${s.toTime}` : ""}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-650">
                    <span className="font-bold">📅 {s.date}</span>

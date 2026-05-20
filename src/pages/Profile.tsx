@@ -12,6 +12,7 @@ import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import { getLabel } from '../utils/labels';
 import { displayPhone } from '../utils/phone';
+import { readJSON } from '../utils/github';
 
 // ─────────────────────────────────────────────
 // DETAIL ROW COMPONENT (High-contrast label vs value typography)
@@ -53,8 +54,7 @@ export default function Profile() {
 
   // Fetch full schedule details dynamically on mount
   useEffect(() => {
-    fetch("/data/schedule.json")
-      .then(r => r.json())
+    readJSON("schedule.json")
       .then(setScheduleItems)
       .catch(() => setScheduleItems([]));
   }, []);

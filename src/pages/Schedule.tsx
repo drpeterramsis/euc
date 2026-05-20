@@ -9,6 +9,7 @@
  */
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
+import { readJSON } from "../utils/github";
 import { getPageAccess } from "../utils/pageAccess";
 import { useAppContext } from "../context/AppContext";
 import { getLabel } from "../utils/labels";
@@ -38,8 +39,7 @@ export default function Schedule() {
   const [tripDays, setTripDays] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch("/data/tripSchedule.json")
-      .then(r => r.json())
+    readJSON("tripSchedule.json")
       .then(setTripDays)
       .catch(() => setTripDays([]));
   }, []);

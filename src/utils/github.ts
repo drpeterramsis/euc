@@ -29,13 +29,17 @@ export async function readJSON(fileName: string): Promise<any[]> {
       });
       if (res.ok) {
         const data = await res.json();
-        return JSON.parse(atob(data.content));
+        const b64 = data.content;
+        const bin = atob(b64);
+        const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+        const text = new TextDecoder("utf-8").decode(bytes);
+        return JSON.parse(text);
       }
     } catch (err) { console.warn(`GitHub API failed for ${fileName}`); }
   }
 
   try {
-    const res = await fetch(`/data/${fileName}?t=${Date.now()}`);
+    const res = await fetch(`${import.meta.env.BASE_URL}data/${fileName}?t=${Date.now()}`);
     if (res.ok) return await res.json();
   } catch (err) { console.error(`Local fallback failed for ${fileName}`); }
   return [];

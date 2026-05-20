@@ -7,7 +7,7 @@ import Layout from '../components/Layout';
 import { useApp, DEFAULT_SCHEDULE_CATEGORIES, DEFAULT_MEDIA_CATEGORIES } from '../context/AppContext';
 import { APP_VERSION } from "../version";
 import { Navigate, useSearchParams, useNavigate } from 'react-router-dom';
-import { writeJSON } from '../utils/github';
+import { writeJSON, readJSON } from '../utils/github';
 import UserControlCard from '../components/UserControlCard';
 import UserGridCard from '../components/UserGridCard';
 import UserAvatar from '../components/UserAvatar';
@@ -647,13 +647,11 @@ export default function Admin({ initialTab }: AdminProps = {}) {
 
   // Load countdown config & day-by-day trip agenda on component load
   useEffect(() => {
-    fetch("/data/countdownConfig.json")
-      .then(r => r.json())
+    readJSON("countdownConfig.json")
       .then(setCountdownConfig)
       .catch(() => {});
 
-    fetch("/data/tripSchedule.json")
-      .then(r => r.json())
+    readJSON("tripSchedule.json")
       .then(setTripSchedule)
       .catch(() => setTripSchedule([]));
   }, []);
@@ -2084,7 +2082,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                 </div>
                 <div className="text-xs text-gray-500 mt-3 flex flex-wrap items-center gap-4">
                     <span className="flex items-center gap-1 font-bold text-gray-700">📅 {session.date}</span>
-                    <span className="flex items-center gap-1 font-bold text-gray-700">⏰ {session.time}{session.toTime ? ` – ${session.toTime}` : ""}</span>
+                    <span className="flex items-center gap-1 font-bold text-gray-700">⏰ {session.time}{session.toTime ? ` - ${session.toTime}` : ""}</span>
                     <span className="flex items-center gap-1">🏛 {session.hall}</span>
                     {session.link && <span className="text-blue-600 truncate max-w-[200px]">🔗 {session.link}</span>}
                 </div>

@@ -15,6 +15,7 @@ import MediaPostViewerModal from '../components/MediaPostViewerModal';
 import { shouldShowOnDashboard } from '../utils/postVisibility';
 import { getLabel } from '../utils/labels';
 import SmartCountdown from '../components/SmartCountdown';
+import { readJSON } from '../utils/github';
 
 // ─────────────────────────────────────────────
 // SUMMARY CARD FOR FLIGHTS (Compact, clean with icons)
@@ -112,13 +113,11 @@ export default function Dashboard() {
 
   // Load dynamically on app mount to stay reactive without page refreshes
   useEffect(() => {
-    fetch("/data/schedule.json")
-      .then(r => r.json())
+    readJSON("schedule.json")
       .then(setScheduleItems)
       .catch(() => setScheduleItems([]));
 
-    fetch("/data/countdownConfig.json")
-      .then(r => r.json())
+    readJSON("countdownConfig.json")
       .then(setCountdownConfig)
       .catch(() => {});
   }, []);
