@@ -189,7 +189,17 @@ export default function Dashboard() {
       </div>
 
 
-      {/* Your Trip Logistics Compact Highlights */}
+
+
+      {/* Dynamic Smart Countdown from configuration & schedule */}
+      <div className="mb-8">
+        <SmartCountdown
+          scheduleItems={scheduleItems}
+          countdownConfig={countdownConfig}
+        />
+      </div>
+
+            {/* Your Trip Logistics Compact Highlights */}
       {scheduleItems.length > 0 && (
         <div className="mb-8">
           <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3 block">
@@ -203,15 +213,7 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-      )}
-
-      {/* Dynamic Smart Countdown from configuration & schedule */}
-      <div className="mb-8">
-        <SmartCountdown
-          scheduleItems={scheduleItems}
-          countdownConfig={countdownConfig}
-        />
-      </div>
+      )} 
 
       
 
