@@ -69,7 +69,9 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
     label: (appConfig?.navLabels as any)?.[item.key] ?? labels[item.key as keyof typeof labels] ?? item.key,
   }));
 
-  const visibleNavItems = navItems.filter(item => isNavVisible(item.key, currentUser?.role, appConfig));
+  const normalizedRole = currentUser?.role?.trim().toLowerCase();
+
+  const visibleNavItems = navItems.filter(item => isNavVisible(item.key, normalizedRole, appConfig));
 
   return (
     <>
@@ -100,7 +102,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
             </button>
           </div>
         </div>
-
+        
         {/* Zone 2 — User Card + Logout Button (TOP, under logo, always visible) */}
         {fullUser && (
           <div className="flex-shrink-0 px-3 py-3 border-b border-gray-800 bg-black">
@@ -131,7 +133,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                         scrollbar-thin scrollbar-thumb-gray-700
                         scrollbar-track-transparent space-y-1">
           {visibleNavItems.map(item => {
-            const access = getPageAccess(item.key, currentUser?.role, appConfig);
+            const access = getPageAccess(item.key, normalizedRole, appConfig);
             const isComingSoon = access === "coming-soon";
 
             return (
@@ -160,7 +162,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
             );
           })}
           
-          {currentUser?.role === 'admin' && (
+          {normalizedRole === 'admin' && (
             <>
               <div className="border-t border-gray-800 my-4" />
               <NavLink

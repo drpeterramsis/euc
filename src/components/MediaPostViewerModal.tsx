@@ -1,9 +1,14 @@
 import { useState } from "react";
+import VideoPlayer from "./VideoPlayer";
+import { detectLinkType } from "../utils/linkUtils";
 
 export default function MediaPostViewerModal({ post, onClose }: { post: any, onClose: () => void }) {
   const [imageError, setImageError] = useState(false);
 
   if (!post) return null;
+
+  const finalLink = post.linkUrl || post.link;
+  const isVideo = finalLink && ["youtube", "vimeo", "facebook"].includes(detectLinkType(finalLink));
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={onClose}>
@@ -14,12 +19,18 @@ export default function MediaPostViewerModal({ post, onClose }: { post: any, onC
         <button onClick={onClose} className="absolute right-4 top-4 text-white bg-black/50 p-2 rounded-full hover:bg-black/70 z-10 text-xl font-bold">✕</button>
 
         <div className="w-full flex-1 bg-gray-100 flex items-center justify-center p-2">
-          <img 
-            src={imageError ? "https://placehold.co/800x400?text=Image+Unavailable" : post.imageDataUrl} 
-            alt={post.title} 
-            className="w-full h-full object-contain max-h-[50vh]"
-            onError={() => setImageError(true)}
-          />
+          {isVideo ? (
+            <div className="w-full p-4">
+              <VideoPlayer url={finalLink} title={post.title} />
+            </div>
+          ) : (
+            <img 
+              src={imageError ? "https://placehold.co/800x400?text=Image+Unavailable" : (post.photoUrl || post.imageDataUrl || post.thumbnailUrl)} 
+              alt={post.title} 
+              className="w-full h-full object-contain max-h-[50vh]"
+              onError={() => setImageError(true)}
+            />
+          )}
         </div>
 
         <div className="p-6 space-y-4">
@@ -41,9 +52,9 @@ export default function MediaPostViewerModal({ post, onClose }: { post: any, onC
             )}
 
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              {post.link && (
+              {finalLink && (
                 <a 
-                  href={post.link} 
+                  href={finalLink} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex-1 bg-black text-white text-center py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors"
@@ -51,9 +62,9 @@ export default function MediaPostViewerModal({ post, onClose }: { post: any, onC
                   {post.linkLabel || "Open Link"}
                 </a>
               )}
-              {post.allowDownload !== false && (
+              {post.allowDownload !== false && !isVideo && (post.photoUrl || post.imageDataUrl || post.thumbnailUrl) && (
                 <a 
-                  href={post.imageDataUrl} 
+                  href={post.photoUrl || post.imageDataUrl || post.thumbnailUrl} 
                   download={`euc_post_${post.id}.jpg`}
                   className="flex-1 border-2 border-gray-900 text-gray-900 text-center py-3 rounded-lg font-bold hover:bg-gray-50 transition-colors"
                 >

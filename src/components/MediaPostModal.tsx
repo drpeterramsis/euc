@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { compressImage } from '../utils/image';
 import { showToast } from './Toast';
+import { getThumbnailUrl, detectLinkType } from '../utils/linkUtils';
 
 interface MediaPostModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
   const [isSaving, setIsSaving] = useState(false);
   const [compressing, setCompressing] = useState(false);
   const [userSearchText, setUserSearchText] = useState("");
+  const [autoThumbnail, setAutoThumbnail] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     id: "",
@@ -65,6 +67,15 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
     }
   }, [isOpen, post, settings]);
 
+  useEffect(() => {
+    if (form.link && !form.imageDataUrl) {
+      const thumb = getThumbnailUrl(form.link);
+      setAutoThumbnail(thumb);
+    } else {
+      setAutoThumbnail(null);
+    }
+  }, [form.link, form.imageDataUrl]);
+
   if (!isOpen) return null;
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,8 +94,13 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
   };
 
   const handleSubmit = async () => {
-    if (!form.title || !form.imageDataUrl) {
-      showToast("Title and Image are required", "error");
+    if (!form.title) {
+      showToast("Title is required", "error");
+      return;
+    }
+
+    if (!form.imageDataUrl && !autoThumbnail) {
+      showToast("An image or a link with an auto-fetched preview is required", "error");
       return;
     }
 
@@ -100,7 +116,19 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
 
     try {
       setIsSaving(true);
-      await onSave({ ...form, createdAt: post?.createdAt || new Date().toISOString() });
+      
+      const payload = {
+        ...form,
+        photoUrl: form.imageDataUrl || "",
+        thumbnailUrl: autoThumbnail || "",
+        linkUrl: form.link || "",
+        linkType: form.link ? detectLinkType(form.link) : "",
+        // For backwards compatibility with standard media lists rendering img tags:
+        imageDataUrl: form.imageDataUrl || autoThumbnail || "",
+        createdAt: post?.createdAt || new Date().toISOString()
+      };
+
+      await onSave(payload);
       onClose();
     } catch (err) {
       showToast("Failed to save post", "error");
@@ -239,6 +267,26 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
                     </label>
                   )}
                 </div>
+
+                {/* If no manual photo and autoThumbnail exists, show the preview */}
+                {!form.imageDataUrl && autoThumbnail && (
+                  <div className="relative mt-3 rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                    <img
+                      src={autoThumbnail}
+                      alt="Link preview"
+                      className="w-full h-48 object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-3 py-2 flex items-center gap-2">
+                      <span className="text-white text-xs truncate">{form.link}</span>
+                      <span className="ml-auto text-xs bg-yellow-400 text-black px-2 py-0.5 rounded-full font-bold capitalize flex-shrink-0">
+                        {detectLinkType(form.link)}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Audience Targeting */}
