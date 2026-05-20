@@ -9,15 +9,6 @@ export default defineConfig(({mode}) => {
     plugins: [
       react(), 
       tailwindcss(),
-      {
-        name: 'force-light-mode',
-        transformIndexHtml(html) {
-          return html.replace(
-            '<head>',
-            `<head><meta name="color-scheme" content="light only"><style>:root,html,body{color-scheme:light only!important;background:#fff!important;color:#111!important}</style>`
-          );
-        }
-      }
     ],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
@@ -28,14 +19,9 @@ export default defineConfig(({mode}) => {
       },
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modify—file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
-      headers: {
-        "Content-Type": "application/json; charset=utf-8"
-      }
-    }
+    },
+    appType: 'spa'
   };
 });

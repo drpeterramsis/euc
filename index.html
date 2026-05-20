@@ -1,39 +1,8 @@
 <!doctype html>
-<html lang="en" class="light" style="color-scheme: light only;" data-theme="light" data-color-scheme="light">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="color-scheme" content="light only" />
-    <meta name="supported-color-schemes" content="light" />
-    <style>
-      :root { color-scheme: light only !important; }
-      html, body { color-scheme: light only !important; background: #fff !important; color: #111 !important; }
-    </style>
-    <script>
-      (function () {
-        try {
-          document.documentElement.style.colorScheme = 'light';
-          document.documentElement.classList.remove('dark');
-          document.documentElement.classList.add('light');
-          document.documentElement.setAttribute('data-theme', 'light');
-          document.documentElement.setAttribute('data-color-scheme', 'light');
-
-          const originalMatchMedia = window.matchMedia.bind(window);
-          window.matchMedia = function (query) {
-            if (query === '(prefers-color-scheme: dark)') {
-              const mql = originalMatchMedia(query);
-              return Object.assign(mql, { matches: false });
-            }
-            return originalMatchMedia(query);
-          };
-        } catch (e) {}
-      })();
-    </script>
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="EUC – EVA URO CLUB | Prague Conference 2025" />
-    <meta name="author" content="EVA Pharma" />
-    <meta property="og:title" content="EUC – EVA URO CLUB" />
-    <meta property="og:description" content="Prague Conference Trip Management App" />
     <title>EUC – EVA URO CLUB</title>
   </head>
   <body>
