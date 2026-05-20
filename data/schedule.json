@@ -3,7 +3,7 @@
     "id": "S001",
     "type": "flight",
     "direction": "outbound",
-    "title": "✈️ To Prague",
+    "title": "\u2708\uFE0F To Prague",
     "visibility": "all_users",
     "details": {
       "flightNumber":             "EgyptAir MS 789",
@@ -21,7 +21,7 @@
     "id": "S002",
     "type": "flight",
     "direction": "inbound",
-    "title": "✈️ To Cairo",
+    "title": "\u2708\uFE0F To Cairo",
     "visibility": "all_users",
     "details": {
       "flightNumber":             "MS 790",
@@ -38,16 +38,16 @@
   {
     "id": "S003",
     "type": "hotel",
-    "title": "🏨 Hotel Details",
+    "title": "\uD83C\uDFE8 Hotel Details",
     "visibility": "all_users",
     "details": {
-      "hotelName":        "Vienna House Diplomat Prague",
-      "checkInDate":      "2026-06-25",
-      "checkInTime":      "",
-      "checkOutDate":     "2026-06-28",
-      "checkOutTime":     "",
-      "address":          "Diplomat Hotel Prague is located in the heart of the prestigious diplomatic district of Dejvice, just minutes from the historic center of Prague and 12 kilometers from the airport. Evropská 15, 160 41 Prague 6",
-      "googleMapLocation":"https://www.google.com/maps/place/Diplomat+Hotel+Prague/@50.0998037,14.3895171,17z/data=!4m10!3m9!1s0x470b953c9b9b8d15:0x6e37f2f5bfa9e19d!5m3!1s2026-07-01!4m1!1i2!8m2!3d50.0998037!4d14.3895171!16s%2Fg%2F1hc1kbzcn?entry=tts&g_ep=EgoyMDI2MDUxMy4wIPu8ASoASAFQAw%3D%3D&skid=fca6053c-12d5-4a28-a4e7-e6285d8182a5"
+      "hotelName":         "Vienna House Diplomat Prague",
+      "checkInDate":       "2026-06-25",
+      "checkInTime":       "",
+      "checkOutDate":      "2026-06-28",
+      "checkOutTime":      "",
+      "address":           "Diplomat Hotel Prague is located in the heart of the prestigious diplomatic district of Dejvice, just minutes from the historic center of Prague and 12 kilometers from the airport. Evropska 15, 160 41 Prague 6",
+      "googleMapLocation": "https://www.google.com/maps/place/Diplomat+Hotel+Prague/@50.0998037,14.3895171,17z"
     }
   }
 ]

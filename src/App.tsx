@@ -16,15 +16,18 @@ import Profile from './pages/Profile';
 import Schedule from './pages/Schedule';
 import Sessions from './pages/Sessions';
 import Admin from './pages/Admin';
-import AdminPosts from './pages/AdminPosts';
-import AdminCategories from './pages/AdminCategories';
+import { 
+  AdminUsers, AdminPosts, AdminCategories, AdminSessions, 
+  AdminTripSchedule, AdminFlightHotel, AdminCountdown, 
+  AdminMedia, AdminDirectory, AdminNotifications, 
+  AdminSettings, AdminAppearance 
+} from './pages/admin/AdminFeaturePages';
 import ComingSoon from './pages/ComingSoon';
 import Media from './pages/Media';
 import Staff from './pages/Staff';
-import Directory from './pages/Directory'; // ← NEW
+import Directory from './pages/Directory'; 
 import { useApp } from './context/AppContext';
 import { getFeatureStatus } from './utils/featureAccess';
-
 import { useSwipeBack } from './hooks/useSwipeBack';
 
 /**
@@ -82,8 +85,18 @@ function AppRoutes() {
       <Route path="/schedule" element={<ProtectedRoute><FeatureRoute featureKey="schedule"><Schedule /></FeatureRoute></ProtectedRoute>} />
       <Route path="/sessions" element={<ProtectedRoute><FeatureRoute featureKey="sessions"><Sessions /></FeatureRoute></ProtectedRoute>} />
       <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+      <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
       <Route path="/admin/posts" element={<AdminRoute><AdminPosts /></AdminRoute>} />
       <Route path="/admin/categories" element={<AdminRoute><AdminCategories /></AdminRoute>} />
+      <Route path="/admin/sessions" element={<AdminRoute><AdminSessions /></AdminRoute>} />
+      <Route path="/admin/trip-schedule" element={<AdminRoute><AdminTripSchedule /></AdminRoute>} />
+      <Route path="/admin/flight-hotel" element={<AdminRoute><AdminFlightHotel /></AdminRoute>} />
+      <Route path="/admin/countdown" element={<AdminRoute><AdminCountdown /></AdminRoute>} />
+      <Route path="/admin/media" element={<AdminRoute><AdminMedia /></AdminRoute>} />
+      <Route path="/admin/directory" element={<AdminRoute><AdminDirectory /></AdminRoute>} />
+      <Route path="/admin/notifications" element={<AdminRoute><AdminNotifications /></AdminRoute>} />
+      <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+      <Route path="/admin/appearance" element={<AdminRoute><AdminAppearance /></AdminRoute>} />
       <Route path="/media" element={<ProtectedRoute><FeatureRoute featureKey="photoGallery"><Media /></FeatureRoute></ProtectedRoute>} />
       <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
       <Route path="/directory" element={<ProtectedRoute><Directory /></ProtectedRoute>} /> {/* ← NEW */}

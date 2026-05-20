@@ -8,22 +8,22 @@
       {
         "id": "TS001-E1",
         "time": "12:50",
-        "label": "Depart Cairo — EgyptAir MS 789",
-        "icon": "✈️",
+        "label": "Depart Cairo - EgyptAir MS 789",
+        "icon": "\u2708\uFE0F",
         "type": "travel"
       },
       {
         "id": "TS001-E2",
         "time": "17:00",
         "label": "Arrive Prague Airport",
-        "icon": "🛬",
+        "icon": "\uD83D\uDEEC",
         "type": "travel"
       },
       {
         "id": "TS001-E3",
         "time": "19:00",
-        "label": "Check-in — Vienna House Diplomat Prague",
-        "icon": "🏨",
+        "label": "Check-in - Vienna House Diplomat Prague",
+        "icon": "\uD83C\uDFE8",
         "type": "hotel"
       }
     ]
@@ -38,21 +38,21 @@
         "id": "TS002-E1",
         "time": "09:00",
         "label": "Opening Session",
-        "icon": "🎤",
+        "icon": "\uD83C\uDFA4",
         "type": "session"
       },
       {
         "id": "TS002-E2",
         "time": "13:00",
         "label": "Lunch Break",
-        "icon": "🍽️",
+        "icon": "\uD83C\uDF7D\uFE0F",
         "type": "break"
       },
       {
         "id": "TS002-E3",
         "time": "15:00",
-        "label": "City Tour — Prague Old Town",
-        "icon": "🏛️",
+        "label": "City Tour - Prague Old Town",
+        "icon": "\uD83C\uDFDB\uFE0F",
         "type": "activity"
       }
     ]
@@ -67,21 +67,21 @@
         "id": "TS003-E1",
         "time": "09:00",
         "label": "Morning Sessions",
-        "icon": "🎤",
+        "icon": "\uD83C\uDFA4",
         "type": "session"
       },
       {
         "id": "TS003-E2",
         "time": "13:00",
         "label": "Lunch Break",
-        "icon": "🍽️",
+        "icon": "\uD83C\uDF7D\uFE0F",
         "type": "break"
       },
       {
         "id": "TS003-E3",
         "time": "19:00",
         "label": "Gala Dinner",
-        "icon": "🥂",
+        "icon": "\uD83E\uDD42",
         "type": "activity"
       }
     ]
@@ -95,15 +95,15 @@
       {
         "id": "TS004-E1",
         "time": "12:00",
-        "label": "Check-out — Vienna House Diplomat Prague",
-        "icon": "🏨",
+        "label": "Check-out - Vienna House Diplomat Prague",
+        "icon": "\uD83C\uDFE8",
         "type": "hotel"
       },
       {
         "id": "TS004-E2",
         "time": "16:45",
-        "label": "Depart Prague — MS 790",
-        "icon": "✈️",
+        "label": "Depart Prague - MS 790",
+        "icon": "\u2708\uFE0F",
         "type": "travel"
       }
     ]

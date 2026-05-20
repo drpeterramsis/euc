@@ -1,0 +1,13 @@
+import AdminPlaceholder from "./AdminPlaceholder";
+export const AdminUsers = () => <AdminPlaceholder title="User Management" />;
+export const AdminPosts = () => <AdminPlaceholder title="News Feed Posts" />;
+export const AdminCategories = () => <AdminPlaceholder title="Post Categories" />;
+export const AdminSessions = () => <AdminPlaceholder title="Conference Sessions" />;
+export const AdminTripSchedule = () => <AdminPlaceholder title="Trip Schedule" />;
+export const AdminFlightHotel = () => <AdminPlaceholder title="Flight & Hotel Logistics" />;
+export const AdminCountdown = () => <AdminPlaceholder title="Countdown & Timeline" />;
+export const AdminMedia = () => <AdminPlaceholder title="Media & Gallery" />;
+export const AdminDirectory = () => <AdminPlaceholder title="Staff Directory" />;
+export const AdminNotifications = () => <AdminPlaceholder title="Push Notifications" />;
+export const AdminSettings = () => <AdminPlaceholder title="App Settings" />;
+export const AdminAppearance = () => <AdminPlaceholder title="Appearance" />;

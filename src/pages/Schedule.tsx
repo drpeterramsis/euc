@@ -60,7 +60,7 @@ export default function Schedule() {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center text-center px-6 py-20 min-h-[60vh] font-sans">
-          <span className="text-6xl mb-5">🔒</span>
+          <span className="text-6xl mb-5">{"\uD83D\uDD12"}</span>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             {pageTitle}
           </h1>
@@ -79,7 +79,7 @@ export default function Schedule() {
         <div className="mb-6 flex justify-between items-end">
           <div>
             <h1 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-              🗓️ {pageTitle}
+              {"\uD83D\uDDD3\uFE0F"} {pageTitle}
             </h1>
             <p className="text-sm text-gray-500 mt-1">
               Prague · June 25–28, 2026
@@ -157,7 +157,7 @@ export default function Schedule() {
 
           {tripDays.length === 0 && (
             <div className="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-              <p className="text-4xl mb-3">📭</p>
+              <p className="text-4xl mb-3">{"\uD83D\uDCED"}</p>
               <p className="text-sm font-bold text-gray-400">No schedule yet.</p>
             </div>
           )}

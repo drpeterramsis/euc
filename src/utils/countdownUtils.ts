@@ -37,7 +37,7 @@ export function buildTimeline(
         id:       item.id,
         label:    item.title,
         datetime: dt,
-        icon:     item.direction === "outbound" ? "✈️" : "🛬",
+        icon:     item.direction === "outbound" ? "\u2708\uFE0F" : "\uD83D\uDEEC",
         color:    item.direction === "outbound" ? "yellow" : "green",
         source:   "schedule",
         isPast:   new Date(dt).getTime() < now,
@@ -50,9 +50,9 @@ export function buildTimeline(
       const dt = `${item.details.checkInDate}T${item.details.checkInTime || "14:00"}:00`;
       events.push({
         id:       item.id + "_checkin",
-        label:    `🏨 Check-in: ${item.details.hotelName}`,
+        label:    `\uD83C\uDFE8 Check-in: ${item.details.hotelName}`,
         datetime: dt,
-        icon:     "🏨",
+        icon:     "\uD83C\uDFE8",
         color:    "blue",
         source:   "schedule",
         isPast:   new Date(dt).getTime() < now,
@@ -63,9 +63,9 @@ export function buildTimeline(
       const dtOut = `${item.details.checkOutDate}T${item.details.checkOutTime || "12:00"}:00`;
       events.push({
         id:       item.id + "_checkout",
-        label:    `🏨 Check-out: ${item.details.hotelName}`,
+        label:    `\uD83C\uDFE8 Check-out: ${item.details.hotelName}`,
         datetime: dtOut,
-        icon:     "🏨",
+        icon:     "\uD83C\uDFE8",
         color:    "gray",
         source:   "schedule",
         isPast:   new Date(dtOut).getTime() < now,
@@ -83,7 +83,7 @@ export function buildTimeline(
       id:       entry.id,
       label:    entry.label,
       datetime: entry.datetime,
-      icon:     entry.icon ?? "📌",
+      icon:     entry.icon ?? "\uD83D\uDCCC",
       color:    entry.color ?? "gray",
       source:   "custom",
       isPast:   ts < now,

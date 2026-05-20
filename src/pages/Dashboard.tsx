@@ -18,8 +18,9 @@ import SmartCountdown from '../components/SmartCountdown';
 
 // ─────────────────────────────────────────────
 // SUMMARY CARD FOR FLIGHTS (Compact, clean with icons)
+// NOTE: "key" is allowed in TypeScript props type but NOT destructured to avoid React key prop warning.
 // ─────────────────────────────────────────────
-function FlightSummaryCard({ item, key }: { item: any; key?: any }) {
+function FlightSummaryCard({ item }: { item: any; key?: any }) {
   const d = item.details;
   if (!d) return null;
   return (
@@ -53,8 +54,9 @@ function FlightSummaryCard({ item, key }: { item: any; key?: any }) {
 
 // ─────────────────────────────────────────────
 // SUMMARY CARD FOR HOTEL (Compact, clean staying details)
+// NOTE: "key" is allowed in TypeScript props type but NOT destructured to avoid React key prop warning.
 // ─────────────────────────────────────────────
-function HotelSummaryCard({ item, key }: { item: any; key?: any }) {
+function HotelSummaryCard({ item }: { item: any; key?: any }) {
   const d = item.details;
   if (!d) return null;
   return (
@@ -146,7 +148,7 @@ export default function Dashboard() {
       {currentUser?.role === "admin" && !viewAs && (
         <div className="bg-white text-gray-900 p-5 rounded-xl mb-8 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100">
           <h2 className="text-yellow-600 font-extrabold mb-4 flex items-center gap-2 uppercase tracking-wider text-sm">
-            <span>👑</span> Admin Quick Actions
+            <span>{"\uD83D\uDC51"}</span> Admin Quick Actions
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <button onClick={() => navigate("/admin?tab=users")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-with-all text-gray-800 flex items-center justify-center gap-2">👥 Users</button>
@@ -221,7 +223,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
           <div className="p-5 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">✈️</span>
+              <span className="text-2xl">{"\u2708\uFE0F"}</span>
               <div>
                 <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">Departure Trip</h3>
                 <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">To Prague Conference</p>
@@ -243,7 +245,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
           <div className="p-5 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">🛬</span>
+              <span className="text-2xl">{"\uD83D\uDEEC"}</span>
               <div>
                 <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">Arrival Trip (Return)</h3>
                 <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Back Home Safely</p>
@@ -264,7 +266,7 @@ export default function Dashboard() {
         {/* Hotel Details */}
         <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden flex flex-col md:col-span-2">
           <div className="p-5 bg-gray-50 border-b border-gray-100 flex items-center gap-3">
-            <span className="text-2xl">🏨</span>
+            <span className="text-2xl">{"\uD83C\uDFE8"}</span>
             <div>
               <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">Accommodation Details</h3>
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Your Stay in Prague</p>

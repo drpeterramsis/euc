@@ -497,7 +497,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
   const renderTripInfoTab = () => (
     <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-8">
       <div>
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><span>🏨</span> Global Hotel Info</h2>
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><span>{"\uD83C\uDFE8"}</span> Global Hotel Info</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Hotel Name</label>
@@ -1711,7 +1711,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
       {/* ── 2. SECTION A: FLIGHT & HOTEL LOGISTICS (schedule.json) ── */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-150 mb-8 font-sans">
         <h3 className="font-extrabold text-lg text-gray-900 border-b pb-3 mb-4 flex items-center gap-2">
-          <span>✈️</span> Section A: Flight & Hotel Details (schedule.json)
+          <span>{"\u2708\uFE0F"}</span> Section A: Flight & Hotel Details (schedule.json)
         </h3>
         
         <p className="text-sm text-gray-500 mb-6">
@@ -1725,7 +1725,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
           return (
             <div key={item.id} className="border border-gray-200 rounded-xl overflow-hidden mb-6">
               <div className="bg-gray-50 px-4 py-2.5 font-bold text-sm text-gray-800 border-b border-gray-200 flex items-center justify-between">
-                <span>{item.title || (isFlight ? (isOutbound ? "✈️ Outbound Flight" : "✈️ Inbound Flight") : "🏨 Accommodation")}</span>
+                <span>{item.title || (isFlight ? (isOutbound ? "\u2708\uFE0F Outbound Flight" : "\u2708\uFE0F Inbound Flight") : "\uD83C\uDFE8 Accommodation")}</span>
                 <span className="text-[10px] bg-yellow-400 text-black px-2 py-0.5 rounded font-mono font-bold">{item.id}</span>
               </div>
               
@@ -2648,7 +2648,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
           <option value="dashboard">📊 Quick Panel</option>
           <option value="users">👥 User Management</option>
           <option value="appConfig">⚙️ App Settings</option>
-          <option value="tripInfo">✈️ Trip Info</option>
+          <option value="tripInfo">{"\u2708\uFE0F"} Trip Info</option>
           <option value="schedule">📅 Schedule & Sessions</option>
           <option value="features">⚙️ Feature Flags</option>
           <option value="media">🖼️ Media / Posts</option>
@@ -2662,7 +2662,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
           { key: 'dashboard', label: '📊 Quick Panel' },
           { key: 'users', label: '👥 User Management' },
           { key: 'appConfig', label: '⚙️ App Settings' },
-          { key: 'tripInfo', label: '✈️ Trip Info' },
+          { key: 'tripInfo', label: '{"\u2708\uFE0F"} Trip Info' },
           { key: 'schedule', label: '📅 Schedule & Sessions' },
           { key: 'features', label: '⚙️ Feature Flags' },
           { key: 'media', label: '🖼️ Media / Posts' },
