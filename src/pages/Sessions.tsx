@@ -10,6 +10,7 @@
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import { getLabel } from '../utils/labels';
+import { getPageAccess } from '../utils/pageAccess';
 
 /**
  * Sessions component renders the list/grid of scientific sessions.
@@ -19,16 +20,10 @@ export default function Sessions() {
 
   const pageTitle = getLabel(appConfig, "sessions");
 
-  // Check visibility and coming soon from appConfig
-  const config = appConfig?.pages?.sessions;
-  const isHidden = config?.visible === false;
-  const isComingSoon = config?.comingSoon === true;
-
-  // Staff and Admin bypass
-  const bypassForStaff = currentUser?.role === "staff" || currentUser?.role === "admin";
+  const access = getPageAccess("sessions", currentUser?.role, appConfig);
 
   // Hidden Check
-  if (isHidden && !bypassForStaff) {
+  if (access === "hidden") {
     return (
       <Layout>
         <div className="flex items-center justify-center h-64 font-sans">
@@ -39,7 +34,7 @@ export default function Sessions() {
   }
 
   // Coming Soon Check
-  if (isComingSoon && !bypassForStaff) {
+  if (access === "coming-soon") {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center text-center px-6 py-20 font-sans">

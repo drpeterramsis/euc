@@ -230,6 +230,15 @@ export default function Admin() {
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><span>🛡️</span> Page Visibility & Status</h2>
         <p className="text-sm text-gray-500 mb-6 font-medium">Control whether specific sections of the app are visible to end users or flagged as coming soon.</p>
 
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-xs text-yellow-800 font-medium font-sans">
+            ⚠️ Role overrides apply: Admin always sees all pages as active.
+            Staff always see standard pages as active.
+            Doctors see Schedule, Sessions, and News Feed as "Coming Soon" by default.
+            These settings apply to any additional visibility rules.
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {Object.entries(pageConfigs).map(([pageKey, config]: [string, any]) => (
             <div key={pageKey} className="border border-gray-200 rounded-xl p-5 bg-gray-50 flex flex-col gap-4">

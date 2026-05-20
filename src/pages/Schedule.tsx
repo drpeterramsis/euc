@@ -10,6 +10,7 @@
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import { getLabel } from '../utils/labels';
+import { getPageAccess } from '../utils/pageAccess';
 
 /**
  * Schedule component renders the trip schedule timeline.
@@ -19,16 +20,10 @@ export default function Schedule() {
 
   const pageTitle = getLabel(appConfig, "schedule");
 
-  // Check visibility and coming soon from appConfig
-  const config = appConfig?.pages?.schedule;
-  const isHidden = config?.visible === false;
-  const isComingSoon = config?.comingSoon === true;
-
-  // Staff and Admin bypass
-  const bypassForStaff = currentUser?.role === "staff" || currentUser?.role === "admin";
+  const access = getPageAccess("schedule", currentUser?.role, appConfig);
 
   // Hidden Check
-  if (isHidden && !bypassForStaff) {
+  if (access === "hidden") {
     return (
       <Layout>
         <div className="flex items-center justify-center h-64 font-sans">
@@ -39,7 +34,7 @@ export default function Schedule() {
   }
 
   // Coming Soon Check
-  if (isComingSoon && !bypassForStaff) {
+  if (access === "coming-soon") {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center text-center px-6 py-20 font-sans">

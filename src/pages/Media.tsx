@@ -9,6 +9,7 @@ import { useApp, DEFAULT_MEDIA_CATEGORIES } from '../context/AppContext';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
 import { isPostVisible } from '../utils/postVisibility';
 import { getLabel } from '../utils/labels';
+import { getPageAccess } from '../utils/pageAccess';
 
 export default function Media() {
   const { media, settings, currentUser, appConfig } = useApp();
@@ -18,16 +19,10 @@ export default function Media() {
 
   const pageTitle = getLabel(appConfig, "media");
 
-  // Check visibility and coming soon from appConfig
-  const config = appConfig?.pages?.media;
-  const isHidden = config?.visible === false;
-  const isComingSoon = config?.comingSoon === true;
-
-  // Staff and Admin bypass
-  const bypassForStaff = currentUser?.role === "staff" || currentUser?.role === "admin";
+  const access = getPageAccess("media", currentUser?.role, appConfig);
 
   // Hidden Check
-  if (isHidden && !bypassForStaff) {
+  if (access === "hidden") {
     return (
       <Layout>
         <div className="flex items-center justify-center h-64 font-sans">
@@ -38,7 +33,7 @@ export default function Media() {
   }
 
   // Coming Soon Check
-  if (isComingSoon && !bypassForStaff) {
+  if (access === "coming-soon") {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center text-center px-6 py-20 font-sans">

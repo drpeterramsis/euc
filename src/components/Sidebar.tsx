@@ -14,6 +14,7 @@ import { logout } from "../utils/auth";
 import { useApp } from "../context/AppContext";
 import { getFeatureStatus } from "../utils/featureAccess";
 import UserAvatar from "./UserAvatar";
+import { getPageAccess, isNavVisible } from "../utils/pageAccess";
 
 /**
  * Sidebar component renders fixed navigation menu.
@@ -68,26 +69,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
     label: (appConfig?.navLabels as any)?.[item.key] ?? labels[item.key as keyof typeof labels] ?? item.key,
   }));
 
-  // Role-aware Page visibility filter logic
-  const STAFF_DEFAULT_VISIBLE = ["dashboard", "schedule", "sessions", "media", "directory", "profile"];
-
-  const isPageVisible = (key: string): boolean => {
-    // Admin always sees everything
-    if (currentUser?.role === "admin") return true;
-
-    // Staff: always show staff-default pages
-    if (currentUser?.role === "staff") {
-      if (STAFF_DEFAULT_VISIBLE.includes(key)) return true;
-    }
-
-    // Doctor/others: respect global appConfig visibility
-    const pageConf = (appConfig?.pages as any)?.[key];
-    if (pageConf?.visible === false) return false;
-
-    return true;
-  };
-
-  const visibleNavItems = navItems.filter(item => isPageVisible(item.key));
+  const visibleNavItems = navItems.filter(item => isNavVisible(item.key, currentUser?.role, appConfig));
 
   return (
     <>
@@ -149,31 +131,13 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                         scrollbar-thin scrollbar-thumb-gray-700
                         scrollbar-track-transparent space-y-1">
           {visibleNavItems.map(item => {
-            // Determine config checks
-            const pConf = (appConfig?.pages as any)?.[item.key];
-            const isComingSoon = pConf?.comingSoon === true;
-
-            // Route dynamic behavior
-            let finalPath = item.path;
-            const bypassForStaff = currentUser?.role === "staff" || currentUser?.role === "admin";
-
-            if (isComingSoon && !bypassForStaff) {
-              finalPath = `/coming-soon?feature=${item.key}`;
-            }
-
-            // Normal feature-specific status constraints
-            if (item.featureKey) {
-              const status = getFeatureStatus(fullUser, item.featureKey);
-              if (status === "disabled" && !bypassForStaff) return null;
-              if (status === "coming_soon" && !bypassForStaff) {
-                finalPath = `/coming-soon?feature=${item.featureKey}`;
-              }
-            }
+            const access = getPageAccess(item.key, currentUser?.role, appConfig);
+            const isComingSoon = access === "coming-soon";
 
             return (
               <NavLink
                 key={item.key}
-                to={finalPath}
+                to={item.path}
                 onClick={onClose}
                 className={({ isActive }) =>
                   `block p-3 rounded-lg transition-colors font-medium flex items-center gap-2 ${
@@ -187,7 +151,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                 <span className="flex-1 truncate">{item.label}</span>
                 
                 {/* Coming Soon badge on sidebar item */}
-                {pConf?.comingSoon && (
+                {isComingSoon && (
                   <span className="ml-auto text-xs bg-gray-600 text-white px-1.5 py-0.5 rounded-full">
                     Soon
                   </span>

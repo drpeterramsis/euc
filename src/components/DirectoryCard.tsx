@@ -81,15 +81,7 @@ export function DirectoryCard({ user, currentUser }: DirectoryCardProps) {
           </p>
         )}
 
-        {/* Email — if available */}
-        {user.email && (
-          <a
-            href={`mailto:${user.email}`}
-            className={`text-xs text-gray-500 hover:text-yellow-500 transition-colors truncate ${!canContact ? "mt-auto" : ""}`}
-          >
-            ✉️ {user.email}
-          </a>
-        )}
+
 
         {/* Contact buttons block — only renders when canContact === true */}
         {canContact && user.phone && (

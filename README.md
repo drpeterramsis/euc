@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.885
+Version: 1.0.887
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -96,6 +96,8 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.883 | 2026-05-20 | Replaced full users.json database with correct delegation list, converted viewer Dropbox URLs to direct download links, Egyptian phone normalization utilities, and applied unified auto-formatted direct Calling & WhatsApp buttons across the Staff Directory, Admin table, and My Profile page. |
 | v1.0.884 | 2026-05-20 | Replaced and corrected all remaining Dropbox photoUrl links in data/users.json to use the direct download dl.dropboxusercontent.com domain with the dl=0 viewer query suffix removed. |
 | v1.0.885 | 2026-05-20 | EUC App — Modify U038 to Staff, Add U039 Admin, Move Sidebar User Card to Top, Staff Visible Pages. |
+| v1.0.886 | 2026-05-20 | Implemented Role-Based Page Visibility Matrix, created page access utilities, removed email display from directory cards, and added Admin warning informational note. |
+| v1.0.887 | 2026-05-20 | Added seconds display to the existing countdown component for precise four-block real-time tracking (Days, Hours, Minutes, Seconds). |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

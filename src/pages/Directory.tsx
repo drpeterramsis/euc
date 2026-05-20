@@ -8,6 +8,7 @@ import Layout from "../components/Layout";
 import { useAppContext } from "../context/AppContext";
 import { DirectoryCard } from "../components/DirectoryCard";
 import { getLabel } from "../utils/labels";
+import { getPageAccess } from "../utils/pageAccess";
 
 export default function Directory() {
   const { users, appConfig, currentUser } = useAppContext();
@@ -16,16 +17,10 @@ export default function Directory() {
 
   const pageTitle = getLabel(appConfig, "directory");
 
-  // Check visibility from appConfig
-  const dirConfig = appConfig?.pages?.directory;
-  const isHidden    = dirConfig?.visible === false;
-  const isComingSoon = dirConfig?.comingSoon === true;
+  const access = getPageAccess("directory", currentUser?.role, appConfig);
 
-  // Staff and Admin bypass
-  const bypassForStaff = currentUser?.role === "staff" || currentUser?.role === "admin";
-
-  // Hidden: show nothing if not admin/staff
-  if (isHidden && !bypassForStaff) {
+  // Hidden Check
+  if (access === "hidden") {
     return (
       <Layout>
         <div className="flex items-center justify-center h-64 font-sans">
@@ -35,8 +30,8 @@ export default function Directory() {
     );
   }
 
-  // Coming Soon
-  if (isComingSoon && !bypassForStaff) {
+  // Coming Soon Check
+  if (access === "coming-soon") {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center text-center px-6 py-20 font-sans">
