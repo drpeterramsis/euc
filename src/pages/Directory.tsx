@@ -3,7 +3,7 @@
 // PURPOSE: Renders the team/staff directory, matching coming soon & visibility rules with staff overrides.
 // ─────────────────────────────────────────────
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { useAppContext } from "../context/AppContext";
 import { DirectoryCard } from "../components/DirectoryCard";
@@ -17,14 +17,20 @@ export default function Directory() {
 
   const pageTitle = getLabel(appConfig, "directory");
 
+  // ✅ ONLY use getPageAccess — NEVER check appConfig.pages directly
   const access = getPageAccess("directory", currentUser?.role, appConfig);
+
+  // DEBUG — retrieve info during testing
+  useEffect(() => {
+    console.log("[Directory] role:", currentUser?.role, "| access:", access);
+  }, [currentUser?.role, access]);
 
   // Hidden Check
   if (access === "hidden") {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-64 font-sans">
-          <p className="text-gray-400 text-sm">This page is not available.</p>
+        <div className="flex items-center justify-center min-h-[60vh] font-sans">
+          <p className="text-gray-400 text-sm font-bold">This page is not available.</p>
         </div>
       </Layout>
     );
@@ -34,11 +40,13 @@ export default function Directory() {
   if (access === "coming-soon") {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center text-center px-6 py-20 font-sans">
-          <span className="text-5xl mb-4">🔒</span>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{pageTitle}</h1>
-          <p className="text-gray-500 mb-6 font-medium text-sm">
-            This feature is currently under development and will be available soon.
+        <div className="flex flex-col items-center justify-center text-center px-6 py-20 min-h-[60vh] font-sans">
+          <span className="text-6xl mb-5">🔒</span>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            {appConfig?.navLabels?.["directory"] ?? pageTitle}
+          </h1>
+          <p className="text-gray-500 mb-6 font-semibold text-sm max-w-xs">
+            This feature is coming soon.
           </p>
         </div>
       </Layout>

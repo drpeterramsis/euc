@@ -16,6 +16,8 @@ import Profile from './pages/Profile';
 import Schedule from './pages/Schedule';
 import Sessions from './pages/Sessions';
 import Admin from './pages/Admin';
+import AdminPosts from './pages/AdminPosts';
+import AdminCategories from './pages/AdminCategories';
 import ComingSoon from './pages/ComingSoon';
 import Media from './pages/Media';
 import Staff from './pages/Staff';
@@ -80,6 +82,8 @@ function AppRoutes() {
       <Route path="/schedule" element={<ProtectedRoute><FeatureRoute featureKey="schedule"><Schedule /></FeatureRoute></ProtectedRoute>} />
       <Route path="/sessions" element={<ProtectedRoute><FeatureRoute featureKey="sessions"><Sessions /></FeatureRoute></ProtectedRoute>} />
       <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+      <Route path="/admin/posts" element={<AdminRoute><AdminPosts /></AdminRoute>} />
+      <Route path="/admin/categories" element={<AdminRoute><AdminCategories /></AdminRoute>} />
       <Route path="/media" element={<ProtectedRoute><FeatureRoute featureKey="photoGallery"><Media /></FeatureRoute></ProtectedRoute>} />
       <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
       <Route path="/directory" element={<ProtectedRoute><Directory /></ProtectedRoute>} /> {/* ← NEW */}

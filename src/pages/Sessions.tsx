@@ -7,6 +7,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
+import React, { useEffect } from 'react';
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import { getLabel } from '../utils/labels';
@@ -20,14 +21,20 @@ export default function Sessions() {
 
   const pageTitle = getLabel(appConfig, "sessions");
 
+  // ✅ ONLY use getPageAccess — NEVER check appConfig.pages directly
   const access = getPageAccess("sessions", currentUser?.role, appConfig);
+
+  // DEBUG — retrieve info during testing
+  useEffect(() => {
+    console.log("[Sessions] role:", currentUser?.role, "| access:", access);
+  }, [currentUser?.role, access]);
 
   // Hidden Check
   if (access === "hidden") {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-64 font-sans">
-          <p className="text-gray-400 text-sm">This page is not available.</p>
+        <div className="flex items-center justify-center min-h-[60vh] font-sans">
+          <p className="text-gray-400 text-sm font-bold">This page is not available.</p>
         </div>
       </Layout>
     );
@@ -37,11 +44,13 @@ export default function Sessions() {
   if (access === "coming-soon") {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center text-center px-6 py-20 font-sans">
-          <span className="text-5xl mb-4">🔒</span>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{pageTitle}</h1>
-          <p className="text-gray-500 mb-6 font-medium text-sm">
-            This feature is currently under development and will be available soon.
+        <div className="flex flex-col items-center justify-center text-center px-6 py-20 min-h-[60vh] font-sans">
+          <span className="text-6xl mb-5">🔒</span>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            {appConfig?.navLabels?.["sessions"] ?? pageTitle}
+          </h1>
+          <p className="text-gray-500 mb-6 font-semibold text-sm max-w-xs">
+            This feature is coming soon.
           </p>
         </div>
       </Layout>
@@ -77,13 +86,13 @@ export default function Sessions() {
               </div>
               
               <div className="space-y-2 mb-6 flex-1">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-gray-650">
                    <span className="font-bold">⏰ {s.time}{s.toTime ? ` – ${s.toTime}` : ""}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-gray-650">
                    <span className="font-bold">📅 {s.date}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-gray-650">
                    <span className="font-bold">🏛 Hall: {s.hall}</span>
                 </div>
               </div>
@@ -93,7 +102,7 @@ export default function Sessions() {
                   href={s.link} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="w-full bg-black text-white text-center py-2.5 rounded-lg font-bold text-sm hover:bg-gray-800 transition-colors shadow-sm"
+                  className="w-full bg-black text-white text-center py-2.5 rounded-lg font-bold text-sm hover:bg-gray-800 transition-colors shadow-sm cursor-pointer"
                 >
                   Join / Open Link
                 </a>

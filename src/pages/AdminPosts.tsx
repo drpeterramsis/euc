@@ -1,0 +1,11 @@
+import React from 'react';
+import Admin from './Admin';
+
+// ─────────────────────────────────────────────
+// FILE: src/pages/AdminPosts.tsx
+// PURPOSE: Admin view pre-set to the News Feed / Posts management tab.
+// ─────────────────────────────────────────────
+
+export default function AdminPosts() {
+  return <Admin initialTab="media" />;
+}

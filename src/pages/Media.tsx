@@ -3,7 +3,7 @@
 // PURPOSE: Renders the media gallery, matching coming soon & visibility rules with staff overrides.
 // ─────────────────────────────────────────────
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { useApp, DEFAULT_MEDIA_CATEGORIES } from '../context/AppContext';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
@@ -21,14 +21,20 @@ export default function Media() {
 
   const pageTitle = getLabel(appConfig, "media");
 
+  // ✅ ONLY use getPageAccess — NEVER check appConfig.pages directly
   const access = getPageAccess("media", currentUser?.role, appConfig);
+
+  // DEBUG — retrieve info during testing
+  useEffect(() => {
+    console.log("[Media] role:", currentUser?.role, "| access:", access);
+  }, [currentUser?.role, access]);
 
   // Hidden Check
   if (access === "hidden") {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-64 font-sans">
-          <p className="text-gray-400 text-sm">This page is not available.</p>
+        <div className="flex items-center justify-center min-h-[60vh] font-sans">
+          <p className="text-gray-400 text-sm font-bold">This page is not available.</p>
         </div>
       </Layout>
     );
@@ -38,11 +44,13 @@ export default function Media() {
   if (access === "coming-soon") {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center text-center px-6 py-20 font-sans">
-          <span className="text-5xl mb-4">🔒</span>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{pageTitle}</h1>
-          <p className="text-gray-500 mb-6 font-medium text-sm">
-            This feature is currently under development and will be available soon.
+        <div className="flex flex-col items-center justify-center text-center px-6 py-20 min-h-[60vh] font-sans">
+          <span className="text-6xl mb-5">🔒</span>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            {appConfig?.navLabels?.["media"] ?? pageTitle}
+          </h1>
+          <p className="text-gray-500 mb-6 font-semibold text-sm max-w-xs">
+            This feature is coming soon.
           </p>
         </div>
       </Layout>
@@ -95,7 +103,7 @@ export default function Media() {
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border ${
                 activeCategory === cat 
-                  ? "bg-yellow-500 border-yellow-600 text-black shadow-sm font-bold shadow-sm" 
+                  ? "bg-yellow-500 border-yellow-600 text-black shadow-sm font-bold" 
                   : "bg-white border-gray-200 text-gray-500 hover:border-gray-300 pointer-events-auto cursor-pointer"
               }`}
             >
@@ -109,7 +117,7 @@ export default function Media() {
           <select 
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-yellow-500"
+            className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-yellow-500 cursor-pointer"
           >
             <option value="latest">Latest</option>
             <option value="oldest">Oldest</option>
@@ -147,7 +155,7 @@ export default function Media() {
                     <VideoPlayer url={finalLink} title={post.title} />
                   </div>
                 ) : (
-                  <img src={post.imageDataUrl || post.photoUrl || post.thumbnailUrl} alt={post.title} className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
+                  <img src={post.imageDataUrl || post.photoUrl || post.thumbnailUrl} alt={post.title} className="w-full h-full object-cover transition-transform hover:scale-105 duration-500 font-sans" />
                 )}
                 <div className="absolute top-2 left-2 flex flex-col gap-1 z-10 pointer-events-none">
                   {post.comingSoon && (
@@ -155,7 +163,7 @@ export default function Media() {
                       🕐 Coming Soon
                     </div>
                   )}
-                  <span className="px-2 py-1 bg-white/90 backdrop-blur-sm text-yellow-800 text-[10px] font-bold rounded shadow-sm capitalize border border-yellow-100 w-max">
+                  <span className="px-2 py-1 bg-white/90 backdrop-blur-sm text-yellow-800 text-[10px] font-bold rounded shadow-sm capitalize border border-yellow-100 w-max font-semibold">
                     {post.category}
                   </span>
 
@@ -188,7 +196,7 @@ export default function Media() {
                     target="_blank" 
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="w-full bg-black text-white text-[10px] font-bold py-1.5 rounded text-center uppercase tracking-tight hover:bg-gray-800"
+                    className="w-full bg-black text-white text-[10px] font-bold py-1.5 rounded text-center uppercase tracking-tight hover:bg-gray-800 cursor-pointer"
                   >
                     {post.linkLabel || "Open Link"}
                   </a>
@@ -198,7 +206,7 @@ export default function Media() {
                     href={post.imageDataUrl || post.photoUrl || post.thumbnailUrl} 
                     download={`euc_post_${post.id}.jpg`}
                     onClick={(e) => e.stopPropagation()}
-                    className="w-full border-2 border-gray-900 text-gray-900 text-[10px] font-bold py-1.5 rounded text-center uppercase tracking-tight hover:bg-gray-50"
+                    className="w-full border-2 border-gray-900 text-gray-900 text-[10px] font-bold py-1.5 rounded text-center uppercase tracking-tight hover:bg-gray-50 cursor-pointer"
                   >
                     Download
                   </a>
@@ -206,9 +214,9 @@ export default function Media() {
               </div>
             </div>
           </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
 
       {selectedPost && (
         <MediaPostViewerModal 

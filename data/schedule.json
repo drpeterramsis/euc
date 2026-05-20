@@ -1,12 +1,53 @@
 [
   {
-    "id": "s001",
-    "date": "2025-09-10",
-    "title": "Arrival Day",
-    "items": [
-      { "time": "13:00", "activity": "Airport Pickup", "location": "PRG Terminal 2" },
-      { "time": "15:00", "activity": "Hotel Check-in", "location": "Hotel Kings Court" },
-      { "time": "19:00", "activity": "Welcome Dinner", "location": "TBA" }
-    ]
+    "id": "S001",
+    "type": "flight",
+    "direction": "outbound",
+    "title": "✈️ To Prague",
+    "visibility": "all_users",
+    "details": {
+      "flightNumber":             "EgyptAir MS 789",
+      "date":                     "2026-06-25",
+      "time":                     "12:50",
+      "departureAirport":         "Cairo International Airport",
+      "departureAirportLocation": "https://share.google/jp9j1ZSKluVAvNhtS",
+      "departureTerminal":        "3",
+      "departureGate":            "",
+      "arrivalAirport":           "Prague Airport",
+      "arrivalAirportLocation":   "https://share.google/Pra7DRlYwXiHzK6oL"
+    }
+  },
+  {
+    "id": "S002",
+    "type": "flight",
+    "direction": "inbound",
+    "title": "✈️ To Cairo",
+    "visibility": "all_users",
+    "details": {
+      "flightNumber":             "MS 790",
+      "date":                     "2026-06-28",
+      "time":                     "16:45",
+      "departureAirport":         "Prague Airport",
+      "departureAirportLocation": "https://share.google/Pra7DRlYwXiHzK6oL",
+      "departureTerminal":        "1",
+      "departureGate":            "",
+      "arrivalAirport":           "Cairo Airport",
+      "arrivalAirportLocation":   "https://www.google.com/maps?rlz=1C1GCEU_enEG1195EG1195&sca_esv=bc9bdbf6b9739e40&sxsrf=ANbL-n6MuYAajomajr3IqGscLdQemfM6Og:1779306457304&um=1&ie=UTF-8&fb=1&gl=eg&sa=X&geocode=KUFPqC4IF1gUMYYT4lEhr2Xg&daddr=Sheraton+Al+Matar,+El+Nozha,+Cairo+Governorate+4475001"
+    }
+  },
+  {
+    "id": "S003",
+    "type": "hotel",
+    "title": "🏨 Hotel Details",
+    "visibility": "all_users",
+    "details": {
+      "hotelName":        "Vienna House Diplomat Prague",
+      "checkInDate":      "2026-06-25",
+      "checkInTime":      "",
+      "checkOutDate":     "2026-06-28",
+      "checkOutTime":     "",
+      "address":          "Diplomat Hotel Prague is located in the heart of the prestigious diplomatic district of Dejvice, just minutes from the historic center of Prague and 12 kilometers from the airport. Evropská 15, 160 41 Prague 6",
+      "googleMapLocation":"https://www.google.com/maps/place/Diplomat+Hotel+Prague/@50.0998037,14.3895171,17z/data=!4m10!3m9!1s0x470b953c9b9b8d15:0x6e37f2f5bfa9e19d!5m3!1s2026-07-01!4m1!1i2!8m2!3d50.0998037!4d14.3895171!16s%2Fg%2F1hc1kbzcn?entry=tts&g_ep=EgoyMDI2MDUxMy4wIPu8ASoASAFQAw%3D%3D&skid=fca6053c-12d5-4a28-a4e7-e6285d8182a5"
+    }
   }
 ]

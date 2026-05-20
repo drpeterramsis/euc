@@ -16,14 +16,19 @@ import MediaPostViewerModal from '../components/MediaPostViewerModal';
 import MediaPostModal from '../components/MediaPostModal';
 import { showToast } from '../components/Toast';
 import { compressImage } from '../utils/image';
+import AdminDashboard from './AdminDashboard';
 
-export default function Admin() {
+interface AdminProps {
+  initialTab?: string;
+}
+
+export default function Admin({ initialTab }: AdminProps = {}) {
   const { 
     currentUser, users, schedule, sessions, settings, media = [], tripInfo, appConfig,
     updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia, updateTripInfo, updateAppConfig
   } = useApp();
   const [searchParams] = useSearchParams();
-  const defaultTab = searchParams.get("tab") || "users";
+  const defaultTab = initialTab || searchParams.get("tab") || "dashboard";
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [userSearchQuery, setUserSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "grid">(() => {
@@ -573,7 +578,42 @@ export default function Admin() {
 
   useEffect(() => {
     if (schedule && schedule.length > 0) {
-      setScheduleItems(schedule);
+      // ─── FLAT SCHEDULE/ITINERARY NORMALIZATION ───
+      // If the schedule is stored in the modern flat flight/hotel card format,
+      // we map it into day-by-day containers on the fly for the Admin management view.
+      const isNewFlatFormat = schedule.some((x: any) => x.type === "flight" || x.type === "hotel");
+      if (isNewFlatFormat) {
+        const groupings: { [key: string]: any } = {};
+        schedule.forEach((item: any) => {
+          const details = item.details || {};
+          const itemDate = details.date || details.checkInDate || "2026-06-25";
+          if (!groupings[itemDate]) {
+            groupings[itemDate] = {
+              id: "pseudo-day-" + itemDate,
+              date: itemDate,
+              title: item.title || "Trip Event",
+              items: []
+            };
+          }
+          groupings[itemDate].items.push({
+            id: item.id || "S" + Date.now(),
+            category: item.type === "flight" ? "Transport" : "Social",
+            activity: item.title || "Flight/Accommodation",
+            time: details.time || "12:00",
+            endTime: details.checkOutTime || "",
+            location: details.departureAirport || details.hotelName || "",
+            notes: details.flightNumber || details.address || "",
+            link: details.departureAirportLocation || details.googleMapLocation || "",
+            mapLocation: details.arrivalAirportLocation || "",
+            accessRoles: ["admin", "doctor", "staff"],
+            accessUserIds: [],
+            _rawItem: item // Preserve the raw item reference to avoid losing custom details on update
+          });
+        });
+        setScheduleItems(Object.values(groupings));
+      } else {
+        setScheduleItems(schedule);
+      }
     }
   }, [schedule]);
 
@@ -827,9 +867,64 @@ export default function Admin() {
           items: [...day.items].sort((a, b) => a.time.localeCompare(b.time))
       })).sort((a, b) => a.date.localeCompare(b.date));
 
-      setScheduleItems(updated);
-      await writeJSON("schedule.json", updated);
-      updateSchedule(updated);
+      // Reconstuct flat items if the schedule is in the modern flat flight/hotel format
+      const isNewFlatFormat = schedule && schedule.some((x: any) => x.type === "flight" || x.type === "hotel");
+      if (isNewFlatFormat) {
+        const flatResult: any[] = [];
+        updated.forEach((day: any) => {
+          day.items?.forEach((item: any) => {
+            if (item._rawItem) {
+              const updatedDetails = { ...item._rawItem.details };
+              if (item._rawItem.type === "flight") {
+                updatedDetails.flightNumber = item.notes || updatedDetails.flightNumber;
+                updatedDetails.date = day.date;
+                updatedDetails.time = item.time;
+                updatedDetails.departureAirport = item.location || updatedDetails.departureAirport;
+                updatedDetails.departureAirportLocation = item.link || updatedDetails.departureAirportLocation;
+                updatedDetails.arrivalAirportLocation = item.mapLocation || updatedDetails.arrivalAirportLocation;
+              } else if (item._rawItem.type === "hotel") {
+                updatedDetails.hotelName = item.location || updatedDetails.hotelName;
+                updatedDetails.checkInDate = day.date;
+                updatedDetails.address = item.notes || updatedDetails.address;
+                updatedDetails.googleMapLocation = item.link || updatedDetails.googleMapLocation;
+              }
+              flatResult.push({
+                ...item._rawItem,
+                title: item.activity,
+                details: updatedDetails
+              });
+            } else {
+              // A newly created custom item
+              flatResult.push({
+                id: item.id || "S" + Date.now(),
+                type: "flight",
+                title: item.activity,
+                direction: "outbound",
+                visibility: "all_users",
+                details: {
+                  flightNumber: item.notes || "Flight",
+                  date: day.date,
+                  time: item.time,
+                  departureAirport: item.location || "",
+                  departureAirportLocation: item.link || "",
+                  departureTerminal: "",
+                  departureGate: "",
+                  arrivalAirport: "",
+                  arrivalAirportLocation: item.mapLocation || ""
+                }
+              });
+            }
+          });
+        });
+        setScheduleItems(updated);
+        await writeJSON("schedule.json", flatResult);
+        updateSchedule(flatResult);
+      } else {
+        setScheduleItems(updated);
+        await writeJSON("schedule.json", updated);
+        updateSchedule(updated);
+      }
+
       setEditingScheduleId(null);
       setApplyToAllSchedule(false);
       showToast("Schedule saved successfully ✓", "success");
@@ -848,9 +943,44 @@ export default function Admin() {
         ...day,
         items: day.items?.filter((i: any) => i.id !== id) || []
       })).filter(day => day.items.length > 0);
-      setScheduleItems(updated);
-      await writeJSON("schedule.json", updated);
-      updateSchedule(updated);
+
+      const isNewFlatFormat = schedule && schedule.some((x: any) => x.type === "flight" || x.type === "hotel");
+      if (isNewFlatFormat) {
+        const flatResult: any[] = [];
+        updated.forEach((day: any) => {
+          day.items?.forEach((item: any) => {
+            if (item._rawItem) {
+              flatResult.push(item._rawItem);
+            } else {
+              flatResult.push({
+                id: item.id || "S" + Date.now(),
+                type: "flight",
+                title: item.activity,
+                direction: "outbound",
+                visibility: "all_users",
+                details: {
+                  flightNumber: item.notes || "Flight",
+                  date: day.date,
+                  time: item.time,
+                  departureAirport: item.location || "",
+                  departureAirportLocation: item.link || "",
+                  departureTerminal: "",
+                  departureGate: "",
+                  arrivalAirport: "",
+                  arrivalAirportLocation: item.mapLocation || ""
+                }
+              });
+            }
+          });
+        });
+        setScheduleItems(updated);
+        await writeJSON("schedule.json", flatResult);
+        updateSchedule(flatResult);
+      } else {
+        setScheduleItems(updated);
+        await writeJSON("schedule.json", updated);
+        updateSchedule(updated);
+      }
       showToast("Schedule item deleted", "success");
     } catch (err) {
       showToast("Failed to delete", "error");
@@ -2013,6 +2143,7 @@ export default function Admin() {
                      focus:outline-none focus:ring-2 focus:ring-yellow-400
                      appearance-none cursor-pointer"
         >
+          <option value="dashboard">📊 Quick Panel</option>
           <option value="users">👥 User Management</option>
           <option value="appConfig">⚙️ App Settings</option>
           <option value="tripInfo">✈️ Trip Info</option>
@@ -2026,6 +2157,7 @@ export default function Admin() {
       {/* Desktop/Tablet: Horizontal Tab Bar */}
       <div className="hidden md:flex mb-6 gap-2 border-b overflow-x-auto pb-[1px]">
         {[
+          { key: 'dashboard', label: '📊 Quick Panel' },
           { key: 'users', label: '👥 User Management' },
           { key: 'appConfig', label: '⚙️ App Settings' },
           { key: 'tripInfo', label: '✈️ Trip Info' },
@@ -2047,6 +2179,7 @@ export default function Admin() {
       </div>
 
       <div className="pb-12">
+        {activeTab === 'dashboard' && <AdminDashboard onSelectTab={(tab) => setActiveTab(tab)} />}
         {activeTab === 'users' && renderTab1()}
         {activeTab === 'appConfig' && renderAppConfigTab()}
         {activeTab === 'tripInfo' && renderTripInfoTab()}

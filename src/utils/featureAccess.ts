@@ -6,6 +6,13 @@ export function getFeatureStatus(
   user: any,
   featureKey: string
 ): FeatureStatus {
+  // ─── ADMIN and STAFF OVERRIDE ───
+  // Unconditional full access for admin and staff roles (case-insensitive)
+  const userRole = user?.role?.trim().toLowerCase();
+  if (userRole === "admin" || userRole === "staff") {
+    return "active";
+  }
+
   // If user is admin, they usually have access to everything, 
   // but we can still respect the status set by global flags.
   
