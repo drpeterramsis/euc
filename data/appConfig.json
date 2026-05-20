@@ -1,11 +1,11 @@
 {
   "navLabels": {
-    "dashboard": "Home Page",
-    "schedule": "Trip Schedule",
-    "sessions": "Sessions",
-    "media": "News Feed",
-    "directory": "Staff Directory",
-    "profile": "My Profile"
+    "dashboard":  "Home Page",
+    "schedule":   "Trip Schedule",
+    "sessions":   "Sessions",
+    "media":      "Photo Gallery",
+    "directory":  "Staff Directory",
+    "profile":    "My Profile"
   },
   "navOrder": [
     "dashboard",
@@ -16,13 +16,11 @@
     "profile"
   ],
   "pages": {
-    "directory": {
-      "visible": true,
-      "comingSoon": false
-    },
-    "media": {
-      "visible": true,
-      "comingSoon": false
-    }
+    "dashboard":  { "visible": true,  "comingSoon": false },
+    "schedule":   { "visible": true,  "comingSoon": false },
+    "sessions":   { "visible": true,  "comingSoon": false },
+    "media":      { "visible": true,  "comingSoon": false },
+    "directory":  { "visible": true,  "comingSoon": false },
+    "profile":    { "visible": true,  "comingSoon": false }
   }
 }

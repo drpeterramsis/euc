@@ -2,6 +2,7 @@
 // FILE: src/components/Sidebar.tsx
 // PURPOSE: Renders the navigation sidebar,
 // now mobile responsive with hamburger mechanism.
+// Displays the user identity & logout button at the TOP (Zone 2)
 // ─────────────────────────────────────────────
 
 /**
@@ -67,18 +68,26 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
     label: (appConfig?.navLabels as any)?.[item.key] ?? labels[item.key as keyof typeof labels] ?? item.key,
   }));
 
-  // Visibility Filter logic for pages
-  const visibleNavItems = navItems.filter(item => {
-    if (item.key === "directory") {
-      const dirConfig = appConfig?.pages?.directory;
-      return currentUser?.role === "admin" || (dirConfig?.visible !== false);
+  // Role-aware Page visibility filter logic
+  const STAFF_DEFAULT_VISIBLE = ["dashboard", "schedule", "sessions", "media", "directory", "profile"];
+
+  const isPageVisible = (key: string): boolean => {
+    // Admin always sees everything
+    if (currentUser?.role === "admin") return true;
+
+    // Staff: always show staff-default pages
+    if (currentUser?.role === "staff") {
+      if (STAFF_DEFAULT_VISIBLE.includes(key)) return true;
     }
-    if (item.key === "media") {
-      const mediaConfig = appConfig?.pages?.media;
-      return currentUser?.role === "admin" || (mediaConfig?.visible !== false);
-    }
+
+    // Doctor/others: respect global appConfig visibility
+    const pageConf = (appConfig?.pages as any)?.[key];
+    if (pageConf?.visible === false) return false;
+
     return true;
-  });
+  };
+
+  const visibleNavItems = navItems.filter(item => isPageVisible(item.key));
 
   return (
     <>
@@ -89,7 +98,8 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
         />
       )}
       <aside className={sidebarClass}>
-        {/* Zone 1 — Logo: fixed, never scrolls */}
+        
+        {/* Zone 1 — Logo (fixed, never scrolls) */}
         <div className="flex-shrink-0 p-4 border-b border-gray-800 flex flex-col items-center gap-2 text-white bg-black">
           <img 
             src="/images/euc_ico.png" 
@@ -97,10 +107,10 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
             className="h-16 w-auto object-contain"
             referrerPolicy="no-referrer"
           />
-          <div className="flex justify-between items-center w-full">
+          <div className="flex justify-between items-center w-full lg:hidden">
             <button
               onClick={onClose}
-              className="lg:hidden text-white hover:text-yellow-400 transition-colors p-2 bg-transparent border-none outline-none shadow-none focus:outline-none"
+              className="text-white hover:text-yellow-400 transition-colors p-2 bg-transparent border-none outline-none shadow-none focus:outline-none"
               aria-label="Close menu"
               style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
             >
@@ -109,33 +119,53 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
           </div>
         </div>
 
-        {/* Zone 2 — Nav items: scrollable if overflow */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
-          {visibleNavItems.map(item => {
-            // Determine path and checking status
-            const isDir = item.key === "directory";
-            const isMedia = item.key === "media";
-            
-            const config = isDir 
-              ? appConfig?.pages?.directory 
-              : isMedia 
-                ? appConfig?.pages?.media 
-                : null;
+        {/* Zone 2 — User Card + Logout Button (TOP, under logo, always visible) */}
+        {fullUser && (
+          <div className="flex-shrink-0 px-3 py-3 border-b border-gray-800 bg-black">
+            <div className="flex items-center gap-2 mb-2">
+              <UserAvatar user={fullUser} size="sm" className="border border-gray-700" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-white truncate leading-tight">
+                  {fullUser.name || fullUser.username}
+                </p>
+                <p className="text-xs text-yellow-500 uppercase font-medium tracking-wide">
+                  {fullUser.role}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={logout}
+              className="w-full bg-gray-800 hover:bg-red-600 text-white
+                         font-semibold py-1.5 rounded-lg transition-colors
+                         text-xs text-center border-none cursor-pointer"
+            >
+              Logout
+            </button>
+          </div>
+        )}
 
-            const isComingSoon = config?.comingSoon === true;
-            const isHidden = config?.visible === false;
+        {/* Zone 3 — Nav Items (scrollable middle zone) */}
+        <nav className="flex-1 overflow-y-auto px-3 py-3
+                        scrollbar-thin scrollbar-thumb-gray-700
+                        scrollbar-track-transparent space-y-1">
+          {visibleNavItems.map(item => {
+            // Determine config checks
+            const pConf = (appConfig?.pages as any)?.[item.key];
+            const isComingSoon = pConf?.comingSoon === true;
 
             // Route dynamic behavior
             let finalPath = item.path;
-            if (isComingSoon && currentUser?.role !== "admin") {
+            const bypassForStaff = currentUser?.role === "staff" || currentUser?.role === "admin";
+
+            if (isComingSoon && !bypassForStaff) {
               finalPath = `/coming-soon?feature=${item.key}`;
             }
 
             // Normal feature-specific status constraints
             if (item.featureKey) {
               const status = getFeatureStatus(fullUser, item.featureKey);
-              if (status === "disabled" && currentUser?.role !== "admin") return null;
-              if (status === "coming_soon" && currentUser?.role !== "admin") {
+              if (status === "disabled" && !bypassForStaff) return null;
+              if (status === "coming_soon" && !bypassForStaff) {
                 finalPath = `/coming-soon?feature=${item.featureKey}`;
               }
             }
@@ -157,7 +187,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                 <span className="flex-1 truncate">{item.label}</span>
                 
                 {/* Coming Soon badge on sidebar item */}
-                {config?.comingSoon && (
+                {pConf?.comingSoon && (
                   <span className="ml-auto text-xs bg-gray-600 text-white px-1.5 py-0.5 rounded-full">
                     Soon
                   </span>
@@ -175,8 +205,8 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-lg transition-all font-bold ${
                     isActive
-                      ? "bg-yellow-50 text-black shadow-sm"
-                      : "bg-yellow-50 text-yellow-700 hover:bg-yellow-10 border border-yellow-200"
+                      ? "bg-yellow-50 text-black shadow-sm font-bold"
+                      : "bg-yellow-50 text-yellow-700 hover:bg-yellow-10 border border-yellow-250 font-bold"
                   }`
                 }
               >
@@ -194,25 +224,6 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
             💬 <span>Need Help?</span>
           </a>
         </nav>
-
-        {/* Zone 3 — User card + Logout: fixed at bottom, NEVER scrolls */}
-        <div className="flex-shrink-0 p-4 border-t border-gray-800 bg-black">
-          {fullUser && (
-            <div className="flex items-center space-x-3 mb-4">
-              <UserAvatar user={fullUser} size="md" className="border border-gray-700" />
-              <div className="flex flex-col truncate">
-                <span className="text-sm font-bold text-white truncate">{fullUser.name || fullUser.username}</span>
-                <span className="text-xs text-yellow-500 font-semibold">{fullUser.role.toUpperCase()}</span>
-              </div>
-            </div>
-          )}
-          <button 
-              className="w-full text-center p-3 rounded-lg font-bold transition-colors bg-gray-900 border border-gray-700 text-gray-300 hover:bg-gray-800 shadow-sm"
-              onClick={logout}
-          >
-              Logout
-          </button>
-        </div>
       </aside>
     </>
   );

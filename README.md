@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.884
+Version: 1.0.885
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -21,7 +21,7 @@ Current event: Prague Conference 2026.
 |---------|---------------------------------------------------|
 | admin   | Full access + User Management + Feature Control   |
 | doctor  | Profile, Flight, Hotel, Schedule, Sessions        |
-| staff   | Profile, Flight, Hotel, Schedule                  |
+| staff   | Profile, Flight, Hotel, Schedule, Sessions, Media, Directory |
 
 ## Project Structure
 /data              → JSON files (users, schedule, sessions, settings, etc.)
@@ -93,8 +93,9 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.880 | 2026-05-19 | Hardcoded the correct superuser admin photo URL in users.json and updated throughout. |
 | v1.0.881 | 2026-05-19 | Removed Social Program and Awards Ceremony everywhere; implemented Admin Panel Drag-to-Reorder Sidebar Navigation with Up/Down fallback controls. |
 | v1.0.882 | 2026-05-20 | Implemented isolated Sidebar scrolling (Zones structure to keep Logout reachable at all times) and role-restricted 📞 Call / 💬 WhatsApp buttons with dynamic card heights in the staff directory. |
-| v1.0.883 | 2026-05-20 | Replaced full users.json database with correct delegation list, converted viewer Dropbox URLs to direct download links, built Egyptian phone normalization utilities, and applied unified auto-formatted direct Calling & WhatsApp buttons across the Staff Directory, Admin table, and My Profile page. |
+| v1.0.883 | 2026-05-20 | Replaced full users.json database with correct delegation list, converted viewer Dropbox URLs to direct download links, Egyptian phone normalization utilities, and applied unified auto-formatted direct Calling & WhatsApp buttons across the Staff Directory, Admin table, and My Profile page. |
 | v1.0.884 | 2026-05-20 | Replaced and corrected all remaining Dropbox photoUrl links in data/users.json to use the direct download dl.dropboxusercontent.com domain with the dl=0 viewer query suffix removed. |
+| v1.0.885 | 2026-05-20 | EUC App — Modify U038 to Staff, Add U039 Admin, Move Sidebar User Card to Top, Staff Visible Pages. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

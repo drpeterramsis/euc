@@ -1,3 +1,8 @@
+// ─────────────────────────────────────────────
+// FILE: src/pages/Media.tsx
+// PURPOSE: Renders the media gallery, matching coming soon & visibility rules with staff overrides.
+// ─────────────────────────────────────────────
+
 import { useState, useMemo } from 'react';
 import Layout from '../components/Layout';
 import { useApp, DEFAULT_MEDIA_CATEGORIES } from '../context/AppContext';
@@ -10,6 +15,42 @@ export default function Media() {
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("latest"); // latest, oldest, category
+
+  const pageTitle = getLabel(appConfig, "media");
+
+  // Check visibility and coming soon from appConfig
+  const config = appConfig?.pages?.media;
+  const isHidden = config?.visible === false;
+  const isComingSoon = config?.comingSoon === true;
+
+  // Staff and Admin bypass
+  const bypassForStaff = currentUser?.role === "staff" || currentUser?.role === "admin";
+
+  // Hidden Check
+  if (isHidden && !bypassForStaff) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center h-64 font-sans">
+          <p className="text-gray-400 text-sm">This page is not available.</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Coming Soon Check
+  if (isComingSoon && !bypassForStaff) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center text-center px-6 py-20 font-sans">
+          <span className="text-5xl mb-4">🔒</span>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{pageTitle}</h1>
+          <p className="text-gray-500 mb-6 font-medium text-sm">
+            This feature is currently under development and will be available soon.
+          </p>
+        </div>
+      </Layout>
+    );
+  }
 
   // Derive categories from settings + posts (filtered by visibility)
   const categories = useMemo(() => {
@@ -44,7 +85,7 @@ export default function Media() {
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{getLabel(appConfig, "media")}</h1>
+        <h1 className="text-2xl font-bold">{pageTitle}</h1>
         <div className="text-xs font-bold text-gray-400">PRAGUE-2026</div>
       </div>
 
@@ -57,8 +98,8 @@ export default function Media() {
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border ${
                 activeCategory === cat 
-                  ? "bg-yellow-500 border-yellow-600 text-black shadow-sm" 
-                  : "bg-white border-gray-200 text-gray-500 hover:border-gray-300"
+                  ? "bg-yellow-500 border-yellow-600 text-black shadow-sm font-bold shadow-sm" 
+                  : "bg-white border-gray-200 text-gray-500 hover:border-gray-300 pointer-events-auto cursor-pointer"
               }`}
             >
               {cat}
@@ -110,14 +151,14 @@ export default function Media() {
 
                 {/* Private / Group Indicator for Admin */}
                 {currentUser?.role === 'admin' && post.audienceType && post.audienceType !== 'all' && (
-                  <span className="px-1.5 py-0.5 bg-black/80 backdrop-blur-sm text-[#FFBF00] text-[8px] font-black rounded border border-yellow-500/50 flex items-center gap-1 w-max">
+                  <span className="px-1.5 py-0.5 bg-black/80 backdrop-blur-sm text-[#FFBF00] text-[8px] font-black rounded border border-yellow-500/50 flex items-center gap-1 w-max font-bold">
                     {post.audienceType === 'roles' ? `👥 ${(post.audienceRoles || []).join(', ')}` : `👤 Targeting ${post.audienceUserIds?.length} users`}
                   </span>
                 )}
               </div>
               
               {currentUser?.role === "admin" && post.scheduledAt && new Date(post.scheduledAt) > new Date() && (
-                <div className="absolute top-2 right-2 bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
+                <div className="absolute top-2 right-2 bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow font-bold">
                   📅 Scheduled
                 </div>
               )}

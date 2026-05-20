@@ -1,3 +1,8 @@
+// ─────────────────────────────────────────────
+// FILE: src/pages/Directory.tsx
+// PURPOSE: Renders the team/staff directory, matching coming soon & visibility rules with staff overrides.
+// ─────────────────────────────────────────────
+
 import React, { useState } from "react";
 import Layout from "../components/Layout";
 import { useAppContext } from "../context/AppContext";
@@ -16,8 +21,11 @@ export default function Directory() {
   const isHidden    = dirConfig?.visible === false;
   const isComingSoon = dirConfig?.comingSoon === true;
 
-  // Hidden: show nothing (or redirect) if not admin
-  if (isHidden && currentUser?.role !== "admin") {
+  // Staff and Admin bypass
+  const bypassForStaff = currentUser?.role === "staff" || currentUser?.role === "admin";
+
+  // Hidden: show nothing if not admin/staff
+  if (isHidden && !bypassForStaff) {
     return (
       <Layout>
         <div className="flex items-center justify-center h-64 font-sans">
@@ -28,7 +36,7 @@ export default function Directory() {
   }
 
   // Coming Soon
-  if (isComingSoon && currentUser?.role !== "admin") {
+  if (isComingSoon && !bypassForStaff) {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center text-center px-6 py-20 font-sans">

@@ -1,3 +1,8 @@
+// ─────────────────────────────────────────────
+// FILE: src/pages/Schedule.tsx
+// PURPOSE: Renders the trip schedule timeline with staff visibility bypasses.
+// ─────────────────────────────────────────────
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -11,6 +16,42 @@ import { getLabel } from '../utils/labels';
  */
 export default function Schedule() {
   const { schedule, currentUser, appConfig } = useApp();
+
+  const pageTitle = getLabel(appConfig, "schedule");
+
+  // Check visibility and coming soon from appConfig
+  const config = appConfig?.pages?.schedule;
+  const isHidden = config?.visible === false;
+  const isComingSoon = config?.comingSoon === true;
+
+  // Staff and Admin bypass
+  const bypassForStaff = currentUser?.role === "staff" || currentUser?.role === "admin";
+
+  // Hidden Check
+  if (isHidden && !bypassForStaff) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center h-64 font-sans">
+          <p className="text-gray-400 text-sm">This page is not available.</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Coming Soon Check
+  if (isComingSoon && !bypassForStaff) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center text-center px-6 py-20 font-sans">
+          <span className="text-5xl mb-4">🔒</span>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{pageTitle}</h1>
+          <p className="text-gray-500 mb-6 font-medium text-sm">
+            This feature is currently under development and will be available soon.
+          </p>
+        </div>
+      </Layout>
+    );
+  }
 
   const viewAs = sessionStorage.getItem("euc_view_as");
   const displayUser = viewAs ? JSON.parse(viewAs) : currentUser;
@@ -27,7 +68,7 @@ export default function Schedule() {
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{getLabel(appConfig, "schedule")}</h1>
+        <h1 className="text-2xl font-bold">{pageTitle}</h1>
         <div className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded">PRAGUE-2026</div>
       </div>
       

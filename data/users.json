@@ -420,8 +420,19 @@
   {
     "id": "U038",
     "name": "Mahmoud Abdelaty Ramadan",
-    "role": "admin",
+    "role": "staff",
     "username": "Mahmoud.Abdelaty",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/gez2bkappvxz7aarrjypb/Mahmoud.Abdelaty.jpg?rlkey=horls6oycffole2ze9ahuwfhg&st=f4tl4hkb",
+    "title": "Product Manager",
+    "email": "",
+    "phone": "201026060462"
+  },
+  {
+    "id": "U039",
+    "name": "Mahmoud Abdelaty Ramadan",
+    "role": "admin",
+    "username": "Mahmoud.Abdelaty.admin",
     "password": "Diamonrecta5mg",
     "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/gez2bkappvxz7aarrjypb/Mahmoud.Abdelaty.jpg?rlkey=horls6oycffole2ze9ahuwfhg&st=f4tl4hkb",
     "title": "Product Manager",
