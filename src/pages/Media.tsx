@@ -104,7 +104,7 @@ export default function Media() {
 
       {/* Filter & Sort Bar */}
       <div className="flex flex-col sm:flex-row gap-4 mb-8 items-center justify-between">
-        <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto no-scrollbar">
+        <div className="flex gap-2 overflow-x-auto overflow-y-hidden whitespace-nowrap overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch] pb-2 sm:pb-0 w-full sm:w-auto no-scrollbar">
           {categories.map(cat => (
             <button
               key={cat}

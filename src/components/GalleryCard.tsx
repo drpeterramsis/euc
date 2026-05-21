@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { GalleryAlbum } from "../context/AppContext";
 import GalleryLightbox from "./GalleryLightbox";
 
-export default function GalleryCard({ album }: { album: GalleryAlbum }) {
+export default function GalleryCard({ album }: { key?: React.Key, album: any }) {
   const [isOpen, setIsOpen] = useState(false);
 
   // Take up to 3 thumbnails

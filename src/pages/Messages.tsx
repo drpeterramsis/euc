@@ -26,15 +26,25 @@ export default function Messages() {
 
   if (!messages) return <Layout><div className="p-8 text-center">Loading...</div></Layout>;
 
-  const validMessages = messages.filter((m: any) => m.status === "published");
+  const now = new Date().toISOString();
+  const validMessages = messages.filter((m: any) => {
+    if (m.status !== "published") return false;
+    if (m.expiresAt && m.expiresAt <= now) return false;
+    return true;
+  });
   
-  const pinnedHigh = validMessages.filter((m: any) => m.priority === "high" && m.pinned);
-  const unpinnedHigh = validMessages.filter((m: any) => m.priority === "high" && !m.pinned);
-  const pinnedNormal = validMessages.filter((m: any) => m.priority === "normal" && m.pinned);
-  const unpinnedNormal = validMessages.filter((m: any) => m.priority === "normal" && !m.pinned);
+  const sortMessages = (list: any[]) => {
+    return list.sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      const tA = new Date(a.publishedAt || 0).getTime();
+      const tB = new Date(b.publishedAt || 0).getTime();
+      return tB - tA;
+    });
+  };
 
-  const highMessages = [...pinnedHigh, ...unpinnedHigh];
-  const normalMessages = [...pinnedNormal, ...unpinnedNormal];
+  const highMessages = sortMessages(validMessages.filter((m: any) => m.priority === "high"));
+  const normalMessages = sortMessages(validMessages.filter((m: any) => m.priority !== "high"));
 
   const hasMessages = highMessages.length > 0 || normalMessages.length > 0;
 

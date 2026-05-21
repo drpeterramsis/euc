@@ -1270,7 +1270,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
             </div>
 
             {/* Desktop List View */}
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden md:block overflow-x-auto overflow-y-hidden overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch]">
               <table className="w-full text-left min-w-[800px]">
                 <thead className="bg-gray-50 border-b">
                   <tr>
@@ -2660,7 +2660,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
       </div>
 
       {/* Desktop/Tablet: Horizontal Tab Bar */}
-      <div className="hidden md:flex mb-6 gap-2 border-b overflow-x-auto pb-[1px]">
+      <div className="hidden md:flex mb-6 gap-2 border-b overflow-x-auto overflow-y-hidden whitespace-nowrap overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch] pb-[1px]">
         {[
           { key: 'dashboard', label: '📊 Quick Panel' },
           { key: 'users', label: '👥 User Management' },

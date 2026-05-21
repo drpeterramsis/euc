@@ -173,15 +173,21 @@ export default function AdminMessages() {
                 )}
               </div>
               {form.buttons.map((btn, i) => (
-                <div key={i} className="flex gap-2 items-center mb-2">
-                  <input placeholder="Label" value={btn.label} onChange={e => { const b = [...form.buttons]; b[i].label = e.target.value; setForm({...form, buttons: b}); }} className="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm" />
-                  <input placeholder="Link (/route or https://...)" value={btn.link} onChange={e => { const b = [...form.buttons]; b[i].link = e.target.value; setForm({...form, buttons: b}); }} className="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm" />
-                  <select value={btn.style} onChange={e => { const b = [...form.buttons]; b[i].style = e.target.value as any; setForm({...form, buttons: b}); }} className="w-32 bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm">
-                    <option value="primary">Primary</option>
-                    <option value="secondary">Secondary</option>
-                    <option value="ghost">Ghost</option>
-                  </select>
-                  <button type="button" onClick={() => { const b = [...form.buttons]; b.splice(i, 1); setForm({...form, buttons: b}); }} className="text-red-500 font-bold px-2">X</button>
+                <div key={i} className="mb-4 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input placeholder="Label" value={btn.label} onChange={e => { const b = [...form.buttons]; b[i].label = e.target.value; setForm({...form, buttons: b}); }} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm" />
+                    <input placeholder="Link (/route or https://...)" value={btn.link} onChange={e => { const b = [...form.buttons]; b[i].link = e.target.value; setForm({...form, buttons: b}); }} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm" />
+                    <select value={btn.style} onChange={e => { const b = [...form.buttons]; b[i].style = e.target.value as any; setForm({...form, buttons: b}); }} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm">
+                      <option value="primary">Primary</option>
+                      <option value="secondary">Secondary</option>
+                      <option value="ghost">Ghost</option>
+                    </select>
+                  </div>
+                  <div className="flex justify-end mt-2">
+                    <button type="button" onClick={() => { const b = [...form.buttons]; b.splice(i, 1); setForm({...form, buttons: b}); }} className="text-red-500 text-xs font-bold hover:text-red-700 transition-colors">
+                      Remove Button
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -194,7 +200,7 @@ export default function AdminMessages() {
         </div>
       ) : (
         <div className="bg-white border border-gray-100 shadow-sm rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto overflow-y-hidden overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch]">
             <table className="w-full text-left text-sm">
                <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase font-bold tracking-wider">
                  <tr>

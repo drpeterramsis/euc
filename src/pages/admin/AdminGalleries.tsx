@@ -66,7 +66,7 @@ export default function AdminGalleries() {
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         if (!file.type.startsWith('image/')) continue;
-        const compressed = await compressImage(file, 1024);
+        const compressed = await compressImage(file);
         newImages.push({ url: compressed, caption: "" });
     }
 
@@ -167,7 +167,7 @@ export default function AdminGalleries() {
            </form>
         </div>
       ) : (
-        <div className="overflow-x-auto bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="overflow-x-auto overflow-y-hidden overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch] bg-white border border-gray-100 shadow-sm rounded-xl">
            <table className="w-full text-left text-sm">
              <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase font-bold tracking-wider">
                <tr>
