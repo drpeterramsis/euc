@@ -9,20 +9,21 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { logout } from "../utils/auth";
 import { useApp } from "../context/AppContext";
 import { getFeatureStatus } from "../utils/featureAccess";
 import UserAvatar from "./UserAvatar";
 import { getPageAccess, isNavVisible } from "../utils/pageAccess";
-import InstallButton from "./InstallButton";
 
 /**
  * Sidebar component renders fixed navigation menu.
  * Displays current logged-in user's name and avatar read from context.
  */
 export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
-  const { currentUser, users, appConfig } = useApp();
+  const { currentUser, users, appConfig, isAppInstalled, installPrompt, triggerInstall } = useApp();
+  const [showInstallModal, setShowInstallModal] = useState(false);
   const fullUser = users.find(u => u.id === currentUser?.id) || currentUser;
 
   const labels = appConfig?.navLabels || {
@@ -73,6 +74,35 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
   const normalizedRole = currentUser?.role?.trim().toLowerCase();
 
   const visibleNavItems = navItems.filter(item => isNavVisible(item.key, normalizedRole, appConfig));
+
+  const handleInstallClick = async () => {
+    if (installPrompt) {
+      await triggerInstall();
+    } else {
+      setShowInstallModal(true);
+    }
+  };
+
+  const getSystemInstructions = () => {
+    const ua = navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(ua);
+    if (isIOS) {
+      return (
+        <ol className="list-decimal pl-5 text-sm text-gray-700 space-y-2">
+          <li>Open this app in <strong>Safari</strong>.</li>
+          <li>Tap the <strong>Share</strong> icon at the bottom of the screen.</li>
+          <li>Scroll down and tap <strong>"Add to Home Screen"</strong>.</li>
+        </ol>
+      );
+    }
+    return (
+      <ol className="list-decimal pl-5 text-sm text-gray-700 space-y-2">
+        <li>Open this app in <strong>Chrome</strong> or a compatible browser.</li>
+        <li>Tap the browser menu (⋮) in the top right.</li>
+        <li>Select <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong>.</li>
+      </ol>
+    );
+  };
 
   return (
     <>
@@ -182,9 +212,17 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
             </>
           )}
 
-          <div className="my-4 px-2">
-            <InstallButton variant="menu" />
-          </div>
+          {!isAppInstalled && (
+            <div className="my-4 px-2">
+              <button
+                onClick={handleInstallClick}
+                className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-700 font-bold text-sm transition-colors cursor-pointer border border-yellow-200"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                Install App
+              </button>
+            </div>
+          )}
 
           <a
             href={`https://wa.me/201069996672?text=${encodeURIComponent("Hello EUC Support Team, I need technical assistance with the EUC Conference App.")}`}
@@ -196,6 +234,29 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
           </a>
         </nav>
       </aside>
+
+      {showInstallModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-black text-gray-900 tracking-tight">How to Install</h3>
+              <button 
+                onClick={() => setShowInstallModal(false)}
+                className="text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors border-none"
+              >
+                ✕
+              </button>
+            </div>
+            {getSystemInstructions()}
+            <button 
+              onClick={() => setShowInstallModal(false)}
+              className="mt-6 w-full py-2 bg-black hover:bg-gray-900 text-white font-bold rounded-lg transition-colors cursor-pointer border-none"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

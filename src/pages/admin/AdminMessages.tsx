@@ -9,6 +9,7 @@ export default function AdminMessages() {
   const [form, setForm] = useState({
     title: "",
     body: "",
+    category: "general",
     priority: "normal",
     audience: "all",
     scheduledAt: "",
@@ -24,6 +25,7 @@ export default function AdminMessages() {
     setForm({
       title: msg.title || "",
       body: msg.body || "",
+      category: msg.category || "general",
       priority: msg.priority || "normal",
       audience: msg.audience || "all",
       scheduledAt: msg.scheduledAt ? new Date(msg.scheduledAt).toISOString().slice(0, 16) : "",
@@ -38,6 +40,7 @@ export default function AdminMessages() {
     setForm({
       title: "",
       body: "",
+      category: "general",
       priority: "normal",
       audience: "all",
       scheduledAt: "",
@@ -81,6 +84,7 @@ export default function AdminMessages() {
       id: editingMsg?.id === "new" ? `msg_${Date.now()}` : editingMsg.id,
       title: form.title,
       body: form.body,
+      category: form.category,
       status,
       scheduledAt: form.scheduledAt ? new Date(form.scheduledAt).toISOString() : null,
       publishedAt: editingMsg.publishedAt || publishedAt,
@@ -128,17 +132,28 @@ export default function AdminMessages() {
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Body *</label>
               <textarea required rows={4} value={form.body} onChange={e => setForm({...form, body: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-yellow-500 focus:border-yellow-500" />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+               <div>
+                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Category</label>
+                 <select value={form.category} onChange={e => setForm({...form, category: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium focus:ring-yellow-500 focus:border-yellow-500">
+                   <option value="general">General</option>
+                   <option value="schedule">Schedule</option>
+                   <option value="logistics">Logistics</option>
+                   <option value="urgent">Urgent</option>
+                   <option value="social">Social</option>
+                   <option value="other">Other</option>
+                 </select>
+               </div>
                <div>
                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Priority</label>
-                 <div className="flex gap-4">
+                 <div className="flex gap-4 mt-2">
                    <label className="flex items-center gap-1 text-sm font-medium"><input type="radio" value="normal" checked={form.priority === "normal"} onChange={e => setForm({...form, priority: e.target.value})} /> Normal</label>
                    <label className="flex items-center gap-1 text-sm font-medium"><input type="radio" value="high" checked={form.priority === "high"} onChange={e => setForm({...form, priority: e.target.value})} /> High</label>
                  </div>
                </div>
                <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Pinned</label>
-                  <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                  <label className="flex items-center gap-2 text-sm font-medium cursor-pointer mt-2">
                     <input type="checkbox" checked={form.pinned} onChange={e => setForm({...form, pinned: e.target.checked})} className="rounded text-black focus:ring-black rounded-sm" />
                     Stick to top of priority group
                   </label>
@@ -154,7 +169,7 @@ export default function AdminMessages() {
                  </select>
                </div>
                <div>
-                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Scheduled At (Leave empty for Draft)</label>
+                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Scheduled At (Draft if empty)</label>
                  <input type="datetime-local" value={form.scheduledAt} onChange={e => setForm({...form, scheduledAt: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium" />
                </div>
                <div>
@@ -199,55 +214,48 @@ export default function AdminMessages() {
           </form>
         </div>
       ) : (
-        <div className="bg-white border border-gray-100 shadow-sm rounded-xl overflow-hidden">
-          <div className="overflow-x-auto overflow-y-hidden overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch]">
-            <table className="w-full text-left text-sm">
-               <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase font-bold tracking-wider">
-                 <tr>
-                    <th className="p-4">Title</th>
-                    <th className="p-4">Priority</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4">Audience</th>
-                    <th className="p-4">Scheduled</th>
-                    <th className="p-4">Pinned</th>
-                    <th className="p-4 text-right">Actions</th>
-                 </tr>
-               </thead>
-               <tbody className="divide-y divide-gray-100">
-                 {messages.map((m: any) => {
-                   let badgeCls = "bg-gray-100 text-gray-600";
-                   if (m.status === "scheduled") badgeCls = "bg-blue-100 text-blue-700";
-                   if (m.status === "published") badgeCls = "bg-green-100 text-green-700";
-                   if (m.status === "expired") badgeCls = "bg-red-100 text-red-600";
-                   if (m.status === "archived") badgeCls = "bg-gray-200 text-gray-500";
-                   
-                   return (
-                     <tr key={m.id} className="hover:bg-gray-50">
-                        <td className="p-4 font-bold text-gray-900">{m.title}</td>
-                        <td className="p-4 capitalize">{m.priority}</td>
-                        <td className="p-4">
-                          <span className={`px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest ${badgeCls}`}>{m.status}</span>
-                        </td>
-                        <td className="p-4 capitalize">{m.audience}</td>
-                        <td className="p-4 text-gray-500 whitespace-nowrap">{m.scheduledAt ? new Date(m.scheduledAt).toLocaleString() : "—"}</td>
-                        <td className="p-4">{m.pinned ? "📌" : ""}</td>
-                        <td className="p-4 text-right space-x-3">
-                          <button onClick={() => handleEdit(m)} className="text-gray-400 hover:text-black transition-colors" title="Edit">
-                             <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                          </button>
-                          <button onClick={() => handleDelete(m.id)} className="text-gray-400 hover:text-red-600 transition-colors" title="Delete">
-                             <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                          </button>
-                        </td>
-                     </tr>
-                   );
-                 })}
-                 {messages.length === 0 && (
-                   <tr><td colSpan={7} className="p-8 text-center text-gray-400 font-bold italic">No messages found.</td></tr>
-                 )}
-               </tbody>
-            </table>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+           {messages.map((m: any) => {
+             let badgeCls = "bg-gray-100 text-gray-600";
+             if (m.status === "scheduled") badgeCls = "bg-blue-100 text-blue-700";
+             if (m.status === "published") badgeCls = "bg-green-100 text-green-700";
+             if (m.status === "expired") badgeCls = "bg-red-100 text-red-600";
+             if (m.status === "archived") badgeCls = "bg-gray-200 text-gray-500";
+             
+             return (
+               <div key={m.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 space-y-3 flex flex-col justify-between">
+                 <div>
+                   <div className="flex justify-between items-start gap-2 mb-2">
+                     <h3 className="font-bold text-gray-900 leading-tight flex-1 break-words">{m.title}</h3>
+                     {m.pinned && <span className="text-sm">📌</span>}
+                   </div>
+                   <div className="flex flex-wrap gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">
+                      <span className={`px-2 py-1 rounded ${badgeCls}`}>{m.status}</span>
+                      <span className="px-2 py-1 bg-gray-50 border border-gray-100 rounded">{m.priority}</span>
+                      {m.category && <span className="px-2 py-1 bg-gray-50 border border-gray-100 rounded">{m.category}</span>}
+                   </div>
+                   <p className="text-xs text-gray-500 line-clamp-2">{m.body}</p>
+                 </div>
+                 <div className="border-t border-gray-50 pt-3 mt-3 flex items-center justify-between text-xs text-gray-500">
+                    <div className="flex flex-col gap-1">
+                      <span>Audience: <strong className="capitalize text-gray-700">{m.audience}</strong></span>
+                      {m.scheduledAt && <span>Sched: <strong className="text-gray-700">{new Date(m.scheduledAt).toLocaleString()}</strong></span>}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button onClick={() => handleEdit(m)} className="text-gray-400 hover:text-black transition-colors" title="Edit">
+                         <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                      </button>
+                      <button onClick={() => handleDelete(m.id)} className="text-gray-400 hover:text-red-600 transition-colors" title="Delete">
+                         <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      </button>
+                    </div>
+                 </div>
+               </div>
+             );
+           })}
+           {messages.length === 0 && (
+             <div className="col-span-full p-8 text-center text-gray-400 font-bold italic">No messages found.</div>
+           )}
         </div>
       )}
     </div>

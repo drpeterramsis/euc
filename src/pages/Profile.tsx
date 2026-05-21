@@ -13,7 +13,6 @@ import { useApp } from '../context/AppContext';
 import { getLabel } from '../utils/labels';
 import { displayPhone } from '../utils/phone';
 import { readJSON } from '../utils/github';
-import InstallButton from '../components/InstallButton';
 
 // ─────────────────────────────────────────────
 // DETAIL ROW COMPONENT (High-contrast label vs value typography)

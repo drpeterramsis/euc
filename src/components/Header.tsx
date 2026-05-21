@@ -8,24 +8,27 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { useApp } from "../context/AppContext";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { getLabel } from "../utils/labels";
 import UserAvatar from "./UserAvatar";
-import InstallButton from "./InstallButton";
 
 /**
  * Header component displays page context and user avatar.
  */
 export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const { currentUser, appConfig, messages } = useApp();
+  const location = useLocation();
 
-  const unreadCount = messages ? messages.filter(
-    (m) =>
-      m.status === "published" &&
-      currentUser &&
-      m.readBy &&
-      !m.readBy.includes(currentUser.id)
-  ).length : 0;
+  let unreadCount = 0;
+  if (messages && currentUser && location.pathname !== "/messages") {
+    unreadCount = messages.filter(
+      (m) =>
+        m.status === "published" &&
+        (!m.expiresAt || new Date(m.expiresAt).getTime() > Date.now()) &&
+        m.readBy &&
+        !m.readBy.includes(currentUser.id)
+    ).length;
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-black border-b border-gray-800 flex items-center justify-between px-4 z-40 shadow-sm">
@@ -51,7 +54,6 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
         </Link>
       </div>
       <div className="flex items-center space-x-4">
-        <InstallButton variant="header" />
         <Link to="/messages" className="relative p-2 text-white hover:text-yellow-400 transition-colors">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />

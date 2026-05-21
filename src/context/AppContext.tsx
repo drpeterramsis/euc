@@ -94,6 +94,7 @@ export interface AppMessage {
   title: string;
   body: string;
   status: "draft" | "scheduled" | "published" | "expired" | "archived";
+  category: "general" | "schedule" | "logistics" | "urgent" | "social" | "other";
   scheduledAt: string | null;
   publishedAt: string | null;
   expiresAt: string | null;
@@ -268,7 +269,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Check if already installed
-    if (window.matchMedia("(display-mode: standalone)").matches) {
+    if (window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone) {
       setIsAppInstalled(true);
     }
 

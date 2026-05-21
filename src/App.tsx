@@ -8,7 +8,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -30,7 +30,6 @@ import Directory from './pages/Directory';
 import { useApp } from './context/AppContext';
 import { getFeatureStatus } from './utils/featureAccess';
 import { useSwipeBack } from './hooks/useSwipeBack';
-import InstallButton from './components/InstallButton';
 
 /**
  * ProtectedRoute component verifies authentication synchronously.
@@ -140,7 +139,6 @@ export default function App() {
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>
-      <InstallButton variant="banner" />
     </>
   );
 }
