@@ -40,8 +40,17 @@ export async function readJSON(fileName: string): Promise<any[]> {
 
   try {
     const res = await fetch(`${import.meta.env.BASE_URL}data/${fileName}?t=${Date.now()}`);
-    if (res.ok) return await res.json();
-  } catch (err) { console.error(`Local fallback failed for ${fileName}`); }
+    if (res.ok) {
+      const text = await res.text();
+      try {
+        return JSON.parse(text);
+      } catch {
+        return [];
+      }
+    }
+  } catch (err) { 
+    // silent fallback
+  }
   return [];
 }
 

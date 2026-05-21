@@ -96,10 +96,7 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* PWA INSTALLATION ROW */}
-      <div className="mb-8">
-        <InstallButton variant="settings" />
-      </div>
+
 
       {/* COMPREHENSIVE DYNAMIC TRAVEL & LODGING LOGISTICS SECTION (System 1) */}
       <div className="pb-8">

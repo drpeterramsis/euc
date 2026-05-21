@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { writeJSON } from "../utils/github";
 
 export default function Messages() {
-  const { messages, setMessages, currentUser } = useApp() as any;
+  const { messages, updateMessages, currentUser } = useApp() as any;
   const navigate = useNavigate();
   const [filterCategory, setFilterCategory] = useState<string>("all");
 
@@ -18,7 +18,7 @@ export default function Messages() {
     const msgIndex = updated.findIndex((m: any) => m.id === id);
     if (msgIndex !== -1) {
       updated[msgIndex] = { ...msg, readBy: [...(msg.readBy || []), currentUser.id] };
-      setMessages && setMessages(updated);
+      updateMessages && updateMessages(updated);
     }
   };
 
@@ -39,9 +39,10 @@ export default function Messages() {
     return list.sort((a, b) => {
       if (a.pinned && !b.pinned) return -1;
       if (!a.pinned && b.pinned) return 1;
-      const tA = new Date(a.publishedAt || 0).getTime();
-      const tB = new Date(b.publishedAt || 0).getTime();
-      return tB - tA;
+      const tA = new Date(a.publishedAt || a.scheduledAt || 0).getTime();
+      const tB = new Date(b.publishedAt || b.scheduledAt || 0).getTime();
+      if (tA !== tB) return tB - tA;
+      return String(b.id).localeCompare(String(a.id));
     });
   };
 

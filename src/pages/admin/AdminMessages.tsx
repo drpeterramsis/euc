@@ -3,8 +3,10 @@ import { useApp } from "../../context/AppContext";
 import { writeJSON } from "../../utils/github";
 
 export default function AdminMessages() {
-  const { messages, setMessages } = useApp() as any;
+  const { messages, updateMessages } = useApp() as any;
   const [editingMsg, setEditingMsg] = useState<any>(null);
+  const [publishMode, setPublishMode] = useState<"now"|"schedule">("now");
+  const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -22,6 +24,7 @@ export default function AdminMessages() {
 
   const handleEdit = (msg: any) => {
     setEditingMsg(msg);
+    setPublishMode(msg.status === "scheduled" || (msg.scheduledAt && msg.scheduledAt > new Date().toISOString()) ? "schedule" : "now");
     setForm({
       title: msg.title || "",
       body: msg.body || "",
@@ -37,6 +40,7 @@ export default function AdminMessages() {
 
   const initNew = () => {
     setEditingMsg({ id: "new" });
+    setPublishMode("now");
     setForm({
       title: "",
       body: "",
@@ -51,26 +55,41 @@ export default function AdminMessages() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete message?")) return;
-    const updated = messages.filter((m: any) => m.id !== id);
-    setMessages(updated);
-    await writeJSON("messages.json", updated);
+    setMessageToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!messageToDelete) return;
+    const updated = messages.filter((m: any) => m.id !== messageToDelete);
+    updateMessages(updated);
+    setMessageToDelete(null);
+    await writeJSON("messages.json", updated).catch(()=>null);
+  };
+
+  const cancelDelete = () => {
+    setMessageToDelete(null);
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const now = new Date().toISOString();
     let status = "draft";
-    let publishedAt = null;
+    let publishedAt = editingMsg?.publishedAt || null;
+    let scheduledAt = form.scheduledAt ? new Date(form.scheduledAt).toISOString() : null;
 
-    if (form.scheduledAt) {
-      const sDate = new Date(form.scheduledAt).toISOString();
-      if (sDate <= now) {
+    if (publishMode === "now") {
         status = "published";
-        publishedAt = now;
-      } else {
-        status = "scheduled";
-      }
+        publishedAt = publishedAt || now;
+        scheduledAt = null;
+    } else {
+        if (scheduledAt) {
+            if (scheduledAt <= now) {
+                status = "published";
+                publishedAt = scheduledAt;
+            } else {
+                status = "scheduled";
+            }
+        }
     }
 
     if (form.expiresAt) {
@@ -81,33 +100,33 @@ export default function AdminMessages() {
     }
 
     const payload = {
-      id: editingMsg?.id === "new" ? `msg_${Date.now()}` : editingMsg.id,
+      id: editingMsg?.id === "new" ? crypto.randomUUID?.() || `msg_${Date.now()}` : editingMsg.id,
       title: form.title,
       body: form.body,
       category: form.category,
       status,
-      scheduledAt: form.scheduledAt ? new Date(form.scheduledAt).toISOString() : null,
-      publishedAt: editingMsg.publishedAt || publishedAt,
+      scheduledAt,
+      publishedAt,
       expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : null,
       priority: form.priority,
       audience: form.audience,
       buttons: form.buttons,
       createdBy: "admin",
-      readBy: editingMsg.readBy || [],
+      readBy: editingMsg?.readBy || [],
       pinned: form.pinned
     };
 
     let updated = [...messages];
     if (editingMsg?.id === "new") {
-      updated.push(payload);
+      updated = [payload, ...updated];
     } else {
       const idx = updated.findIndex((m: any) => m.id === payload.id);
       if (idx !== -1) updated[idx] = payload;
     }
 
-    setMessages(updated);
-    await writeJSON("messages.json", updated);
+    updateMessages(updated);
     setEditingMsg(null);
+    await writeJSON("messages.json", updated).catch(()=>null);
   };
 
   return (
@@ -169,10 +188,19 @@ export default function AdminMessages() {
                  </select>
                </div>
                <div>
-                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Scheduled At (Draft if empty)</label>
-                 <input type="datetime-local" value={form.scheduledAt} onChange={e => setForm({...form, scheduledAt: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium" />
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Publishing</label>
+                  <div className="flex gap-4 mt-2">
+                    <label className="flex items-center gap-1 text-sm font-medium"><input type="radio" value="now" checked={publishMode === "now"} onChange={() => setPublishMode("now")} /> Publish Now</label>
+                    <label className="flex items-center gap-1 text-sm font-medium"><input type="radio" value="schedule" checked={publishMode === "schedule"} onChange={() => setPublishMode("schedule")} /> Schedule</label>
+                  </div>
                </div>
-               <div>
+               {publishMode === "schedule" && (
+                 <div>
+                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Scheduled At *</label>
+                   <input required type="datetime-local" value={form.scheduledAt} onChange={e => setForm({...form, scheduledAt: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium" />
+                 </div>
+               )}
+               <div className={publishMode === "now" ? "md:col-start-3" : ""}>
                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Expires At</label>
                  <input type="datetime-local" value={form.expiresAt} onChange={e => setForm({...form, expiresAt: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium" />
                </div>
@@ -256,6 +284,22 @@ export default function AdminMessages() {
            {messages.length === 0 && (
              <div className="col-span-full p-8 text-center text-gray-400 font-bold italic">No messages found.</div>
            )}
+        </div>
+      )}
+
+      {messageToDelete && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 text-center animate-in fade-in zoom-in duration-200">
+             <div className="mx-auto w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
+               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+             </div>
+             <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Message</h3>
+             <p className="text-sm text-gray-500 mb-6">Are you sure you want to delete this message? This action cannot be undone.</p>
+             <div className="flex gap-3">
+               <button onClick={cancelDelete} className="flex-1 py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-lg transition-colors border-none cursor-pointer">Cancel</button>
+               <button onClick={confirmDelete} className="flex-1 py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors border-none cursor-pointer">Delete</button>
+             </div>
+          </div>
         </div>
       )}
     </div>

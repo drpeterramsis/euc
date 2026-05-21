@@ -314,7 +314,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       readJSON("media.json").catch(() => []), 
       readJSON("tripInfo.json").catch(() => DEFAULT_TRIP_INFO),
       readJSON("appConfig.json").catch(() => DEFAULT_APP_CONFIG),
-      readJSON("messages.json").catch(() => []),
+      (async () => {
+        try {
+          const local = localStorage.getItem("euc_messages");
+          if (local) return JSON.parse(local);
+          return await readJSON("messages.json");
+        } catch {
+          return [];
+        }
+      })(),
       readJSON("gallery.json").catch(() => []),
     ]);
 
@@ -540,6 +548,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setMessages(data);
     try {
       sessionStorage.setItem(CACHE.messages, JSON.stringify(data));
+      localStorage.setItem("euc_messages", JSON.stringify(data));
       localStorage.setItem(CACHE.lastFetch, Date.now().toString());
     } catch {}
   }, []);
@@ -599,6 +608,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (changed) {
           try {
             sessionStorage.setItem(CACHE.messages, JSON.stringify(updated));
+            localStorage.setItem("euc_messages", JSON.stringify(updated));
             localStorage.setItem(CACHE.lastFetch, Date.now().toString());
           } catch {}
           return updated;
