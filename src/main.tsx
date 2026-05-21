@@ -9,6 +9,11 @@ import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import { AppProvider } from "./context/AppContext";
 import './index.css';
+import { registerSW } from 'virtual:pwa-register';
+
+if ('serviceWorker' in navigator) {
+  registerSW({ immediate: true });
+}
 
 const forceLight = () => {
   document.documentElement.classList.remove("dark");
