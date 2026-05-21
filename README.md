@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.919
+Version: 1.0.920
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -106,6 +106,7 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.917 | 2026-05-20 | Implemented Countdown control settings, custom timeline entries manager, isolated Flight & Hotel logistics editor, and Day-by-Day Daily trip itinerary planner in Admin page (persisting seamlessly to countdownConfig.json, schedule.json, and tripSchedule.json). |
 | v1.0.918 | 2026-05-20 | Fixed reserved key prop warnings in FlightSummaryCard and HotelSummaryCard components to adhere to React and TypeScript expectations seamlessly. |
 | v1.0.919 | 2026-05-21 | Added fast canvas image compression, 2-column album card action buttons layout, seamless lightbox zoom capabilities, double tap zoom toggles, swipe back support, and multi-file progress tracking. |
+| v1.0.920 | 2026-05-21 | Fixed central message distribution for non-admin users, resolved local caching blockages, and implemented automatic background update state propagation for both new messages and gallery albums. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

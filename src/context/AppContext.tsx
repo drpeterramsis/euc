@@ -317,9 +317,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       readJSON("appConfig.json").catch(() => DEFAULT_APP_CONFIG),
       (async () => {
         try {
-          const local = localStorage.getItem("euc_messages");
-          if (local) return JSON.parse(local);
-          return await readJSON("messages.json");
+          const fresh = await readJSON("messages.json");
+          const readByLocal = JSON.parse(localStorage.getItem("euc_read_message_ids") || "[]");
+          const uRaw = localStorage.getItem("euc_user");
+          const cUser = uRaw ? JSON.parse(uRaw) : null;
+          if (cUser) {
+            return fresh.map((m: any) => {
+              if (readByLocal.includes(m.id)) {
+                const readSet = new Set(m.readBy || []);
+                readSet.add(cUser.id);
+                return { ...m, readBy: Array.from(readSet) };
+              }
+              return m;
+            });
+          }
+          return fresh;
         } catch {
           return [];
         }
@@ -379,6 +391,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setMedia(fresh.media);
         setTripInfo(fresh.tripInfo);
         setAppConfig(fresh.appConfig);
+        setMessages(fresh.messages);
+        setGalleries(fresh.galleries);
         writeSessionCache(fresh);
 
         // Deeply update currentUser if their data changed
@@ -550,6 +564,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     try {
       sessionStorage.setItem(CACHE.messages, JSON.stringify(data));
       localStorage.setItem("euc_messages", JSON.stringify(data));
+      const uRaw = localStorage.getItem("euc_user");
+      const cUser = uRaw ? JSON.parse(uRaw) : null;
+      if (cUser) {
+        const readIds = data
+          .filter((m: any) => m.readBy && m.readBy.includes(cUser.id))
+          .map((m: any) => m.id);
+        localStorage.setItem("euc_read_message_ids", JSON.stringify(readIds));
+      }
       localStorage.setItem(CACHE.lastFetch, Date.now().toString());
     } catch {}
   }, []);
