@@ -56,9 +56,8 @@ export async function readJSON(fileName: string): Promise<any[]> {
 
 /**
  * Robustly updates a file on GitHub contents API.
- * 1) GET file SHA with cache-buster
- * 2) PUT with new content and current SHA
- * 3) If 409/422 conflict, re-fetch SHA with a fresh cache-buster and retry once
+ * ALWAYS fetches the latest SHA right before writing.
+ * Retries once on 409/422 conflicts.
  */
 export async function githubUpdateFile(
   path: string,
@@ -74,65 +73,133 @@ export async function githubUpdateFile(
     throw new Error("No VITE_GITHUB_TOKEN or VITE_GITHUB_REPO credentials configured.");
   }
 
-  // Get current file SHA (with anti-cache query param)
-  const getSha = async (): Promise<string> => {
-    try {
-      const getRes = await fetch(
-        `https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}&t=${Date.now()}`,
-        {
-          headers: {
-            Authorization: `Bearer ${TOKEN}`,
-            Accept: "application/vnd.github.v3+json",
-          },
-        }
-      );
-      if (getRes.ok) {
-        const fileData = await getRes.json();
-        return fileData.sha || "";
-      }
-    } catch (e) {
-      console.warn(`Failed to retrieve file SHA for ${path}:`, e);
+  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+
+  // ALWAYS get fresh SHA right before writing
+  let sha: string | undefined;
+  const getRes = await fetch(`${url}?ref=${BRANCH}&t=${Date.now()}`, {
+    headers: {
+      Authorization: `Bearer ${TOKEN}`,
+      Accept: "application/vnd.github.v3+json"
     }
-    return "";
-  };
-
-  let sha = await getSha();
-  const base64Content = btoa(unescape(encodeURIComponent(content)));
-
-  const doPut = async (currentSha: string) => {
-    const putRes = await fetch(
-      `https://api.github.com/repos/${REPO}/contents/${path}`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${TOKEN}`,
-          Accept: "application/vnd.github.v3+json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: commitMessage,
-          content: base64Content,
-          sha: currentSha || undefined,
-          branch: BRANCH,
-        }),
-      }
-    );
-    return putRes;
-  };
-
-  let putRes = await doPut(sha);
-
-  // If SHA was stale (409) or validation issue (422), catch and retry ONCE with a fresh SHA query
-  if (!putRes.ok && (putRes.status === 409 || putRes.status === 422)) {
-    console.warn(`Initial GitHub write returned ${putRes.status} for ${path}, retrying with a fresh SHA fetch...`);
-    sha = await getSha();
-    putRes = await doPut(sha);
+  });
+  if (getRes.ok) {
+    const getData = await getRes.json();
+    sha = getData.sha;
   }
+
+  const base64Content = btoa(unescape(encodeURIComponent(content)));
+  const body: any = {
+    message: commitMessage,
+    content: base64Content,
+    branch: BRANCH
+  };
+  if (sha) body.sha = sha;
+
+  const putRes = await fetch(url, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${TOKEN}`,
+      "Content-Type": "application/json",
+      Accept: "application/vnd.github.v3+json",
+    },
+    body: JSON.stringify(body),
+  });
 
   if (!putRes.ok) {
     const err = await putRes.json().catch(() => ({ message: putRes.statusText }));
+    // If SHA conflict — retry once with fresh SHA
+    if (putRes.status === 409 || putRes.status === 422) {
+      console.warn(`Initial GitHub write returned ${putRes.status} for ${path}, retrying with a fresh SHA fetch...`);
+      const retryGet = await fetch(`${url}?ref=${BRANCH}&t=${Date.now()}`, {
+        headers: {
+          Authorization: `Bearer ${TOKEN}`,
+          Accept: "application/vnd.github.v3+json"
+        }
+      });
+      if (retryGet.ok) {
+        const retryData = await retryGet.json();
+        body.sha = retryData.sha;
+        const retryPut = await fetch(url, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${TOKEN}`,
+            "Content-Type": "application/json",
+            Accept: "application/vnd.github.v3+json",
+          },
+          body: JSON.stringify(body),
+        });
+        if (!retryPut.ok) {
+          throw new Error(`GitHub write failed after retry: ${path}`);
+        }
+        return;
+      }
+    }
     throw new Error(`GitHub write failed: ${err.message || "Unknown Git API error"}`);
   }
+}
+
+/**
+ * Uploads a picture as a separate raw file in the repository (not base64 inside JSON).
+ * Path: data/photos/{albumId}/{fileName}
+ */
+export async function githubUploadPhoto(
+  albumId: string,
+  fileName: string,
+  base64Content: string, // raw base64, no data:image prefix
+  commitMessage: string
+): Promise<string> {
+  const TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
+  const REPO = import.meta.env.VITE_GITHUB_REPO;
+  const BRANCH = import.meta.env.VITE_GITHUB_BRANCH || "main";
+
+  if (!TOKEN || !REPO) {
+    console.warn("No GitHub credentials — photo upload skipped");
+    throw new Error("No VITE_GITHUB_TOKEN or VITE_GITHUB_REPO credentials configured.");
+  }
+
+  const path = `data/photos/${albumId}/${fileName}`;
+  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+
+  // Check if file already exists (to get SHA if needed)
+  let sha: string | undefined;
+  try {
+    const check = await fetch(`${url}?ref=${BRANCH}&t=${Date.now()}`, {
+      headers: {
+        Authorization: `Bearer ${TOKEN}`,
+        Accept: "application/vnd.github.v3+json"
+      }
+    });
+    if (check.ok) {
+      const data = await check.json();
+      sha = data.sha;
+    }
+  } catch (_) {}
+
+  const body: any = {
+    message: commitMessage,
+    content: base64Content,
+    branch: BRANCH
+  };
+  if (sha) body.sha = sha;
+
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${TOKEN}`,
+      "Content-Type": "application/json",
+      Accept: "application/vnd.github.v3+json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: res.statusText }));
+    throw new Error(`Photo upload failed: ${err.message || "Unknown error"}`);
+  }
+
+  // Return the raw URL to use in gallery.json
+  return `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${path}`;
 }
 
 /**

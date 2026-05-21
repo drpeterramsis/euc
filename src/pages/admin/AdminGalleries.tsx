@@ -12,7 +12,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useApp, GalleryAlbum } from "../../context/AppContext";
-import { writeJSON } from "../../utils/github";
+import { writeJSON, githubUploadPhoto, githubUpdateFile } from "../../utils/github";
 import { compressImage } from "../../utils/image";
 import { useSwipeBack } from "../../hooks/useSwipeBack";
 
@@ -59,8 +59,10 @@ export default function AdminGalleries() {
   }, [editingAlbum]);
 
   const initNew = () => {
+    // Generate unique stable album ID immediately at initialization 
+    // to support separate raw picture uploads correctly
     setEditingAlbum({
-      id: "new",
+      id: `gallery_${Date.now()}`,
       type: "gallery",
       title: "",
       category: "trip-gallery",
@@ -83,31 +85,35 @@ export default function AdminGalleries() {
 
     setLoading(true);
     const oldGalleries = [...galleries]; // Capture snapshot for rollback
-    const updated = [...galleries];
-    const payload = {
-      ...editingAlbum,
-      id: editingAlbum.id === "new" ? `gallery_${Date.now()}` : editingAlbum.id
-    };
+    const targetAlbum = { ...editingAlbum };
 
-    if (editingAlbum.id === "new") {
-      updated.push(payload);
-    } else {
-      const idx = updated.findIndex((a: any) => a.id === payload.id);
-      if (idx !== -1) updated[idx] = payload;
-    }
+    // Compute updated list using functional approach and existing state
+    const isNew = !galleries.some((a: any) => a.id === targetAlbum.id);
+    const updated = isNew 
+      ? [...galleries, targetAlbum]
+      : galleries.map((a: any) => a.id === targetAlbum.id ? targetAlbum : a);
 
     try {
-      // Optimistic state change
-      updateGalleries(updated);
+      // Optimistic state update with functional updater form
+      updateGalleries((prev: GalleryAlbum[]) => {
+        const checkNew = !prev.some(a => a.id === targetAlbum.id);
+        return checkNew 
+          ? [...prev, targetAlbum]
+          : prev.map(a => a.id === targetAlbum.id ? targetAlbum : a);
+      });
 
-      // Save to server
-      await writeJSON("gallery.json", updated);
+      // Save lightweight configuration file ONCE to GitHub
+      await githubUpdateFile(
+        "data/gallery.json",
+        JSON.stringify(updated, null, 2),
+        `Save album: ${targetAlbum.title}`
+      );
 
       showToast("Album successfully saved is globally visible to everyone!", "success");
       setEditingAlbum(null);
     } catch (err: any) {
       console.error("Failed to save and persist gallery to GitHub:", err);
-      // State Rollback
+      // State Rollback using functional form
       updateGalleries(oldGalleries);
       showToast("Failed to save. Keeping album composer draft open.", "error");
     } finally {
@@ -125,15 +131,19 @@ export default function AdminGalleries() {
     const updated = galleries.filter((g: any) => g.id !== id);
     
     try {
-      // Optimistic delete
-      updateGalleries(updated);
+      // Optimistic delete using functional updater style
+      updateGalleries((prev: GalleryAlbum[]) => prev.filter(g => g.id !== id));
 
-      // Persist deletion
-      await writeJSON("gallery.json", updated);
+      // Persist deletion to GitHub once
+      await githubUpdateFile(
+        "data/gallery.json",
+        JSON.stringify(updated, null, 2),
+        `Delete album: ${id}`
+      );
       showToast("Album deleted successfully!", "success");
     } catch (err: any) {
       console.error("Failed to delete album on GitHub:", err);
-      // State Rollback
+      // State Rollback using functional style
       updateGalleries(oldGalleries);
       showToast("Failed to delete. Please check internet connection.", "error");
     } finally {
@@ -141,38 +151,67 @@ export default function AdminGalleries() {
     }
   };
 
-  // Modern compressed image uploader with multiple select support and progression feedback
+  // Modern compressed image uploader with multiple select support and SEQUENTIAL upload loop
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || !editingAlbum) return;
     
     setLoading(true);
-    const newImages = [...editingAlbum.images];
     const total = files.length;
+    const albumId = editingAlbum.id;
     
-    for (let i = 0; i < total; i++) {
+    try {
+      // Process photos SEQUENTIALLY to prevent parallel PUT SHA race conditions on GitHub
+      for (let i = 0; i < total; i++) {
         const file = files[i];
         if (!file.type.startsWith('image/')) continue;
-        setUploadProgress(`Compressing ${i + 1} / ${total}...`);
-        try {
-          // Native client-side image compression & size reducing
-          const compressed = await compressImage(file);
-          newImages.push({ url: compressed, caption: "" });
-        } catch (err) {
-          console.error("Error compressing image:", err);
-        }
+        
+        setUploadProgress(`Uploading photo ${i + 1} of ${total}...`);
+        
+        // 1) Compress the image client-side first
+        const compressed = await compressImage(file);
+        
+        // 2) Strip the data URLs prefix to get raw base64 string
+        const base64 = compressed.split(",")[1];
+        const fileName = `${Date.now()}_${i}.jpg`;
+        
+        // 3) Upload raw file separately to Github repo
+        const url = await githubUploadPhoto(
+          albumId,
+          fileName,
+          base64,
+          `Add photo to album ${albumId}`
+        );
+        
+        // 4) Add image raw public URL to state using functional updater form
+        setEditingAlbum(prev => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            images: [...(prev.images || []), { url, caption: "" }]
+          };
+        });
+      }
+      showToast("Photos uploaded with success!", "success");
+    } catch (err: any) {
+      console.error("Photos upload failed:", err);
+      showToast(`Upload failed at photo processing. Please try again.`, "error");
+    } finally {
+      setUploadProgress(null);
+      setLoading(false);
     }
-
-    setEditingAlbum({ ...editingAlbum, images: newImages });
-    setUploadProgress(null);
-    setLoading(false);
   };
 
   const removeImage = (index: number) => {
     if (!editingAlbum) return;
-    const newImages = [...editingAlbum.images];
-    newImages.splice(index, 1);
-    setEditingAlbum({ ...editingAlbum, images: newImages });
+    
+    // Functional state modification for removing album images
+    setEditingAlbum(prev => {
+      if (!prev) return null;
+      const newImages = [...prev.images];
+      newImages.splice(index, 1);
+      return { ...prev, images: newImages };
+    });
   };
 
   return (
@@ -252,9 +291,12 @@ export default function AdminGalleries() {
                            value={img.caption} 
                            disabled={loading}
                            onChange={e => {
-                             const newImages = [...editingAlbum.images];
-                             newImages[idx].caption = e.target.value;
-                             setEditingAlbum({...editingAlbum, images: newImages});
+                             setEditingAlbum(prev => {
+                               if (!prev) return null;
+                               const newImages = [...prev.images];
+                               newImages[idx] = { ...newImages[idx], caption: e.target.value };
+                               return { ...prev, images: newImages };
+                             });
                            }} 
                            className="absolute bottom-0 left-0 right-0 text-[10px] w-full p-1 bg-white/90 border-t border-gray-200 focus:outline-none font-medium"
                          />
@@ -266,7 +308,7 @@ export default function AdminGalleries() {
                   </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 mt-6 pt-4 border-t border-gray-100 sm:flex sm:justify-end">
+              <div className="grid grid-cols-2 gap-2 mt-6 pt-4 border-t border-gray-100 sm:flex sm:justify-end font-bold">
                  {/* Hide cancel button on mobile, utilize natural swipe back gesture */}
                  <button type="button" onClick={() => setEditingAlbum(null)} className="hidden md:block w-full sm:w-auto px-4 py-2 font-bold text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg border-none cursor-pointer" disabled={loading}>Cancel</button>
                  <button type="submit" className="w-full sm:w-auto px-6 py-2 font-bold text-sm bg-black hover:bg-gray-800 text-white rounded-lg flex items-center justify-center gap-2 border-none cursor-pointer" disabled={loading}>

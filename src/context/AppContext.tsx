@@ -597,12 +597,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, []);
 
-  const updateGalleries = useCallback((data: GalleryAlbum[]) => {
-    setGalleries(data);
-    try {
-      sessionStorage.setItem(CACHE.galleries, JSON.stringify(data));
-      localStorage.setItem(CACHE.lastFetch, Date.now().toString());
-    } catch {}
+  const updateGalleries = useCallback((data: GalleryAlbum[] | ((prev: GalleryAlbum[]) => GalleryAlbum[])) => {
+    setGalleries(prev => {
+      const merged = typeof data === "function" ? data(prev) : data;
+      try {
+        sessionStorage.setItem(CACHE.galleries, JSON.stringify(merged));
+        localStorage.setItem(CACHE.lastFetch, Date.now().toString());
+      } catch {}
+      return merged;
+    });
   }, []);
 
   const refreshData = useCallback(async () => {
