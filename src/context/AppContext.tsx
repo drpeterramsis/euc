@@ -164,7 +164,19 @@ export const DEFAULT_APP_CONFIG: AppConfig = {
   }
 };
 
-const REFRESH_INTERVAL = 10 * 60 * 1000;
+/**
+ * Normalizes recipients and user roles, removing plurals to ensure precise routing matching.
+ */
+export function matchesRole(recipients: any, userRole: string): boolean {
+  if (!recipients) return true;
+  const list = Array.isArray(recipients) ? recipients : [recipients];
+  const normalize = (s: string) => s.toLowerCase().replace(/s$/, "").trim();
+  const role = normalize(userRole || "");
+  return list.some(r => {
+    const n = normalize(r);
+    return n === "all" || n === "all_user" || n === "all_users" || n === role;
+  });
+}
 
 interface AppContextType {
   users:       any[];
@@ -490,6 +502,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         });
     }
   }, [currentUser, backgroundRefresh, fetchFreshData]);
+
+  // Periodic silent background sync polling every 30 seconds to download live message and galleries updates
+  useEffect(() => {
+    if (!currentUser) return;
+    const interval = setInterval(() => {
+      backgroundRefresh();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [currentUser, backgroundRefresh]);
 
   const loginUser = useCallback((user: any) => {
     const matchedUser = users.find(u => u.username === user.username) || user;

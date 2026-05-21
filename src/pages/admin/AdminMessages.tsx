@@ -1,3 +1,8 @@
+// ─────────────────────────────────────────────
+// FILE: src/pages/admin/AdminMessages.tsx
+// PURPOSE: Admin pane to send, edit, schedule, pin, and delete broadcast messages.
+// ─────────────────────────────────────────────
+
 import React, { useState } from "react";
 import { useApp } from "../../context/AppContext";
 import { writeJSON } from "../../utils/github";
@@ -8,6 +13,10 @@ export default function AdminMessages() {
   const [editingMsg, setEditingMsg] = useState<any>(null);
   const [publishMode, setPublishMode] = useState<"now"|"schedule">("now");
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
+
+  // Loading, saving, and toast alerts states
+  const [isSaving, setIsSaving] = useState(false);
+  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -22,6 +31,14 @@ export default function AdminMessages() {
   });
 
   if (!messages) return <div className="p-8 text-center text-gray-500 font-bold">Loading Messages...</div>;
+
+  /**
+   * Triggers a temporary floating status toast feedback
+   */
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
 
   const handleEdit = (msg: any) => {
     setEditingMsg(msg);
@@ -59,20 +76,47 @@ export default function AdminMessages() {
     setMessageToDelete(id);
   };
 
+  /**
+   * Robust delete message flow with GitHub persistence and rollback on failure.
+   */
   const confirmDelete = async () => {
     if (!messageToDelete) return;
+    setIsSaving(true);
+    const oldMessages = [...messages]; // Capture state snapshot for rollback
+
     const updated = messages.filter((m: any) => m.id !== messageToDelete);
-    updateMessages(updated);
-    setMessageToDelete(null);
-    await writeJSON("messages.json", updated).catch(()=>null);
+    
+    try {
+      // Optimistic UI update
+      updateMessages(updated);
+      setMessageToDelete(null);
+
+      // Save changes to GitHub
+      await writeJSON("messages.json", updated);
+      showToast("Message deleted successfully!", "success");
+    } catch (err: any) {
+      console.error("Failed to delete message from GitHub:", err);
+      // Rollback to historic state if save fails
+      updateMessages(oldMessages);
+      showToast("Failed to delete message. Please check connection and try again.", "error");
+    } finally {
+      setIsSaving(false);
+      setMessageToDelete(null);
+    }
   };
 
   const cancelDelete = () => {
     setMessageToDelete(null);
   };
 
+  /**
+   * Save message changes with optimistic state and GitHub backup.
+   */
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSaving) return;
+
+    setIsSaving(true);
     const now = new Date().toISOString();
     let status = "draft";
     let publishedAt = editingMsg?.publishedAt || null;
@@ -122,6 +166,7 @@ export default function AdminMessages() {
       pinned: form.pinned
     };
 
+    const oldMessages = [...messages]; // Capture state snapshot for rollback
     let updated = [...messages];
     if (editingMsg?.id === "new") {
       updated = [payload, ...updated];
@@ -130,17 +175,47 @@ export default function AdminMessages() {
       if (idx !== -1) updated[idx] = payload;
     }
 
-    updateMessages(updated);
-    setEditingMsg(null);
-    await writeJSON("messages.json", updated).catch(()=>null);
+    try {
+      // Optimistic state change
+      updateMessages(updated);
+
+      // Persist to GitHub
+      await writeJSON("messages.json", updated);
+      
+      showToast("Message sent and persisted successfully!", "success");
+      setEditingMsg(null);
+    } catch (err: any) {
+      console.error("Failed to save message to GitHub:", err);
+      // Rollback optimistic state changes
+      updateMessages(oldMessages);
+      showToast("Failed to save message. Keeping compose draft open.", "error");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
-    <div>
+    <div className="relative">
+      {/* Toast Notification HUD */}
+      {toast && (
+        <div className={`fixed bottom-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg border text-sm font-bold flex items-center gap-2 animate-bounce ${
+          toast.type === "success" 
+            ? "bg-green-50 text-green-800 border-green-200" 
+            : "bg-red-50 text-red-800 border-red-200"
+        }`}>
+          <span>{toast.type === "success" ? "✅" : "❌"}</span>
+          <span>{toast.message}</span>
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">Message Center</h2>
         {!editingMsg && (
-          <button onClick={initNew} className="bg-black text-white hover:bg-gray-800 rounded-lg px-4 py-2 font-bold text-sm transition-colors">
+          <button 
+            onClick={initNew} 
+            disabled={isSaving}
+            className="bg-black text-white hover:bg-gray-800 disabled:bg-gray-400 rounded-lg px-4 py-2 font-bold text-sm transition-colors cursor-pointer"
+          >
             + New Message
           </button>
         )}
@@ -151,16 +226,16 @@ export default function AdminMessages() {
           <form onSubmit={handleSave} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Title *</label>
-              <input required value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-yellow-500 focus:border-yellow-500" />
+              <input required value={form.title} disabled={isSaving} onChange={e => setForm({...form, title: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-yellow-500 focus:border-yellow-500" />
             </div>
             <div>
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Body *</label>
-              <textarea required rows={4} value={form.body} onChange={e => setForm({...form, body: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-yellow-500 focus:border-yellow-500" />
+              <textarea required rows={4} value={form.body} disabled={isSaving} onChange={e => setForm({...form, body: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-yellow-500 focus:border-yellow-500" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                <div>
                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Category</label>
-                 <select value={form.category} onChange={e => setForm({...form, category: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium focus:ring-yellow-500 focus:border-yellow-500">
+                 <select value={form.category} disabled={isSaving} onChange={e => setForm({...form, category: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium focus:ring-yellow-500 focus:border-yellow-500">
                    <option value="general">General</option>
                    <option value="schedule">Schedule</option>
                    <option value="logistics">Logistics</option>
@@ -172,14 +247,14 @@ export default function AdminMessages() {
                <div>
                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Priority</label>
                  <div className="flex gap-4 mt-2">
-                   <label className="flex items-center gap-1 text-sm font-medium"><input type="radio" value="normal" checked={form.priority === "normal"} onChange={e => setForm({...form, priority: e.target.value})} /> Normal</label>
-                   <label className="flex items-center gap-1 text-sm font-medium"><input type="radio" value="high" checked={form.priority === "high"} onChange={e => setForm({...form, priority: e.target.value})} /> High</label>
+                   <label className="flex items-center gap-1 text-sm font-medium"><input type="radio" value="normal" disabled={isSaving} checked={form.priority === "normal"} onChange={e => setForm({...form, priority: e.target.value})} /> Normal</label>
+                   <label className="flex items-center gap-1 text-sm font-medium"><input type="radio" value="high" disabled={isSaving} checked={form.priority === "high"} onChange={e => setForm({...form, priority: e.target.value})} /> High</label>
                  </div>
                </div>
                <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Pinned</label>
                   <label className="flex items-center gap-2 text-sm font-medium cursor-pointer mt-2">
-                    <input type="checkbox" checked={form.pinned} onChange={e => setForm({...form, pinned: e.target.checked})} className="rounded text-black focus:ring-black rounded-sm" />
+                    <input type="checkbox" checked={form.pinned} disabled={isSaving} onChange={e => setForm({...form, pinned: e.target.checked})} className="rounded text-black focus:ring-black rounded-sm" />
                     Stick to top of priority group
                   </label>
                </div>
@@ -187,7 +262,7 @@ export default function AdminMessages() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                <div>
                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Recipients</label>
-                 <select value={form.recipients} onChange={e => setForm({...form, recipients: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium focus:ring-yellow-500 focus:border-yellow-500">
+                 <select value={form.recipients} disabled={isSaving} onChange={e => setForm({...form, recipients: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium focus:ring-yellow-500 focus:border-yellow-500">
                    <option value="all">All Users</option>
                    <option value="doctors">Doctors</option>
                    <option value="staff">Staff</option>
@@ -197,26 +272,26 @@ export default function AdminMessages() {
                <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Publishing</label>
                   <div className="flex gap-4 mt-2">
-                    <label className="flex items-center gap-1 text-sm font-medium"><input type="radio" value="now" checked={publishMode === "now"} onChange={() => setPublishMode("now")} /> Publish Now</label>
-                    <label className="flex items-center gap-1 text-sm font-medium"><input type="radio" value="schedule" checked={publishMode === "schedule"} onChange={() => setPublishMode("schedule")} /> Schedule</label>
+                    <label className="flex items-center gap-1 text-sm font-medium"><input type="radio" value="now" disabled={isSaving} checked={publishMode === "now"} onChange={() => setPublishMode("now")} /> Publish Now</label>
+                    <label className="flex items-center gap-1 text-sm font-medium"><input type="radio" value="schedule" disabled={isSaving} checked={publishMode === "schedule"} onChange={() => setPublishMode("schedule")} /> Schedule</label>
                   </div>
                </div>
                {publishMode === "schedule" && (
                  <div>
                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Scheduled At *</label>
-                   <input required type="datetime-local" value={form.scheduledAt} onChange={e => setForm({...form, scheduledAt: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium" />
+                   <input required type="datetime-local" disabled={isSaving} value={form.scheduledAt} onChange={e => setForm({...form, scheduledAt: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium" />
                  </div>
                )}
                <div className={publishMode === "now" ? "md:col-start-3" : ""}>
                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Expires At</label>
-                 <input type="datetime-local" value={form.expiresAt} onChange={e => setForm({...form, expiresAt: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium" />
+                 <input type="datetime-local" disabled={isSaving} value={form.expiresAt} onChange={e => setForm({...form, expiresAt: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium" />
                </div>
             </div>
             
             <div className="pt-4 border-t border-gray-100">
               <div className="flex justify-between items-center mb-2">
                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest">Buttons Builders</label>
-                {form.buttons.length < 3 && (
+                {form.buttons.length < 3 && !isSaving && (
                   <button type="button" onClick={() => setForm({...form, buttons: [...form.buttons, { label: "", link: "", style: "primary" }]})} className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-2 py-1 rounded font-bold">
                     + Add Button
                   </button>
@@ -225,16 +300,16 @@ export default function AdminMessages() {
               {form.buttons.map((btn, i) => (
                 <div key={i} className="mb-4 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <input placeholder="Label" value={btn.label} onChange={e => { const b = [...form.buttons]; b[i].label = e.target.value; setForm({...form, buttons: b}); }} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm" />
-                    <input placeholder="Link (/route or https://...)" value={btn.link} onChange={e => { const b = [...form.buttons]; b[i].link = e.target.value; setForm({...form, buttons: b}); }} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm" />
-                    <select value={btn.style} onChange={e => { const b = [...form.buttons]; b[i].style = e.target.value as any; setForm({...form, buttons: b}); }} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm">
+                    <input placeholder="Label" value={btn.label} disabled={isSaving} onChange={e => { const b = [...form.buttons]; b[i].label = e.target.value; setForm({...form, buttons: b}); }} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm" />
+                    <input placeholder="Link (/route or https://...)" value={btn.link} disabled={isSaving} onChange={e => { const b = [...form.buttons]; b[i].link = e.target.value; setForm({...form, buttons: b}); }} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm" />
+                    <select value={btn.style} disabled={isSaving} onChange={e => { const b = [...form.buttons]; b[i].style = e.target.value as any; setForm({...form, buttons: b}); }} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm">
                       <option value="primary">Primary</option>
                       <option value="secondary">Secondary</option>
                       <option value="ghost">Ghost</option>
                     </select>
                   </div>
                   <div className="flex justify-end mt-2">
-                    <button type="button" onClick={() => { const b = [...form.buttons]; b.splice(i, 1); setForm({...form, buttons: b}); }} className="text-red-500 text-xs font-bold hover:text-red-700 transition-colors">
+                    <button type="button" disabled={isSaving} onClick={() => { const b = [...form.buttons]; b.splice(i, 1); setForm({...form, buttons: b}); }} className="text-red-500 text-xs font-bold hover:text-red-700 transition-colors disabled:text-gray-405 duration-200">
                       Remove Button
                     </button>
                   </div>
@@ -243,8 +318,20 @@ export default function AdminMessages() {
             </div>
 
             <div className="flex justify-end gap-3 mt-6 pt-4">
-              <button type="button" onClick={() => setEditingMsg(null)} className="px-4 py-2 font-bold text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg">Cancel</button>
-              <button type="submit" className="px-6 py-2 font-bold text-sm bg-black hover:bg-gray-800 text-white rounded-lg">Save Message</button>
+              <button type="button" disabled={isSaving} onClick={() => setEditingMsg(null)} className="px-4 py-2 font-bold text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg disabled:opacity-50 transition-all cursor-pointer">Cancel</button>
+              <button type="submit" disabled={isSaving} className="px-6 py-2 font-bold text-sm bg-black hover:bg-gray-800 disabled:bg-gray-600 text-white rounded-lg flex items-center gap-2 transition-all cursor-pointer">
+                {isSaving ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <span>Save Message</span>
+                )}
+              </button>
             </div>
           </form>
         </div>
@@ -265,9 +352,9 @@ export default function AdminMessages() {
                      {m.pinned && <span className="text-sm">📌</span>}
                    </div>
                    <div className="flex flex-wrap gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">
-                      <span className={`px-2 py-1 rounded ${badgeCls}`}>{m.status}</span>
-                      <span className="px-2 py-1 bg-gray-50 border border-gray-100 rounded">{m.priority}</span>
-                      {m.category && <span className="px-2 py-1 bg-gray-50 border border-gray-100 rounded">{m.category}</span>}
+                       <span className={`px-2 py-1 rounded ${badgeCls}`}>{m.status}</span>
+                       <span className="px-2 py-1 bg-gray-50 border border-gray-100 rounded">{m.priority}</span>
+                       {m.category && <span className="px-2 py-1 bg-gray-50 border border-gray-100 rounded">{m.category}</span>}
                    </div>
                    <p className="text-xs text-gray-500 line-clamp-2">{m.body}</p>
                  </div>
@@ -277,10 +364,10 @@ export default function AdminMessages() {
                       {m.scheduledAt && <span>Sched: <strong className="text-gray-700">{new Date(m.scheduledAt).toLocaleString()}</strong></span>}
                     </div>
                     <div className="flex items-center gap-3">
-                      <button onClick={() => handleEdit(m)} className="text-gray-400 hover:text-black transition-colors" title="Edit">
+                      <button onClick={() => handleEdit(m)} disabled={isSaving} className="text-gray-400 hover:text-black transition-colors bg-transparent border-none cursor-pointer" title="Edit">
                          <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                       </button>
-                      <button onClick={() => handleDelete(m.id)} className="text-gray-400 hover:text-red-600 transition-colors" title="Delete">
+                      <button onClick={() => handleDelete(m.id)} disabled={isSaving} className="text-gray-400 hover:text-red-600 transition-colors bg-transparent border-none cursor-pointer" title="Delete">
                          <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                       </button>
                     </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Layout from "../components/Layout";
-import { useApp } from "../context/AppContext";
+import { useApp, matchesRole } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 import { writeJSON } from "../utils/github";
 import { ensureHttps } from "../utils/linkUtils";
@@ -20,27 +20,18 @@ export default function Messages() {
     if (msgIndex !== -1) {
       updated[msgIndex] = { ...msg, readBy: [...(msg.readBy || []), currentUser.id] };
       updateMessages && updateMessages(updated);
+      
+      // Persist the read mark immediately to the server
+      writeJSON("messages.json", updated).catch(() => null);
     }
   };
 
-  if (!messages) return <Layout><div className="p-8 text-center">Loading...</div></Layout>;
+  if (!messages) return <Layout><div className="p-8 text-center text-gray-500 font-medium">Loading Messages...</div></Layout>;
 
   const isMessageVisible = (m: any) => {
     if (!currentUser) return false;
-    const role = (currentUser.role || "").toLowerCase();
-    const userId = String(currentUser.id);
     const audienceObj = m.audience || m.recipients || m.targetRole || "all";
-    if (audienceObj === "all" || audienceObj === "all_users") return true;
-    if (Array.isArray(audienceObj)) {
-      return audienceObj.includes("all") || audienceObj.includes("all_users") || audienceObj.includes(role) || audienceObj.includes(userId);
-    }
-    if (typeof audienceObj === "string") {
-      const s = audienceObj.toLowerCase();
-      if (s === "all" || s === "all_users") return true;
-      if (s === role) return true;
-      if (s.includes(role)) return true;
-    }
-    return false;
+    return matchesRole(audienceObj, currentUser.role);
   };
 
   const now = new Date().toISOString();

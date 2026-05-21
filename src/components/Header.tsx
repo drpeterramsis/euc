@@ -7,7 +7,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import { useApp } from "../context/AppContext";
+import { useApp, matchesRole } from "../context/AppContext";
 import { Link, useLocation } from "react-router-dom";
 import { getLabel } from "../utils/labels";
 import UserAvatar from "./UserAvatar";
@@ -21,20 +21,8 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
 
   const isMessageVisible = (m: any) => {
     if (!currentUser) return false;
-    const role = (currentUser.role || "").toLowerCase();
-    const userId = String(currentUser.id);
     const audienceObj = m.audience || m.recipients || m.targetRole || "all";
-    if (audienceObj === "all" || audienceObj === "all_users") return true;
-    if (Array.isArray(audienceObj)) {
-      return audienceObj.includes("all") || audienceObj.includes("all_users") || audienceObj.includes(role) || audienceObj.includes(userId);
-    }
-    if (typeof audienceObj === "string") {
-      const s = audienceObj.toLowerCase();
-      if (s === "all" || s === "all_users") return true;
-      if (s === role) return true;
-      if (s.includes(role)) return true;
-    }
-    return false;
+    return matchesRole(audienceObj, currentUser.role);
   };
 
   let unreadCount = 0;
