@@ -24,11 +24,13 @@ import {
 } from './pages/admin/AdminFeaturePages';
 import ComingSoon from './pages/ComingSoon';
 import Media from './pages/Media';
+import Messages from './pages/Messages';
 import Staff from './pages/Staff';
 import Directory from './pages/Directory'; 
 import { useApp } from './context/AppContext';
 import { getFeatureStatus } from './utils/featureAccess';
 import { useSwipeBack } from './hooks/useSwipeBack';
+import InstallButton from './components/InstallButton';
 
 /**
  * ProtectedRoute component verifies authentication synchronously.
@@ -83,6 +85,7 @@ function AppRoutes() {
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/schedule" element={<ProtectedRoute><FeatureRoute featureKey="schedule"><Schedule /></FeatureRoute></ProtectedRoute>} />
+      <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
       <Route path="/sessions" element={<ProtectedRoute><FeatureRoute featureKey="sessions"><Sessions /></FeatureRoute></ProtectedRoute>} />
       <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
       <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
@@ -137,6 +140,7 @@ export default function App() {
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>
+      <InstallButton variant="banner" />
     </>
   );
 }

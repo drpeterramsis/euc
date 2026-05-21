@@ -15,6 +15,7 @@ import { useApp } from "../context/AppContext";
 import { getFeatureStatus } from "../utils/featureAccess";
 import UserAvatar from "./UserAvatar";
 import { getPageAccess, isNavVisible } from "../utils/pageAccess";
+import InstallButton from "./InstallButton";
 
 /**
  * Sidebar component renders fixed navigation menu.
@@ -180,6 +181,10 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
               </NavLink>
             </>
           )}
+
+          <div className="my-4 px-2">
+            <InstallButton variant="menu" />
+          </div>
 
           <a
             href={`https://wa.me/201069996672?text=${encodeURIComponent("Hello EUC Support Team, I need technical assistance with the EUC Conference App.")}`}

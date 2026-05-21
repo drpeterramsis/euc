@@ -16,6 +16,7 @@ import { shouldShowOnDashboard } from '../utils/postVisibility';
 import { getLabel } from '../utils/labels';
 import SmartCountdown from '../components/SmartCountdown';
 import { readJSON } from '../utils/github';
+import GalleryCard from '../components/GalleryCard';
 
 // ─────────────────────────────────────────────
 // SUMMARY CARD FOR FLIGHTS (Compact, clean with icons)
@@ -95,7 +96,7 @@ function HotelSummaryCard({ item }: { item: any; key?: any }) {
 }
 
 export default function Dashboard() {
-  const { currentUser, users, media = [], tripInfo, appConfig } = useApp();
+  const { currentUser, users, media = [], galleries = [], tripInfo, appConfig } = useApp() as any;
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const navigate = useNavigate();
 
@@ -122,9 +123,16 @@ export default function Dashboard() {
       .catch(() => {});
   }, []);
 
-  const dashboardMedia = [...media]
-    .filter(p => shouldShowOnDashboard(p, fullUser))
-    .sort((a, b) => new Date(b.createdAt || Date.now()).getTime() - new Date(a.createdAt || Date.now()).getTime())
+  const rawPosts = media
+    .filter((p: any) => shouldShowOnDashboard(p, fullUser))
+    .map((p: any) => ({ ...p, _type: 'post', sortByDate: p.createdAt || 0 }));
+    
+  const rawGalleries = (galleries || []).filter((g: any) =>
+    g.showInLatest === true
+  ).map((g: any) => ({ ...g, _type: 'gallery', sortByDate: g.publishedAt || 0 }));
+
+  const dashboardMedia = [...rawPosts, ...rawGalleries]
+    .sort((a, b) => new Date(b.sortByDate).getTime() - new Date(a.sortByDate).getTime())
     .slice(0, 3);
 
   return (
@@ -152,7 +160,9 @@ export default function Dashboard() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <button onClick={() => navigate("/admin?tab=users")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-with-all text-gray-800 flex items-center justify-center gap-2">👥 Users</button>
             <button onClick={() => navigate("/admin?tab=schedule")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-with-all text-gray-800 flex items-center justify-center gap-2">📅 {getLabel(appConfig, "schedule")}</button>
-  <button onClick={() => navigate("/admin?tab=media")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">{"\uD83D\uDCF8"} {getLabel(appConfig, "media")}</button>
+            <button onClick={() => navigate("/admin?tab=sessions")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-with-all text-gray-800 flex items-center justify-center gap-2">🎓 {getLabel(appConfig, "sessions")}</button>
+            <button onClick={() => navigate("/admin?tab=messages")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">💬 Messages</button>
+            <button onClick={() => navigate("/admin?tab=media")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-all text-gray-800 flex items-center justify-center gap-2">{"\uD83D\uDCF8"} {getLabel(appConfig, "media")}</button>
             <button onClick={() => navigate("/admin?tab=features")} className="p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 border border-gray-100 font-bold text-xs transition-with-all text-gray-800 flex items-center justify-center gap-2">⚙️ Features</button>
           </div>
         </div>
@@ -174,16 +184,21 @@ export default function Dashboard() {
             <button onClick={() => navigate("/media")} className="text-yellow-600 text-xs font-black hover:text-yellow-700 transition-colors uppercase tracking-widest">Explore {getLabel(appConfig, "media")} →</button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {dashboardMedia.map((post: any) => (
-                <div key={post.id} className="group relative rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500" onClick={() => setSelectedPost(post)}>
-                    <img src={post.imageDataUrl} alt={post.title} className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-700 font-sans" referrerPolicy="no-referrer" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                    <div className="absolute bottom-0 left-0 p-4">
-                        <h4 className="text-white font-bold text-sm truncate drop-shadow-md">{post.title}</h4>
-                        <p className="text-yellow-400 text-[10px] font-black uppercase tracking-widest">{post.category}</p>
-                    </div>
-                </div>
-            ))}
+            {dashboardMedia.map((post: any) => {
+                if (post._type === 'gallery') {
+                  return <GalleryCard key={post.id} album={post} />;
+                }
+                return (
+                  <div key={post.id} className="group relative rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500" onClick={() => setSelectedPost(post)}>
+                      <img src={post.imageDataUrl} alt={post.title} className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-700 font-sans" referrerPolicy="no-referrer" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                      <div className="absolute bottom-0 left-0 p-4">
+                          <h4 className="text-white font-bold text-sm truncate drop-shadow-md">{post.title}</h4>
+                          <p className="text-yellow-400 text-[10px] font-black uppercase tracking-widest">{post.category}</p>
+                      </div>
+                  </div>
+                );
+            })}
             {dashboardMedia.length === 0 && <div className="col-span-full py-10 text-center bg-gray-50 rounded-xl border-2 border-dashed border-gray-100 text-gray-400 font-bold italic font-sans">No stories shared yet...</div>}
         </div>
       </div>

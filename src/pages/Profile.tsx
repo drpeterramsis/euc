@@ -13,6 +13,7 @@ import { useApp } from '../context/AppContext';
 import { getLabel } from '../utils/labels';
 import { displayPhone } from '../utils/phone';
 import { readJSON } from '../utils/github';
+import InstallButton from '../components/InstallButton';
 
 // ─────────────────────────────────────────────
 // DETAIL ROW COMPONENT (High-contrast label vs value typography)
@@ -94,6 +95,11 @@ export default function Profile() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* PWA INSTALLATION ROW */}
+      <div className="mb-8">
+        <InstallButton variant="settings" />
       </div>
 
       {/* COMPREHENSIVE DYNAMIC TRAVEL & LODGING LOGISTICS SECTION (System 1) */}

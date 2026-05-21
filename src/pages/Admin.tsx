@@ -17,6 +17,8 @@ import MediaPostModal from '../components/MediaPostModal';
 import { showToast } from '../components/Toast';
 import { compressImage } from '../utils/image';
 import AdminDashboard from './AdminDashboard';
+import AdminMessages from './admin/AdminMessages';
+import AdminGalleries from './admin/AdminGalleries';
 
 interface AdminProps {
   initialTab?: string;
@@ -2519,6 +2521,8 @@ export default function Admin({ initialTab }: AdminProps = {}) {
             post={editingMediaPost}
           />
        )}
+
+       <AdminGalleries />
     </div>
     );
   };
@@ -2645,6 +2649,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
         >
           <option value="dashboard">📊 Quick Panel</option>
           <option value="users">👥 User Management</option>
+          <option value="messages">💬 Message Center</option>
           <option value="appConfig">⚙️ App Settings</option>
           <option value="tripInfo">{"\u2708\uFE0F"} Trip Info</option>
           <option value="schedule">📅 Schedule & Sessions</option>
@@ -2659,6 +2664,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
         {[
           { key: 'dashboard', label: '📊 Quick Panel' },
           { key: 'users', label: '👥 User Management' },
+          { key: 'messages', label: '💬 Message Center' },
           { key: 'appConfig', label: '⚙️ App Settings' },
           { key: 'tripInfo', label: '{"\u2708\uFE0F"} Trip Info' },
           { key: 'schedule', label: '📅 Schedule & Sessions' },
@@ -2681,6 +2687,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
       <div className="pb-12">
         {activeTab === 'dashboard' && <AdminDashboard onSelectTab={(tab) => setActiveTab(tab)} />}
         {activeTab === 'users' && renderTab1()}
+        {activeTab === 'messages' && <AdminMessages />}
         {activeTab === 'appConfig' && renderAppConfigTab()}
         {activeTab === 'tripInfo' && renderTripInfoTab()}
         {activeTab === 'schedule' && renderTab3()}

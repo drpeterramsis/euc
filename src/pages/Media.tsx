@@ -12,9 +12,10 @@ import { getLabel } from '../utils/labels';
 import { getPageAccess } from '../utils/pageAccess';
 import VideoPlayer from '../components/VideoPlayer';
 import { detectLinkType } from '../utils/linkUtils';
+import GalleryCard from '../components/GalleryCard';
 
 export default function Media() {
-  const { media, settings, currentUser, appConfig } = useApp();
+  const { media, galleries, settings, currentUser, appConfig } = useApp() as any;
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("latest"); // latest, oldest, category
@@ -61,31 +62,38 @@ export default function Media() {
   const categories = useMemo(() => {
     const fromSettings = settings?.mediaCategories || DEFAULT_MEDIA_CATEGORIES;
     const fromPosts = media
-      .filter(p => isPostVisible(p, currentUser))
-      .map(p => p.category)
+      .filter((p: any) => isPostVisible(p, currentUser))
+      .map((p: any) => p.category)
       .filter(Boolean);
-    return ["All", ...new Set([...fromSettings, ...fromPosts])];
-  }, [settings, media, currentUser]);
+    const fromGalleries = (galleries || [])
+      .filter((g: any) => g.showInFeed)
+      .map((g: any) => g.category)
+      .filter(Boolean);
+    return ["All", ...new Set([...fromSettings, ...fromPosts, ...fromGalleries])];
+  }, [settings, media, currentUser, galleries]);
 
   const filteredMedia = useMemo(() => {
-    let filtered = media.filter(p => isPostVisible(p, currentUser));
+    let rawPosts = media.filter((p: any) => isPostVisible(p, currentUser)).map((p: any) => ({ ...p, _type: 'post' }));
+    let rawGalleries = (galleries || []).filter((g: any) => g.showInFeed).map((g: any) => ({ ...g, _type: 'gallery', createdAt: g.publishedAt }));
+    
+    let combined = [...rawPosts, ...rawGalleries];
 
     // Apply category filter
     if (activeCategory !== "All") {
-      filtered = filtered.filter(p => p.category === activeCategory);
+      combined = combined.filter(p => p.category === activeCategory);
     }
 
     // Apply sort
     if (sortBy === "latest") {
-      filtered.sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+      combined.sort((a: any, b: any) => new Date(b.createdAt || b.publishedAt || 0).getTime() - new Date(a.createdAt || a.publishedAt || 0).getTime());
     } else if (sortBy === "oldest") {
-      filtered.sort((a: any, b: any) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+      combined.sort((a: any, b: any) => new Date(a.createdAt || a.publishedAt || 0).getTime() - new Date(b.createdAt || b.publishedAt || 0).getTime());
     } else if (sortBy === "category") {
-      filtered.sort((a: any, b: any) => (a.category || "").localeCompare(b.category || ""));
+      combined.sort((a: any, b: any) => (a.category || "").localeCompare(b.category || ""));
     }
 
-    return filtered;
-  }, [media, activeCategory, sortBy, currentUser]);
+    return combined;
+  }, [media, galleries, activeCategory, sortBy, currentUser]);
 
   return (
     <Layout>
@@ -137,6 +145,14 @@ export default function Media() {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredMedia.map((post: any) => {
+          if (post._type === 'gallery') {
+            return (
+              <div key={post.id} className="h-full">
+                <GalleryCard album={post} />
+              </div>
+            );
+          }
+
           const finalLink = post.linkUrl || post.link;
           const isVideo = finalLink && ["youtube", "vimeo", "facebook"].includes(detectLinkType(finalLink));
 
