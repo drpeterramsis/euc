@@ -1,3 +1,18 @@
+export function ensureHttps(url: string | undefined | null): string {
+  if (!url || url.trim() === "") return "#";
+  const trimmed = url.trim();
+  if (
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("mailto:") ||
+    trimmed.startsWith("tel:") ||
+    trimmed.startsWith("/")
+  ) {
+    return trimmed;
+  }
+  return "https://" + trimmed;
+}
+
 export type LinkType = "youtube" | "vimeo" | "facebook" | "instagram" | "twitter" | "generic";
 
 export function detectLinkType(url: string): LinkType {

@@ -3,6 +3,7 @@ import Layout from "../components/Layout";
 import { useApp } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 import { writeJSON } from "../utils/github";
+import { ensureHttps } from "../utils/linkUtils";
 
 export default function Messages() {
   const { messages, updateMessages, currentUser } = useApp() as any;
@@ -60,15 +61,32 @@ export default function Messages() {
           if (b.style === "primary") btnClass = "bg-black text-white hover:bg-gray-800";
           if (b.style === "secondary") btnClass = "bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-200";
           if (b.style === "ghost") btnClass = "text-black underline bg-transparent hover:text-gray-600";
+          
+          const safeUrl = ensureHttps(b.link);
+          const isExternal = safeUrl.startsWith("http") || safeUrl.startsWith("mailto:") || safeUrl.startsWith("tel:");
+
+          if (isExternal) {
+            return (
+              <a
+                key={i}
+                href={safeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className={`rounded-lg px-4 py-2 text-xs font-bold transition-colors whitespace-normal break-words inline-block text-center ${btnClass}`}
+              >
+                {b.label}
+              </a>
+            );
+          }
           return (
             <button
               key={i}
               onClick={(e) => {
                 e.stopPropagation();
-                if (b.link.startsWith("http")) window.open(b.link, "_blank");
-                else navigate(b.link);
+                navigate(safeUrl);
               }}
-              className={`rounded-lg px-4 py-2 text-xs font-bold transition-colors whitespace-normal break-words ${btnClass}`}
+              className={`rounded-lg px-4 py-2 text-xs font-bold transition-colors whitespace-normal break-words inline-block text-center border-none cursor-pointer ${btnClass}`}
             >
               {b.label}
             </button>
@@ -99,16 +117,20 @@ export default function Messages() {
             </svg>
             Messages
           </h1>
-          <div className="flex gap-2 overflow-x-auto overflow-y-hidden whitespace-nowrap overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch] pb-2 w-full sm:w-auto no-scrollbar">
-            {["all", "general", "schedule", "logistics", "urgent", "social", "other"].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setFilterCategory(cat)}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold capitalize transition-colors ${filterCategory === cat ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-              >
-                {cat}
-              </button>
-            ))}
+          <div className="w-full sm:w-auto">
+            <select
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            >
+              <option value="all">All Categories</option>
+              <option value="general">General</option>
+              <option value="schedule">Schedule</option>
+              <option value="logistics">Logistics</option>
+              <option value="urgent">Urgent</option>
+              <option value="social">Social</option>
+              <option value="other">Other</option>
+            </select>
           </div>
         </div>
 

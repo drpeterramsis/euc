@@ -124,21 +124,19 @@ export default function AdminGalleries() {
              </div>
 
              <div className="pt-4 border-t border-gray-100">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center mb-4 gap-2">
                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest">Images ({editingAlbum.images.length})</label>
-                  <label className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors">
-                     {loading ? "Processing..." : "+ Upload Photos"}
+                  <label className="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-3 sm:py-1.5 rounded-lg text-sm sm:text-xs font-bold cursor-pointer transition-colors text-center block">
+                     {loading ? "Processing..." : "+ Add Photo"}
                      <input type="file" accept="image/*" multiple className="hidden" disabled={loading} onChange={handleImageUpload} />
                   </label>
                 </div>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
                   {editingAlbum.images.map((img, idx) => (
-                    <div key={idx} className="relative rounded-lg overflow-hidden border border-gray-200 group aspect-square bg-gray-50">
+                    <div key={idx} className="relative rounded-lg overflow-hidden border border-gray-200 group aspect-square bg-gray-50 w-full">
                        <img src={img.url} className="w-full h-full object-cover" alt="Album photo" />
-                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2">
-                          <button type="button" onClick={() => removeImage(idx)} className="bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold shadow-md hover:bg-red-600 mb-2">X</button>
-                       </div>
+                       <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs min-h-[44px] min-w-[44px] shadow-md hover:bg-red-600 z-10 focus:outline-none">X</button>
                        <input 
                          placeholder="Caption..." 
                          value={img.caption} 
@@ -157,17 +155,17 @@ export default function AdminGalleries() {
                 </div>
              </div>
 
-             <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
-                <button type="button" onClick={() => setEditingAlbum(null)} className="px-4 py-2 font-bold text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg" disabled={loading}>Cancel</button>
-                <button type="submit" className="px-6 py-2 font-bold text-sm bg-black hover:bg-gray-800 text-white rounded-lg flex items-center gap-2" disabled={loading}>
+             <div className="grid grid-cols-2 gap-2 mt-6 pt-4 border-t border-gray-100 sm:flex sm:justify-end">
+                <button type="button" onClick={() => setEditingAlbum(null)} className="w-full sm:w-auto px-4 py-3 sm:py-2 font-bold text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg" disabled={loading}>Cancel</button>
+                <button type="submit" className="w-full sm:w-auto px-6 py-3 sm:py-2 font-bold text-sm bg-black hover:bg-gray-800 text-white rounded-lg flex items-center justify-center gap-2" disabled={loading}>
                   {loading ? <span className="animate-spin text-white">⚙️</span> : null}
-                  Save Album
+                  Save
                 </button>
              </div>
            </form>
         </div>
       ) : (
-        <div className="overflow-x-auto overflow-y-hidden overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch] bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="grid grid-cols-1 gap-4">
            <table className="w-full text-left text-sm">
              <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase font-bold tracking-wider">
                <tr>

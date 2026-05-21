@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useApp } from "../../context/AppContext";
 import { writeJSON } from "../../utils/github";
+import { ensureHttps } from "../../utils/linkUtils";
 
 export default function AdminMessages() {
   const { messages, updateMessages } = useApp() as any;
@@ -99,6 +100,11 @@ export default function AdminMessages() {
       }
     }
 
+    const normalizedButtons = form.buttons.map(b => ({
+      ...b,
+      link: ensureHttps(b.link)
+    }));
+
     const payload = {
       id: editingMsg?.id === "new" ? crypto.randomUUID?.() || `msg_${Date.now()}` : editingMsg.id,
       title: form.title,
@@ -110,7 +116,7 @@ export default function AdminMessages() {
       expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : null,
       priority: form.priority,
       audience: form.audience,
-      buttons: form.buttons,
+      buttons: normalizedButtons,
       createdBy: "admin",
       readBy: editingMsg?.readBy || [],
       pinned: form.pinned

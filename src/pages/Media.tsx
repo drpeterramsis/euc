@@ -103,33 +103,26 @@ export default function Media() {
       </div>
 
       {/* Filter & Sort Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8 items-center justify-between">
-        <div className="flex gap-2 overflow-x-auto overflow-y-hidden whitespace-nowrap overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch] pb-2 sm:pb-0 w-full sm:w-auto no-scrollbar">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border ${
-                activeCategory === cat 
-                  ? "bg-yellow-500 border-yellow-600 text-black shadow-sm font-bold" 
-                  : "bg-white border-gray-200 text-gray-500 hover:border-gray-300 pointer-events-auto cursor-pointer"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+      <div className="px-4 py-2 w-full mb-8">
+        <div className="grid grid-cols-2 gap-2">
+          <select
+            value={activeCategory}
+            onChange={(e) => setActiveCategory(e.target.value)}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+          >
+            {categories.map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sort by:</span>
           <select 
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-yellow-500 cursor-pointer"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
           >
-            <option value="latest">Latest</option>
-            <option value="oldest">Oldest</option>
-            <option value="category">Category (A-Z)</option>
+            <option value="latest">Sort: Latest</option>
+            <option value="oldest">Sort: Oldest</option>
+            <option value="category">Sort: Category (A-Z)</option>
           </select>
         </div>
       </div>
