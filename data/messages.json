@@ -9,7 +9,7 @@
     "publishedAt": "2025-06-10T08:00:00Z",
     "expiresAt": "2025-06-15T23:59:00Z",
     "priority": "high",
-    "audience": "all",
+    "recipients": "all",
     "buttons": [
       { "label": "View Schedule", "link": "/schedule", "style": "primary" },
       { "label": "View Map", "link": "/map", "style": "secondary" }
@@ -28,7 +28,7 @@
     "publishedAt": null,
     "expiresAt": "2025-06-11T22:00:00Z",
     "priority": "normal",
-    "audience": "all",
+    "recipients": "all",
     "buttons": [],
     "createdBy": "admin",
     "readBy": [],

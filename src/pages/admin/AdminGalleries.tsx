@@ -112,7 +112,7 @@ export default function AdminGalleries() {
                  </div>
              </div>
              
-             <div className="grid grid-cols-2 gap-4">
+             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
                     <input type="checkbox" checked={editingAlbum.showInFeed} onChange={e => setEditingAlbum({...editingAlbum, showInFeed: e.target.checked})} className="rounded text-black focus:ring-black" />
                     Show in News Feed
@@ -120,6 +120,10 @@ export default function AdminGalleries() {
                 <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
                     <input type="checkbox" checked={editingAlbum.showInLatest} onChange={e => setEditingAlbum({...editingAlbum, showInLatest: e.target.checked})} className="rounded text-black focus:ring-black" />
                     Show in Latest (Dashboard)
+                </label>
+                <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
+                    <input type="checkbox" checked={editingAlbum.allowDownload || false} onChange={e => setEditingAlbum({...editingAlbum, allowDownload: e.target.checked})} className="rounded text-black focus:ring-black" />
+                    Allow Image Download
                 </label>
              </div>
 

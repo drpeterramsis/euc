@@ -99,7 +99,7 @@ export interface AppMessage {
   publishedAt: string | null;
   expiresAt: string | null;
   priority: "normal" | "high";
-  audience: "all" | string;
+  recipients: "all" | string;
   buttons: MessageButton[];
   createdBy: string;
   readBy: string[];
@@ -127,6 +127,7 @@ export interface GalleryAlbum {
   showInFeed: boolean;
   showInLatest: boolean;
   uploadedBy: string;
+  allowDownload?: boolean;
 }
 
 export interface PageConfig {

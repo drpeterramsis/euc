@@ -14,7 +14,7 @@ export default function AdminMessages() {
     body: "",
     category: "general",
     priority: "normal",
-    audience: "all",
+    recipients: "all",
     scheduledAt: "",
     expiresAt: "",
     pinned: false,
@@ -31,7 +31,7 @@ export default function AdminMessages() {
       body: msg.body || "",
       category: msg.category || "general",
       priority: msg.priority || "normal",
-      audience: msg.audience || "all",
+      recipients: msg.recipients || msg.audience || "all",
       scheduledAt: msg.scheduledAt ? new Date(msg.scheduledAt).toISOString().slice(0, 16) : "",
       expiresAt: msg.expiresAt ? new Date(msg.expiresAt).toISOString().slice(0, 16) : "",
       pinned: msg.pinned || false,
@@ -47,7 +47,7 @@ export default function AdminMessages() {
       body: "",
       category: "general",
       priority: "normal",
-      audience: "all",
+      recipients: "all",
       scheduledAt: "",
       expiresAt: "",
       pinned: false,
@@ -115,7 +115,7 @@ export default function AdminMessages() {
       publishedAt,
       expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : null,
       priority: form.priority,
-      audience: form.audience,
+      recipients: form.recipients,
       buttons: normalizedButtons,
       createdBy: "admin",
       readBy: editingMsg?.readBy || [],
@@ -186,10 +186,11 @@ export default function AdminMessages() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                <div>
-                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Audience</label>
-                 <select value={form.audience} onChange={e => setForm({...form, audience: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium focus:ring-yellow-500 focus:border-yellow-500">
+                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">Recipients</label>
+                 <select value={form.recipients} onChange={e => setForm({...form, recipients: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium focus:ring-yellow-500 focus:border-yellow-500">
                    <option value="all">All Users</option>
                    <option value="doctors">Doctors</option>
+                   <option value="staff">Staff</option>
                    <option value="admins">Admins</option>
                  </select>
                </div>
@@ -272,7 +273,7 @@ export default function AdminMessages() {
                  </div>
                  <div className="border-t border-gray-50 pt-3 mt-3 flex items-center justify-between text-xs text-gray-500">
                     <div className="flex flex-col gap-1">
-                      <span>Audience: <strong className="capitalize text-gray-700">{m.audience}</strong></span>
+                      <span>Recipients: <strong className="capitalize text-gray-700">{m.recipients || m.audience || "all"}</strong></span>
                       {m.scheduledAt && <span>Sched: <strong className="text-gray-700">{new Date(m.scheduledAt).toLocaleString()}</strong></span>}
                     </div>
                     <div className="flex items-center gap-3">

@@ -25,10 +25,29 @@ export default function Messages() {
 
   if (!messages) return <Layout><div className="p-8 text-center">Loading...</div></Layout>;
 
+  const isMessageVisible = (m: any) => {
+    if (!currentUser) return false;
+    const role = (currentUser.role || "").toLowerCase();
+    const userId = String(currentUser.id);
+    const audienceObj = m.audience || m.recipients || m.targetRole || "all";
+    if (audienceObj === "all" || audienceObj === "all_users") return true;
+    if (Array.isArray(audienceObj)) {
+      return audienceObj.includes("all") || audienceObj.includes("all_users") || audienceObj.includes(role) || audienceObj.includes(userId);
+    }
+    if (typeof audienceObj === "string") {
+      const s = audienceObj.toLowerCase();
+      if (s === "all" || s === "all_users") return true;
+      if (s === role) return true;
+      if (s.includes(role)) return true;
+    }
+    return false;
+  };
+
   const now = new Date().toISOString();
   let validMessages = messages.filter((m: any) => {
     if (m.status !== "published") return false;
     if (m.expiresAt && m.expiresAt <= now) return false;
+    if (!isMessageVisible(m)) return false;
     return true;
   });
 

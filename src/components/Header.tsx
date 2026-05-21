@@ -19,12 +19,31 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const { currentUser, appConfig, messages } = useApp();
   const location = useLocation();
 
+  const isMessageVisible = (m: any) => {
+    if (!currentUser) return false;
+    const role = (currentUser.role || "").toLowerCase();
+    const userId = String(currentUser.id);
+    const audienceObj = m.audience || m.recipients || m.targetRole || "all";
+    if (audienceObj === "all" || audienceObj === "all_users") return true;
+    if (Array.isArray(audienceObj)) {
+      return audienceObj.includes("all") || audienceObj.includes("all_users") || audienceObj.includes(role) || audienceObj.includes(userId);
+    }
+    if (typeof audienceObj === "string") {
+      const s = audienceObj.toLowerCase();
+      if (s === "all" || s === "all_users") return true;
+      if (s === role) return true;
+      if (s.includes(role)) return true;
+    }
+    return false;
+  };
+
   let unreadCount = 0;
   if (messages && currentUser && location.pathname !== "/messages") {
     unreadCount = messages.filter(
-      (m) =>
+      (m: any) =>
         m.status === "published" &&
         (!m.expiresAt || new Date(m.expiresAt).getTime() > Date.now()) &&
+        isMessageVisible(m) &&
         m.readBy &&
         !m.readBy.includes(currentUser.id)
     ).length;
