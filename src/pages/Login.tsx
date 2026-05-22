@@ -12,6 +12,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { readJSON } from '../utils/github';
 import { useApp } from '../context/AppContext';
+import { saveSession } from '../utils/session';
 
 /**
  * Login component renders a centered login form for authentication.
@@ -47,6 +48,7 @@ export default function Login() {
         console.log("Matched user:", matchedUser);
         // Authentication successful
         loginUser(matchedUser);
+        saveSession(matchedUser.id, matchedUser.role);
         // Redirect to dashboard
         navigate('/dashboard', { replace: true });
       } else {

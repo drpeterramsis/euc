@@ -32,6 +32,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { readJSON } from "../utils/github";
+import { loadSession, clearSession } from "../utils/session";
 
 export const CACHE = {
   users:     "euc_session_users",
@@ -425,13 +426,58 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [fetchFreshData, currentUser]);
 
   useEffect(() => {
-    if (!currentUser) {
+    // 1. First, check if session exists to handle auto-login logic
+    const session = loadSession();
+    
+    // If no explicit session and no legacy euc_user exists, just exit loading
+    if (!session && !currentUser) {
       setLoading(false);
+      setIsFirstLoad(false);
       return;
     }
 
     if (fetchedRef.current) return;
     fetchedRef.current = true;
+
+    const resolveAuth = (fetchedUsers: any[]) => {
+      if (session) {
+        const user = fetchedUsers.find((u: any) => u.id === session.userId);
+        if (user) {
+          if (user.active === false || user.revoked === true) {
+            clearSession();
+            localStorage.removeItem("euc_user");
+            setCurrentUser(null);
+          } else {
+            setCurrentUser(user);
+            localStorage.setItem("euc_user", JSON.stringify(user));
+          }
+        } else {
+          clearSession();
+          localStorage.removeItem("euc_user");
+          setCurrentUser(null);
+        }
+      } else if (currentUser) {
+        // Fallback for euc_user validation
+        const matchedUser = fetchedUsers.find((u: any) => u.username === currentUser.username);
+        if (matchedUser) {
+          if (matchedUser.active === false || matchedUser.revoked === true) {
+            localStorage.removeItem("euc_user");
+            setCurrentUser(null);
+          } else {
+            const updatedUser = {
+              ...currentUser,
+              ...matchedUser,
+              photoUrl: matchedUser.photoUrl || matchedUser.photo || currentUser.photoUrl || ""
+            };
+            setCurrentUser(updatedUser);
+            localStorage.setItem("euc_user", JSON.stringify(updatedUser));
+          }
+        } else {
+          localStorage.removeItem("euc_user");
+          setCurrentUser(null);
+        }
+      }
+    };
 
     const cached = readSessionCache();
 
@@ -445,22 +491,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setAppConfig(cached.appConfig);
       if (cached.messages) setMessages(cached.messages);
       if (cached.galleries) setGalleries(cached.galleries);
+      
+      resolveAuth(cached.users);
+      
       setLoading(false);
       setIsFirstLoad(false);
-
-      // Deeply update/propagate currentUser fields on browser refresh
-      if (currentUser) {
-        const matchedUser = cached.users.find((u: any) => u.username === currentUser.username);
-        if (matchedUser) {
-          const updatedUser = {
-            ...currentUser,
-            ...matchedUser,
-            photoUrl: matchedUser.photoUrl || matchedUser.photo || currentUser.photoUrl || ""
-          };
-          setCurrentUser(updatedUser);
-          localStorage.setItem("euc_user", JSON.stringify(updatedUser));
-        }
-      }
 
       // ALWAYS run a background refresh on mount when user is logged in after a short delay
       setTimeout(() => backgroundRefresh(), 2000);
@@ -479,19 +514,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setGalleries(fresh.galleries);
           writeSessionCache(fresh);
 
-          // Deeply update/propagate currentUser fields on initial fetch
-          if (currentUser) {
-            const matchedUser = fresh.users.find((u: any) => u.username === currentUser.username);
-            if (matchedUser) {
-              const updatedUser = {
-                ...currentUser,
-                ...matchedUser,
-                photoUrl: matchedUser.photoUrl || matchedUser.photo || currentUser.photoUrl || ""
-              };
-              setCurrentUser(updatedUser);
-              localStorage.setItem("euc_user", JSON.stringify(updatedUser));
-            }
-          }
+          resolveAuth(fresh.users);
         })
         .catch(() => {
           setError("Failed to load data. Please refresh.");

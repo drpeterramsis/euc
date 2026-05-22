@@ -1,5 +1,56 @@
+import React, { useState } from "react";
 import AdminPlaceholder from "./AdminPlaceholder";
-export const AdminUsers = () => <AdminPlaceholder title="User Management" />;
+import { useApp } from "../../context/AppContext";
+import { githubUpdateFile } from "../../utils/github";
+
+export const AdminUsers = () => {
+  const { users, updateUsers } = useApp() as any;
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+
+  const toggleActive = async (userId: string, currentStatus: boolean) => {
+    setLoadingId(userId);
+    try {
+      const updatedUsers = users.map((u: any) => 
+        u.id === userId ? { ...u, active: !currentStatus, revoked: currentStatus } : u
+      );
+      updateUsers(updatedUsers);
+      await githubUpdateFile("data/users.json", JSON.stringify(updatedUsers, null, 2), `Toggle active status for user ${userId}`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update user status.");
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  return (
+    <div className="p-6">
+      <h2 className="text-xl font-bold mb-6">User Management</h2>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        {users.map((u: any) => (
+          <div key={u.id} className="p-4 border-b border-gray-100 flex items-center justify-between">
+            <div>
+              <p className="font-bold">{u.name}</p>
+              <p className="text-xs text-gray-500">@{u.username} — {u.role}</p>
+            </div>
+            <button 
+              onClick={() => toggleActive(u.id, u.active !== false && u.revoked !== true)}
+              disabled={loadingId === u.id}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
+                u.active !== false && u.revoked !== true 
+                  ? "bg-green-100 text-green-700" 
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {loadingId === u.id ? "Updating..." : (u.active !== false && u.revoked !== true ? "Active" : "Revoked")}
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const AdminPosts = () => <AdminPlaceholder title="News Feed Posts" />;
 export const AdminCategories = () => <AdminPlaceholder title="Post Categories" />;
 export const AdminSessions = () => <AdminPlaceholder title="Conference Sessions" />;

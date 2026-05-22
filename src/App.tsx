@@ -114,15 +114,16 @@ function AppRoutes() {
 export default function App() {
   const { loading, isFirstLoad, isBackgroundRefreshing } = useApp();
 
-  if (loading && isFirstLoad) return (
-    <div className="fixed inset-0 bg-white flex flex-col items-center justify-center">
-      <div className="text-4xl font-extrabold text-gray-900 mb-1 tracking-tight">EUC<span className="text-yellow-500">.</span></div>
-      <div className="text-gray-500 text-xs mb-8 font-medium">EVA URO COMMUNITY</div>
-      <div className="w-12 h-12 border-4 border-yellow-500 border-t-transparent
-                      rounded-full animate-spin"></div>
-      <div className="text-gray-500 text-sm mt-6 font-medium">Loading conference data...</div>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-white">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-gray-500">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

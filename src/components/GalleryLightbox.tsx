@@ -154,12 +154,16 @@ export default function GalleryLightbox({ album, onClose }: { album: GalleryAlbu
   if (selectedIndex === null) {
     return (
       <div className="fixed inset-0 bg-white z-50 flex flex-col overflow-x-hidden overflow-y-auto">
-        <div className="sticky top-0 left-0 right-0 w-full bg-white border-b border-gray-200 p-4 z-10 flex items-center justify-between shadow-sm">
-          <h2 className="text-xl font-bold truncate max-w-[70%]">{album.title}</h2>
-          {/* Hide back button on mobile, use swipe back */}
-          <button onClick={onClose} className="hidden md:flex px-4 py-2 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-lg transition-colors border-none cursor-pointer items-center gap-2">
-             <span>←</span> Back
+        <div className="sticky top-0 left-0 right-0 w-full bg-white border-b border-gray-100 z-10 flex items-center gap-2 px-4 py-3">
+          <button 
+            onClick={onClose} 
+            className="flex items-center justify-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-800 min-h-[44px] min-w-[44px] bg-transparent border-none p-0 cursor-pointer"
+          >
+            ← Back
           </button>
+          <h1 className="text-base font-semibold text-gray-800 truncate">
+            {album.title}
+          </h1>
         </div>
 
         <div className="p-4 w-full h-full max-w-full">

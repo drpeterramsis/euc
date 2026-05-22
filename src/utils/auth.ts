@@ -15,6 +15,7 @@
 const LOGIN_KEY = "euc_user";
 
 import { CACHE } from "../context/AppContext";
+import { clearSession } from "./session";
 
 // Interface defining the user structure
 export interface User {
@@ -42,6 +43,7 @@ export function login(user: User) {
 export function logout(): void {
   // 1. Clear auth session
   localStorage.removeItem(LOGIN_KEY);
+  clearSession();
 
   // 2. Clear ALL sessionStorage data
   sessionStorage.removeItem(CACHE.users);
