@@ -191,12 +191,12 @@ export default function GalleryLightbox({ album, onClose }: { album: GalleryAlbu
          onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
     >
       {/* Close button */}
-      <button onClick={() => setSelectedIndex(null)} className="absolute top-4 right-4 text-white p-3 z-50 rounded-full hover:bg-white/10 border-none cursor-pointer bg-transparent">
-        <svg className="w-8 h-8 font-bold drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+      <button onClick={() => setSelectedIndex(null)} className="fixed top-3 right-3 z-50 bg-black/50 text-white rounded-full p-2 min-w-[40px] min-h-[40px] hover:bg-white/10 border-none cursor-pointer flex items-center justify-center">
+        <svg className="w-6 h-6 font-bold drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
       </button>
 
       {/* Photo counter at top center */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 text-white text-sm font-bold bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full z-50">
+      <div className="fixed top-3 left-1/2 -translate-x-1/2 z-50 bg-black/50 text-white text-sm px-3 py-1 rounded-full font-bold">
         {selectedIndex + 1} / {album.images.length}
       </div>
 
@@ -207,19 +207,19 @@ export default function GalleryLightbox({ album, onClose }: { album: GalleryAlbu
           <button 
             type="button"
             onClick={(e) => { e.stopPropagation(); handlePrev(); }} 
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-black/50 hover:bg-black/75 text-white rounded-full w-14 h-14 min-w-[56px] min-h-[56px] flex items-center justify-center transition-colors pointer-events-auto border-none cursor-pointer"
+            className="fixed left-2 top-1/2 -translate-y-1/2 z-50 bg-black/50 hover:bg-black/75 text-white rounded-full p-3 min-w-[48px] min-h-[48px] flex items-center justify-center transition-colors pointer-events-auto border-none cursor-pointer"
             aria-label="Previous Photo"
           >
-            <span className="text-3xl font-black mb-1">‹</span>
+            <span className="text-3xl font-black mb-1 leading-none">‹</span>
           </button>
           {/* Right edge: Next */}
           <button 
             type="button"
             onClick={(e) => { e.stopPropagation(); handleNext(); }} 
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-black/50 hover:bg-black/75 text-white rounded-full w-14 h-14 min-w-[56px] min-h-[56px] flex items-center justify-center transition-colors pointer-events-auto border-none cursor-pointer"
+            className="fixed right-2 top-1/2 -translate-y-1/2 z-50 bg-black/50 hover:bg-black/75 text-white rounded-full p-3 min-w-[48px] min-h-[48px] flex items-center justify-center transition-colors pointer-events-auto border-none cursor-pointer"
             aria-label="Next Photo"
           >
-            <span className="text-3xl font-black mb-1">›</span>
+            <span className="text-3xl font-black mb-1 leading-none">›</span>
           </button>
         </>
       )}
@@ -241,29 +241,28 @@ export default function GalleryLightbox({ album, onClose }: { album: GalleryAlbu
         />
       </div>
 
-      <div className="absolute bottom-6 left-0 right-0 flex flex-col items-center gap-4 px-4 z-50 pointer-events-none">
-        {currentImg?.caption && (
+      {/* Caption */}
+      {currentImg?.caption && (
+        <div className="fixed bottom-20 left-4 right-4 flex justify-center z-50 pointer-events-none">
           <p className="text-white font-bold max-w-2xl text-center bg-black/60 backdrop-blur-sm rounded-lg px-4 py-2 drop-shadow-md pointer-events-auto">
              {currentImg.caption}
           </p>
-        )}
-        
-        <div className="flex items-center gap-4 bg-black/80 backdrop-blur-sm px-6 py-3 rounded-full pointer-events-auto">
-          <button onClick={handleZoomOut} className="text-white hover:text-gray-300 font-bold px-3 py-1 flex items-center justify-center bg-white/10 rounded-full w-10 h-10 shadow-sm border-none cursor-pointer" aria-label="Zoom Out">-</button>
-          <span className="text-white text-xs font-bold w-12 text-center">{Math.round(scale * 100)}%</span>
-          <button onClick={handleZoomIn} className="text-white hover:text-gray-300 font-bold px-3 py-1 flex items-center justify-center bg-white/10 rounded-full w-10 h-10 shadow-sm border-none cursor-pointer" aria-label="Zoom In">+</button>
-          
-          {album.allowDownload && (
-             <>
-               <div className="w-px h-6 bg-gray-500/50 mx-2"></div>
-               <a href={currentImg!.url} download target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white hover:text-yellow-400 font-bold text-sm bg-white/10 px-4 py-2 rounded-full transition-colors shadow-sm">
-                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                 Download
-               </a>
-             </>
-          )}
         </div>
-      </div>
+      )}
+
+      {/* Download button */}
+      {album.allowDownload && (
+        <a 
+          href={currentImg!.url} 
+          download 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-white text-gray-800 text-sm px-4 py-2 rounded-full shadow font-medium flex items-center gap-2 pointer-events-auto decoration-transparent"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+          Download
+        </a>
+      )}
     </div>
   );
 }

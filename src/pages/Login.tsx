@@ -8,11 +8,11 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { readJSON } from '../utils/github';
 import { useApp } from '../context/AppContext';
-import { saveSession } from '../utils/session';
+import { saveSession, hasSession } from '../utils/session';
 
 /**
  * Login component renders a centered login form for authentication.
@@ -26,6 +26,12 @@ export default function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { loginUser } = useApp();
+
+  useEffect(() => {
+    if (hasSession() || localStorage.getItem('euc_user')) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
