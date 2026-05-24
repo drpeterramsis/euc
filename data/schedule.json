@@ -3,7 +3,7 @@
     "id": "S001",
     "type": "flight",
     "direction": "outbound",
-    "title": "\u2708\uFE0F To Prague",
+    "title": "To Prague",
     "visibility": "all_users",
     "details": {
       "flightNumber":             "EgyptAir MS 789",
@@ -21,7 +21,7 @@
     "id": "S002",
     "type": "flight",
     "direction": "inbound",
-    "title": "\u2708\uFE0F To Cairo",
+    "title": "To Cairo",
     "visibility": "all_users",
     "details": {
       "flightNumber":             "MS 790",
@@ -38,7 +38,7 @@
   {
     "id": "S003",
     "type": "hotel",
-    "title": "\uD83C\uDFE8 Hotel Details",
+    "title": "Hotel Details",
     "visibility": "all_users",
     "details": {
       "hotelName":         "Vienna House Diplomat Prague",

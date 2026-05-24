@@ -29,13 +29,21 @@ export function buildTimeline(
   const now = Date.now();
   const events: TimelineEvent[] = [];
 
+  function stripLeadingEmoji(str: string): string {
+    if (!str) return "";
+    return str.replace(
+      /^[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F000}-\u{1FFFF}\s]+/gu,
+      ""
+    ).trim();
+  }
+
   // ── From schedule.json ──────────────────────────────────
   scheduleItems.forEach(item => {
     if (item.type === "flight") {
       const dt = `${item.details.date}T${item.details.time ?? "00:00"}:00`;
       events.push({
         id:       item.id,
-        label:    item.title,
+        label:    stripLeadingEmoji(item.title),
         datetime: dt,
         icon:     item.direction === "outbound" ? "\u2708\uFE0F" : "\uD83D\uDEEC",
         color:    item.direction === "outbound" ? "yellow" : "green",
@@ -50,7 +58,7 @@ export function buildTimeline(
       const dt = `${item.details.checkInDate}T${item.details.checkInTime || "14:00"}:00`;
       events.push({
         id:       item.id + "_checkin",
-        label:    `\uD83C\uDFE8 Check-in: ${item.details.hotelName}`,
+        label:    `Check-in: ${item.details.hotelName}`,
         datetime: dt,
         icon:     "\uD83C\uDFE8",
         color:    "blue",
@@ -63,7 +71,7 @@ export function buildTimeline(
       const dtOut = `${item.details.checkOutDate}T${item.details.checkOutTime || "12:00"}:00`;
       events.push({
         id:       item.id + "_checkout",
-        label:    `\uD83C\uDFE8 Check-out: ${item.details.hotelName}`,
+        label:    `Check-out: ${item.details.hotelName}`,
         datetime: dtOut,
         icon:     "\uD83C\uDFE8",
         color:    "gray",
@@ -81,7 +89,7 @@ export function buildTimeline(
     const ts = new Date(entry.datetime).getTime();
     events.push({
       id:       entry.id,
-      label:    entry.label,
+      label:    stripLeadingEmoji(entry.label),
       datetime: entry.datetime,
       icon:     entry.icon ?? "\uD83D\uDCCC",
       color:    entry.color ?? "gray",
