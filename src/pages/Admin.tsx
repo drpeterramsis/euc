@@ -120,6 +120,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     icon: "📌",
     color: "gray" as "yellow" | "green" | "blue" | "red" | "gray",
     inputTimezone: "Africa/Cairo",
+    timezoneDisplay: "both" as "both" | "prague" | "cairo",
   });
 
   const [sessionItems, setSessionItems] = useState<any[]>([]);
@@ -134,6 +135,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     toTime: "",
     hall: "",
     link: "",
+    timezoneDisplay: "both" as "both" | "prague" | "cairo",
   });
 
   // Tab 4 State (Features)
@@ -160,6 +162,18 @@ export default function Admin({ initialTab }: AdminProps = {}) {
   const [newSchedCat, setNewSchedCat] = useState("");
   const [newMediaCat, setNewMediaCat] = useState("");
   const [isSavingCats, setIsSavingCats] = useState(false);
+
+  // App Version State
+  const [inputAppVersion, setInputAppVersion] = useState("");
+  const [isSavingVersion, setIsSavingVersion] = useState(false);
+
+  useEffect(() => {
+    if (settings?.appVersion) {
+      setInputAppVersion(settings.appVersion);
+    } else {
+      setInputAppVersion(APP_VERSION);
+    }
+  }, [settings?.appVersion]);
 
   // App Settings Tab state
   const [navLabelsForm, setNavLabelsForm] = useState<Record<string, string>>(
@@ -925,6 +939,28 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     }
   };
 
+  const handleSaveAppVersion = async () => {
+    if (!inputAppVersion.trim()) {
+      showToast("App version cannot be empty", "error");
+      return;
+    }
+    try {
+      setIsSavingVersion(true);
+      const updatedSettings = {
+        ...settings,
+        appVersion: inputAppVersion.trim(),
+      };
+      await writeJSON("settings.json", updatedSettings);
+      updateSettings(updatedSettings);
+      localStorage.setItem("appVersion", inputAppVersion.trim());
+      showToast("App version updated to " + inputAppVersion.trim() + " successfully", "success");
+    } catch {
+      showToast("Failed to update app version", "error");
+    } finally {
+      setIsSavingVersion(false);
+    }
+  };
+
   // --- TAB 1 METHODS ---
   const handleSaveUser = async (
     updatedUser: any,
@@ -1289,6 +1325,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
       toTime: "",
       hall: "",
       link: "",
+      timezoneDisplay: "both",
     });
     setShowSessionForm(true);
   }
@@ -2060,6 +2097,55 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                 </div>
               </div>
 
+              {/* Timezone Display Mode Selector for Timeline Entries */}
+              <div className="flex flex-col mt-2">
+                <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Show time to users as</label>
+                <div className="flex flex-col gap-1 mt-1">
+                  <label className="flex items-center gap-1 cursor-pointer select-none">
+                    <input
+                      type="radio"
+                      name="timelineMarkerTzDisp"
+                      value="both"
+                      checked={(newTimelineEntry.timezoneDisplay || "both") === "both"}
+                      onChange={() => setNewTimelineEntry({
+                        ...newTimelineEntry,
+                        timezoneDisplay: "both"
+                      })}
+                      className="accent-yellow-500 w-3 h-3"
+                    />
+                    <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                  </label>
+                  <label className="flex items-center gap-1 cursor-pointer select-none">
+                    <input
+                      type="radio"
+                      name="timelineMarkerTzDisp"
+                      value="prague"
+                      checked={(newTimelineEntry.timezoneDisplay || "both") === "prague"}
+                      onChange={() => setNewTimelineEntry({
+                        ...newTimelineEntry,
+                        timezoneDisplay: "prague"
+                      })}
+                      className="accent-yellow-500 w-3 h-3"
+                    />
+                    <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague only</span>
+                  </label>
+                  <label className="flex items-center gap-1 cursor-pointer select-none">
+                    <input
+                      type="radio"
+                      name="timelineMarkerTzDisp"
+                      value="cairo"
+                      checked={(newTimelineEntry.timezoneDisplay || "both") === "cairo"}
+                      onChange={() => setNewTimelineEntry({
+                        ...newTimelineEntry,
+                        timezoneDisplay: "cairo"
+                      })}
+                      className="accent-yellow-500 w-3 h-3"
+                    />
+                    <span className="text-[10px] text-gray-750 font-semibold">🇪🇬 Cairo only</span>
+                  </label>
+                </div>
+              </div>
+
               {/* Live Preview for Timeline Entry */}
               {newTimelineEntry.datetime && (() => {
                 const tz = newTimelineEntry.inputTimezone || "Africa/Cairo";
@@ -2134,6 +2220,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                     id: "CT_" + Date.now(),
                     ...newTimelineEntry,
                     datetime: localToUtc(newTimelineEntry.datetime, newTimelineEntry.inputTimezone || "Africa/Cairo"),
+                    timezoneDisplay: newTimelineEntry.timezoneDisplay || "both",
                   };
                   const updated = {
                     ...countdownConfig,
@@ -2149,6 +2236,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                     icon: "📌",
                     color: "gray",
                     inputTimezone: "Africa/Cairo",
+                    timezoneDisplay: "both",
                   });
                   showToast(
                     "Marker appended locally. Press Save to persist.",
@@ -2333,6 +2421,46 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                               className="accent-yellow-500 w-3 h-3"
                             />
                             <span className="text-xs text-gray-700">🇨🇿 Prague</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Timezone Display Mode Selector for Flight Details */}
+                      <div className="flex flex-col mt-2">
+                        <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Show time to users as</label>
+                        <div className="flex flex-col gap-1 mt-1">
+                          <label className="flex items-center gap-1 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name={`adminFlightTzDisp-${item.id}`}
+                              value="both"
+                              checked={(item.details?.timezoneDisplay || "both") === "both"}
+                              onChange={() => updateFlightHotelField(item.id, "timezoneDisplay", "both")}
+                              className="accent-yellow-500 w-3 h-3"
+                            />
+                            <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                          </label>
+                          <label className="flex items-center gap-1 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name={`adminFlightTzDisp-${item.id}`}
+                              value="prague"
+                              checked={(item.details?.timezoneDisplay || "both") === "prague"}
+                              onChange={() => updateFlightHotelField(item.id, "timezoneDisplay", "prague")}
+                              className="accent-yellow-500 w-3 h-3"
+                            />
+                            <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague only</span>
+                          </label>
+                          <label className="flex items-center gap-1 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name={`adminFlightTzDisp-${item.id}`}
+                              value="cairo"
+                              checked={(item.details?.timezoneDisplay || "both") === "cairo"}
+                              onChange={() => updateFlightHotelField(item.id, "timezoneDisplay", "cairo")}
+                              className="accent-yellow-500 w-3 h-3"
+                            />
+                            <span className="text-[10px] text-gray-750 font-semibold">🇪🇬 Cairo only</span>
                           </label>
                         </div>
                       </div>
@@ -2541,6 +2669,46 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                         </div>
                       </div>
 
+                      {/* Timezone Display Mode Selector for Check-In */}
+                      <div className="flex flex-col mt-2">
+                        <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Show time to users as</label>
+                        <div className="flex flex-col gap-1 mt-1">
+                          <label className="flex items-center gap-1 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name={`adminCheckInTzDisp-${item.id}`}
+                              value="both"
+                              checked={(item.details?.timezoneDisplayCheckIn || "both") === "both"}
+                              onChange={() => updateFlightHotelField(item.id, "timezoneDisplayCheckIn", "both")}
+                              className="accent-yellow-500 w-3 h-3"
+                            />
+                            <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                          </label>
+                          <label className="flex items-center gap-1 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name={`adminCheckInTzDisp-${item.id}`}
+                              value="prague"
+                              checked={(item.details?.timezoneDisplayCheckIn || "both") === "prague"}
+                              onChange={() => updateFlightHotelField(item.id, "timezoneDisplayCheckIn", "prague")}
+                              className="accent-yellow-500 w-3 h-3"
+                            />
+                            <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague only</span>
+                          </label>
+                          <label className="flex items-center gap-1 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name={`adminCheckInTzDisp-${item.id}`}
+                              value="cairo"
+                              checked={(item.details?.timezoneDisplayCheckIn || "both") === "cairo"}
+                              onChange={() => updateFlightHotelField(item.id, "timezoneDisplayCheckIn", "cairo")}
+                              className="accent-yellow-500 w-3 h-3"
+                            />
+                            <span className="text-[10px] text-gray-750 font-semibold">🇪🇬 Cairo only</span>
+                          </label>
+                        </div>
+                      </div>
+
                       {/* Live Preview for Check-In */}
                       {(() => {
                         const d = item.details?.checkInDate;
@@ -2619,6 +2787,46 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                               className="accent-yellow-500 w-3 h-3"
                             />
                             <span className="text-xs text-gray-700">🇨🇿 Prague</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Timezone Display Mode Selector for Check-Out */}
+                      <div className="flex flex-col mt-2">
+                        <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Show time to users as</label>
+                        <div className="flex flex-col gap-1 mt-1">
+                          <label className="flex items-center gap-1 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name={`adminCheckOutTzDisp-${item.id}`}
+                              value="both"
+                              checked={(item.details?.timezoneDisplayCheckOut || "both") === "both"}
+                              onChange={() => updateFlightHotelField(item.id, "timezoneDisplayCheckOut", "both")}
+                              className="accent-yellow-500 w-3 h-3"
+                            />
+                            <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                          </label>
+                          <label className="flex items-center gap-1 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name={`adminCheckOutTzDisp-${item.id}`}
+                              value="prague"
+                              checked={(item.details?.timezoneDisplayCheckOut || "both") === "prague"}
+                              onChange={() => updateFlightHotelField(item.id, "timezoneDisplayCheckOut", "prague")}
+                              className="accent-yellow-500 w-3 h-3"
+                            />
+                            <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague only</span>
+                          </label>
+                          <label className="flex items-center gap-1 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name={`adminCheckOutTzDisp-${item.id}`}
+                              value="cairo"
+                              checked={(item.details?.timezoneDisplayCheckOut || "both") === "cairo"}
+                              onChange={() => updateFlightHotelField(item.id, "timezoneDisplayCheckOut", "cairo")}
+                              className="accent-yellow-500 w-3 h-3"
+                            />
+                            <span className="text-[10px] text-gray-750 font-semibold">🇪🇬 Cairo only</span>
                           </label>
                         </div>
                       </div>
@@ -2845,6 +3053,46 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                                   className="accent-yellow-500 w-3 h-3"
                                 />
                                 <span className="text-[10px] text-gray-700">🇨🇿 Prague</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Timezone Display Mode Selector for Daily Itinerary Event */}
+                          <div className="flex flex-col mt-1">
+                            <label className="text-[8px] font-bold text-gray-400 uppercase tracking-wider">Show time to users as</label>
+                            <div className="flex flex-col gap-1 mt-1">
+                              <label className="flex items-center gap-1 cursor-pointer select-none">
+                                <input
+                                  type="radio"
+                                  name={`tripEventTzDisp-${event.id}`}
+                                  value="both"
+                                  checked={(event.timezoneDisplay || "both") === "both"}
+                                  onChange={() => handleUpdateTripEventField(day.id, event.id, "timezoneDisplay", "both")}
+                                  className="accent-yellow-500 w-3 h-3"
+                                />
+                                <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                              </label>
+                              <label className="flex items-center gap-1 cursor-pointer select-none">
+                                <input
+                                  type="radio"
+                                  name={`tripEventTzDisp-${event.id}`}
+                                  value="prague"
+                                  checked={(event.timezoneDisplay || "both") === "prague"}
+                                  onChange={() => handleUpdateTripEventField(day.id, event.id, "timezoneDisplay", "prague")}
+                                  className="accent-yellow-500 w-3 h-3"
+                                />
+                                <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague only</span>
+                              </label>
+                              <label className="flex items-center gap-1 cursor-pointer select-none">
+                                <input
+                                  type="radio"
+                                  name={`tripEventTzDisp-${event.id}`}
+                                  value="cairo"
+                                  checked={(event.timezoneDisplay || "both") === "cairo"}
+                                  onChange={() => handleUpdateTripEventField(day.id, event.id, "timezoneDisplay", "cairo")}
+                                  className="accent-yellow-500 w-3 h-3"
+                                />
+                                <span className="text-[10px] text-gray-750 font-semibold">🇪🇬 Cairo only</span>
                               </label>
                             </div>
                           </div>
@@ -3156,6 +3404,48 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                 Select the timezone the time above was given to you in. Default
                 is Cairo since you are based in Egypt.
               </p>
+
+              {/* Timezone Display Mode Selector for Scientific Session */}
+              <div className="flex flex-col gap-1 mt-3">
+                <label className="text-sm font-medium text-gray-700">
+                  Show time to users as
+                </label>
+                <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 mt-1">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="radio"
+                      name="sessionTzDisp"
+                      value="both"
+                      checked={(sessionForm.timezoneDisplay || "both") === "both"}
+                      onChange={() => setSessionForm({ ...sessionForm, timezoneDisplay: "both" })}
+                      className="accent-yellow-500 w-4 h-4"
+                    />
+                    <span className="text-sm text-gray-700">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="radio"
+                      name="sessionTzDisp"
+                      value="prague"
+                      checked={(sessionForm.timezoneDisplay || "both") === "prague"}
+                      onChange={() => setSessionForm({ ...sessionForm, timezoneDisplay: "prague" })}
+                      className="accent-yellow-500 w-4 h-4"
+                    />
+                    <span className="text-sm text-gray-700">🇨🇿 Prague only</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="radio"
+                      name="sessionTzDisp"
+                      value="cairo"
+                      checked={(sessionForm.timezoneDisplay || "both") === "cairo"}
+                      onChange={() => setSessionForm({ ...sessionForm, timezoneDisplay: "cairo" })}
+                      className="accent-yellow-500 w-4 h-4"
+                    />
+                    <span className="text-sm text-gray-700">🇪🇬 Cairo only</span>
+                  </label>
+                </div>
+              </div>
 
               {/* Live previews for scientific session */}
               {(() => {
@@ -3826,6 +4116,32 @@ export default function Admin({ initialTab }: AdminProps = {}) {
             </button>
           </div>
         </div>
+
+        {/* Global App Version Settings Board */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 col-span-1 md:col-span-2">
+          <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+            <span>⚙️</span> Global Application Version
+          </h3>
+          <p className="text-gray-500 text-xs mb-4">
+            Manage the user-facing application build version displayed in the footers and system logs in real-time.
+          </p>
+          <div className="flex gap-2 max-w-md">
+            <input
+              type="text"
+              placeholder="e.g. 1.0.957"
+              value={inputAppVersion}
+              onChange={(e) => setInputAppVersion(e.target.value)}
+              className="flex-1 p-2 border rounded focus:ring-1 focus:ring-yellow-500 outline-none font-semibold text-gray-800"
+            />
+            <button
+              onClick={handleSaveAppVersion}
+              disabled={isSavingVersion}
+              className="bg-yellow-500 text-black px-6 py-2 rounded font-bold hover:bg-yellow-600 disabled:opacity-50 transition-colors"
+            >
+              {isSavingVersion ? "Saving..." : "Save Version"}
+            </button>
+          </div>
+        </div>
       </div>
     );
   };
@@ -3844,7 +4160,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
         </div>
         <div className="flex flex-col items-end">
           <span className="bg-yellow-500 text-black px-3 py-1 rounded-full text-xs font-black shadow-sm">
-            v{APP_VERSION}
+            v{settings?.appVersion || APP_VERSION}
           </span>
           <span className="text-[10px] text-gray-500 font-bold mt-1 uppercase tracking-tighter">
             Current Build

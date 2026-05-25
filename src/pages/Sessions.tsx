@@ -108,14 +108,20 @@ export default function Sessions() {
                       );
                     const cairo = utcToDisplay(rawDate, "Africa/Cairo");
                     const prague = utcToDisplay(rawDate, "Europe/Prague");
+                    const showPrague = (s.timezoneDisplay ?? "both") === "both" || (s.timezoneDisplay ?? "both") === "prague";
+                    const showCairo = (s.timezoneDisplay ?? "both") === "both" || (s.timezoneDisplay ?? "both") === "cairo";
                     return (
                       <div className="flex flex-col gap-1">
-                        <span className="font-bold flex items-center gap-2">
-                          🇨🇿 {prague.time} {s.toTime ? `(Prague)` : ""}
-                        </span>
-                        <span className="font-semibold text-gray-500 text-xs flex items-center gap-2">
-                          🇪🇬 {cairo.time} {s.toTime ? `(Cairo)` : ""}
-                        </span>
+                        {showPrague && (
+                          <span className="font-bold flex items-center gap-2">
+                            🇨🇿 {prague.time} {s.toTime ? `(Prague)` : ""}
+                          </span>
+                        )}
+                        {showCairo && (
+                          <span className="font-semibold text-gray-500 text-xs flex items-center gap-2">
+                            🇪🇬 {cairo.time} {s.toTime ? `(Cairo)` : ""}
+                          </span>
+                        )}
                       </div>
                     );
                   })()}

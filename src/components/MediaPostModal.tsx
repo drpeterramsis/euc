@@ -60,7 +60,8 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
     comingSoon: false,
     scheduledAt: null as string | null,
     scheduledAtLocal: "",
-    inputTimezone: "Africa/Cairo"
+    inputTimezone: "Africa/Cairo",
+    timezoneDisplay: "both" as "both" | "prague" | "cairo"
   });
 
   useEffect(() => {
@@ -74,7 +75,8 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
           comingSoon: post.comingSoon || false,
           scheduledAt: post.scheduledAt || null,
           scheduledAtLocal: post.scheduledAt ? getCairoDatetimeLocal(post.scheduledAt) : "",
-          inputTimezone: "Africa/Cairo"
+          inputTimezone: post.inputTimezone || "Africa/Cairo",
+          timezoneDisplay: post.timezoneDisplay || "both"
         });
       } else {
         setForm({
@@ -93,7 +95,8 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
           comingSoon: false,
           scheduledAt: null,
           scheduledAtLocal: "",
-          inputTimezone: "Africa/Cairo"
+          inputTimezone: "Africa/Cairo",
+          timezoneDisplay: "both"
         });
       }
     }
@@ -492,6 +495,46 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
                               className="accent-yellow-500 w-4 h-4"
                             />
                             <span className="text-sm font-medium text-gray-700">🇨🇿 Prague</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Timezone Display Mode Selector */}
+                      <div className="flex flex-col gap-1 mt-1">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Show time to users as</label>
+                        <div className="flex flex-col gap-1 mt-1">
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name="mediaInputTzDisp"
+                              value="both"
+                              checked={(form.timezoneDisplay || "both") === "both"}
+                              onChange={() => setForm(f => ({ ...f, timezoneDisplay: "both" }))}
+                              className="accent-yellow-500 w-4 h-4"
+                            />
+                            <span className="text-sm font-medium text-gray-750">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name="mediaInputTzDisp"
+                              value="prague"
+                              checked={(form.timezoneDisplay || "both") === "prague"}
+                              onChange={() => setForm(f => ({ ...f, timezoneDisplay: "prague" }))}
+                              className="accent-yellow-500 w-4 h-4"
+                            />
+                            <span className="text-sm font-medium text-gray-750">🇨🇿 Prague only</span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name="mediaInputTzDisp"
+                              value="cairo"
+                              checked={(form.timezoneDisplay || "both") === "cairo"}
+                              onChange={() => setForm(f => ({ ...f, timezoneDisplay: "cairo" }))}
+                              className="accent-yellow-500 w-4 h-4"
+                            />
+                            <span className="text-sm font-medium text-gray-750">🇪🇬 Cairo only</span>
                           </label>
                         </div>
                       </div>

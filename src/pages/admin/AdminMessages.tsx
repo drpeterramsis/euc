@@ -60,7 +60,9 @@ export default function AdminMessages() {
     pinned: false,
     buttons: [] as any[],
     inputTimezone: "Africa/Cairo",
-    inputTimezoneExpires: "Africa/Cairo"
+    inputTimezoneExpires: "Africa/Cairo",
+    timezoneDisplay: "both" as "both" | "prague" | "cairo",
+    timezoneDisplayExpires: "both" as "both" | "prague" | "cairo"
   });
 
   if (!messages)
@@ -99,8 +101,10 @@ export default function AdminMessages() {
       expiresAt: msg.expiresAt ? getCairoDatetimeLocal(msg.expiresAt) : "",
       pinned: msg.pinned || false,
       buttons: msg.buttons ? JSON.parse(JSON.stringify(msg.buttons)) : [],
-      inputTimezone: "Africa/Cairo",
-      inputTimezoneExpires: "Africa/Cairo"
+      inputTimezone: msg.inputTimezone || "Africa/Cairo",
+      inputTimezoneExpires: msg.inputTimezoneExpires || "Africa/Cairo",
+      timezoneDisplay: msg.timezoneDisplay || "both",
+      timezoneDisplayExpires: msg.timezoneDisplayExpires || "both"
     });
   };
 
@@ -118,7 +122,9 @@ export default function AdminMessages() {
       pinned: false,
       buttons: [],
       inputTimezone: "Africa/Cairo",
-      inputTimezoneExpires: "Africa/Cairo"
+      inputTimezoneExpires: "Africa/Cairo",
+      timezoneDisplay: "both",
+      timezoneDisplayExpires: "both"
     });
   };
 
@@ -224,6 +230,10 @@ export default function AdminMessages() {
       createdBy: "admin",
       readBy: editingMsg?.readBy || [],
       pinned: form.pinned,
+      inputTimezone: form.inputTimezone || "Africa/Cairo",
+      inputTimezoneExpires: form.inputTimezoneExpires || "Africa/Cairo",
+      timezoneDisplay: form.timezoneDisplay || "both",
+      timezoneDisplayExpires: form.timezoneDisplayExpires || "both"
     };
 
     const oldMessages = [...messages]; // Capture state snapshot for rollback
@@ -506,6 +516,48 @@ export default function AdminMessages() {
                           </div>
                         </div>
 
+                        {/* Timezone Display Mode Selector */}
+                        <div className="flex flex-col gap-1 mt-1">
+                          <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                            Show time to users as
+                          </label>
+                          <div className="flex flex-col gap-1 mt-1">
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                              <input
+                                type="radio"
+                                name="msgScheduledTzDisp"
+                                value="both"
+                                checked={(form.timezoneDisplay || "both") === "both"}
+                                onChange={() => setForm({ ...form, timezoneDisplay: "both" })}
+                                className="accent-yellow-500 w-4 h-4"
+                              />
+                              <span className="text-xs font-semibold text-gray-750">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                              <input
+                                type="radio"
+                                name="msgScheduledTzDisp"
+                                value="prague"
+                                checked={(form.timezoneDisplay || "both") === "prague"}
+                                onChange={() => setForm({ ...form, timezoneDisplay: "prague" })}
+                                className="accent-yellow-500 w-4 h-4"
+                              />
+                              <span className="text-xs font-semibold text-gray-750">🇨🇿 Prague only</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                              <input
+                                type="radio"
+                                name="msgScheduledTzDisp"
+                                value="cairo"
+                                checked={(form.timezoneDisplay || "both") === "cairo"}
+                                onChange={() => setForm({ ...form, timezoneDisplay: "cairo" })}
+                                className="accent-yellow-500 w-4 h-4"
+                              />
+                              <span className="text-xs font-semibold text-gray-750">🇪🇬 Cairo only</span>
+                            </label>
+                          </div>
+                        </div>
+
                         {pragueDisplay && cairoDisplay && (
                           <div className="flex items-center gap-3 mt-1 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100 text-xs text-gray-600 font-medium">
                             <span>🇨🇿 Prague: <strong>{pragueDisplay}</strong></span>
@@ -577,6 +629,48 @@ export default function AdminMessages() {
                               className="accent-yellow-500 w-4 h-4"
                             />
                             <span className="text-xs font-medium text-gray-700">🇨🇿 Prague</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Timezone Display Mode Selector */}
+                      <div className="flex flex-col gap-1 mt-1">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                          Show time to users as
+                        </label>
+                        <div className="flex flex-col gap-1 mt-1">
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name="msgExpiresTzDisp"
+                              value="both"
+                              checked={(form.timezoneDisplayExpires || "both") === "both"}
+                              onChange={() => setForm({ ...form, timezoneDisplayExpires: "both" })}
+                              className="accent-yellow-500 w-4 h-4"
+                            />
+                            <span className="text-xs font-semibold text-gray-750">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name="msgExpiresTzDisp"
+                              value="prague"
+                              checked={(form.timezoneDisplayExpires || "both") === "prague"}
+                              onChange={() => setForm({ ...form, timezoneDisplayExpires: "prague" })}
+                              className="accent-yellow-500 w-4 h-4"
+                            />
+                            <span className="text-xs font-semibold text-gray-750">🇨🇿 Prague only</span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name="msgExpiresTzDisp"
+                              value="cairo"
+                              checked={(form.timezoneDisplayExpires || "both") === "cairo"}
+                              onChange={() => setForm({ ...form, timezoneDisplayExpires: "cairo" })}
+                              className="accent-yellow-500 w-4 h-4"
+                            />
+                            <span className="text-xs font-semibold text-gray-750">🇪🇬 Cairo only</span>
                           </label>
                         </div>
                       </div>

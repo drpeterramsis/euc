@@ -222,17 +222,23 @@ export default function SmartCountdown({
                       )}
                     </div>
                     <p className="text-[11px] text-gray-400 mt-0.5 font-sans">
-                      <span className="flex items-center gap-2">
-                        <span>
-                          🇨🇿{" "}
-                          {utcToDisplay(event.datetime, "Europe/Prague").time}{" "}
-                          {utcToDisplay(event.datetime, "Europe/Prague").date}
-                        </span>
-                        <span className="text-gray-600">|</span>
-                        <span>
-                          🇪🇬 {utcToDisplay(event.datetime, "Africa/Cairo").time}{" "}
-                          {utcToDisplay(event.datetime, "Africa/Cairo").date}
-                        </span>
+                      <span className="flex items-center gap-2 flex-wrap">
+                        {((event.timezoneDisplay ?? "both") === "both" || (event.timezoneDisplay ?? "both") === "prague") && (
+                          <span>
+                            🇨🇿{" "}
+                            {utcToDisplay(event.datetime, "Europe/Prague").time}{" "}
+                            {utcToDisplay(event.datetime, "Europe/Prague").date}
+                          </span>
+                        )}
+                        {(event.timezoneDisplay ?? "both") === "both" && (
+                          <span className="text-gray-650">|</span>
+                        )}
+                        {((event.timezoneDisplay ?? "both") === "both" || (event.timezoneDisplay ?? "both") === "cairo") && (
+                          <span>
+                            🇪🇬 {utcToDisplay(event.datetime, "Africa/Cairo").time}{" "}
+                            {utcToDisplay(event.datetime, "Africa/Cairo").date}
+                          </span>
+                        )}
                       </span>
                     </p>
                   </div>

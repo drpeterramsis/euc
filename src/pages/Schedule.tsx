@@ -141,14 +141,20 @@ export default function Schedule() {
                             );
                           const cairo = utcToDisplay(rawDate, "Africa/Cairo");
                           const prague = utcToDisplay(rawDate, "Europe/Prague");
+                          const showPrague = (event.timezoneDisplay ?? "both") === "both" || (event.timezoneDisplay ?? "both") === "prague";
+                          const showCairo = (event.timezoneDisplay ?? "both") === "both" || (event.timezoneDisplay ?? "both") === "cairo";
                           return (
                             <>
-                              <span className="text-xs font-bold text-gray-800">
-                                🇨🇿 {prague.time}
-                              </span>
-                              <span className="text-[10px] text-gray-400 font-semibold mt-0.5">
-                                🇪🇬 {cairo.time}
-                              </span>
+                              {showPrague && (
+                                <span className="text-xs font-bold text-gray-800">
+                                  🇨🇿 {prague.time}
+                                </span>
+                              )}
+                              {showCairo && (
+                                <span className="text-[10px] text-gray-400 font-semibold mt-0.5 animate-fade-in">
+                                  🇪🇬 {cairo.time}
+                                </span>
+                              )}
                             </>
                           );
                         })()}

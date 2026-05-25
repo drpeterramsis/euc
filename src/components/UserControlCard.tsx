@@ -523,6 +523,55 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                       </div>
                     </div>
 
+                    {/* Timezone Display Mode Selector */}
+                    <div className="flex flex-col mt-1">
+                      <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Show time as</label>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <label className="flex items-center gap-1 cursor-pointer select-none">
+                          <input
+                            type="radio"
+                            name="depTzDisp"
+                            value="both"
+                            checked={(travelData.departure?.timezoneDisplay || "both") === "both"}
+                            onChange={() => setTravelData((prev: any) => ({
+                              ...prev,
+                              departure: { ...prev.departure, timezoneDisplay: "both" }
+                            }))}
+                            className="accent-yellow-500 w-3 h-3"
+                          />
+                          <span className="text-[10px] text-gray-700">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                        </label>
+                        <label className="flex items-center gap-1 cursor-pointer select-none">
+                          <input
+                            type="radio"
+                            name="depTzDisp"
+                            value="prague"
+                            checked={(travelData.departure?.timezoneDisplay || "both") === "prague"}
+                            onChange={() => setTravelData((prev: any) => ({
+                              ...prev,
+                              departure: { ...prev.departure, timezoneDisplay: "prague" }
+                            }))}
+                            className="accent-yellow-500 w-3 h-3"
+                          />
+                          <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague only</span>
+                        </label>
+                        <label className="flex items-center gap-1 cursor-pointer select-none">
+                          <input
+                            type="radio"
+                            name="depTzDisp"
+                            value="cairo"
+                            checked={(travelData.departure?.timezoneDisplay || "both") === "cairo"}
+                            onChange={() => setTravelData((prev: any) => ({
+                              ...prev,
+                              departure: { ...prev.departure, timezoneDisplay: "cairo" }
+                            }))}
+                            className="accent-yellow-500 w-3 h-3"
+                          />
+                          <span className="text-[10px] text-gray-750 font-semibold">🇪🇬 Cairo only</span>
+                        </label>
+                      </div>
+                    </div>
+
                     {/* Live Preview */}
                     {departurePragueDisplay && departureCairoDisplay && (
                       <div className="text-[10px] bg-white p-1.5 rounded border border-gray-100 text-gray-650 font-semibold leading-normal flex flex-col justify-center mt-1">
@@ -581,6 +630,55 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                             className="accent-yellow-500 w-3 h-3"
                           />
                           <span className="text-xs text-gray-700">🇨🇿 Prague</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Timezone Display Mode Selector */}
+                    <div className="flex flex-col mt-1">
+                      <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Show time as</label>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <label className="flex items-center gap-1 cursor-pointer select-none">
+                          <input
+                            type="radio"
+                            name="arrTzDisp"
+                            value="both"
+                            checked={(travelData.arrival?.timezoneDisplay || "both") === "both"}
+                            onChange={() => setTravelData((prev: any) => ({
+                              ...prev,
+                              arrival: { ...prev.arrival, timezoneDisplay: "both" }
+                            }))}
+                            className="accent-yellow-500 w-3 h-3"
+                          />
+                          <span className="text-[10px] text-gray-700">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                        </label>
+                        <label className="flex items-center gap-1 cursor-pointer select-none">
+                          <input
+                            type="radio"
+                            name="arrTzDisp"
+                            value="prague"
+                            checked={(travelData.arrival?.timezoneDisplay || "both") === "prague"}
+                            onChange={() => setTravelData((prev: any) => ({
+                              ...prev,
+                              arrival: { ...prev.arrival, timezoneDisplay: "prague" }
+                            }))}
+                            className="accent-yellow-500 w-3 h-3"
+                          />
+                          <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague only</span>
+                        </label>
+                        <label className="flex items-center gap-1 cursor-pointer select-none">
+                          <input
+                            type="radio"
+                            name="arrTzDisp"
+                            value="cairo"
+                            checked={(travelData.arrival?.timezoneDisplay || "both") === "cairo"}
+                            onChange={() => setTravelData((prev: any) => ({
+                              ...prev,
+                              arrival: { ...prev.arrival, timezoneDisplay: "cairo" }
+                            }))}
+                            className="accent-yellow-500 w-3 h-3"
+                          />
+                          <span className="text-[10px] text-gray-750 font-semibold">🇪🇬 Cairo only</span>
                         </label>
                       </div>
                     </div>
