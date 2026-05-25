@@ -25,19 +25,28 @@ export interface TimelineEvent {
 }
 
 // Helper to get UTC from event data
+// COMMENT: Resolves local times of flights, hotels (Check-In or Check-Out), and custom events into UTC with their chosen input timezone settings.
 function getUtcFromEvent(event: any): string {
   if (event.datetime_utc) return event.datetime_utc;
   let local;
+  let tz = "Africa/Cairo";
   if (event.type === "flight") {
     local = `${event.details.date}T${event.details.time ?? "00:00"}`;
+    tz = event.details.inputTimezone || "Africa/Cairo";
   } else if (event.type === "hotel") {
-    local = `${event.details.checkInDate}T${event.details.checkInTime || "14:00"}`;
+    const isOut = event.details.isCheckOut;
+    local = `${event.details.checkInDate}T${event.details.checkInTime || (isOut ? "12:00" : "14:00")}`;
+    tz = isOut 
+      ? (event.details.inputTimezoneCheckOut || "Africa/Cairo")
+      : (event.details.inputTimezoneCheckIn || "Africa/Cairo");
   } else if (event.datetime) {
     local = event.datetime;
+    tz = event.inputTimezone || "Africa/Cairo";
   } else {
     local = `${event.date}T${event.time ?? "00:00"}`;
+    tz = event.inputTimezone || "Africa/Cairo";
   }
-  return localToUtc(local, "Africa/Cairo");
+  return localToUtc(local, tz);
 }
 
 // Build unified timeline from schedule.json + custom entries
@@ -89,7 +98,8 @@ export function buildTimeline(
         isToday: isToday(dt),
         isSoon: isSoon(dt, now),
         diff: new Date(dt).getTime() - now,
-        timezoneDisplay: item.timezoneDisplay ?? item.details?.timezoneDisplay,
+        // COMMENT: Use Check-In specific timezone setting or general fallback
+        timezoneDisplay: item.timezoneDisplay ?? item.details?.timezoneDisplayCheckIn ?? item.details?.timezoneDisplay,
       });
       const itemOut = {
         ...item,
@@ -98,6 +108,7 @@ export function buildTimeline(
           ...item.details,
           checkInDate: item.details.checkOutDate,
           checkInTime: item.details.checkOutTime || "12:00",
+          isCheckOut: true, // COMMENT: Mark check-out event to support correct timezone parsing in getUtcFromEvent
         },
       };
       const dtOut = getUtcFromEvent(itemOut);
@@ -112,7 +123,8 @@ export function buildTimeline(
         isToday: isToday(dtOut),
         isSoon: isSoon(dtOut, now),
         diff: new Date(dtOut).getTime() - now,
-        timezoneDisplay: item.timezoneDisplay ?? item.details?.timezoneDisplay,
+        // COMMENT: Use Check-Out specific timezone setting or general fallback
+        timezoneDisplay: item.timezoneDisplay ?? item.details?.timezoneDisplayCheckOut ?? item.details?.timezoneDisplay,
       });
     }
   });
