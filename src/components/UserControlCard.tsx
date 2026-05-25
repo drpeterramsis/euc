@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { showToast } from './Toast';
+import { localToUtc, utcToDisplay, TZ_CAIRO, TZ_PRAGUE } from "../utils/timezone";
 
 const DEFAULT_FEATURE_ACCESS = {
   sessions:       { access: true,  status: "full" },
@@ -218,6 +219,50 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
     }
     setApplyToAllTravel(false);
   }, [isOpen, user, mode]);
+
+  const departurePragueDisplay = useMemo(() => {
+    const d = travelData.departure?.date;
+    const t = travelData.departure?.time;
+    const tz = travelData.departure?.inputTimezone || "Africa/Cairo";
+    if (!d || !t) return null;
+    try {
+      const utc = localToUtc(`${d}T${t}`, tz);
+      return utcToDisplay(utc, TZ_PRAGUE).time;
+    } catch { return null; }
+  }, [travelData.departure?.date, travelData.departure?.time, travelData.departure?.inputTimezone]);
+
+  const departureCairoDisplay = useMemo(() => {
+    const d = travelData.departure?.date;
+    const t = travelData.departure?.time;
+    const tz = travelData.departure?.inputTimezone || "Africa/Cairo";
+    if (!d || !t) return null;
+    try {
+      const utc = localToUtc(`${d}T${t}`, tz);
+      return utcToDisplay(utc, TZ_CAIRO).time;
+    } catch { return null; }
+  }, [travelData.departure?.date, travelData.departure?.time, travelData.departure?.inputTimezone]);
+
+  const arrivalPragueDisplay = useMemo(() => {
+    const d = travelData.arrival?.date;
+    const t = travelData.arrival?.time;
+    const tz = travelData.arrival?.inputTimezone || "Africa/Cairo";
+    if (!d || !t) return null;
+    try {
+      const utc = localToUtc(`${d}T${t}`, tz);
+      return utcToDisplay(utc, TZ_PRAGUE).time;
+    } catch { return null; }
+  }, [travelData.arrival?.date, travelData.arrival?.time, travelData.arrival?.inputTimezone]);
+
+  const arrivalCairoDisplay = useMemo(() => {
+    const d = travelData.arrival?.date;
+    const t = travelData.arrival?.time;
+    const tz = travelData.arrival?.inputTimezone || "Africa/Cairo";
+    if (!d || !t) return null;
+    try {
+      const utc = localToUtc(`${d}T${t}`, tz);
+      return utcToDisplay(utc, TZ_CAIRO).time;
+    } catch { return null; }
+  }, [travelData.arrival?.date, travelData.arrival?.time, travelData.arrival?.inputTimezone]);
 
   if (!isOpen) return null;
 
@@ -439,7 +484,54 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <input name="departure.flightNumber" value={travelData.departure?.flightNumber} onChange={handleTravelChange} placeholder="Flight Number" className="w-full p-2 border rounded" />
                   <input name="departure.date" type="date" value={travelData.departure?.date} onChange={handleTravelChange} className="w-full p-2 border rounded" />
-                  <input name="departure.time" type="time" value={travelData.departure?.time} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                  
+                  <div className="flex flex-col gap-1">
+                    <input name="departure.time" type="time" value={travelData.departure?.time} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                    
+                    {/* Timezone Selector */}
+                    <div className="flex flex-col mt-1">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Timezone</label>
+                      <div className="flex gap-2">
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="depTz"
+                            value="Africa/Cairo"
+                            checked={(travelData.departure?.inputTimezone || "Africa/Cairo") === "Africa/Cairo"}
+                            onChange={() => setTravelData((prev: any) => ({
+                              ...prev,
+                              departure: { ...prev.departure, inputTimezone: "Africa/Cairo" }
+                            }))}
+                            className="accent-yellow-500 w-3 h-3"
+                          />
+                          <span className="text-xs text-gray-700">🇪🇬 Cairo</span>
+                        </label>
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="depTz"
+                            value="Europe/Prague"
+                            checked={(travelData.departure?.inputTimezone || "Africa/Cairo") === "Europe/Prague"}
+                            onChange={() => setTravelData((prev: any) => ({
+                              ...prev,
+                              departure: { ...prev.departure, inputTimezone: "Europe/Prague" }
+                            }))}
+                            className="accent-yellow-500 w-3 h-3"
+                          />
+                          <span className="text-xs text-gray-700">🇨🇿 Prague</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Live Preview */}
+                    {departurePragueDisplay && departureCairoDisplay && (
+                      <div className="text-[10px] bg-white p-1.5 rounded border border-gray-100 text-gray-650 font-semibold leading-normal flex flex-col justify-center mt-1">
+                        <div>🇨🇿 PRG: <strong>{departurePragueDisplay}</strong></div>
+                        <div className="mt-0.5">🇪🇬 CAI: <strong>{departureCairoDisplay}</strong></div>
+                      </div>
+                    )}
+                  </div>
+
                   <input name="departure.departureAirport" value={travelData.departure?.departureAirport} onChange={handleTravelChange} placeholder="Departure Airport" className="w-full p-2 border rounded" />
                   <input name="departure.arrivalAirport" value={travelData.departure?.arrivalAirport} onChange={handleTravelChange} placeholder="Arrival Airport (PRG)" className="w-full p-2 border rounded" />
                   <div className="grid grid-cols-2 gap-2">
@@ -454,7 +546,54 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <input name="arrival.flightNumber" value={travelData.arrival?.flightNumber} onChange={handleTravelChange} placeholder="Flight Number" className="w-full p-2 border rounded" />
                   <input name="arrival.date" type="date" value={travelData.arrival?.date} onChange={handleTravelChange} className="w-full p-2 border rounded" />
-                  <input name="arrival.time" type="time" value={travelData.arrival?.time} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                  
+                  <div className="flex flex-col gap-1">
+                    <input name="arrival.time" type="time" value={travelData.arrival?.time} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                    
+                    {/* Timezone Selector */}
+                    <div className="flex flex-col mt-1">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Timezone</label>
+                      <div className="flex gap-2">
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="arrTz"
+                            value="Africa/Cairo"
+                            checked={(travelData.arrival?.inputTimezone || "Africa/Cairo") === "Africa/Cairo"}
+                            onChange={() => setTravelData((prev: any) => ({
+                              ...prev,
+                              arrival: { ...prev.arrival, inputTimezone: "Africa/Cairo" }
+                            }))}
+                            className="accent-yellow-500 w-3 h-3"
+                          />
+                          <span className="text-xs text-gray-700">🇪🇬 Cairo</span>
+                        </label>
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="arrTz"
+                            value="Europe/Prague"
+                            checked={(travelData.arrival?.inputTimezone || "Africa/Cairo") === "Europe/Prague"}
+                            onChange={() => setTravelData((prev: any) => ({
+                              ...prev,
+                              arrival: { ...prev.arrival, inputTimezone: "Europe/Prague" }
+                            }))}
+                            className="accent-yellow-500 w-3 h-3"
+                          />
+                          <span className="text-xs text-gray-700">🇨🇿 Prague</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Live Preview */}
+                    {arrivalPragueDisplay && arrivalCairoDisplay && (
+                      <div className="text-[10px] bg-white p-1.5 rounded border border-gray-100 text-gray-650 font-semibold leading-normal flex flex-col justify-center mt-1">
+                        <div>🇨🇿 PRG: <strong>{arrivalPragueDisplay}</strong></div>
+                        <div className="mt-0.5">🇪🇬 CAI: <strong>{arrivalCairoDisplay}</strong></div>
+                      </div>
+                    )}
+                  </div>
+
                   <input name="arrival.departureAirport" value={travelData.arrival?.departureAirport} onChange={handleTravelChange} placeholder="Departure Airport (PRG)" className="w-full p-2 border rounded" />
                   <input name="arrival.arrivalAirport" value={travelData.arrival?.arrivalAirport} onChange={handleTravelChange} placeholder="Arrival Home Airport" className="w-full p-2 border rounded" />
                   <div className="grid grid-cols-2 gap-2">

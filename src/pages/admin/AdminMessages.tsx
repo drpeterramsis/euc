@@ -3,11 +3,37 @@
 // PURPOSE: Admin pane to send, edit, schedule, pin, and delete broadcast messages.
 // ─────────────────────────────────────────────
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 import { writeJSON } from "../../utils/github";
 import { ensureHttps } from "../../utils/linkUtils";
+import { localToUtc, utcToDisplay, TZ_CAIRO, TZ_PRAGUE } from "../../utils/timezone";
+
+// COMMENT: Safely formats a UTC ISO string to Cairo local ISO format (YYYY-MM-DDTHH:mm) using standard parts translation.
+const getCairoDatetimeLocal = (utcIso: string): string => {
+  try {
+    const d = new Date(utcIso);
+    if (isNaN(d.getTime())) return "";
+    
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Africa/Cairo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).formatToParts(d);
+    
+    const val = (type: string) => parts.find(p => p.type === type)?.value || "";
+    let hourStr = val("hour");
+    if (hourStr === "24") hourStr = "00";
+    return `${val("year")}-${val("month")}-${val("day")}T${hourStr}:${val("minute")}`;
+  } catch {
+    return "";
+  }
+};
 
 export default function AdminMessages() {
   const { messages, updateMessages } = useApp() as any;
@@ -33,6 +59,8 @@ export default function AdminMessages() {
     expiresAt: "",
     pinned: false,
     buttons: [] as any[],
+    inputTimezone: "Africa/Cairo",
+    inputTimezoneExpires: "Africa/Cairo"
   });
 
   if (!messages)
@@ -67,14 +95,12 @@ export default function AdminMessages() {
       category: msg.category || "general",
       priority: msg.priority || "normal",
       recipients: msg.recipients || msg.audience || "all",
-      scheduledAt: msg.scheduledAt
-        ? new Date(msg.scheduledAt).toISOString().slice(0, 16)
-        : "",
-      expiresAt: msg.expiresAt
-        ? new Date(msg.expiresAt).toISOString().slice(0, 16)
-        : "",
+      scheduledAt: msg.scheduledAt ? getCairoDatetimeLocal(msg.scheduledAt) : "",
+      expiresAt: msg.expiresAt ? getCairoDatetimeLocal(msg.expiresAt) : "",
       pinned: msg.pinned || false,
       buttons: msg.buttons ? JSON.parse(JSON.stringify(msg.buttons)) : [],
+      inputTimezone: "Africa/Cairo",
+      inputTimezoneExpires: "Africa/Cairo"
     });
   };
 
@@ -91,6 +117,8 @@ export default function AdminMessages() {
       expiresAt: "",
       pinned: false,
       buttons: [],
+      inputTimezone: "Africa/Cairo",
+      inputTimezoneExpires: "Africa/Cairo"
     });
   };
 
@@ -146,7 +174,7 @@ export default function AdminMessages() {
     let status = "draft";
     let publishedAt = editingMsg?.publishedAt || null;
     let scheduledAt = form.scheduledAt
-      ? new Date(form.scheduledAt).toISOString()
+      ? localToUtc(form.scheduledAt, form.inputTimezone || "Africa/Cairo")
       : null;
 
     if (publishMode === "now") {
@@ -164,8 +192,10 @@ export default function AdminMessages() {
       }
     }
 
+    let expiresAt = null;
     if (form.expiresAt) {
-      const eDate = new Date(form.expiresAt).toISOString();
+      const eDate = localToUtc(form.expiresAt, form.inputTimezoneExpires || "Africa/Cairo");
+      expiresAt = eDate;
       if (eDate <= now && status === "published") {
         status = "expired";
       }
@@ -187,7 +217,7 @@ export default function AdminMessages() {
       status,
       scheduledAt,
       publishedAt,
-      expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : null,
+      expiresAt,
       priority: form.priority,
       recipients: form.recipients,
       buttons: normalizedButtons,
@@ -426,6 +456,66 @@ export default function AdminMessages() {
                     }
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium"
                   />
+                  
+                  {!!form.scheduledAt && (() => {
+                    const [dateInput, timeInput] = form.scheduledAt.split("T");
+                    const pragueDisplay = (() => {
+                      if (!dateInput || !timeInput) return null;
+                      try {
+                        const utc = localToUtc(`${dateInput}T${timeInput}`, form.inputTimezone || "Africa/Cairo");
+                        return utcToDisplay(utc, TZ_PRAGUE).time;
+                      } catch { return null; }
+                    })();
+                    const cairoDisplay = (() => {
+                      if (!dateInput || !timeInput) return null;
+                      try {
+                        const utc = localToUtc(`${dateInput}T${timeInput}`, form.inputTimezone || "Africa/Cairo");
+                        return utcToDisplay(utc, TZ_CAIRO).time;
+                      } catch { return null; }
+                    })();
+
+                    return (
+                      <div className="space-y-2 mt-1">
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                            Timezone of this time
+                          </label>
+                          <div className="flex gap-4">
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                              <input
+                                type="radio"
+                                name="msgScheduledTimezone"
+                                value="Africa/Cairo"
+                                checked={(form.inputTimezone || "Africa/Cairo") === "Africa/Cairo"}
+                                onChange={() => setForm({ ...form, inputTimezone: "Africa/Cairo" })}
+                                className="accent-yellow-500 w-4 h-4"
+                              />
+                              <span className="text-xs font-medium text-gray-700">🇪🇬 Cairo</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                              <input
+                                type="radio"
+                                name="msgScheduledTimezone"
+                                value="Europe/Prague"
+                                checked={(form.inputTimezone || "Africa/Cairo") === "Europe/Prague"}
+                                onChange={() => setForm({ ...form, inputTimezone: "Europe/Prague" })}
+                                className="accent-yellow-500 w-4 h-4"
+                              />
+                              <span className="text-xs font-medium text-gray-700">🇨🇿 Prague</span>
+                            </label>
+                          </div>
+                        </div>
+
+                        {pragueDisplay && cairoDisplay && (
+                          <div className="flex items-center gap-3 mt-1 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100 text-xs text-gray-600 font-medium">
+                            <span>🇨🇿 Prague: <strong>{pragueDisplay}</strong></span>
+                            <span className="text-gray-300">|</span>
+                            <span>🇪🇬 Cairo: <strong>{cairoDisplay}</strong></span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
               <div className={publishMode === "now" ? "md:col-start-3" : ""}>
@@ -441,6 +531,66 @@ export default function AdminMessages() {
                   }
                   className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium"
                 />
+
+                {!!form.expiresAt && (() => {
+                  const [dateInput, timeInput] = form.expiresAt.split("T");
+                  const pragueDisplay = (() => {
+                    if (!dateInput || !timeInput) return null;
+                    try {
+                      const utc = localToUtc(`${dateInput}T${timeInput}`, form.inputTimezoneExpires || "Africa/Cairo");
+                      return utcToDisplay(utc, TZ_PRAGUE).time;
+                    } catch { return null; }
+                  })();
+                  const cairoDisplay = (() => {
+                    if (!dateInput || !timeInput) return null;
+                    try {
+                      const utc = localToUtc(`${dateInput}T${timeInput}`, form.inputTimezoneExpires || "Africa/Cairo");
+                      return utcToDisplay(utc, TZ_CAIRO).time;
+                    } catch { return null; }
+                  })();
+
+                  return (
+                    <div className="space-y-2 mt-1">
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                          Timezone of this time
+                        </label>
+                        <div className="flex gap-4">
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name="msgExpiresTimezone"
+                              value="Africa/Cairo"
+                              checked={(form.inputTimezoneExpires || "Africa/Cairo") === "Africa/Cairo"}
+                              onChange={() => setForm({ ...form, inputTimezoneExpires: "Africa/Cairo" })}
+                              className="accent-yellow-500 w-4 h-4"
+                            />
+                            <span className="text-xs font-medium text-gray-700">🇪🇬 Cairo</span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name="msgExpiresTimezone"
+                              value="Europe/Prague"
+                              checked={(form.inputTimezoneExpires || "Africa/Cairo") === "Europe/Prague"}
+                              onChange={() => setForm({ ...form, inputTimezoneExpires: "Europe/Prague" })}
+                              className="accent-yellow-500 w-4 h-4"
+                            />
+                            <span className="text-xs font-medium text-gray-700">🇨🇿 Prague</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {pragueDisplay && cairoDisplay && (
+                        <div className="flex items-center gap-3 mt-1 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100 text-xs text-gray-600 font-medium">
+                          <span>🇨🇿 Prague: <strong>{pragueDisplay}</strong></span>
+                          <span className="text-gray-300">|</span>
+                          <span>🇪🇬 Cairo: <strong>{cairoDisplay}</strong></span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 

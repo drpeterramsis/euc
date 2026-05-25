@@ -1,8 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { compressImage } from '../utils/image';
 import { showToast } from './Toast';
 import { getThumbnailUrl, detectLinkType } from '../utils/linkUtils';
+import { localToUtc, utcToDisplay, TZ_CAIRO, TZ_PRAGUE } from "../utils/timezone";
+
+// COMMENT: Safely formats a UTC ISO string to Cairo local ISO format (YYYY-MM-DDTHH:mm) using standard parts translation.
+const getCairoDatetimeLocal = (utcIso: string): string => {
+  try {
+    const d = new Date(utcIso);
+    if (isNaN(d.getTime())) return "";
+    
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Africa/Cairo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).formatToParts(d);
+    
+    const val = (type: string) => parts.find(p => p.type === type)?.value || "";
+    let hourStr = val("hour");
+    if (hourStr === "24") hourStr = "00";
+    return `${val("year")}-${val("month")}-${val("day")}T${hourStr}:${val("minute")}`;
+  } catch {
+    return "";
+  }
+};
 
 interface MediaPostModalProps {
   isOpen: boolean;
@@ -32,7 +58,9 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
     audienceRoles: [] as string[],
     audienceUserIds: [] as string[],
     comingSoon: false,
-    scheduledAt: null as string | null
+    scheduledAt: null as string | null,
+    scheduledAtLocal: "",
+    inputTimezone: "Africa/Cairo"
   });
 
   useEffect(() => {
@@ -44,7 +72,9 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
           audienceRoles: post.audienceRoles || [],
           audienceUserIds: post.audienceUserIds || [],
           comingSoon: post.comingSoon || false,
-          scheduledAt: post.scheduledAt || null
+          scheduledAt: post.scheduledAt || null,
+          scheduledAtLocal: post.scheduledAt ? getCairoDatetimeLocal(post.scheduledAt) : "",
+          inputTimezone: "Africa/Cairo"
         });
       } else {
         setForm({
@@ -61,7 +91,9 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
           audienceRoles: [],
           audienceUserIds: [],
           comingSoon: false,
-          scheduledAt: null
+          scheduledAt: null,
+          scheduledAtLocal: "",
+          inputTimezone: "Africa/Cairo"
         });
       }
     }
@@ -117,8 +149,13 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
     try {
       setIsSaving(true);
       
+      const datetime_utc = form.scheduledAtLocal
+        ? localToUtc(form.scheduledAtLocal, form.inputTimezone || "Africa/Cairo")
+        : null;
+
       const payload = {
         ...form,
+        scheduledAt: datetime_utc,
         photoUrl: form.imageDataUrl || "",
         thumbnailUrl: autoThumbnail || "",
         linkUrl: form.link || "",
@@ -389,36 +426,91 @@ export default function MediaPostModal({ isOpen, onClose, onSave, post }: MediaP
                 <label className="flex items-center gap-2 cursor-pointer mt-3">
                   <input
                     type="checkbox"
-                    checked={!!form.scheduledAt}
+                    checked={!!form.scheduledAtLocal}
                     onChange={e => setForm(f => ({
                       ...f,
-                      scheduledAt: e.target.checked
-                        ? new Date().toISOString()
-                        : null
+                      scheduledAtLocal: e.target.checked
+                        ? getCairoDatetimeLocal(new Date().toISOString())
+                        : ""
                     }))}
                     className="w-4 h-4 accent-yellow-400"
                   />
                   <span className="font-medium text-sm text-gray-800">Schedule Publishing</span>
                 </label>
 
-                {!!form.scheduledAt && (
-                  <div className="ml-6 mt-2 animate-in fade-in duration-300">
-                    <input
-                      type="datetime-local"
-                      value={form.scheduledAt ? form.scheduledAt.slice(0, 16) : ""}
-                      onChange={e => setForm(f => ({
-                        ...f,
-                        scheduledAt: e.target.value
-                          ? new Date(e.target.value).toISOString()
-                          : null
-                      }))}
-                      className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-full font-bold focus:ring-1 focus:ring-yellow-500 outline-none"
-                    />
-                    <p className="text-[10px] font-medium text-gray-500 mt-1">
-                      Post will not be visible to users until this date and time.
-                    </p>
-                  </div>
-                )}
+                {!!form.scheduledAtLocal && (() => {
+                  const [dateInput, timeInput] = form.scheduledAtLocal.split("T");
+                  const pragueDisplay = (() => {
+                    if (!dateInput || !timeInput) return null;
+                    try {
+                      const utc = localToUtc(`${dateInput}T${timeInput}`, form.inputTimezone || "Africa/Cairo");
+                      return utcToDisplay(utc, TZ_PRAGUE).time;
+                    } catch { return null; }
+                  })();
+                  const cairoDisplay = (() => {
+                    if (!dateInput || !timeInput) return null;
+                    try {
+                      const utc = localToUtc(`${dateInput}T${timeInput}`, form.inputTimezone || "Africa/Cairo");
+                      return utcToDisplay(utc, TZ_CAIRO).time;
+                    } catch { return null; }
+                  })();
+
+                  return (
+                    <div className="ml-6 mt-2 animate-in fade-in duration-300 space-y-3">
+                      <input
+                        type="datetime-local"
+                        value={form.scheduledAtLocal}
+                        onChange={e => setForm(f => ({
+                          ...f,
+                          scheduledAtLocal: e.target.value
+                        }))}
+                        className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-full font-bold focus:ring-1 focus:ring-yellow-500 outline-none"
+                      />
+                      
+                      {/* Timezone selector */}
+                      <div className="flex flex-col gap-1 mt-1">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">This time is in</label>
+                        <div className="flex gap-4">
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name="mediaInputTimezone"
+                              value="Africa/Cairo"
+                              checked={(form.inputTimezone || "Africa/Cairo") === "Africa/Cairo"}
+                              onChange={() => setForm(f => ({ ...f, inputTimezone: "Africa/Cairo" }))}
+                              className="accent-yellow-500 w-4 h-4"
+                            />
+                            <span className="text-sm font-medium text-gray-700">🇪🇬 Cairo</span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="radio"
+                              name="mediaInputTimezone"
+                              value="Europe/Prague"
+                              checked={(form.inputTimezone || "Africa/Cairo") === "Europe/Prague"}
+                              onChange={() => setForm(f => ({ ...f, inputTimezone: "Europe/Prague" }))}
+                              className="accent-yellow-500 w-4 h-4"
+                            />
+                            <span className="text-sm font-medium text-gray-700">🇨🇿 Prague</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Live preview */}
+                      {pragueDisplay && cairoDisplay && (
+                        <div className="flex items-center gap-3 mt-1.5 px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-100 text-xs text-gray-600 font-medium">
+                          <span>🇨🇿 Prague: <strong>{pragueDisplay}</strong></span>
+                          <span className="text-gray-300">|</span>
+                          <span>🇪🇬 Cairo: <strong>{cairoDisplay}</strong></span>
+                        </div>
+                      )}
+
+                      <p className="text-[10px] font-medium text-gray-500 mt-1">
+                        Post will not be visible to users until this date and time.
+                      </p>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>

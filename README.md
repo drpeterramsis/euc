@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.922
+Version: 1.0.957
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -109,6 +109,10 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.920 | 2026-05-21 | Fixed central message distribution for non-admin users, resolved local caching blockages, and implemented automatic background update state propagation for both new messages and gallery albums. |
 | v1.0.921 | 2026-05-21 | Added Admin broadcast message builders and responsive action grids for gallery management. |
 | v1.0.922 | 2026-05-21 | CRITICAL BUG FIX: Resolved disappearing albums with 3+ images by implementing sequential raw file photo uploader and optimized SHA/retry handling. |
+| v1.0.954 | 2026-05-25 | CRITICAL BUG FIX: Resolved "Uncaught RangeError: Invalid time value" crash from range/invalid times. Implemented robust timezone converters, parsing, fallback dates, and try-catch wrappers. |
+| v1.0.955 | 2026-05-25 | UI POLISH: Replaced static countdown next event marker with high-fidelity animate-ping pulsing dot in SmartCountdown component. |
+| v1.0.956 | 2026-05-25 | UI FIX: Replaced NEXT pulsing dot outer ping ring color with high-visibility yellow for maximum contrast on dark theme backgrounds while keeping original event-type classification color. |
+| v1.0.957 | 2026-05-25 | FEATURE: Added timezone selectors on ALL event inputs. Integrated dual-timezone live converter previews displaying Prague and Cairo times under flight logistics, hotel check-in/checkout details, daily schedule events, custom countdown markers, and scientific sessions. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

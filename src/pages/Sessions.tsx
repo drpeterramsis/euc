@@ -7,11 +7,12 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import React, { useEffect } from 'react';
-import Layout from '../components/Layout';
-import { useApp } from '../context/AppContext';
-import { getLabel } from '../utils/labels';
-import { getPageAccess } from '../utils/pageAccess';
+import React, { useEffect } from "react";
+import Layout from "../components/Layout";
+import { useApp } from "../context/AppContext";
+import { getLabel } from "../utils/labels";
+import { getPageAccess } from "../utils/pageAccess";
+import { utcToDisplay, localToUtc } from "../utils/timezone";
 
 /**
  * Sessions component renders the list/grid of scientific sessions.
@@ -34,7 +35,9 @@ export default function Sessions() {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[60vh] font-sans">
-          <p className="text-gray-400 text-sm font-bold">This page is not available.</p>
+          <p className="text-gray-400 text-sm font-bold">
+            This page is not available.
+          </p>
         </div>
       </Layout>
     );
@@ -78,30 +81,58 @@ export default function Sessions() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sortedSessions.length > 0 ? (
           sortedSessions.map((s: any) => (
-            <div key={s.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all flex flex-col">
+            <div
+              key={s.id}
+              className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all flex flex-col"
+            >
               <div className="mb-4">
-                <span className="text-[10px] uppercase tracking-widest font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded border border-yellow-100 mb-2 inline-block">Session</span>
-                <h3 className="font-bold text-xl text-gray-900 leading-tight mb-1">{s.title}</h3>
-                <p className="text-sm text-blue-600 font-bold uppercase">🗣 {s.speaker}</p>
+                <span className="text-[10px] uppercase tracking-widest font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded border border-yellow-100 mb-2 inline-block">
+                  Session
+                </span>
+                <h3 className="font-bold text-xl text-gray-900 leading-tight mb-1">
+                  {s.title}
+                </h3>
+                <p className="text-sm text-blue-600 font-bold uppercase">
+                  🗣 {s.speaker}
+                </p>
               </div>
-              
+
               <div className="space-y-2 mb-6 flex-1">
-                <div className="flex items-center gap-2 text-sm text-gray-650">
-                   <span className="font-bold">⏰ {s.time}{s.toTime ? ` - ${s.toTime}` : ""}</span>
+                <div className="flex flex-col text-sm text-gray-650">
+                  {(() => {
+                    const rawDate =
+                      s.datetime_utc ||
+                      localToUtc(
+                        `${s.date}T${s.time || "00:00"}`,
+                        "Africa/Cairo",
+                      );
+                    const cairo = utcToDisplay(rawDate, "Africa/Cairo");
+                    const prague = utcToDisplay(rawDate, "Europe/Prague");
+                    return (
+                      <div className="flex flex-col gap-1">
+                        <span className="font-bold flex items-center gap-2">
+                          🇨🇿 {prague.time} {s.toTime ? `(Prague)` : ""}
+                        </span>
+                        <span className="font-semibold text-gray-500 text-xs flex items-center gap-2">
+                          🇪🇬 {cairo.time} {s.toTime ? `(Cairo)` : ""}
+                        </span>
+                      </div>
+                    );
+                  })()}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-650">
-                   <span className="font-bold">📅 {s.date}</span>
+                  <span className="font-bold">📅 {s.date}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-650">
-                   <span className="font-bold">🏛 Hall: {s.hall}</span>
+                  <span className="font-bold">🏛 Hall: {s.hall}</span>
                 </div>
               </div>
 
               {s.link && (
-                <a 
-                  href={s.link} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href={s.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-full bg-black text-white text-center py-2.5 rounded-lg font-bold text-sm hover:bg-gray-800 transition-colors shadow-sm cursor-pointer"
                 >
                   Join / Open Link
@@ -112,7 +143,9 @@ export default function Sessions() {
         ) : (
           <div className="col-span-full text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed">
             <span className="text-4xl mb-4 block">🎓</span>
-            <p className="text-gray-500 font-bold">No scientific sessions scheduled yet.</p>
+            <p className="text-gray-500 font-bold">
+              No scientific sessions scheduled yet.
+            </p>
           </div>
         )}
       </div>

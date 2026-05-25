@@ -15,6 +15,7 @@ import MediaPostViewerModal from '../components/MediaPostViewerModal';
 import { shouldShowOnDashboard } from '../utils/postVisibility';
 import { getLabel } from '../utils/labels';
 import SmartCountdown from '../components/SmartCountdown';
+import DualClock from '../components/DualClock';
 import { readJSON } from '../utils/github';
 import GalleryCard from '../components/GalleryCard';
 
@@ -137,6 +138,10 @@ export default function Dashboard() {
 
   return (
     <Layout>
+      <div className="px-4 pt-4 pb-2">
+        <DualClock />
+      </div>
+      
       {viewAs && (
         <div className="bg-yellow-105 text-yellow-800 p-3 text-center font-bold mb-6 rounded-lg relative shadow border border-yellow-200">
           ⚠️ Viewing as [{fullUser?.name || fullUser?.username}]

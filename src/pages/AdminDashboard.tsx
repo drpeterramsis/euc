@@ -1,4 +1,5 @@
 import React from "react";
+import DualClock from "../components/DualClock";
 
 // ─────────────────────────────────────────────
 // FILE: src/pages/AdminDashboard.tsx
@@ -23,6 +24,10 @@ const adminTools = [
 export default function AdminDashboard({ onSelectTab }: AdminDashboardProps) {
   return (
     <div className="space-y-8">
+      <div className="px-4 pt-4 pb-2">
+        <DualClock />
+      </div>
+
       {/* Overview Intro */}
       <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
         <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight mb-2">Welcome to your Admin Hub</h2>
