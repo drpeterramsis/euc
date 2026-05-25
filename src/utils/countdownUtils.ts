@@ -21,6 +21,7 @@ export interface TimelineEvent {
   isToday: boolean;
   isSoon: boolean; // within 24 hours
   diff: number; // ms from now
+  timezoneDisplay?: "both" | "prague" | "cairo";
 }
 
 // Helper to get UTC from event data
@@ -72,6 +73,7 @@ export function buildTimeline(
         isToday: isToday(dt),
         isSoon: isSoon(dt, now),
         diff: new Date(dt).getTime() - now,
+        timezoneDisplay: item.timezoneDisplay ?? item.details?.timezoneDisplay,
       });
     }
     if (item.type === "hotel") {
@@ -87,6 +89,7 @@ export function buildTimeline(
         isToday: isToday(dt),
         isSoon: isSoon(dt, now),
         diff: new Date(dt).getTime() - now,
+        timezoneDisplay: item.timezoneDisplay ?? item.details?.timezoneDisplay,
       });
       const itemOut = {
         ...item,
@@ -109,6 +112,7 @@ export function buildTimeline(
         isToday: isToday(dtOut),
         isSoon: isSoon(dtOut, now),
         diff: new Date(dtOut).getTime() - now,
+        timezoneDisplay: item.timezoneDisplay ?? item.details?.timezoneDisplay,
       });
     }
   });
@@ -128,6 +132,7 @@ export function buildTimeline(
       isToday: isToday(dt),
       isSoon: isSoon(dt, now),
       diff: ts - now,
+      timezoneDisplay: entry.timezoneDisplay,
     });
   });
 

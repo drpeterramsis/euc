@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import { useState, useEffect, DragEvent } from "react";
+import { useState, useEffect, DragEvent, useRef } from "react";
 import Layout from "../components/Layout";
 import {
   useApp,
@@ -23,7 +23,7 @@ import { compressImage } from "../utils/image";
 import AdminDashboard from "./AdminDashboard";
 import AdminMessages from "./admin/AdminMessages";
 import AdminGalleries from "./admin/AdminGalleries";
-import { localToUtc, utcToDisplay, TZ_CAIRO, TZ_PRAGUE } from "../utils/timezone";
+import { localToUtc, utcToDisplay, TZ_CAIRO, TZ_PRAGUE, utcToLocalInput, getUtcFromEvent } from "../utils/timezone";
 
 interface AdminProps {
   initialTab?: string;
@@ -122,6 +122,10 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     inputTimezone: "Africa/Cairo",
     timezoneDisplay: "both" as "both" | "prague" | "cairo",
   });
+
+  const [iconInput, setIconInput ] = useState<string>("📌");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   const [sessionItems, setSessionItems] = useState<any[]>([]);
   const [editingSession, setEditingSession] = useState<any | null>(null);
@@ -1819,6 +1823,23 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     }
   };
 
+  const handleEditCountdownEntry = (entry: any) => {
+    setEditingId(entry.id);
+    const tz = entry.inputTimezone || "Africa/Cairo";
+    const localDt = utcToLocalInput(entry.datetime, tz);
+    
+    setNewTimelineEntry({
+      label: entry.label ?? "",
+      datetime: localDt,
+      icon: entry.icon ?? "📌",
+      color: entry.color ?? "gray",
+      inputTimezone: tz,
+      timezoneDisplay: entry.timezoneDisplay ?? "both",
+    });
+    setIconInput(entry.icon ?? "📌");
+    formRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   // --- FLIGHT & HOTEL LOGISTICS HANDLERS ---
   const updateFlightHotelField = (id: string, field: string, value: any) => {
     setFlightHotelForm((prev) =>
@@ -2023,12 +2044,11 @@ export default function Admin({ initialTab }: AdminProps = {}) {
         </div>
 
         {/* Custom Entries manager */}
-        <div className="mt-6 border-t border-gray-100 pt-6">
+        <div ref={formRef} className="mt-6 border-t border-gray-100 pt-6">
           <p className="text-xs font-bold text-gray-400 uppercase mb-2">
-            Add Custom Marker to Timeline (E.g. Visa Deadline, Visa App, Luggage
-            Drop-off)
+            {editingId ? "✏️ Edit Event" : "➕ Add Custom Marker to Timeline (E.g. Visa Deadline, Visa App, Luggage Drop-off)"}
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 text-xs font-sans">
             <div>
               <label className="text-[10px] font-bold text-gray-400 uppercase">
                 Label / Description
@@ -2043,7 +2063,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                     label: e.target.value,
                   })
                 }
-                className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-950 font-semibold"
+                className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-950 font-semibold focus:outline-none focus:ring-2 focus:ring-yellow-500"
               />
             </div>
             <div>
@@ -2059,7 +2079,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                     datetime: e.target.value,
                   })
                 }
-                className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-950 font-semibold"
+                className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-950 font-semibold focus:outline-none focus:ring-2 focus:ring-yellow-500"
               />
 
               {/* Timezone Selector for Timeline Entries */}
@@ -2162,27 +2182,46 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                 } catch { return null; }
               })()}
             </div>
-            <div>
-              <label className="text-[10px] font-bold text-gray-400 uppercase">
-                Icon
-              </label>
-              <select
-                value={newTimelineEntry.icon}
-                onChange={(e) =>
-                  setNewTimelineEntry({
-                    ...newTimelineEntry,
-                    icon: e.target.value,
-                  })
-                }
-                className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-950 font-semibold"
-              >
-                <option value="📋">📋 Note/Visa</option>
-                <option value="🧳">🧳 Luggage</option>
-                <option value="🎟️">🎟️ Ticket</option>
-                <option value="📌">📌 Pin</option>
-                <option value="🚨">🚨 Alert</option>
-                <option value="🥂">🥂 Celebration</option>
-              </select>
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase">
+                  Icon
+                </label>
+                <input
+                  type="text"
+                  value={iconInput}
+                  onChange={(e) => setIconInput(e.target.value)}
+                  placeholder="Type emoji or symbol e.g. ✈️ 🏨 🎓 ⚕️"
+                  maxLength={4}
+                  className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-950 font-semibold focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
+                />
+                <p className="text-[9px] text-gray-400">
+                  Type any emoji directly — or pick one below
+                </p>
+              </div>
+              <div className="flex flex-col gap-1 mt-1 font-sans">
+                <label className="text-[9px] text-gray-400">
+                  Quick pick
+                </label>
+                <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto border border-gray-200 p-1.5 rounded-lg bg-white">
+                  {["✈️", "🛬", "🛫", "🚌", "🏨", "🎓", "🏥", "⚕️",
+                    "🍽️", "☕", "🎤", "📋", "🗓️", "🔬", "💊", "🩺",
+                    "🎯", "🏆", "📍", "⏰", "🚶", "🧳", "🛂", "🎪"].map((icon) => (
+                    <button
+                      key={icon}
+                      type="button"
+                      onClick={() => setIconInput(icon)}
+                      className={`w-7 h-7 flex items-center justify-center rounded text-sm border transition-all cursor-pointer
+                        ${iconInput === icon
+                          ? "border-yellow-400 bg-yellow-50 scale-105"
+                          : "border-gray-200 bg-white hover:border-yellow-300 hover:bg-yellow-50"
+                        }`}
+                    >
+                      {icon}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
             <div>
               <label className="text-[10px] font-bold text-gray-400 uppercase">
@@ -2196,7 +2235,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                     color: e.target.value as any,
                   })
                 }
-                className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-950 font-semibold"
+                className="w-full p-2 border border-gray-300 rounded bg-white text-xs mt-1 text-gray-950 font-semibold focus:outline-none focus:ring-2 focus:ring-yellow-500"
               >
                 <option value="gray">Gray</option>
                 <option value="yellow">Yellow</option>
@@ -2205,7 +2244,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                 <option value="red">Red</option>
               </select>
             </div>
-            <div className="flex items-end">
+            <div className="flex flex-col justify-end gap-2.5 pt-4">
               <button
                 type="button"
                 onClick={() => {
@@ -2216,18 +2255,34 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                     );
                     return;
                   }
+                  const isEditing = !!editingId;
+                  const finalIcon = iconInput.trim() || "📌";
                   const entry = {
-                    id: "CT_" + Date.now(),
-                    ...newTimelineEntry,
+                    id: isEditing ? editingId : "CT_" + Date.now(),
+                    label: newTimelineEntry.label,
                     datetime: localToUtc(newTimelineEntry.datetime, newTimelineEntry.inputTimezone || "Africa/Cairo"),
+                    icon: finalIcon,
+                    color: newTimelineEntry.color,
+                    inputTimezone: newTimelineEntry.inputTimezone || "Africa/Cairo",
                     timezoneDisplay: newTimelineEntry.timezoneDisplay || "both",
                   };
+                  
+                  let updatedEntries = [];
+                  if (isEditing) {
+                    updatedEntries = (countdownConfig?.customTimelineEntries || []).map((e: any) => 
+                      e.id === editingId ? entry : e
+                    );
+                    setEditingId(null);
+                  } else {
+                    updatedEntries = [
+                      ...(countdownConfig?.customTimelineEntries || []),
+                      entry,
+                    ];
+                  }
+
                   const updated = {
                     ...countdownConfig,
-                    customTimelineEntries: [
-                      ...(countdownConfig.customTimelineEntries || []),
-                      entry,
-                    ],
+                    customTimelineEntries: updatedEntries,
                   };
                   setCountdownConfig(updated);
                   setNewTimelineEntry({
@@ -2238,15 +2293,37 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                     inputTimezone: "Africa/Cairo",
                     timezoneDisplay: "both",
                   });
+                  setIconInput("📌");
                   showToast(
-                    "Marker appended locally. Press Save to persist.",
+                    isEditing ? "Marker updated locally. Press Save to persist." : "Marker appended locally. Press Save to persist.",
                     "info",
                   );
                 }}
                 className="w-full bg-black text-white px-4 py-2 rounded text-xs font-bold hover:bg-gray-800 transition-colors cursor-pointer"
               >
-                ＋ Append Entry
+                {editingId ? "💾 Save Changes" : "＋ Append Entry"}
               </button>
+
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingId(null);
+                    setNewTimelineEntry({
+                      label: "",
+                      datetime: "",
+                      icon: "📌",
+                      color: "gray",
+                      inputTimezone: "Africa/Cairo",
+                      timezoneDisplay: "both",
+                    });
+                    setIconInput("📌");
+                  }}
+                  className="w-full bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded text-xs font-bold hover:bg-gray-50 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+              )}
             </div>
           </div>
 
@@ -2256,7 +2333,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
               (entry: any) => (
                 <div
                   key={entry.id}
-                  className="flex items-center justify-between p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-xs"
+                  className="flex items-center justify-between p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-xs font-sans"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-base">{entry.icon}</span>
@@ -2269,22 +2346,53 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                       </span>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const filtered =
-                        countdownConfig.customTimelineEntries.filter(
-                          (e: any) => e.id !== entry.id,
-                        );
-                      setCountdownConfig({
-                        ...countdownConfig,
-                        customTimelineEntries: filtered,
-                      });
-                    }}
-                    className="text-red-500 hover:text-red-700 font-bold px-2 py-1 bg-red-50 hover:bg-red-100 rounded cursor-pointer"
-                  >
-                    Delete
-                  </button>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleEditCountdownEntry(entry)}
+                      className="p-1.5 rounded-lg text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition-colors cursor-pointer"
+                      title="Edit"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg"
+                           className="w-4 h-4" viewBox="0 0 24 24"
+                           fill="none" stroke="currentColor"
+                           strokeWidth="2" strokeLinecap="round"
+                           strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14
+                                 a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15
+                                 l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const filtered =
+                          countdownConfig.customTimelineEntries.filter(
+                            (e: any) => e.id !== entry.id,
+                          );
+                        setCountdownConfig({
+                          ...countdownConfig,
+                          customTimelineEntries: filtered,
+                        });
+                        if (editingId === entry.id) {
+                          setEditingId(null);
+                          setNewTimelineEntry({
+                            label: "",
+                            datetime: "",
+                            icon: "📌",
+                            color: "gray",
+                            inputTimezone: "Africa/Cairo",
+                            timezoneDisplay: "both",
+                          });
+                          setIconInput("📌");
+                        }
+                      }}
+                      className="text-red-500 hover:text-red-700 font-bold px-2 py-1 bg-red-50 hover:bg-red-105 rounded cursor-pointer"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               ),
             )}

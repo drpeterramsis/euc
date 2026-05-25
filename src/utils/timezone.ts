@@ -139,3 +139,45 @@ export function formatCountdown(utcIso: string): string {
     .join(":");
   return days > 0 ? `${days}d ${hms}` : hms;
 }
+
+// Get UTC ISO string representation of any timeline or countdown event
+export function getUtcFromEvent(event: any): string {
+  if (event.datetime_utc) return event.datetime_utc;
+  const local = event.datetime
+    ? event.datetime
+    : `${event.date}T${event.time ?? "00:00"}`;
+  return localToUtc(local, "Africa/Cairo");
+}
+
+// Helper to convert a UTC ISO string to datetime-local field format ("YYYY-MM-DDTHH:MM") for a target timezone
+export function utcToLocalInput(utcIso: string, timezone: string): string {
+  try {
+    const d = new Date(utcIso);
+    if (isNaN(d.getTime())) return "";
+    
+    const formatter = new Intl.DateTimeFormat("en-GB", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    
+    const parts = formatter.formatToParts(d);
+    const getPart = (type: string) => parts.find((p) => p.type === type)?.value || "";
+    
+    const year = getPart("year");
+    const month = getPart("month");
+    const day = getPart("day");
+    const hour = getPart("hour");
+    const minute = getPart("minute");
+    
+    return `${year}-${month}-${day}T${hour}:${minute}`;
+  } catch (err) {
+    console.error("utcToLocalInput: Error converting date:", utcIso, timezone, err);
+    return "";
+  }
+}
+
