@@ -13,6 +13,7 @@ import { useApp } from '../context/AppContext';
 import { getLabel } from '../utils/labels';
 import { displayPhone } from '../utils/phone';
 import { readJSON } from '../utils/github';
+import { formatTimeAmPm } from '../utils/timezone';
 
 // ─────────────────────────────────────────────
 // DETAIL ROW COMPONENT (High-contrast label vs value typography)
@@ -133,7 +134,7 @@ export default function Profile() {
                           : ""}
                       />
                       <DetailRow label="Departure Time"
-                        value={item.details?.time || ""} />
+                        value={formatTimeAmPm(item.details?.time || "")} />
                       <DetailRow label="Departure Airport"
                         value={item.details?.departureAirport || ""} />
                       <DetailRow label="Departure Location"
@@ -165,7 +166,7 @@ export default function Profile() {
                           : ""}
                       />
                       <DetailRow label="Check-In Time"
-                        value={item.details?.checkInTime || ""} />
+                        value={formatTimeAmPm(item.details?.checkInTime || "")} />
                       <DetailRow label="Check-Out Date"
                         value={item.details?.checkOutDate
                           ? new Date(item.details.checkOutDate).toLocaleDateString("en-GB", {
@@ -175,7 +176,7 @@ export default function Profile() {
                           : ""}
                       />
                       <DetailRow label="Check-Out Time"
-                        value={item.details?.checkOutTime || ""} />
+                        value={formatTimeAmPm(item.details?.checkOutTime || "")} />
                       <DetailRow label="Address"
                         value={item.details?.address || ""} />
                       <DetailRow label="Google Maps"

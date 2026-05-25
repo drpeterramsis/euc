@@ -23,7 +23,7 @@ import { compressImage } from "../utils/image";
 import AdminDashboard from "./AdminDashboard";
 import AdminMessages from "./admin/AdminMessages";
 import AdminGalleries from "./admin/AdminGalleries";
-import { localToUtc, utcToDisplay, TZ_CAIRO, TZ_PRAGUE, utcToLocalInput, getUtcFromEvent } from "../utils/timezone";
+import { localToUtc, utcToDisplay, TZ_CAIRO, TZ_PRAGUE, utcToLocalInput, getUtcFromEvent, formatTimeAmPm } from "../utils/timezone";
 
 interface AdminProps {
   initialTab?: string;
@@ -3377,8 +3377,8 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                       📅 {session.date}
                     </span>
                     <span className="flex items-center gap-1 font-bold text-gray-700">
-                      ⏰ {session.time}
-                      {session.toTime ? ` - ${session.toTime}` : ""}
+                      ⏰ {formatTimeAmPm(session.time)}
+                      {session.toTime ? ` - ${formatTimeAmPm(session.toTime)}` : ""}
                     </span>
                     <span className="flex items-center gap-1">
                       🏛 {session.hall}

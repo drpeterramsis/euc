@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.960
+Version: 1.0.961
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -116,6 +116,7 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.958 | 2026-05-25 | FEATURE: Added timezone display choice (Prague/Cairo/Both) selectors to all forms. Created conditional representation logic to filter rendered event times based on event-by-event settings. |
 | v1.0.959 | 2026-05-25 | FEATURE: Added Custom Icon Picker with a two-part text input + quick-pick emoji grid, Edit Custom Countdown Entries with scroll-into-view, cancel/save states, and Fixed Timezone Display Bug on Dashboard Countdown Cards by propagating timezoneDisplay setting correctly in the unified timeline builder. |
 | v1.0.960 | 2026-05-25 | BUG FIX: Resolved timezone display bug on countdown hotel check-in and check-out events by properly mapping timezoneDisplayCheckIn/Out settings in the builder. |
+| v1.0.961 | 2026-05-25 | GLOBAL TIME CONVERSION: Converted all user-facing times to 12-hour AM/PM format (en-US locale, hour: numeric) including countdown, schedules, hotel, flights, & admin live form previews. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

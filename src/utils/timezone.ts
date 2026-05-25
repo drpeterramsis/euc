@@ -15,11 +15,11 @@ export function utcToDisplay(
       // Fallback to current date to prevent uncaught RangeError
       date = new Date();
     }
-    const time = date.toLocaleTimeString("en-GB", {
+    const time = date.toLocaleTimeString("en-US", {
       timeZone: timezone,
-      hour: "2-digit",
+      hour: "numeric",
       minute: "2-digit",
-      hour12: false,
+      hour12: true,
     });
     const dateStr = date.toLocaleDateString("en-GB", {
       timeZone: timezone,
@@ -33,8 +33,27 @@ export function utcToDisplay(
   } catch (err) {
     console.error("utcToDisplay: Error parsing date/time for timezone", timezone, utcIso, err);
     const label = timezone === TZ_PRAGUE ? "CEST" : "EET";
-    return { time: "00:00", date: "N/A", label };
+    return { time: "12:00 AM", date: "N/A", label };
   }
+}
+
+// Convert a "HH:mm" or "HH:mm:ss" string to AM/PM
+// e.g. "14:30" → "2:30 PM"
+export function formatTimeAmPm(timeStr: string): string {
+  if (!timeStr) return "";
+  if (/AM|PM/i.test(timeStr)) return timeStr;
+  // Parse hours and minutes from the string
+  const [hourStr, minuteStr] = timeStr.split(":");
+  const hours   = parseInt(hourStr, 10);
+  const minutes = parseInt(minuteStr ?? "0", 10);
+  if (isNaN(hours) || isNaN(minutes)) return timeStr;
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 }
 
 // Convert a local datetime string + chosen timezone to UTC ISO string
@@ -102,12 +121,12 @@ export function getLiveClocks(): {
 } {
   const now = new Date();
   const fmt = (tz: string) => ({
-    time: now.toLocaleTimeString("en-GB", {
+    time: now.toLocaleTimeString("en-US", {
       timeZone: tz,
-      hour: "2-digit",
+      hour: "numeric",
       minute: "2-digit",
       second: "2-digit",
-      hour12: false,
+      hour12: true,
     }),
     date: now.toLocaleDateString("en-GB", {
       timeZone: tz,
