@@ -18,7 +18,7 @@ import SmartCountdown from '../components/SmartCountdown';
 import DualClock from '../components/DualClock';
 import { readJSON } from '../utils/github';
 import GalleryCard from '../components/GalleryCard';
-import { formatTimeAmPm } from '../utils/timezone';
+import { formatTimeAmPm, splitAmPm } from '../utils/timezone';
 
 // ─────────────────────────────────────────────
 // SUMMARY CARD FOR FLIGHTS (Compact, clean with icons)
@@ -45,7 +45,22 @@ function FlightSummaryCard({ item }: { item: any; key?: any }) {
                 weekday: "short", month: "short", day: "numeric"
               })
             : ""}
-          {" · "}{d.time ? formatTimeAmPm(d.time) : "Scheduled"}
+          {" · "}
+          {(() => {
+            if (!d.time) return "Scheduled";
+            const formatted = formatTimeAmPm(d.time);
+            const { digits, period } = splitAmPm(formatted);
+            return (
+              <span className="inline-flex items-center font-bold text-gray-800">
+                {digits}
+                {period && (
+                  <span className="text-[10px] font-semibold ml-0.5 text-amber-500 tracking-wide">
+                    {period}
+                  </span>
+                )}
+              </span>
+            );
+          })()}
           {d.departureTerminal ? ` · Terminal ${d.departureTerminal}` : ""}
         </p>
       </div>

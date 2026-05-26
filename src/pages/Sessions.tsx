@@ -12,7 +12,7 @@ import Layout from "../components/Layout";
 import { useApp } from "../context/AppContext";
 import { getLabel } from "../utils/labels";
 import { getPageAccess } from "../utils/pageAccess";
-import { utcToDisplay, localToUtc } from "../utils/timezone";
+import { utcToDisplay, localToUtc, splitAmPm } from "../utils/timezone";
 
 /**
  * Sessions component renders the list/grid of scientific sessions.
@@ -74,7 +74,7 @@ export default function Sessions() {
     <Layout>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{pageTitle}</h1>
-        <span className="text-sm bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold border border-yellow-200">
+        <span className="text-sm bg-yellow-105 text-yellow-800 px-3 py-1 rounded-full font-bold border border-yellow-250">
           {sessions.length} sessions
         </span>
       </div>
@@ -86,7 +86,7 @@ export default function Sessions() {
               className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all flex flex-col"
             >
               <div className="mb-4">
-                <span className="text-[10px] uppercase tracking-widest font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded border border-yellow-100 mb-2 inline-block">
+                <span className="text-[10px] uppercase tracking-widest font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded border border-yellow-105 mb-2 inline-block">
                   Session
                 </span>
                 <h3 className="font-bold text-xl text-gray-900 leading-tight mb-1">
@@ -111,17 +111,23 @@ export default function Sessions() {
                     const showPrague = (s.timezoneDisplay ?? "both") === "both" || (s.timezoneDisplay ?? "both") === "prague";
                     const showCairo = (s.timezoneDisplay ?? "both") === "both" || (s.timezoneDisplay ?? "both") === "cairo";
                     return (
-                      <div className="flex flex-col gap-1">
-                        {showPrague && (
-                          <span className="font-bold flex items-center gap-2">
-                            🇨🇿 {prague.time} {s.toTime ? `(Prague)` : ""}
-                          </span>
-                        )}
-                        {showCairo && (
-                          <span className="font-semibold text-gray-500 text-xs flex items-center gap-2">
-                            🇪🇬 {cairo.time} {s.toTime ? `(Cairo)` : ""}
-                          </span>
-                        )}
+                      <div className="flex flex-col gap-1.5 items-start">
+                        {showPrague && (() => {
+                          const { digits, period } = splitAmPm(prague.time);
+                          return (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-amber-100 border border-amber-300 text-amber-900 font-bold whitespace-nowrap">
+                              🇨🇿 {digits}<span className="text-[10px] font-semibold text-amber-500 ml-0.5">{period}</span> {s.toTime ? `(Prague)` : ""}
+                            </span>
+                          );
+                        })()}
+                        {showCairo && (() => {
+                          const { digits, period } = splitAmPm(cairo.time);
+                          return (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-blue-50 border border-blue-200 text-blue-800 font-bold whitespace-nowrap">
+                              🇪🇬 {digits}<span className="text-[10px] font-semibold text-amber-500 ml-0.5">{period}</span> {s.toTime ? `(Cairo)` : ""}
+                            </span>
+                          );
+                        })()}
                       </div>
                     );
                   })()}

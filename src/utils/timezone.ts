@@ -56,6 +56,24 @@ export function formatTimeAmPm(timeStr: string): string {
   });
 }
 
+// Split a 12-hour time string into digits and period (AM/PM) for customized visual presentation.
+// COMMENT: Separates the AM/PM period from the digits to style them independently.
+export function splitAmPm(timeStr: string): {
+  digits: string;
+  period: string;
+} {
+  if (!timeStr) return { digits: timeStr, period: "" };
+  const upper = timeStr.toUpperCase();
+  const isPM  = upper.endsWith("PM");
+  const isAM  = upper.endsWith("AM");
+  if (!isPM && !isAM) return { digits: timeStr, period: "" };
+  const period = isPM ? "PM" : "AM";
+  const digits = timeStr
+    .slice(0, timeStr.length - 2)
+    .trim();
+  return { digits, period };
+}
+
 // Convert a local datetime string + chosen timezone to UTC ISO string
 // Input: "2025-06-25T14:00" + "Europe/Prague"
 // Output: "2025-06-25T12:00:00.000Z"

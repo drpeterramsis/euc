@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.961
+Version: 1.0.965
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -117,6 +117,10 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.959 | 2026-05-25 | FEATURE: Added Custom Icon Picker with a two-part text input + quick-pick emoji grid, Edit Custom Countdown Entries with scroll-into-view, cancel/save states, and Fixed Timezone Display Bug on Dashboard Countdown Cards by propagating timezoneDisplay setting correctly in the unified timeline builder. |
 | v1.0.960 | 2026-05-25 | BUG FIX: Resolved timezone display bug on countdown hotel check-in and check-out events by properly mapping timezoneDisplayCheckIn/Out settings in the builder. |
 | v1.0.961 | 2026-05-25 | GLOBAL TIME CONVERSION: Converted all user-facing times to 12-hour AM/PM format (en-US locale, hour: numeric) including countdown, schedules, hotel, flights, & admin live form previews. |
+| v1.0.962 | 2026-05-26 | UI POLISH: Applied split AM/PM formatting in amber, customized warm yellow countdown page background, set high contrast green ping dot on next event, aligned side-by-side Dual Clock layout on mobile, and deployed color-matched Prague/Cairo timezone display pills across all schedules, sessions, & profile lists. |
+| v1.0.963 | 2026-05-26 | UI POLISH: Redesigned Countdown card with bg-white, dark-island timer bg-gray-900, yellow digits/white seconds, hidden zero-days, and swapped Prague/Cairo trip timeline pill color schemes. |
+| v1.0.964 | 2026-05-26 | UI POLISH: Aligned DualClock timezone clocks to match the Countdown page colors (Prague blue chip, Cairo amber chip, amber AM/PM indicators). |
+| v1.0.965 | 2026-05-26 | GLOBAL COLOR SWAP: Swapped Prague and Cairo color representations across the entire application so that the destination (Prague) gets the prominent Amber theme and home base (Cairo) gets the secondary Blue theme. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

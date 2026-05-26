@@ -13,12 +13,12 @@ import { readJSON } from "../utils/github";
 import { getPageAccess } from "../utils/pageAccess";
 import { useAppContext } from "../context/AppContext";
 import { getLabel } from "../utils/labels";
-import { utcToDisplay, localToUtc } from "../utils/timezone";
+import { utcToDisplay, localToUtc, splitAmPm } from "../utils/timezone";
 import DualClock from "../components/DualClock";
 
 // Event type color map
 const typeColorMap: Record<string, string> = {
-  travel: "bg-yellow-100 text-yellow-800 border-yellow-300",
+  travel: "bg-yellow-105 text-yellow-800 border-yellow-300",
   hotel: "bg-blue-100   text-blue-800   border-blue-300",
   session: "bg-purple-100 text-purple-800 border-purple-300",
   activity: "bg-green-100  text-green-800  border-green-300",
@@ -130,8 +130,8 @@ export default function Schedule() {
                       key={event.id}
                       className="flex items-start gap-4 py-3 first:pt-2 last:pb-2"
                     >
-                      {/* Time Column */}
-                      <div className="flex flex-col w-20 flex-shrink-0 pt-0.5 items-end px-2">
+                      {/* Time Column with customized Prague/Cairo design pills */}
+                      <div className="flex flex-col w-20 flex-shrink-0 pt-0.5 items-end px-2 sm:px-0">
                         {(() => {
                           const rawDate =
                             event.datetime_utc ||
@@ -145,16 +145,22 @@ export default function Schedule() {
                           const showCairo = (event.timezoneDisplay ?? "both") === "both" || (event.timezoneDisplay ?? "both") === "cairo";
                           return (
                             <>
-                              {showPrague && (
-                                <span className="text-xs font-bold text-gray-800">
-                                  🇨🇿 {prague.time}
-                                </span>
-                              )}
-                              {showCairo && (
-                                <span className="text-[10px] text-gray-400 font-semibold mt-0.5 animate-fade-in">
-                                  🇪🇬 {cairo.time}
-                                </span>
-                              )}
+                              {showPrague && (() => {
+                                const { digits, period } = splitAmPm(prague.time);
+                                return (
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] bg-amber-100 border border-amber-300 text-amber-900 font-bold whitespace-nowrap mb-1">
+                                    🇨🇿 {digits}<span className="text-[9px] font-semibold text-amber-500 ml-0.5">{period}</span>
+                                  </span>
+                                );
+                              })()}
+                              {showCairo && (() => {
+                                const { digits, period } = splitAmPm(cairo.time);
+                                return (
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] bg-blue-50 border border-blue-200 text-blue-800 font-bold whitespace-nowrap">
+                                    🇪🇬 {digits}<span className="text-[9px] font-semibold text-amber-500 ml-0.5">{period}</span>
+                                  </span>
+                                );
+                              })()}
                             </>
                           );
                         })()}

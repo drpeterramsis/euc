@@ -13,7 +13,7 @@ import { useApp } from '../context/AppContext';
 import { getLabel } from '../utils/labels';
 import { displayPhone } from '../utils/phone';
 import { readJSON } from '../utils/github';
-import { formatTimeAmPm } from '../utils/timezone';
+import { formatTimeAmPm, splitAmPm } from '../utils/timezone';
 
 // ─────────────────────────────────────────────
 // DETAIL ROW COMPONENT (High-contrast label vs value typography)
@@ -21,10 +21,10 @@ import { formatTimeAmPm } from '../utils/timezone';
 function DetailRow({
   label, value, isLink = false, href
 }: {
-  label: string; value: string;
+  label: string; value: React.ReactNode;
   isLink?: boolean; href?: string;
 }) {
-  const isEmpty = !value || value.trim() === "";
+  const isEmpty = value === undefined || value === null || value === "";
   return (
     <div className="flex flex-col gap-0.5 py-2.5 border-b border-gray-100 last:border-0">
       <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 font-sans">
@@ -59,6 +59,23 @@ export default function Profile() {
       .then(setScheduleItems)
       .catch(() => setScheduleItems([]));
   }, []);
+
+  // Helper to render split AM/PM beautifully
+  function renderTimeWithSplitAmPm(timeStr: string) {
+    if (!timeStr) return "";
+    const formatted = formatTimeAmPm(timeStr);
+    const { digits, period } = splitAmPm(formatted);
+    return (
+      <span className="inline-flex items-center text-sm font-bold text-gray-800">
+        {digits}
+        {period && (
+          <span className="text-xs font-semibold ml-0.5 text-amber-500 tracking-wide leading-tight">
+            {period}
+          </span>
+        )}
+      </span>
+    );
+  }
 
   if (!fullUser) return <Layout>Loading...</Layout>;
 
@@ -134,7 +151,7 @@ export default function Profile() {
                           : ""}
                       />
                       <DetailRow label="Departure Time"
-                        value={formatTimeAmPm(item.details?.time || "")} />
+                        value={renderTimeWithSplitAmPm(item.details?.time || "")} />
                       <DetailRow label="Departure Airport"
                         value={item.details?.departureAirport || ""} />
                       <DetailRow label="Departure Location"
@@ -166,7 +183,7 @@ export default function Profile() {
                           : ""}
                       />
                       <DetailRow label="Check-In Time"
-                        value={formatTimeAmPm(item.details?.checkInTime || "")} />
+                        value={renderTimeWithSplitAmPm(item.details?.checkInTime || "")} />
                       <DetailRow label="Check-Out Date"
                         value={item.details?.checkOutDate
                           ? new Date(item.details.checkOutDate).toLocaleDateString("en-GB", {
@@ -176,7 +193,7 @@ export default function Profile() {
                           : ""}
                       />
                       <DetailRow label="Check-Out Time"
-                        value={formatTimeAmPm(item.details?.checkOutTime || "")} />
+                        value={renderTimeWithSplitAmPm(item.details?.checkOutTime || "")} />
                       <DetailRow label="Address"
                         value={item.details?.address || ""} />
                       <DetailRow label="Google Maps"
