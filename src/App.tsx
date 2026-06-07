@@ -23,6 +23,7 @@ import {
   AdminSettings, AdminAppearance 
 } from './pages/admin/AdminFeaturePages';
 import ComingSoon from './pages/ComingSoon';
+import AccessDenied from './pages/AccessDenied';
 import Media from './pages/Media';
 import Messages from './pages/Messages';
 import Staff from './pages/Staff';
@@ -103,6 +104,7 @@ function AppRoutes() {
       <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
       <Route path="/directory" element={<ProtectedRoute><Directory /></ProtectedRoute>} /> {/* ← NEW */}
       <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+      <Route path="/access-denied" element={<ProtectedRoute><AccessDenied /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

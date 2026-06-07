@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import React, { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { readJSON } from "../utils/github";
 import { getPageAccess, isNavVisible } from "../utils/pageAccess";
@@ -41,17 +42,11 @@ export default function Schedule() {
   const access = getPageAccess("schedule", currentUser?.role, appConfig);
 
   const centralAccess = content?.settings 
-    ? getCentralPageAccess(content.settings, currentUser?.id || "", "agenda", currentUser?.role)
+    ? getCentralPageAccess(currentUser?.id || "", currentUser?.role || "", "agenda", content.settings)
     : { enabled: true, comingSoon: false };
 
   if (!centralAccess.enabled) {
-    return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-[60vh] font-sans">
-          <p className="text-gray-400 text-sm font-bold">This page is not available.</p>
-        </div>
-      </Layout>
-    );
+    return <Navigate to="/access-denied" replace />;
   }
 
   if (centralAccess.comingSoon) {

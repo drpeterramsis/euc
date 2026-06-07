@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────
 
 import { useState, useMemo, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useApp, DEFAULT_MEDIA_CATEGORIES } from '../context/AppContext';
 import MediaPostViewerModal from '../components/MediaPostViewerModal';
@@ -24,28 +25,17 @@ export default function Media() {
 
   const pageTitle = getLabel(appConfig, "media");
 
-  // ✅ ONLY use getPageAccess — NEVER check appConfig.pages directly
-  const access = getPageAccess("media", currentUser?.role, appConfig);
-
   const centralAccess = content?.settings 
     ? getCentralPageAccess(content.settings, currentUser?.id || "", "media", currentUser?.role)
     : { enabled: true, comingSoon: false };
 
-  // DEBUG — retrieve info during testing
-  useEffect(() => {
-    console.log("[Media] role:", currentUser?.role, "| access:", access);
-  }, [currentUser?.role, access]);
-
   // Hidden Check
-  if (access === "hidden" || !centralAccess.enabled) {
-    return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-[60vh] font-sans">
-          <p className="text-gray-400 text-sm font-bold">This page is not available.</p>
-        </div>
-      </Layout>
-    );
+  if (!centralAccess.enabled) {
+    return <Navigate to="/access-denied" replace />;
   }
+
+  // ✅ ONLY use getPageAccess — NEVER check appConfig.pages directly
+  const access = getPageAccess("media", currentUser?.role, appConfig);
 
   // Coming Soon Check
   if (access === "coming-soon" || centralAccess.comingSoon) {

@@ -174,31 +174,46 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
             };
             const pageName = keyToPageName[item.key] || item.key;
             
-            // FIX: Pass currentUser?.role to getCentralPageAccess here for proper override resolution
-            const centralAccess = content?.settings 
+            // FIX: Always get resolved access including role overrides
+            const resolvedAccess = content?.settings 
               ? getCentralPageAccess(currentUser?.id || "", normalizedRole, pageName, content.settings)
               : { enabled: true, comingSoon: false };
 
-            if (!centralAccess.enabled) return null;
-            const isComingSoon = (access === "coming-soon") || centralAccess.comingSoon;
+            const isLocked = !resolvedAccess.enabled;
+            const isComingSoon = !isLocked && resolvedAccess.comingSoon;
 
             return (
               <NavLink
                 key={item.key}
-                to={item.path}
-                onClick={onClose}
+                to={isLocked ? "#" : item.path}
+                onClick={(e) => {
+                  if (isLocked) {
+                    e.preventDefault();
+                    // Optional: show a toast or navigate to a locked screen
+                    alert("This page is not available for your account.");
+                  } else {
+                    onClose?.();
+                  }
+                }}
                 className={({ isActive }) =>
                   `block p-3 rounded-lg transition-colors font-medium flex items-center gap-2 ${
-                    isActive 
+                    isActive && !isLocked
                       ? "bg-yellow-500/10 text-[#FFBF00] border-l-4 border-[#FFBF00]" 
                       : "text-white hover:bg-gray-800 hover:text-[#FFBF00]"
-                  }`
+                  } ${isLocked ? "opacity-50 cursor-not-allowed" : ""}`
                 }
               >
                 <span>{item.icon}</span>
                 <span className="flex-1 truncate">{item.label}</span>
                 
-                {/* Coming Soon badge on sidebar item */}
+                {/* 🔒 Locked badge */}
+                {isLocked && (
+                  <span className="ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-red-100 text-red-600 border border-red-200">
+                    🔒
+                  </span>
+                )}
+                
+                {/* Coming Soon badge */}
                 {isComingSoon && (
                   <span className="ml-auto text-xs bg-gray-600 text-white px-1.5 py-0.5 rounded-full">
                     Soon
