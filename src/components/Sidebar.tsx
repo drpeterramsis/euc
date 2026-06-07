@@ -177,6 +177,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
               schedule: "agenda",
               sessions: "agenda",
               media: "media",
+              directory: "staffDirectory",
             };
             const pageName = keyToPageName[item.key] || item.key;
             

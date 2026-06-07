@@ -18,7 +18,7 @@ export default function SettingsTab() {
     roleOverrides: {} // FIX: Initialize roleOverrides
   };
 
-  const pagesList = ["announcements", "agenda", "posts", "media", "albums"];
+  const pagesList = ["announcements", "agenda", "posts", "media", "staffDirectory"];
 
   // Local state representing the complete active settings
   const [localSettings, setLocalSettings] = useState(() => {
@@ -88,7 +88,7 @@ export default function SettingsTab() {
       case "agenda": return `📅 ${navLabels.schedule || "Schedule"} (Sessions/Schedule)`;
       case "posts": return `📝 ${navLabels.sessions || "Sessions"} (Blog/Stream)`;
       case "media": return `🎥 ${navLabels.media || "News Feed"} (Audio/Video)`;
-      case "albums": return `👥 ${navLabels.directory || "Staff Directory"}`;
+      case "staffDirectory": return `👥 ${navLabels.directory || "Staff Directory"}`;
       default: return page.charAt(0).toUpperCase() + page.slice(1);
     }
   };

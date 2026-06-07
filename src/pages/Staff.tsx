@@ -1,12 +1,22 @@
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import { getLabel } from '../utils/labels';
+import { getPageAccess as getCentralPageAccess } from '../lib/pageAccess';
+import { Navigate } from 'react-router-dom';
 
 /**
  * Staff Directory page displaying conference staff members with contact options.
  */
 export default function Staff() {
-  const { users, appConfig } = useApp();
+  const { users, appConfig, currentUser, content } = useApp() as any;
+
+  const centralAccess = content?.settings 
+    ? getCentralPageAccess(currentUser?.id || "", currentUser?.role || "", "staffDirectory", content.settings)
+    : { enabled: true, comingSoon: false };
+
+  if (!centralAccess.enabled) {
+    return <Navigate to="/access-denied" replace />;
+  }
   const staffMembers = users.filter((u: any) => u.role === "staff");
 
   const getInitials = (name: string) => {
