@@ -1,19 +1,26 @@
 export type PageAccess = { enabled: boolean; comingSoon: boolean }
 
 export function getPageAccess(
-  settings: any,
   userId: string,
+  role: string,
   pageName: string,
-  role?: string
+  settings: any
 ): PageAccess {
-  const base: PageAccess = settings?.pages?.[pageName] 
-    ?? { enabled: true, comingSoon: false }
-  
-  // Checking user override first
-  const userOverride = settings?.userOverrides?.[userId]?.pages?.[pageName]
-  
-  // Checking role override
-  const roleOverride = role ? settings?.roleOverrides?.[role]?.pages?.[pageName] : undefined
-  
-  return userOverride ?? roleOverride ?? base
+  // Normalize role to lowercase for lookup consistency
+  const normalizedRole = role?.toLowerCase() ?? "";
+
+  // 1. User Override (Highest priority)
+  const userOverride = settings?.userOverrides?.[userId]?.pages?.[pageName];
+  if (userOverride !== undefined) return userOverride;
+
+  // 2. Role Override
+  const roleOverride = settings?.roleOverrides?.[normalizedRole]?.pages?.[pageName];
+  if (roleOverride !== undefined) return roleOverride;
+
+  // 3. Global Default (Baseline)
+  const globalDefault = settings?.pages?.[pageName];
+  if (globalDefault !== undefined) return globalDefault;
+
+  // Absolute fallback
+  return { enabled: true, comingSoon: false };
 }

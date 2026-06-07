@@ -174,8 +174,9 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
             };
             const pageName = keyToPageName[item.key] || item.key;
             
+            // FIX: Pass currentUser?.role to getCentralPageAccess here for proper override resolution
             const centralAccess = content?.settings 
-              ? getCentralPageAccess(content.settings, currentUser?.id || "", pageName)
+              ? getCentralPageAccess(currentUser?.id || "", normalizedRole, pageName, content.settings)
               : { enabled: true, comingSoon: false };
 
             if (!centralAccess.enabled) return null;

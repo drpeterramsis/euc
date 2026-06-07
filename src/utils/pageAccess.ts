@@ -7,13 +7,6 @@ import { AppConfig } from "../context/AppContext";
 
 export type AccessResult = "active" | "coming-soon" | "hidden";
 
-const DOCTOR_COMING_SOON_PAGES = ["schedule", "sessions", "media"];
-
-const STAFF_ALWAYS_ACTIVE_PAGES = [
-  "dashboard", "schedule", "sessions",
-  "media", "directory", "profile"
-];
-
 function normalizeRole(role: string | undefined | null): string {
   return role?.trim().toLowerCase() ?? "";
 }
@@ -23,20 +16,11 @@ export function getPageAccess(
   role: string | undefined,
   appConfig: AppConfig | null
 ): AccessResult {
+  // ✅ ADMIN — UNCONDITIONAL FULL ACCESS
   const r = normalizeRole(role);
-
-  // ✅ ADMIN — UNCONDITIONAL FULL ACCESS — nothing can override this
   if (r === "admin") return "active";
 
-  // ✅ STAFF — UNCONDITIONAL FULL ACCESS — nothing can override this
-  if (r === "staff") return "active";
-
-  // 🔒 DOCTOR — Coming Soon for restricted pages
-  if (r === "doctor" && DOCTOR_COMING_SOON_PAGES.includes(pageKey)) {
-    return "coming-soon";
-  }
-
-  // Fallback — appConfig flags (only reached by doctor/unknown roles)
+  // Fallback — appConfig flags
   if (!appConfig) return "active";
 
   const pageConf = appConfig?.pages?.[pageKey];

@@ -14,7 +14,8 @@ export default function SettingsTab() {
       media:         { enabled: true, comingSoon: false },
       albums:        { enabled: true, comingSoon: false }
     },
-    userOverrides: {}
+    userOverrides: {},
+    roleOverrides: {} // FIX: Initialize roleOverrides
   };
 
   const pagesList = ["announcements", "agenda", "posts", "media", "albums"];
@@ -29,15 +30,13 @@ export default function SettingsTab() {
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
-
-  // ... inside handleUserToggle/handleResetToGlobal - I need to replicate for roles ...
   
   // Section C: Change Role-Specific Toggle
   const handleRoleToggle = (page: string, field: "enabled" | "comingSoon") => {
     if (!selectedRole) return;
     setLocalSettings((prev: any) => {
       const overrides = { ...(prev.roleOverrides || {}) };
-      const roleOverride = overrides[selectedRole] || { pages: {} };
+      const roleOverride = overrides[selectedRole.toLowerCase()] || { pages: {} };
       const overridePages = { ...(roleOverride.pages || {}) };
       
       let baseVal = overridePages[page];
@@ -50,7 +49,7 @@ export default function SettingsTab() {
         [field]: !baseVal[field]
       };
 
-      overrides[selectedRole] = {
+      overrides[selectedRole.toLowerCase()] = {
         ...roleOverride,
         pages: overridePages
       };
@@ -64,7 +63,7 @@ export default function SettingsTab() {
     if (!selectedRole) return;
     setLocalSettings((prev: any) => {
       const overrides = { ...(prev.roleOverrides || {}) };
-      delete overrides[selectedRole];
+      delete overrides[selectedRole.toLowerCase()];
       return { ...prev, roleOverrides: overrides };
     });
     setSaveStatus({ type: "success", message: "Role override deleted locally. Save to persist changes." });
@@ -73,7 +72,7 @@ export default function SettingsTab() {
   // Get active role state
   const getRolePageState = (page: string) => {
     if (!selectedRole) return { enabled: true, comingSoon: false, isOverride: false };
-    const overrideVal = localSettings.roleOverrides?.[selectedRole]?.pages?.[page];
+    const overrideVal = localSettings.roleOverrides?.[selectedRole.toLowerCase()]?.pages?.[page];
     if (overrideVal !== undefined) {
       return { ...overrideVal, isOverride: true };
     }
@@ -275,7 +274,7 @@ export default function SettingsTab() {
       </div>
 
       {/* SECTION B: PER-USER OVERRIDE */}
-      <div>
+      <div className="mb-10">
         <h3 className="text-base font-bold text-gray-900 mb-4 uppercase tracking-tight flex items-center gap-2">
           <span className="w-2.5 h-2.5 bg-yellow-500 rounded-full"></span>
           Section B — Per-User Override
