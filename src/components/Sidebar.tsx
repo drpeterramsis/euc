@@ -171,7 +171,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                         scrollbar-thin scrollbar-thumb-gray-700
                         scrollbar-track-transparent space-y-1">
           {visibleNavItems.map(item => {
-            const access = getPageAccess(item.key, normalizedRole, appConfig);
+            const accessResult = getPageAccess(item.key, normalizedRole, appConfig);
             
             const keyToPageName: Record<string, string> = {
               schedule: "agenda",
@@ -186,8 +186,8 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
               ? getCentralPageAccess(currentUser?.id || "", normalizedRole, pageName, content.settings)
               : { enabled: true, comingSoon: false };
 
-            const isLocked = !resolvedAccess.enabled;
-            const isComingSoon = !isLocked && resolvedAccess.comingSoon;
+            const isComingSoon = resolvedAccess.comingSoon === true;
+            const isLocked = !isComingSoon && !resolvedAccess.enabled;
 
             return (
               <NavLink

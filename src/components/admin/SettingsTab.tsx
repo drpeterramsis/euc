@@ -12,7 +12,7 @@ export default function SettingsTab() {
       agenda:        { enabled: true, comingSoon: false },
       posts:         { enabled: true, comingSoon: false },
       media:         { enabled: true, comingSoon: false },
-      albums:        { enabled: true, comingSoon: false }
+      staffDirectory: { enabled: true, comingSoon: false }
     },
     userOverrides: {},
     roleOverrides: {} // FIX: Initialize roleOverrides
@@ -144,12 +144,6 @@ export default function SettingsTab() {
     setSaveStatus({ type: "success", message: "User override deleted locally. Save to persist changes." });
   };
 
-  // Checking if an override exists for selected user
-  const hasUserOverride = (page: string) => {
-    if (!selectedUserId) return false;
-    return localSettings.userOverrides?.[selectedUserId]?.pages?.[page] !== undefined;
-  };
-
   // Get active user state for display
   const getUserPageState = (page: string) => {
     if (!selectedUserId) return { enabled: true, comingSoon: false, isOverride: false };
@@ -226,7 +220,8 @@ export default function SettingsTab() {
           <span className="w-2.5 h-2.5 bg-yellow-500 rounded-full"></span>
           Section A — Global Defaults
         </h3>
-        <div className="overflow-x-auto rounded-xl border border-gray-150 shadow-xs">
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-150 shadow-xs">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-150">
@@ -271,6 +266,27 @@ export default function SettingsTab() {
             </tbody>
           </table>
         </div>
+        {/* Mobile Cards */}
+        <div className="block md:hidden space-y-3">
+          {pagesList.map((page) => {
+            const config = localSettings.pages?.[page] || { enabled: true, comingSoon: false };
+            return (
+              <div key={page} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-100">
+                  <span>{getPageLabel(page)}</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Enabled</span>
+                  <button onClick={() => handleGlobalToggle(page, "enabled")} className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${config.enabled ? "bg-green-100 border-green-300 text-green-800" : "bg-red-50 border-red-200 text-red-700"}`}>{config.enabled ? "✅ Enabled" : "❌ Disabled"}</button>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Coming Soon</span>
+                  <button onClick={() => handleGlobalToggle(page, "comingSoon")} className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${config.comingSoon ? "bg-amber-100 border-amber-300 text-amber-900" : "bg-gray-100 border-gray-200 text-gray-500"}`}>{config.comingSoon ? "🛡️ Coming Soon" : "🚀 Active"}</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* SECTION B: PER-USER OVERRIDE */}
@@ -308,63 +324,88 @@ export default function SettingsTab() {
         </div>
 
         {selectedUserId ? (
-          <div className="overflow-x-auto rounded-xl border border-gray-150 shadow-xs">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-150">
-                  <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider">Page Name</th>
-                  <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider text-center">Override Status</th>
-                  <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider text-center">Enabled</th>
-                  <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider text-center">Coming Soon</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {pagesList.map((page) => {
-                  const state = getUserPageState(page);
-                  return (
-                    <tr key={page} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="p-4 font-bold text-gray-800">{getPageLabel(page)}</td>
-                      <td className="p-4 text-center">
-                        {state.isOverride ? (
-                          <span className="inline-flex px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-yellow-100 border border-yellow-300 text-yellow-800">
-                            ⭐ Customized
-                          </span>
-                        ) : (
-                          <span className="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-gray-100 border border-gray-200 text-gray-400">
-                            🌐 Global Default
-                          </span>
-                        )}
-                      </td>
-                      <td className="p-4 text-center">
-                        <button
-                          onClick={() => handleUserToggle(page, "enabled")}
-                          className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${
-                            state.enabled
-                              ? "bg-green-100 border-green-300 text-green-800 hover:bg-green-200"
-                              : "bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
-                          }`}
-                        >
-                          {state.enabled ? "✅ Enabled" : "❌ Disabled"}
-                        </button>
-                      </td>
-                      <td className="p-4 text-center">
-                        <button
-                          onClick={() => handleUserToggle(page, "comingSoon")}
-                          className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${
-                            state.comingSoon
-                              ? "bg-amber-100 border-amber-300 text-amber-900 hover:bg-amber-200"
-                              : "bg-gray-100 border-gray-200 text-gray-500 hover:bg-gray-200"
-                          }`}
-                        >
-                          {state.comingSoon ? "🛡️ Coming Soon" : "🚀 Active"}
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-150 shadow-xs">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-150">
+                    <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider">Page Name</th>
+                    <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider text-center">Override Status</th>
+                    <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider text-center">Enabled</th>
+                    <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider text-center">Coming Soon</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {pagesList.map((page) => {
+                    const state = getUserPageState(page);
+                    return (
+                      <tr key={page} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="p-4 font-bold text-gray-800">{getPageLabel(page)}</td>
+                        <td className="p-4 text-center">
+                          {state.isOverride ? (
+                            <span className="inline-flex px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-yellow-100 border border-yellow-300 text-yellow-800">
+                              ⭐ Customized
+                            </span>
+                          ) : (
+                            <span className="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-gray-100 border border-gray-200 text-gray-400">
+                              🌐 Global Default
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-4 text-center">
+                          <button
+                            onClick={() => handleUserToggle(page, "enabled")}
+                            className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${
+                              state.enabled
+                                ? "bg-green-100 border-green-300 text-green-800 hover:bg-green-200"
+                                : "bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                            }`}
+                          >
+                            {state.enabled ? "✅ Enabled" : "❌ Disabled"}
+                          </button>
+                        </td>
+                        <td className="p-4 text-center">
+                          <button
+                            onClick={() => handleUserToggle(page, "comingSoon")}
+                            className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${
+                              state.comingSoon
+                                ? "bg-amber-100 border-amber-300 text-amber-900 hover:bg-amber-200"
+                                : "bg-gray-100 border-gray-200 text-gray-500 hover:bg-gray-200"
+                            }`}
+                          >
+                            {state.comingSoon ? "🛡️ Coming Soon" : "🚀 Active"}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {/* Mobile Cards */}
+            <div className="block md:hidden space-y-3">
+              {pagesList.map((page) => {
+                const state = getUserPageState(page);
+                return (
+                  <div key={page} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+                    <div className="flex items-center justify-between gap-2 text-sm font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-100">
+                      <span>{getPageLabel(page)}</span>
+                      {state.isOverride ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] uppercase bg-yellow-100 text-yellow-800">⭐</span> : <span className="text-[10px] text-gray-400">🌐</span>}
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                      <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Enabled</span>
+                      <button onClick={() => handleUserToggle(page, "enabled")} className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${state.enabled ? "bg-green-100 border-green-300 text-green-800" : "bg-red-50 border-red-200 text-red-700"}`}>{state.enabled ? "✅ Enabled" : "❌ Disabled"}</button>
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Coming Soon</span>
+                      <button onClick={() => handleUserToggle(page, "comingSoon")} className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${state.comingSoon ? "bg-amber-100 border-amber-300 text-amber-900" : "bg-gray-100 border-gray-200 text-gray-500"}`}>{state.comingSoon ? "🛡️ Coming Soon" : "🚀 Active"}</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         ) : (
           <div className="text-center p-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-sm text-gray-400 font-bold uppercase tracking-wide">
             Select a user from the dropdown above to view or customize their configuration
@@ -406,63 +447,92 @@ export default function SettingsTab() {
         </div>
 
         {selectedRole ? (
-          <div className="overflow-x-auto rounded-xl border border-gray-150 shadow-xs">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-150">
-                  <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider">Page Name</th>
-                  <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider text-center">Override Status</th>
-                  <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider text-center">Enabled</th>
-                  <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider text-center">Coming Soon</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {pagesList.map((page) => {
-                  const state = getRolePageState(page);
-                  return (
-                    <tr key={page} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="p-4 font-bold text-gray-800">{getPageLabel(page)}</td>
-                      <td className="p-4 text-center">
-                        {state.isOverride ? (
-                          <span className="inline-flex px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-yellow-100 border border-yellow-300 text-yellow-800">
-                            ⭐ Customized
-                          </span>
-                        ) : (
-                          <span className="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-gray-100 border border-gray-200 text-gray-400">
-                            🌐 Global Default
-                          </span>
-                        )}
-                      </td>
-                      <td className="p-4 text-center">
-                        <button
-                          onClick={() => handleRoleToggle(page, "enabled")}
-                          className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${
-                            state.enabled
-                              ? "bg-green-100 border-green-300 text-green-800 hover:bg-green-200"
-                              : "bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
-                          }`}
-                        >
-                          {state.enabled ? "✅ Enabled" : "❌ Disabled"}
-                        </button>
-                      </td>
-                      <td className="p-4 text-center">
-                        <button
-                          onClick={() => handleRoleToggle(page, "comingSoon")}
-                          className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${
-                            state.comingSoon
-                              ? "bg-amber-100 border-amber-300 text-amber-900 hover:bg-amber-200"
-                              : "bg-gray-100 border-gray-200 text-gray-500 hover:bg-gray-200"
-                          }`}
-                        >
-                          {state.comingSoon ? "🛡️ Coming Soon" : "🚀 Active"}
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-150 shadow-xs">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-150">
+                    <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider">Page Name</th>
+                    <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider text-center">Override Status</th>
+                    <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider text-center">Enabled</th>
+                    <th className="p-4 text-xs font-black text-gray-400 uppercase tracking-wider text-center">Coming Soon</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {pagesList.map((page) => {
+                    const state = getRolePageState(page);
+                    return (
+                      <tr key={page} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="p-4 font-bold text-gray-800">{getPageLabel(page)}</td>
+                        <td className="p-4 text-center">
+                          {state.isOverride ? (
+                            <span className="inline-flex px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-yellow-100 border border-yellow-300 text-yellow-800">
+                              ⭐ Customized
+                            </span>
+                          ) : (
+                            <span className="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-gray-100 border border-gray-200 text-gray-400">
+                              🌐 Global Default
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-4 text-center">
+                          <button
+                            onClick={() => handleRoleToggle(page, "enabled")}
+                            className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${
+                              state.enabled
+                                ? "bg-green-100 border-green-300 text-green-800 hover:bg-green-200"
+                                : "bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                            }`}
+                          >
+                            {state.enabled ? "✅ Enabled" : "❌ Disabled"}
+                          </button>
+                        </td>
+                        <td className="p-4 text-center">
+                          <button
+                            onClick={() => handleRoleToggle(page, "comingSoon")}
+                            className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${
+                              state.comingSoon
+                                ? "bg-amber-100 border-amber-300 text-amber-900 hover:bg-amber-200"
+                                : "bg-gray-100 border-gray-200 text-gray-500 hover:bg-gray-200"
+                            }`}
+                          >
+                            {state.comingSoon ? "🛡️ Coming Soon" : "🚀 Active"}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {/* Mobile Cards */}
+            <div className="block md:hidden space-y-3">
+              {pagesList.map((page) => {
+                const state = getRolePageState(page);
+                return (
+                  <div key={page} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+                    <div className="flex items-center justify-between gap-2 text-sm font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-100">
+                      <span>{getPageLabel(page)}</span>
+                      {state.isOverride ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] uppercase bg-yellow-100 text-yellow-800">⭐</span> : <span className="text-[10px] text-gray-400">🌐</span>}
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                      <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Override</span>
+                      <span className="text-[10px] font-bold text-gray-500 uppercase">{state.isOverride ? "Customized" : "Global"}</span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                      <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Enabled</span>
+                      <button onClick={() => handleRoleToggle(page, "enabled")} className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${state.enabled ? "bg-green-100 border-green-300 text-green-800" : "bg-red-50 border-red-200 text-red-700"}`}>{state.enabled ? "✅ Enabled" : "❌ Disabled"}</button>
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Coming Soon</span>
+                      <button onClick={() => handleRoleToggle(page, "comingSoon")} className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black tracking-tight border transition-all cursor-pointer ${state.comingSoon ? "bg-amber-100 border-amber-300 text-amber-900" : "bg-gray-100 border-gray-200 text-gray-500"}`}>{state.comingSoon ? "🛡️ Coming Soon" : "🚀 Active"}</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         ) : (
           <div className="text-center p-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-sm text-gray-400 font-bold uppercase tracking-wide">
             Select a role from the dropdown above to view or customize their configuration

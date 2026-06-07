@@ -14,6 +14,10 @@ export default function Staff() {
     ? getCentralPageAccess(currentUser?.id || "", currentUser?.role || "", "staffDirectory", content.settings)
     : { enabled: true, comingSoon: false };
 
+  if (centralAccess.comingSoon) {
+    return <Navigate to="/coming-soon" replace />;
+  }
+
   if (!centralAccess.enabled) {
     return <Navigate to="/access-denied" replace />;
   }
