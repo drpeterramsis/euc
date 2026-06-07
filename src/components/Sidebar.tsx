@@ -17,6 +17,7 @@ import { getFeatureStatus } from "../utils/featureAccess";
 import UserAvatar from "./UserAvatar";
 import { getPageAccess, isNavVisible } from "../utils/pageAccess";
 import { getPageAccess as getCentralPageAccess } from "../lib/pageAccess";
+import LockedPageModal from "./LockedPageModal";
 
 /**
  * Sidebar component renders fixed navigation menu.
@@ -25,6 +26,11 @@ import { getPageAccess as getCentralPageAccess } from "../lib/pageAccess";
 export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const { currentUser, users, appConfig, isAppInstalled, installPrompt, triggerInstall, content } = useApp();
   const [showInstallModal, setShowInstallModal] = useState(false);
+  const [lockedModal, setLockedModal] = useState<{
+    open: boolean;
+    pageName: string;
+  }>({ open: false, pageName: "" });
+  
   const fullUser = users.find(u => u.id === currentUser?.id) || currentUser;
 
   const labels = appConfig?.navLabels || {
@@ -189,8 +195,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                 onClick={(e) => {
                   if (isLocked) {
                     e.preventDefault();
-                    // Optional: show a toast or navigate to a locked screen
-                    alert("This page is not available for your account.");
+                    setLockedModal({ open: true, pageName: item.label });
                   } else {
                     onClose?.();
                   }
@@ -264,6 +269,12 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
           </a>
         </nav>
       </aside>
+
+      <LockedPageModal
+        isOpen={lockedModal.open}
+        onClose={() => setLockedModal({ open: false, pageName: "" })}
+        pageName={lockedModal.pageName}
+      />
 
       {showInstallModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
