@@ -10,12 +10,14 @@ import MediaPostViewerModal from '../components/MediaPostViewerModal';
 import { isPostVisible } from '../utils/postVisibility';
 import { getLabel } from '../utils/labels';
 import { getPageAccess } from '../utils/pageAccess';
+import { getPageAccess as getCentralPageAccess } from '../lib/pageAccess';
+import ComingSoon from '../components/ComingSoon';
 import VideoPlayer from '../components/VideoPlayer';
 import { detectLinkType } from '../utils/linkUtils';
 import GalleryCard from '../components/GalleryCard';
 
 export default function Media() {
-  const { media, galleries, settings, currentUser, appConfig } = useApp() as any;
+  const { media, galleries, settings, currentUser, appConfig, content } = useApp() as any;
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("latest"); // latest, oldest, category
@@ -25,13 +27,17 @@ export default function Media() {
   // ✅ ONLY use getPageAccess — NEVER check appConfig.pages directly
   const access = getPageAccess("media", currentUser?.role, appConfig);
 
+  const centralAccess = content?.settings 
+    ? getCentralPageAccess(content.settings, currentUser?.id || "", "media", currentUser?.role)
+    : { enabled: true, comingSoon: false };
+
   // DEBUG — retrieve info during testing
   useEffect(() => {
     console.log("[Media] role:", currentUser?.role, "| access:", access);
   }, [currentUser?.role, access]);
 
   // Hidden Check
-  if (access === "hidden") {
+  if (access === "hidden" || !centralAccess.enabled) {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[60vh] font-sans">
@@ -42,18 +48,10 @@ export default function Media() {
   }
 
   // Coming Soon Check
-  if (access === "coming-soon") {
+  if (access === "coming-soon" || centralAccess.comingSoon) {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center text-center px-6 py-20 min-h-[60vh] font-sans">
-          <span className="text-6xl mb-5">🔒</span>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {appConfig?.navLabels?.["media"] ?? pageTitle}
-          </h1>
-          <p className="text-gray-500 mb-6 font-semibold text-sm max-w-xs">
-            This feature is coming soon.
-          </p>
-        </div>
+        <ComingSoon />
       </Layout>
     );
   }
@@ -73,8 +71,23 @@ export default function Media() {
   }, [settings, media, currentUser, galleries]);
 
   const filteredMedia = useMemo(() => {
-    let rawPosts = media.filter((p: any) => isPostVisible(p, currentUser)).map((p: any) => ({ ...p, _type: 'post' }));
-    let rawGalleries = (galleries || []).filter((g: any) => g.showInFeed).map((g: any) => ({ ...g, _type: 'gallery', createdAt: g.publishedAt }));
+    const postsAccess = content?.settings 
+      ? getCentralPageAccess(content.settings, currentUser?.id || "", "posts", currentUser?.role)
+      : { enabled: true, comingSoon: false };
+
+    const albumsAccess = content?.settings 
+      ? getCentralPageAccess(content.settings, currentUser?.id || "", "albums", currentUser?.role)
+      : { enabled: true, comingSoon: false };
+
+    let rawPosts = [];
+    if (postsAccess.enabled && !postsAccess.comingSoon) {
+      rawPosts = media.filter((p: any) => isPostVisible(p, currentUser)).map((p: any) => ({ ...p, _type: 'post' }));
+    }
+    
+    let rawGalleries = [];
+    if (albumsAccess.enabled && !albumsAccess.comingSoon) {
+      rawGalleries = (galleries || []).filter((g: any) => g.showInFeed).map((g: any) => ({ ...g, _type: 'gallery', createdAt: g.publishedAt }));
+    }
     
     let combined = [...rawPosts, ...rawGalleries];
 
@@ -93,7 +106,7 @@ export default function Media() {
     }
 
     return combined;
-  }, [media, galleries, activeCategory, sortBy, currentUser]);
+  }, [media, galleries, activeCategory, sortBy, currentUser, content]);
 
   return (
     <Layout>

@@ -19,6 +19,7 @@ const adminTools = [
   { key: 'features', label: 'Feature Access', icon: '🚀' },
   { key: 'media', label: 'Media / Posts', icon: '🖼️' },
   { key: 'categories', label: 'Categories', icon: '📂' },
+  { key: 'pageSettings', label: 'Page Access', icon: '🔒' },
 ];
 
 export default function AdminDashboard({ onSelectTab }: AdminDashboardProps) {

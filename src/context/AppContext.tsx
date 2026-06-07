@@ -165,6 +165,25 @@ export const DEFAULT_APP_CONFIG: AppConfig = {
   }
 };
 
+export const DEFAULT_CONTENT = {
+  home: { description: "Welcome to EVA URO CLUB Prague Conference Trip Management App" },
+  announcements: [],
+  agenda: [],
+  posts: [],
+  media: [],
+  albums: [],
+  settings: {
+    pages: {
+      announcements: { enabled: true, comingSoon: false },
+      agenda:        { enabled: true, comingSoon: false },
+      posts:         { enabled: true, comingSoon: false },
+      media:         { enabled: true, comingSoon: false },
+      albums:        { enabled: true, comingSoon: false }
+    },
+    userOverrides: {}
+  }
+};
+
 /**
  * Normalizes recipients and user roles, removing plurals to ensure precise routing matching.
  */
@@ -189,6 +208,7 @@ interface AppContextType {
   appConfig:   AppConfig;
   messages:    AppMessage[];
   galleries:   GalleryAlbum[];
+  content:     any;
   currentUser: any;
   loading:     boolean;
   isFirstLoad: boolean;
@@ -203,6 +223,7 @@ interface AppContextType {
   updateAppConfig: (data: AppConfig) => void;
   updateMessages: (data: AppMessage[]) => void;
   updateGalleries: (data: GalleryAlbum[]) => void;
+  updateContent:  (data: any) => void;
   refreshData:    () => Promise<void>;
   loginUser:      (user: any) => void;
   installPrompt:  any | null;
@@ -223,10 +244,12 @@ function readSessionCache() {
     const ac = sessionStorage.getItem(CACHE.appConfig);
     const ms = sessionStorage.getItem(CACHE.messages);
     const ga = sessionStorage.getItem(CACHE.galleries);
+    const co = sessionStorage.getItem("euc_session_content");
     
     // Fallback if tripInfo is missing from cache but everything else is there
     const parsedTripInfo = ti ? JSON.parse(ti) : null;
     const parsedAppConfig = ac ? JSON.parse(ac) : null;
+    const parsedContent = co ? JSON.parse(co) : DEFAULT_CONTENT;
     
     if (parsedTripInfo && (!parsedTripInfo?.hotel?.name || !parsedTripInfo?.departure?.flightNumber)) {
       sessionStorage.removeItem(CACHE.tripInfo);
@@ -243,13 +266,14 @@ function readSessionCache() {
         appConfig: parsedAppConfig || DEFAULT_APP_CONFIG,
         messages: ms ? JSON.parse(ms) : [],
         galleries: ga ? JSON.parse(ga) : [],
+        content: parsedContent,
       };
     }
   } catch { }
   return null;
 }
 
-function writeSessionCache(data: { users: any[], schedule: any[], sessions: any[], settings: any, media: any[], tripInfo: TripInfo, appConfig: AppConfig, messages?: AppMessage[], galleries?: GalleryAlbum[] }) {
+function writeSessionCache(data: { users: any[], schedule: any[], sessions: any[], settings: any, media: any[], tripInfo: TripInfo, appConfig: AppConfig, messages?: AppMessage[], galleries?: GalleryAlbum[], content?: any }) {
   try {
     sessionStorage.setItem(CACHE.users,    JSON.stringify(data.users));
     sessionStorage.setItem(CACHE.schedule, JSON.stringify(data.schedule));
@@ -260,6 +284,7 @@ function writeSessionCache(data: { users: any[], schedule: any[], sessions: any[
     sessionStorage.setItem(CACHE.appConfig, JSON.stringify(data.appConfig));
     if (data.messages) sessionStorage.setItem(CACHE.messages, JSON.stringify(data.messages));
     if (data.galleries) sessionStorage.setItem(CACHE.galleries, JSON.stringify(data.galleries));
+    if (data.content) sessionStorage.setItem("euc_session_content", JSON.stringify(data.content));
     localStorage.setItem(CACHE.lastFetch,  Date.now().toString());
   } catch { }
 }
@@ -274,6 +299,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [appConfig, setAppConfig] = useState<AppConfig>(DEFAULT_APP_CONFIG);
   const [messages, setMessages] = useState<AppMessage[]>([]);
   const [galleries, setGalleries] = useState<GalleryAlbum[]>([]);
+  const [content,  setContent]  = useState<any>(DEFAULT_CONTENT);
   const [loading,  setLoading]  = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [error,    setError]    = useState<string | null>(null);
@@ -320,7 +346,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   });
 
   const fetchFreshData = useCallback(async () => {
-    const [u, sc, se, st, md, ti, ac, ms, ga] = await Promise.all([
+    const [u, sc, se, st, md, ti, ac, ms, ga, co] = await Promise.all([
       readJSON("users.json"),
       readJSON("schedule.json"),
       readJSON("sessions.json"),
@@ -350,6 +376,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
       })(),
       readJSON("gallery.json").catch(() => []),
+      readJSON("content.json").catch(() => DEFAULT_CONTENT),
     ]);
 
     // Merge settings with defaults
@@ -360,7 +387,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       mediaCategories: [...new Set([...DEFAULT_MEDIA_CATEGORIES, ...(s.mediaCategories || [])])],
     };
 
-    return { users: u, schedule: sc, sessions: se, settings: mergedSettings, media: md, tripInfo: ti, appConfig: ac, messages: ms, galleries: ga };
+    return { users: u, schedule: sc, sessions: se, settings: mergedSettings, media: md, tripInfo: ti, appConfig: ac, messages: ms, galleries: ga, content: co || DEFAULT_CONTENT };
   }, []);
 
   const backgroundRefresh = useCallback(async () => {
@@ -381,6 +408,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setAppConfig(fresh.appConfig);
         setMessages(fresh.messages);
         setGalleries(fresh.galleries);
+        setContent(fresh.content);
         writeSessionCache(fresh);
         return;
       }
@@ -394,7 +422,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         stableStringify(fresh.tripInfo) !== stableStringify(cached.tripInfo) ||
         stableStringify(fresh.appConfig) !== stableStringify(cached.appConfig) ||
         stableStringify(fresh.messages) !== stableStringify(cached.messages) ||
-        stableStringify(fresh.galleries) !== stableStringify(cached.galleries);
+        stableStringify(fresh.galleries) !== stableStringify(cached.galleries) ||
+        stableStringify(fresh.content) !== stableStringify(cached.content);
 
       if (changed) {
         setUsers(fresh.users);
@@ -406,6 +435,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setAppConfig(fresh.appConfig);
         setMessages(fresh.messages);
         setGalleries(fresh.galleries);
+        setContent(fresh.content);
         writeSessionCache(fresh);
 
         // Deeply update currentUser if their data changed
@@ -491,6 +521,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setAppConfig(cached.appConfig);
       if (cached.messages) setMessages(cached.messages);
       if (cached.galleries) setGalleries(cached.galleries);
+      if (cached.content) setContent(cached.content);
       
       resolveAuth(cached.users);
       
@@ -512,6 +543,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setAppConfig(fresh.appConfig);
           setMessages(fresh.messages);
           setGalleries(fresh.galleries);
+          setContent(fresh.content || DEFAULT_CONTENT);
           writeSessionCache(fresh);
 
           resolveAuth(fresh.users);
@@ -620,6 +652,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, []);
 
+  const updateContent = useCallback((data: any) => {
+    setContent(data);
+    try {
+      sessionStorage.setItem("euc_session_content", JSON.stringify(data));
+      localStorage.setItem(CACHE.lastFetch, Date.now().toString());
+    } catch {}
+  }, []);
+
   const updateGalleries = useCallback((data: GalleryAlbum[] | ((prev: GalleryAlbum[]) => GalleryAlbum[])) => {
     setGalleries(prev => {
       const merged = typeof data === "function" ? data(prev) : data;
@@ -691,9 +731,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      users, schedule, sessions, settings, media, tripInfo, appConfig, messages, galleries,
+      users, schedule, sessions, settings, media, tripInfo, appConfig, messages, galleries, content,
       currentUser, loading, isFirstLoad, error, isBackgroundRefreshing,
-      updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia, updateTripInfo, updateAppConfig, updateMessages, updateGalleries,
+      updateUsers, updateSchedule, updateSessions, updateSettings, updateMedia, updateTripInfo, updateAppConfig, updateMessages, updateGalleries, updateContent,
       refreshData, loginUser, installPrompt, isAppInstalled, triggerInstall
     }}>
       {children}

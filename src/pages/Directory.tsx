@@ -10,12 +10,16 @@ import { DirectoryCard } from "../components/DirectoryCard";
 import { getLabel } from "../utils/labels";
 import { getPageAccess } from "../utils/pageAccess";
 
+import { getPageAccess as getCentralPageAccess } from "../lib/pageAccess";
+
 export default function Directory() {
-  const { users, appConfig, currentUser } = useAppContext();
+  const { users, appConfig, currentUser, content } = useAppContext() as any;
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<"all" | "doctor" | "staff">("all");
 
   const pageTitle = getLabel(appConfig, "directory");
+
+  const centralAccess = { enabled: true, comingSoon: false };
 
   // ✅ ONLY use getPageAccess — NEVER check appConfig.pages directly
   const access = getPageAccess("directory", currentUser?.role, appConfig);
@@ -26,7 +30,7 @@ export default function Directory() {
   }, [currentUser?.role, access]);
 
   // Hidden Check
-  if (access === "hidden") {
+  if (access === "hidden" || !centralAccess.enabled) {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[60vh] font-sans">
@@ -37,7 +41,7 @@ export default function Directory() {
   }
 
   // Coming Soon Check
-  if (access === "coming-soon") {
+  if (access === "coming-soon" || centralAccess.comingSoon) {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center text-center px-6 py-20 min-h-[60vh] font-sans">

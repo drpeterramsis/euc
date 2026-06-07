@@ -10,7 +10,9 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import { readJSON } from "../utils/github";
-import { getPageAccess } from "../utils/pageAccess";
+import { getPageAccess, isNavVisible } from "../utils/pageAccess";
+import { getPageAccess as getCentralPageAccess } from "../lib/pageAccess";
+import ComingSoon from "../components/ComingSoon";
 import { useAppContext } from "../context/AppContext";
 import { getLabel } from "../utils/labels";
 import { utcToDisplay, localToUtc, splitAmPm } from "../utils/timezone";
@@ -34,9 +36,31 @@ const typeDotMap: Record<string, string> = {
 };
 
 export default function Schedule() {
-  const { appConfig, currentUser } = useAppContext();
+  const { appConfig, currentUser, content } = useAppContext() as any;
   const pageTitle = getLabel(appConfig, "schedule") || "Schedule";
   const access = getPageAccess("schedule", currentUser?.role, appConfig);
+
+  const centralAccess = content?.settings 
+    ? getCentralPageAccess(content.settings, currentUser?.id || "", "agenda", currentUser?.role)
+    : { enabled: true, comingSoon: false };
+
+  if (!centralAccess.enabled) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-[60vh] font-sans">
+          <p className="text-gray-400 text-sm font-bold">This page is not available.</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (centralAccess.comingSoon) {
+    return (
+      <Layout>
+        <ComingSoon />
+      </Layout>
+    );
+  }
 
   const [tripDays, setTripDays] = useState<any[]>([]);
 

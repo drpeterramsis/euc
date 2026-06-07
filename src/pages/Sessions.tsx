@@ -14,13 +14,19 @@ import { getLabel } from "../utils/labels";
 import { getPageAccess } from "../utils/pageAccess";
 import { utcToDisplay, localToUtc, splitAmPm } from "../utils/timezone";
 
+import { getPageAccess as getCentralPageAccess } from "../lib/pageAccess";
+
 /**
  * Sessions component renders the list/grid of scientific sessions.
  */
 export default function Sessions() {
-  const { sessions, currentUser, appConfig } = useApp();
+  const { sessions, currentUser, appConfig, content } = useApp() as any;
 
   const pageTitle = getLabel(appConfig, "sessions");
+
+  const centralAccess = content?.settings 
+    ? getCentralPageAccess(content.settings, currentUser?.id || "", "agenda", currentUser?.role)
+    : { enabled: true, comingSoon: false };
 
   // ✅ ONLY use getPageAccess — NEVER check appConfig.pages directly
   const access = getPageAccess("sessions", currentUser?.role, appConfig);
@@ -31,7 +37,7 @@ export default function Sessions() {
   }, [currentUser?.role, access]);
 
   // Hidden Check
-  if (access === "hidden") {
+  if (access === "hidden" || !centralAccess.enabled) {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[60vh] font-sans">
@@ -44,7 +50,7 @@ export default function Sessions() {
   }
 
   // Coming Soon Check
-  if (access === "coming-soon") {
+  if (access === "coming-soon" || centralAccess.comingSoon) {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center text-center px-6 py-20 min-h-[60vh] font-sans">

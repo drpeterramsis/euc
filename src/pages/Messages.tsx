@@ -4,11 +4,35 @@ import { useApp, matchesRole } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 import { writeJSON } from "../utils/github";
 import { ensureHttps } from "../utils/linkUtils";
+import { getPageAccess } from "../lib/pageAccess";
+import ComingSoon from "../components/ComingSoon";
 
 export default function Messages() {
-  const { messages, updateMessages, currentUser } = useApp() as any;
+  const { messages, updateMessages, currentUser, content } = useApp() as any;
   const navigate = useNavigate();
   const [filterCategory, setFilterCategory] = useState<string>("all");
+
+  const centralAccess = content?.settings 
+    ? getPageAccess(content.settings, currentUser?.id || "", "announcements")
+    : { enabled: true, comingSoon: false };
+
+  if (!centralAccess.enabled) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <h1 className="text-2xl font-semibold text-gray-500">Not Found</h1>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (centralAccess.comingSoon) {
+    return (
+      <Layout>
+        <ComingSoon />
+      </Layout>
+    );
+  }
 
   const handleRead = (id: string, index: number) => {
     if (!currentUser || !messages) return;

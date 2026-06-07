@@ -16,13 +16,14 @@ import { useApp } from "../context/AppContext";
 import { getFeatureStatus } from "../utils/featureAccess";
 import UserAvatar from "./UserAvatar";
 import { getPageAccess, isNavVisible } from "../utils/pageAccess";
+import { getPageAccess as getCentralPageAccess } from "../lib/pageAccess";
 
 /**
  * Sidebar component renders fixed navigation menu.
  * Displays current logged-in user's name and avatar read from context.
  */
 export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
-  const { currentUser, users, appConfig, isAppInstalled, installPrompt, triggerInstall } = useApp();
+  const { currentUser, users, appConfig, isAppInstalled, installPrompt, triggerInstall, content } = useApp();
   const [showInstallModal, setShowInstallModal] = useState(false);
   const fullUser = users.find(u => u.id === currentUser?.id) || currentUser;
 
@@ -165,7 +166,20 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                         scrollbar-track-transparent space-y-1">
           {visibleNavItems.map(item => {
             const access = getPageAccess(item.key, normalizedRole, appConfig);
-            const isComingSoon = access === "coming-soon";
+            
+            const keyToPageName: Record<string, string> = {
+              schedule: "agenda",
+              sessions: "agenda",
+              media: "media",
+            };
+            const pageName = keyToPageName[item.key] || item.key;
+            
+            const centralAccess = content?.settings 
+              ? getCentralPageAccess(content.settings, currentUser?.id || "", pageName)
+              : { enabled: true, comingSoon: false };
+
+            if (!centralAccess.enabled) return null;
+            const isComingSoon = (access === "coming-soon") || centralAccess.comingSoon;
 
             return (
               <NavLink

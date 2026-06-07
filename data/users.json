@@ -438,5 +438,19 @@
     "title": "Product Manager",
     "email": "",
     "phone": "201026060462"
-  }
+  },
+
+ {
+    "id": "U040",
+    "name": "Peter Ramsis Tawfeek",
+    "role": "staff",
+    "username": "Peter.Ramsis",
+    "password": "Diamonrecta5mg",
+    "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/4j9wu37eo0f5k3pnwiyn3/PeterRamsis.jpeg?rlkey=8fm0dtrbtc40ygg8c914epxsz&st=u34h33mv",
+    "title": "Area Supervisor",
+    "email": "",
+    "phone": "201069996672"
+
+ }
+
 ]

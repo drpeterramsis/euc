@@ -23,6 +23,7 @@ import { compressImage } from "../utils/image";
 import AdminDashboard from "./AdminDashboard";
 import AdminMessages from "./admin/AdminMessages";
 import AdminGalleries from "./admin/AdminGalleries";
+import SettingsTab from "../components/admin/SettingsTab";
 import { localToUtc, utcToDisplay, TZ_CAIRO, TZ_PRAGUE, utcToLocalInput, getUtcFromEvent, formatTimeAmPm } from "../utils/timezone";
 
 interface AdminProps {
@@ -311,134 +312,6 @@ export default function Admin({ initialTab }: AdminProps = {}) {
             className="bg-black text-white px-8 py-3 rounded-xl font-black hover:bg-gray-800 transition-all shadow-lg active:scale-95 w-full sm:w-auto uppercase tracking-widest text-xs"
           >
             Save Labels
-          </button>
-        </div>
-      </div>
-
-      {/* Page Visibility & Status section */}
-      <div className="pt-8 border-t border-gray-100">
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-          <span>🛡️</span> Page Visibility & Status
-        </h2>
-        <p className="text-sm text-gray-500 mb-6 font-medium">
-          Control whether specific sections of the app are visible to end users
-          or flagged as coming soon.
-        </p>
-
-        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-xs text-yellow-800 font-medium font-sans">
-            ⚠️ Role overrides apply: Admin always sees all pages as active.
-            Staff always see standard pages as active. Doctors see Schedule,
-            Sessions, and News Feed as "Coming Soon" by default. These settings
-            apply to any additional visibility rules.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {Object.entries(pageConfigs).map(
-            ([pageKey, config]: [string, any]) => (
-              <div
-                key={pageKey}
-                className="border border-gray-200 rounded-xl p-5 bg-gray-50 flex flex-col gap-4"
-              >
-                <p className="font-bold text-gray-800 capitalize text-sm tracking-wider uppercase">
-                  {pageKey === "directory"
-                    ? "Staff Directory"
-                    : "News Feed (Media)"}
-                </p>
-
-                {/* Visible toggle */}
-                <div className="flex items-center gap-4">
-                  <span className="text-xs font-bold text-gray-500 w-20 uppercase tracking-wider">
-                    Visible:
-                  </span>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name={`visible-${pageKey}`}
-                      checked={config.visible === true}
-                      onChange={() =>
-                        setPageConfigs((p) => ({
-                          ...p,
-                          [pageKey]: { ...p[pageKey], visible: true },
-                        }))
-                      }
-                      className="accent-yellow-400 h-4 w-4"
-                    />
-                    <span className="text-sm text-gray-700 font-medium">
-                      Show
-                    </span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name={`visible-${pageKey}`}
-                      checked={config.visible === false}
-                      onChange={() =>
-                        setPageConfigs((p) => ({
-                          ...p,
-                          [pageKey]: { ...p[pageKey], visible: false },
-                        }))
-                      }
-                      className="accent-yellow-400 h-4 w-4"
-                    />
-                    <span className="text-sm text-gray-700 font-medium">
-                      Hide
-                    </span>
-                  </label>
-                </div>
-
-                {/* Coming Soon toggle */}
-                <div className="flex items-center gap-4">
-                  <span className="text-xs font-bold text-gray-500 w-20 uppercase tracking-wider">
-                    Status:
-                  </span>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name={`soon-${pageKey}`}
-                      checked={config.comingSoon === false}
-                      onChange={() =>
-                        setPageConfigs((p) => ({
-                          ...p,
-                          [pageKey]: { ...p[pageKey], comingSoon: false },
-                        }))
-                      }
-                      className="accent-yellow-400 h-4 w-4"
-                    />
-                    <span className="text-sm text-gray-700 font-medium">
-                      Live
-                    </span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name={`soon-${pageKey}`}
-                      checked={config.comingSoon === true}
-                      onChange={() =>
-                        setPageConfigs((p) => ({
-                          ...p,
-                          [pageKey]: { ...p[pageKey], comingSoon: true },
-                        }))
-                      }
-                      className="accent-yellow-400 h-4 w-4"
-                    />
-                    <span className="text-sm text-gray-700 font-medium">
-                      Coming Soon
-                    </span>
-                  </label>
-                </div>
-              </div>
-            ),
-          )}
-        </div>
-
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={handleSavePageSettings}
-            className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-6 py-2.5 rounded-xl transition duration-200 outline-none shadow-md cursor-pointer"
-          >
-            Save Page Settings
           </button>
         </div>
       </div>
@@ -4302,9 +4175,10 @@ export default function Admin({ initialTab }: AdminProps = {}) {
           <option value="appConfig">⚙️ App Settings</option>
           <option value="tripInfo">{"\u2708\uFE0F"} Trip Info</option>
           <option value="schedule">📅 Schedule & Sessions</option>
-          <option value="features">⚙️ Feature Flags</option>
+          <option value="features">🚀 Feature Flags</option>
           <option value="media">🖼️ Media / Posts</option>
           <option value="categories">🎨 Categories</option>
+          <option value="pageSettings">🔒 Page Access</option>
         </select>
       </div>
 
@@ -4317,9 +4191,10 @@ export default function Admin({ initialTab }: AdminProps = {}) {
           { key: "appConfig", label: "⚙️ App Settings" },
           { key: "tripInfo", label: '{"\u2708\uFE0F"} Trip Info' },
           { key: "schedule", label: "📅 Schedule & Sessions" },
-          { key: "features", label: "⚙️ Feature Flags" },
+          { key: "features", label: "🚀 Feature Flags" },
           { key: "media", label: "🖼️ Media / Posts" },
           { key: "categories", label: "🎨 Categories" },
+          { key: "pageSettings", label: "🔒 Page Access" },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -4347,6 +4222,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
         {activeTab === "features" && renderTab4()}
         {activeTab === "media" && renderTab5()}
         {activeTab === "categories" && renderTab6()}
+        {activeTab === "pageSettings" && <SettingsTab />}
       </div>
     </Layout>
   );

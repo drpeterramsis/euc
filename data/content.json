@@ -1,0 +1,18 @@
+{
+  "home": { "description": "Welcome to EVA URO CLUB Prague Conference Trip Management App" },
+  "announcements": [],
+  "agenda": [],
+  "posts": [],
+  "media": [],
+  "albums": [],
+  "settings": {
+    "pages": {
+      "announcements": { "enabled": true, "comingSoon": false },
+      "agenda":        { "enabled": true, "comingSoon": false },
+      "posts":         { "enabled": true, "comingSoon": false },
+      "media":         { "enabled": true, "comingSoon": false },
+      "albums":        { "enabled": true, "comingSoon": false }
+    },
+    "userOverrides": {}
+  }
+}
