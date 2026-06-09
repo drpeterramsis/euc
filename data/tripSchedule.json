@@ -9,22 +9,45 @@
         "id": "TS001-E1",
         "time": "12:50",
         "label": "Depart Cairo - EgyptAir MS 789",
-        "icon": "\u2708\uFE0F",
-        "type": "travel"
+        "icon": "✈️",
+        "type": "travel",
+        "timezoneDisplay": "cairo"
       },
       {
         "id": "TS001-E2",
-        "time": "17:00",
+        "time": "16:30",
         "label": "Arrive Prague Airport",
-        "icon": "\uD83D\uDEEC",
-        "type": "travel"
+        "icon": "🛬",
+        "type": "travel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
       },
       {
         "id": "TS001-E3",
-        "time": "19:00",
+        "time": "17:30",
         "label": "Check-in - Vienna House Diplomat Prague",
-        "icon": "\uD83C\uDFE8",
-        "type": "hotel"
+        "icon": "🏨",
+        "type": "hotel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
+        "id": "TSE_1781013670060",
+        "time": "20:45",
+        "label": "Gather at Lobby to move to dinner",
+        "icon": "🚌",
+        "type": "activity",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
+        "id": "TSE_1781013739551",
+        "time": "21:00",
+        "label": "Dinner at U Cedru Resturant",
+        "icon": "🍽️",
+        "type": "activity",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
       }
     ]
   },
@@ -36,24 +59,66 @@
     "events": [
       {
         "id": "TS002-E1",
-        "time": "09:00",
-        "label": "Opening Session",
-        "icon": "\uD83C\uDFA4",
-        "type": "session"
+        "time": "07:00",
+        "label": "Breakfast [ to 09:00 AM]",
+        "icon": "🍽️",
+        "type": "hotel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
       },
       {
         "id": "TS002-E2",
-        "time": "13:00",
-        "label": "Lunch Break",
-        "icon": "\uD83C\uDF7D\uFE0F",
-        "type": "break"
+        "time": "10:00",
+        "label": "Scientific Session",
+        "icon": "🎤",
+        "type": "session",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
       },
       {
         "id": "TS002-E3",
-        "time": "15:00",
-        "label": "City Tour - Prague Old Town",
-        "icon": "\uD83C\uDFDB\uFE0F",
-        "type": "activity"
+        "time": "13:15",
+        "label": "Gather to City Tour",
+        "icon": "🚌",
+        "type": "hotel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
+        "id": "TSE_1781014169284",
+        "time": "13:30",
+        "label": "City Tour Prague",
+        "icon": "🏛️",
+        "type": "travel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
+        "id": "TSE_1781014219062",
+        "time": "17:30",
+        "label": "Dinner at Charles Bridge Resturant",
+        "icon": "🍽️",
+        "type": "activity",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
+        "id": "TSE_1781014361013",
+        "time": "19:00",
+        "label": "Back to Hotel",
+        "icon": "🚌",
+        "type": "travel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
+        "id": "TSE_1781014410793",
+        "time": "19:30",
+        "label": "Free Time",
+        "icon": "📌",
+        "type": "break",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
       }
     ]
   },
@@ -65,24 +130,75 @@
     "events": [
       {
         "id": "TS003-E1",
-        "time": "09:00",
-        "label": "Morning Sessions",
-        "icon": "\uD83C\uDFA4",
-        "type": "session"
+        "time": "07:00",
+        "label": "Breakfast [ to 09:00 AM]",
+        "icon": "🍽️",
+        "type": "hotel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
       },
       {
         "id": "TS003-E2",
-        "time": "13:00",
-        "label": "Lunch Break",
-        "icon": "\uD83C\uDF7D\uFE0F",
-        "type": "break"
+        "time": "10:00",
+        "label": "Scientific Session",
+        "icon": "🎤",
+        "type": "session",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
       },
       {
         "id": "TS003-E3",
+        "time": "13:15",
+        "label": "Gather at Lobby",
+        "icon": "👥",
+        "type": "hotel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
+        "id": "TSE_1781014603752",
+        "time": "13:30",
+        "label": "Move to Fashion Arena",
+        "icon": "🚌",
+        "type": "travel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
+        "id": "TSE_1781014744176",
         "time": "19:00",
-        "label": "Gala Dinner",
-        "icon": "\uD83E\uDD42",
-        "type": "activity"
+        "label": "Move From Fashion Arena",
+        "icon": "🚌",
+        "type": "travel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
+        "id": "TSE_1781014799812",
+        "time": "20:00",
+        "label": "Dinner with show at Folklore Garden Resturant",
+        "icon": "🍽️",
+        "type": "activity",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
+        "id": "TSE_1781014914915",
+        "time": "22:00",
+        "label": "Back to Hotel",
+        "icon": "🚌",
+        "type": "travel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
+        "id": "TSE_1781014950771",
+        "time": "23:00",
+        "label": "Free Time",
+        "icon": "📌",
+        "type": "break",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
       }
     ]
   },
@@ -93,18 +209,39 @@
     "title": "Departure Day",
     "events": [
       {
+        "id": "TSE_1781015004517",
+        "time": "07:00",
+        "label": "Breakfast (to 10:00 AM)",
+        "icon": "📌",
+        "type": "hotel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
         "id": "TS004-E1",
-        "time": "12:00",
-        "label": "Check-out - Vienna House Diplomat Prague",
-        "icon": "\uD83C\uDFE8",
-        "type": "hotel"
+        "time": "12:45",
+        "label": "Check-out - and Move to airport",
+        "icon": "🏨",
+        "type": "hotel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
       },
       {
         "id": "TS004-E2",
-        "time": "16:45",
+        "time": "17:45",
         "label": "Depart Prague - MS 790",
-        "icon": "\u2708\uFE0F",
-        "type": "travel"
+        "icon": "✈️",
+        "type": "travel",
+        "inputTimezone": "Europe/Prague",
+        "timezoneDisplay": "prague"
+      },
+      {
+        "id": "TSE_1781015146178",
+        "time": "21:35",
+        "label": "Arrival Cairo Airport",
+        "icon": "📌",
+        "type": "travel",
+        "timezoneDisplay": "cairo"
       }
     ]
   }

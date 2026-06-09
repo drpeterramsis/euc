@@ -5,9 +5,29 @@
     {
       "id": "CT002",
       "label": "Luggage Drop-off",
-      "datetime": "2026-06-24T18:00:00",
-      "icon": "\uD83E\uDDF3",
-      "color": "blue"
+      "datetime": "2026-06-25T06:00:00.000Z",
+      "icon": "🧳",
+      "color": "blue",
+      "inputTimezone": "Africa/Cairo",
+      "timezoneDisplay": "cairo"
+    },
+    {
+      "id": "CT_1781013063272",
+      "label": "Arrival Prague Airport",
+      "datetime": "2026-06-25T13:30:00.000Z",
+      "icon": "🛬",
+      "color": "gray",
+      "inputTimezone": "Europe/Prague",
+      "timezoneDisplay": "prague"
+    },
+    {
+      "id": "CT_1781013421628",
+      "label": "Arrival Cairo Airport",
+      "datetime": "2026-06-28T18:30:00.000Z",
+      "icon": "🛬",
+      "color": "gray",
+      "inputTimezone": "Africa/Cairo",
+      "timezoneDisplay": "cairo"
     }
   ]
 }

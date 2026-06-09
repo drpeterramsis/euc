@@ -1,6 +1,7 @@
 // ─────────────────────────────────────────────
 // FILE: src/pages/Schedule.tsx
 // PURPOSE: Renders the general trip agenda (daily sessions/itinerary) for all users, loading from tripSchedule.json.
+// Added live event tracking, countdowns, auto past fading, quick anchors, and responsive columns.
 // ─────────────────────────────────────────────
 
 /**
@@ -11,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { readJSON } from "../utils/github";
-import { getPageAccess, isNavVisible } from "../utils/pageAccess";
+import { getPageAccess } from "../utils/pageAccess";
 import { getPageAccess as getCentralPageAccess } from "../lib/pageAccess";
 import ComingSoon from "../components/ComingSoon";
 import { useAppContext } from "../context/AppContext";
@@ -21,15 +22,15 @@ import DualClock from "../components/DualClock";
 
 // Event type color map
 const typeColorMap: Record<string, string> = {
-  travel: "bg-yellow-105 text-yellow-800 border-yellow-300",
-  hotel: "bg-blue-100   text-blue-800   border-blue-300",
-  session: "bg-purple-100 text-purple-800 border-purple-300",
-  activity: "bg-green-100  text-green-800  border-green-300",
-  break: "bg-gray-100   text-gray-600   border-gray-300",
+  travel: "bg-amber-50 text-amber-800 border-amber-200",
+  hotel: "bg-blue-50   text-blue-850   border-blue-200",
+  session: "bg-purple-50 text-purple-850 border-purple-200",
+  activity: "bg-green-50  text-green-850  border-green-200",
+  break: "bg-gray-50   text-gray-700   border-gray-200",
 };
 
 const typeDotMap: Record<string, string> = {
-  travel: "bg-yellow-400",
+  travel: "bg-amber-400",
   hotel: "bg-blue-500",
   session: "bg-purple-500",
   activity: "bg-green-500",
@@ -45,6 +46,24 @@ export default function Schedule() {
     ? getCentralPageAccess(currentUser?.id || "", currentUser?.role || "", "agenda", content.settings)
     : { enabled: true, comingSoon: false };
 
+  // Track current timestamp to enable real-time countdowns & past/present/future states
+  const [now, setNow] = useState<Date>(new Date());
+  const [tripDays, setTripDays] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Keep internal clock running
+    const timer = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    readJSON("tripSchedule.json")
+      .then(setTripDays)
+      .catch(() => setTripDays([]));
+  }, []);
+
   if (!centralAccess.enabled) {
     return <Navigate to="/access-denied" replace />;
   }
@@ -56,14 +75,6 @@ export default function Schedule() {
       </Layout>
     );
   }
-
-  const [tripDays, setTripDays] = useState<any[]>([]);
-
-  useEffect(() => {
-    readJSON("tripSchedule.json")
-      .then(setTripDays)
-      .catch(() => setTripDays([]));
-  }, []);
 
   if (access === "hidden") {
     return (
@@ -81,7 +92,7 @@ export default function Schedule() {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center text-center px-6 py-20 min-h-[60vh] font-sans">
-          <span className="text-6xl mb-5">{"\uD83D\uDD12"}</span>
+          <span className="text-6xl mb-5">{"🔒"}</span>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{pageTitle}</h1>
           <p className="text-gray-500 mb-6 font-semibold text-sm max-w-xs">
             This feature is coming soon.
@@ -89,6 +100,95 @@ export default function Schedule() {
         </div>
       </Layout>
     );
+  }
+
+  // Helper utility to resolve an exact UTC Date object for an event
+  const getEventDateUtc = (dayDate: string, event: any) => {
+    const timeStr = event.time || "12:00";
+    const timezone = event.inputTimezone || "Europe/Prague";
+    try {
+      const isostring = `${dayDate}T${timeStr}`;
+      const utcStr = localToUtc(isostring, timezone);
+      return new Date(utcStr);
+    } catch {
+      return new Date(`${dayDate}T${timeStr}`);
+    }
+  };
+
+  // Flat list of all events with computed UTC timestamps for linear timeline assessment
+  const allEventsWithDates = tripDays
+    .flatMap((day) =>
+      (day.events || []).map((evt: any) => {
+        const utcDate = getEventDateUtc(day.date, evt);
+        return {
+          ...evt,
+          dayId: day.id,
+          dayDate: day.date,
+          utcDate,
+        };
+      })
+    )
+    .sort((a, b) => a.utcDate.getTime() - b.utcDate.getTime());
+
+  // Find "Next Event" (first future event)
+  const nextEvent = allEventsWithDates.find((e) => e.utcDate.getTime() > now.getTime());
+
+  // Find "Happening Now" (the latest past event starting <= now, within a 3 hour activity window)
+  let activeEvent: any = null;
+  const pastEvents = allEventsWithDates.filter((e) => e.utcDate.getTime() <= now.getTime());
+  if (pastEvents.length > 0) {
+    const latestPast = pastEvents[pastEvents.length - 1];
+    const millisecondsElapsed = now.getTime() - latestPast.utcDate.getTime();
+    const hoursElapsed = millisecondsElapsed / (1000 * 60 * 60);
+    // Mark as happening now if event started in the last 3 hours
+    if (hoursElapsed < 3) {
+      activeEvent = latestPast;
+    }
+  }
+
+  // Determine jump target (happening now prioritized, fallbacks to next event)
+  const jumpTarget = activeEvent || nextEvent;
+
+  // Jump smooth scrolling navigation handler
+  const handleJumpToCurrent = () => {
+    if (jumpTarget) {
+      const targetId = `event-row-${jumpTarget.id}`;
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Highlight active jump
+        element.classList.add("ring-2", "ring-amber-400", "scale-[1.01]", "bg-amber-50/20");
+        setTimeout(() => {
+          element.classList.remove("ring-2", "ring-amber-400", "scale-[1.01]", "bg-amber-50/20");
+        }, 2000);
+      } else {
+        // Fallback to day card anchor
+        const dayElement = document.getElementById(`day-card-${jumpTarget.dayId}`);
+        if (dayElement) {
+          dayElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    }
+  };
+
+  // Next event live ticking countdown values computed dynamically from the existing ticking 'now' state
+  let timeLeft = null;
+  if (nextEvent) {
+    const diff = nextEvent.utcDate.getTime() - now.getTime();
+    if (diff > 0) {
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 65); // Standardize dynamic time bounding
+      timeLeft = {
+        days,
+        hours: hours % 24,
+        minutes: minutes % 60,
+        seconds: seconds % 60
+      };
+    } else {
+      timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
   }
 
   return (
@@ -102,7 +202,7 @@ export default function Schedule() {
         <div className="mb-6 flex justify-between items-end">
           <div>
             <h1 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-              {"\uD83D\uDDD3\uFE0F"} {pageTitle}
+              {"📅"} {pageTitle}
             </h1>
             <p className="text-sm text-gray-500 mt-1">
               Prague · June 25–28, 2026
@@ -113,12 +213,104 @@ export default function Schedule() {
           </div>
         </div>
 
+        {/* live Event Countdown section */}
+        {nextEvent && timeLeft && (
+          <div className="mb-5 bg-gray-900 text-white rounded-2xl p-4 shadow-md border border-gray-800 relative overflow-hidden">
+            <div className="absolute -top-12 -right-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
+                  <span className="text-[10px] uppercase font-black tracking-widest text-amber-400">
+                    Countdown to Next Event
+                  </span>
+                </div>
+                <h3 className="text-xs sm:text-sm font-extrabold mt-1 text-gray-100 flex items-center gap-1.5 truncate max-w-xs sm:max-w-md">
+                  {nextEvent.icon && <span className="text-base select-none">{nextEvent.icon}</span>}
+                  <span className="truncate">{nextEvent.label}</span>
+                </h3>
+              </div>
+              
+              {/* Visual Countdown grid of dynamic time tiles */}
+              <div className="flex items-center gap-1.5">
+                {timeLeft.days > 0 && (
+                  <div className="flex flex-col items-center min-w-[36px] bg-white/5 border border-white/10 px-1.5 py-1 rounded">
+                    <span className="text-xs font-black text-amber-400 leading-none">{timeLeft.days}</span>
+                    <span className="text-[7px] text-gray-400 uppercase font-bold mt-0.5">days</span>
+                  </div>
+                )}
+                <div className="flex flex-col items-center min-w-[36px] bg-white/5 border border-white/10 px-1.5 py-1 rounded">
+                  <span className="text-xs font-black text-white leading-none">{String(timeLeft.hours).padStart(2, '0')}</span>
+                  <span className="text-[7px] text-gray-400 uppercase font-bold mt-0.5">hrs</span>
+                </div>
+                <div className="flex flex-col items-center min-w-[36px] bg-white/5 border border-white/10 px-1.5 py-1 rounded">
+                  <span className="text-xs font-black text-white leading-none">{String(timeLeft.minutes).padStart(2, '0')}</span>
+                  <span className="text-[7px] text-gray-400 uppercase font-bold mt-0.5">min</span>
+                </div>
+                <div className="flex flex-col items-center min-w-[36px] bg-amber-500/15 border border-amber-500/25 px-1.5 py-1 rounded">
+                  <span className="text-xs font-black text-amber-400 leading-none">{String(timeLeft.seconds).padStart(2, '0')}</span>
+                  <span className="text-[7px] text-amber-300 font-black uppercase mt-0.5">sec</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Jumper Quick Anchor button to "Happening Now" / "Up Next" */}
+        {jumpTarget && (
+          <div className="mb-6 flex justify-between items-center bg-amber-50/30 border border-amber-100 p-3 rounded-xl shadow-sm gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              {activeEvent ? (
+                <>
+                  <span className="relative flex h-3 w-3 flex-shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                  </span>
+                  <div className="min-w-0">
+                    <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                      Happening Now
+                    </span>
+                    <p className="text-xs font-bold text-gray-800 truncate mt-1 flex items-center gap-1">
+                      {activeEvent.icon && <span className="select-none">{activeEvent.icon}</span>}
+                      <span className="truncate">{activeEvent.label}</span>
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span className="relative flex h-2.5 w-2.5 flex-shrink-0">
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400"></span>
+                  </span>
+                  <div className="min-w-0">
+                    <span className="text-[9px] font-black text-amber-700 bg-amber-50 border border-amber-100 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                      Up Next
+                    </span>
+                    <p className="text-xs font-bold text-gray-800 truncate mt-1 flex items-center gap-1">
+                      {nextEvent.icon && <span className="select-none">{nextEvent.icon}</span>}
+                      <span className="truncate">{nextEvent.label}</span>
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <button
+              onClick={handleJumpToCurrent}
+              type="button"
+              className="flex-shrink-0 cursor-pointer bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 active:scale-95 text-black px-3.5 py-2 rounded-lg font-black text-[10px] flex items-center gap-1 uppercase tracking-wider transition-all shadow-sm"
+            >
+              🚀 {activeEvent ? "GOTO NOW" : "Check What's Next"}
+            </button>
+          </div>
+        )}
+
         {/* Day Cards */}
         <div className="flex flex-col gap-6">
           {tripDays.map((day) => (
             <div
               key={day.id}
-              className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+              id={`day-card-${day.id}`}
+              className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden scroll-mt-24"
             >
               {/* Day Header */}
               <div className="bg-black px-5 py-3 flex items-center justify-between">
@@ -142,87 +334,152 @@ export default function Schedule() {
               </div>
 
               {/* Events Itinerary */}
-              <div className="px-5 py-3 divide-y divide-gray-50">
+              <div className="px-5 py-3 divide-y divide-gray-100">
                 {day.events &&
-                  day.events.map((event: any, idx: number) => (
-                    <div
-                      key={event.id}
-                      className="flex items-start gap-4 py-3 first:pt-2 last:pb-2"
-                    >
-                      {/* Time Column with customized Prague/Cairo design pills */}
-                      <div className="flex flex-col w-20 flex-shrink-0 pt-0.5 items-end px-2 sm:px-0">
-                        {(() => {
-                          const rawDate =
-                            event.datetime_utc ||
-                            localToUtc(
-                              `${day.date}T${event.time || "00:00"}`,
-                              "Africa/Cairo",
+                  day.events.map((event: any, idx: number) => {
+                    const evtUtc = getEventDateUtc(day.date, event);
+                    const isPast = evtUtc.getTime() < now.getTime() && activeEvent?.id !== event.id;
+                    const isNow = activeEvent?.id === event.id;
+
+                    return (
+                      <div
+                        key={event.id}
+                        id={`event-row-${event.id}`}
+                        className={`flex flex-col md:flex-row md:items-start gap-3 md:gap-4 py-4 first:pt-2 last:pb-2 border-none transition-all duration-300 scroll-mt-28
+                          ${isPast ? "opacity-55 scale-[0.98] grayscale-[15%]" : ""} 
+                          ${isNow ? "bg-amber-50/10 p-2 rounded-xl border border-amber-100" : ""}`}
+                      >
+                        {/* Time Column/Row (Sits ABOVE details on mobile, and to the left on desktop) */}
+                        <div className="flex flex-row md:flex-col items-center md:items-end gap-1.5 md:gap-1.5 md:w-20 md:flex-shrink-0 flex-wrap">
+                          {(() => {
+                            const rawDate =
+                              event.datetime_utc ||
+                              localToUtc(
+                                `${day.date}T${event.time || "00:00"}`,
+                                "Africa/Cairo",
+                              );
+                            const cairo = utcToDisplay(rawDate, "Africa/Cairo");
+                            const prague = utcToDisplay(rawDate, "Europe/Prague");
+                            const showPrague = (event.timezoneDisplay ?? "both") === "both" || (event.timezoneDisplay ?? "both") === "prague";
+                            const showCairo = (event.timezoneDisplay ?? "both") === "both" || (event.timezoneDisplay ?? "both") === "cairo";
+                            return (
+                              <>
+                                {showPrague && (() => {
+                                  const { digits, period } = splitAmPm(prague.time);
+                                  return (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-amber-100 border border-amber-250 text-amber-950 font-black whitespace-nowrap">
+                                      🇨🇿 {digits}<span className="text-[8px] font-bold text-amber-600 ml-0.5">{period}</span>
+                                    </span>
+                                  );
+                                })()}
+                                {showCairo && (() => {
+                                  const { digits, period } = splitAmPm(cairo.time);
+                                  return (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-blue-50 border border-blue-250 text-blue-900 font-black whitespace-nowrap">
+                                      🇪🇬 {digits}<span className="text-[8px] font-bold text-blue-600 ml-0.5">{period}</span>
+                                    </span>
+                                  );
+                                })()}
+                              </>
                             );
-                          const cairo = utcToDisplay(rawDate, "Africa/Cairo");
-                          const prague = utcToDisplay(rawDate, "Europe/Prague");
-                          const showPrague = (event.timezoneDisplay ?? "both") === "both" || (event.timezoneDisplay ?? "both") === "prague";
-                          const showCairo = (event.timezoneDisplay ?? "both") === "both" || (event.timezoneDisplay ?? "both") === "cairo";
-                          return (
-                            <>
-                              {showPrague && (() => {
-                                const { digits, period } = splitAmPm(prague.time);
-                                return (
-                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] bg-amber-100 border border-amber-300 text-amber-900 font-bold whitespace-nowrap mb-1">
-                                    🇨🇿 {digits}<span className="text-[9px] font-semibold text-amber-500 ml-0.5">{period}</span>
-                                  </span>
-                                );
-                              })()}
-                              {showCairo && (() => {
-                                const { digits, period } = splitAmPm(cairo.time);
-                                return (
-                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] bg-blue-50 border border-blue-200 text-blue-800 font-bold whitespace-nowrap">
-                                    🇪🇬 {digits}<span className="text-[9px] font-semibold text-amber-500 ml-0.5">{period}</span>
-                                  </span>
-                                );
-                              })()}
-                            </>
-                          );
-                        })()}
-                      </div>
+                          })()}
+                        </div>
 
-                      {/* Timeline Line with Dot */}
-                      <div className="flex flex-col items-center pt-1.5 relative self-stretch">
-                        <div
-                          className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${typeDotMap[event.type] ?? "bg-gray-400"}`}
-                        />
-                        {idx < day.events.length - 1 && (
-                          <div className="w-px flex-1 bg-gray-100 my-1 min-h-[22px]" />
-                        )}
-                      </div>
-
-                      {/* Event Content & Type Badge */}
-                      <div className="flex-1 flex items-start justify-between gap-3 min-w-0">
-                        <div className="flex items-center gap-2 min-w-0">
-                          {event.icon && (
-                            <span className="text-lg flex-shrink-0">
-                              {event.icon}
-                            </span>
+                        {/* Interactive Timeline line with Pulsator (Vertical alignment only on Desktop) */}
+                        <div className="hidden md:flex flex-col items-center pt-1.5 relative self-stretch select-none">
+                          <div
+                            className={`w-2.5 h-2.5 rounded-full flex-shrink-0 relative transition-transform ${
+                              isNow
+                                ? "bg-emerald-500 scale-125 ring-4 ring-emerald-100"
+                                : isPast
+                                ? "bg-gray-300"
+                                : typeDotMap[event.type] ?? "bg-gray-400"
+                            }`}
+                          >
+                            {isNow && (
+                              <span className="animate-ping absolute top-0 left-0 inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            )}
+                          </div>
+                          {idx < day.events.length - 1 && (
+                            <div className="w-px flex-1 bg-gray-100 my-1.5 min-h-[22px]" />
                           )}
-                          <span className="text-sm font-bold text-gray-800 break-words leading-tight">
-                            {event.label}
+                        </div>
+
+                        {/* Event Content & Type Badge (Full-width custom layouts with short maps links) */}
+                        <div className="flex-1 flex items-start justify-between gap-3 min-w-0">
+                          <div className="min-w-0">
+                            <div className="flex items-start gap-2.5">
+                              {event.icon && (
+                                <span className="text-xl flex-shrink-0 mt-0.5 select-none">
+                                  {event.icon}
+                                </span>
+                              )}
+                              <div className="min-w-0">
+                                <span className={`text-sm font-bold text-gray-800 break-words leading-tight flex flex-wrap items-center gap-1.5 ${isNow ? 'text-emerald-800 font-black' : ''}`}>
+                                  {event.label}
+                                  {isNow && (
+                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8px] bg-emerald-100 text-emerald-800 font-black uppercase tracking-wider animate-pulse">
+                                      • Happening Now
+                                    </span>
+                                  )}
+                                </span>
+
+                                {/* 📍 Custom Location Name with a Minified Short map directions button */}
+                                {event.location && (
+                                  <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                                    <span className="inline-flex items-center gap-1 text-[11px] text-gray-600 font-bold bg-gray-50 border border-gray-150 px-2 py-0.5 rounded-md">
+                                      📍 {event.location}
+                                    </span>
+                                    {event.mapLocation && (
+                                      <a
+                                        href={event.mapLocation}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        referrerPolicy="no-referrer"
+                                        className="inline-flex items-center gap-0.5 text-[9px] font-black text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-150 px-2.5 py-0.5 rounded-md transition-all uppercase tracking-wider cursor-pointer"
+                                        title="View location on the Map"
+                                      >
+                                        🗺️ Map Link
+                                      </a>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Action button of operation defined by the admin */}
+                                {event.link && (
+                                  <div className="mt-2.5">
+                                    <a
+                                      href={event.link}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      referrerPolicy="no-referrer"
+                                      className="inline-flex items-center gap-1 text-[10px] font-black text-white bg-gray-900 hover:bg-gray-800 px-3 py-1.5 rounded-lg transition-all shadow-sm uppercase tracking-wider cursor-pointer"
+                                    >
+                                      🔗 {event.actionText || "View Activity Details"}
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <span
+                            className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider flex-shrink-0 self-start mt-0.5
+                          ${typeColorMap[event.type] ?? "bg-gray-100 text-gray-500 border-gray-200"}`}
+                          >
+                            {event.type}
                           </span>
                         </div>
-                        <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider flex-shrink-0
-                        ${typeColorMap[event.type] ?? "bg-gray-100 text-gray-500 border-gray-200"}`}
-                        >
-                          {event.type}
-                        </span>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
               </div>
             </div>
           ))}
 
           {tripDays.length === 0 && (
             <div className="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-              <p className="text-4xl mb-3">{"\uD83D\uDCED"}</p>
+              <p className="text-4xl mb-3">{"📬"}</p>
               <p className="text-sm font-bold text-gray-400">
                 No schedule yet.
               </p>

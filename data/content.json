@@ -1,5 +1,7 @@
 {
-  "home": { "description": "Welcome to EVA URO CLUB Prague Conference Trip Management App" },
+  "home": {
+    "description": "Welcome to EVA URO CLUB Prague Conference Trip Management App"
+  },
   "announcements": [],
   "agenda": [],
   "posts": [],
@@ -7,12 +9,45 @@
   "albums": [],
   "settings": {
     "pages": {
-      "announcements": { "enabled": true, "comingSoon": false },
-      "agenda":        { "enabled": true, "comingSoon": false },
-      "posts":         { "enabled": true, "comingSoon": false },
-      "media":         { "enabled": true, "comingSoon": false },
-      "albums":        { "enabled": true, "comingSoon": false }
+      "announcements": {
+        "enabled": true,
+        "comingSoon": false
+      },
+      "agenda": {
+        "enabled": true,
+        "comingSoon": false
+      },
+      "posts": {
+        "enabled": true,
+        "comingSoon": false
+      },
+      "media": {
+        "enabled": true,
+        "comingSoon": false
+      },
+      "albums": {
+        "enabled": true,
+        "comingSoon": false
+      }
     },
-    "userOverrides": {}
+    "userOverrides": {},
+    "roleOverrides": {
+      "doctor": {
+        "pages": {
+          "agenda": {
+            "enabled": true,
+            "comingSoon": false
+          },
+          "posts": {
+            "enabled": false,
+            "comingSoon": false
+          },
+          "media": {
+            "enabled": false,
+            "comingSoon": false
+          }
+        }
+      }
+    }
   }
 }

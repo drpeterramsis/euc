@@ -31,6 +31,7 @@ import Directory from './pages/Directory';
 import { useApp } from './context/AppContext';
 import { getFeatureStatus } from './utils/featureAccess';
 import { useSwipeBack } from './hooks/useSwipeBack';
+import { getPageAccess as getCentralPageAccess } from './lib/pageAccess';
 
 /**
  * ProtectedRoute component verifies authentication synchronously.
@@ -63,11 +64,39 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const FeatureRoute = ({ children, featureKey }: { children: React.ReactNode, featureKey: string }) => {
-  const { currentUser, users } = useApp();
+  const { currentUser, users, content } = useApp();
   const fullUser = users.find(u => u.id === currentUser?.id) || currentUser;
   
   if (!fullUser) return <Navigate to="/" replace />;
   
+  // 1. Map featureKey to the central pageName used in content.settings
+  const keyToPageName: Record<string, string> = {
+    schedule: "agenda",
+    sessions: "posts",
+    photoGallery: "media",
+    media: "media",
+    directory: "staffDirectory",
+  };
+  const pageName = keyToPageName[featureKey] || featureKey;
+
+  // 2. Get resolved central access
+  const normalizedRole = currentUser?.role?.trim().toLowerCase();
+  const centralAccess = content?.settings 
+    ? getCentralPageAccess(currentUser?.id || "", normalizedRole || "", pageName, content.settings)
+    : null;
+
+  // If central visibility settings are defined, prioritize them
+  if (centralAccess) {
+    if (centralAccess.comingSoon) {
+      return <Navigate to={`/coming-soon?feature=${featureKey}`} replace />;
+    }
+    if (!centralAccess.enabled) {
+      return <Navigate to="/access-denied" replace />;
+    }
+    return <>{children}</>;
+  }
+
+  // Fallback to individual legacy feature check
   const status = getFeatureStatus(fullUser, featureKey);
   
   if (status === "disabled") return <Navigate to="/dashboard" replace />;

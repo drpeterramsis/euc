@@ -3158,6 +3158,66 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                             </select>
                           </div>
                         </div>
+
+                        {/* Interactive Place, Maps, and Custom Action Buttons */}
+                        <div className="col-span-full pt-2.5 mt-2 border-t border-dashed border-gray-200 grid grid-cols-1 sm:grid-cols-4 gap-2">
+                          <div>
+                            <label className="text-[8px] font-extrabold text-gray-500 uppercase tracking-wider block mb-1">
+                              📍 Place / Location Name
+                            </label>
+                            <input
+                              type="text"
+                              value={event.location || ""}
+                              onChange={(e) =>
+                                handleUpdateTripEventField(day.id, event.id, "location", e.target.value)
+                              }
+                              placeholder="e.g. U Cedru Restaurant"
+                              className="w-full p-1.5 border border-gray-200 rounded bg-gray-50 text-xs font-semibold text-gray-850"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[8px] font-extrabold text-gray-500 uppercase tracking-wider block mb-1">
+                              🗺️ Google Maps URL
+                            </label>
+                            <input
+                              type="text"
+                              value={event.mapLocation || ""}
+                              onChange={(e) =>
+                                handleUpdateTripEventField(day.id, event.id, "mapLocation", e.target.value)
+                              }
+                              placeholder="e.g. https://maps.app.goo.gl/..."
+                              className="w-full p-1.5 border border-gray-200 rounded bg-gray-50 text-xs font-semibold text-gray-850"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[8px] font-extrabold text-gray-500 uppercase tracking-wider block mb-1">
+                              🔗 Custom Action Link
+                            </label>
+                            <input
+                              type="text"
+                              value={event.link || ""}
+                              onChange={(e) =>
+                                handleUpdateTripEventField(day.id, event.id, "link", e.target.value)
+                              }
+                              placeholder="e.g. Website URL"
+                              className="w-full p-1.5 border border-gray-200 rounded bg-gray-50 text-xs font-semibold text-gray-850"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[8px] font-extrabold text-gray-500 uppercase tracking-wider block mb-1">
+                              🏷️ Action Button Label
+                            </label>
+                            <input
+                              type="text"
+                              value={event.actionText || ""}
+                              onChange={(e) =>
+                                handleUpdateTripEventField(day.id, event.id, "actionText", e.target.value)
+                              }
+                              placeholder="Default: View Activity Details"
+                              className="w-full p-1.5 border border-gray-200 rounded bg-gray-50 text-xs font-semibold text-gray-850"
+                            />
+                          </div>
+                        </div>
                       </div>
                       <button
                         type="button"

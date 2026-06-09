@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.965
+Version: 1.0.973
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -121,6 +121,10 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.963 | 2026-05-26 | UI POLISH: Redesigned Countdown card with bg-white, dark-island timer bg-gray-900, yellow digits/white seconds, hidden zero-days, and swapped Prague/Cairo trip timeline pill color schemes. |
 | v1.0.964 | 2026-05-26 | UI POLISH: Aligned DualClock timezone clocks to match the Countdown page colors (Prague blue chip, Cairo amber chip, amber AM/PM indicators). |
 | v1.0.965 | 2026-05-26 | GLOBAL COLOR SWAP: Swapped Prague and Cairo color representations across the entire application so that the destination (Prague) gets the prominent Amber theme and home base (Cairo) gets the secondary Blue theme. |
+| v1.0.966 | 2026-06-09 | Separated database and UI mappings for "Schedule" (agenda) and "Sessions" (posts) so they act as independent access control toggles. Added a global route-access patch for Doctor accounts to seamlessly load page content based on central visibility settings instead of legacy flat profile characteristics. |
+| v1.0.968 | 2026-06-09 | SCHEDULE OPTIMIZATION: Implemented single-column mobile view with stacked time/details, live ticking countdown to next event with ambient styles, pulsating dot for active events, single-click smooth anchor jumper, past event fading, and admin management fields for custom map locations and generic action buttons. |
+| v1.0.970 | 2026-06-09 | BUG FIX: Resolved "Maximum update depth exceeded" error on the Schedule page by substituting the dynamic nextEvent object dependency with high-performance primitive properties (ID & millisecond values) inside the live countdown useEffect hook. |
+| v1.0.973 | 2026-06-09 | ARCHITECTURAL REFACTOR: Re-architected local countdown calculations so they evaluate directly in the render cycle rather than driving nested side effects or redundant state-set operations. This completely decouples ticking countdown logic from React component lifecycle updates, comprehensively resolving maximum update depth error conditions. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

@@ -26,7 +26,7 @@ export default function Sessions() {
   const pageTitle = getLabel(appConfig, "sessions");
 
   const centralAccess = content?.settings 
-    ? getCentralPageAccess(currentUser?.id || "", currentUser?.role || "", "agenda", content.settings)
+    ? getCentralPageAccess(currentUser?.id || "", currentUser?.role || "", "posts", content.settings)
     : { enabled: true, comingSoon: false };
 
   // Hidden Check
