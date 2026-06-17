@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <!-- Beautiful metallic gold gradient -->
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFEFA6" />
+      <stop offset="30%" stop-color="#D4AF37" />
+      <stop offset="70%" stop-color="#AA7C11" />
+      <stop offset="100%" stop-color="#5A3F02" />
+    </linearGradient>
+    <linearGradient id="gold-light" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#AA7C11" />
+      <stop offset="50%" stop-color="#FFEFA6" />
+      <stop offset="100%" stop-color="#D4AF37" />
+    </linearGradient>
+  </defs>
+
+  <!-- Luxurious dark background representing ancient ground -->
+  <rect width="512" height="512" fill="#140700" rx="90" />
+  
+  <g transform="translate(256, 256)">
+    <!-- Elegant decorative background lines / sunrays -->
+    <g stroke="url(#gold)" stroke-width="2" opacity="0.15">
+      <circle r="220" fill="none" />
+      <circle r="180" fill="none" />
+      <line x1="-220" y1="0" x2="220" y2="0" />
+      <line x1="0" y1="-220" x2="0" y2="220" />
+      <line x1="-155" y1="-155" x2="155" y2="155" />
+      <line x1="-155" y1="155" x2="155" y2="-155" />
+    </g>
+
+    <!-- Detailed Crossed Swords in Background -->
+    <g stroke="url(#gold)" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Sword 1: Top-Left to Bottom-Right -->
+      <g transform="rotate(45)">
+        <!-- Blade -->
+        <path d="M -15 -180 L 15 -180 L 10 100 L -10 100 Z" fill="#2C2318" stroke="url(#gold)" stroke-width="8" />
+        <line x1="0" y1="-175" x2="0" y2="100" stroke="url(#gold-light)" stroke-width="3" />
+        <!-- Guard -->
+        <path d="M -45 100 L 45 100 L 35 115 L -35 115 Z" fill="url(#gold)" stroke="url(#gold-light)" stroke-width="4" />
+        <circle cx="-40" cy="107.5" r="8" fill="url(#gold-light)" />
+        <circle cx="40" cy="107.5" r="8" fill="url(#gold-light)" />
+        <!-- Hilt/Grip -->
+        <rect x="-6" y="115" width="12" height="45" rx="3" fill="#140700" stroke="url(#gold)" stroke-width="5" />
+        <!-- Pommel -->
+        <circle cx="0" cy="168" r="14" fill="url(#gold-light)" stroke="url(#gold)" stroke-width="4" />
+        <circle cx="0" cy="168" r="5" fill="#140700" />
+      </g>
+
+      <!-- Sword 2: Top-Right to Bottom-Left -->
+      <g transform="rotate(-45)">
+        <!-- Blade -->
+        <path d="M -15 -180 L 15 -180 L 10 100 L -10 100 Z" fill="#2C2318" stroke="url(#gold)" stroke-width="8" />
+        <line x1="0" y1="-175" x2="0" y2="100" stroke="url(#gold-light)" stroke-width="3" />
+        <!-- Guard -->
+        <path d="M -45 100 L 45 100 L 35 115 L -35 115 Z" fill="url(#gold)" stroke="url(#gold-light)" stroke-width="4" />
+        <circle cx="-40" cy="107.5" r="8" fill="url(#gold-light)" />
+        <circle cx="40" cy="107.5" r="8" fill="url(#gold-light)" />
+        <!-- Hilt/Grip -->
+        <rect x="-6" y="115" width="12" height="45" rx="3" fill="#140700" stroke="url(#gold)" stroke-width="5" />
+        <!-- Pommel -->
+        <circle cx="0" cy="168" r="14" fill="url(#gold-light)" stroke="url(#gold)" stroke-width="4" />
+        <circle cx="0" cy="168" r="5" fill="#140700" />
+      </g>
+    </g>
+
+    <!-- Main Shield of the Twelve Tribes (Canaan Sovereign Shield) -->
+    <!-- Outer Guard Ring -->
+    <path d="M 0 -130 C 130 -130 150 -60 150 40 C 150 140 0 200 0 200 C 0 200 -150 140 -150 40 C -150 -60 -130 -130 0 -130 Z" 
+          fill="#140700" stroke="url(#gold)" stroke-width="16" stroke-linejoin="round" />
+          
+    <!-- Inner Fine Ring -->
+    <path d="M 0 -110 C 110 -110 125 -50 125 35 C 125 120 0 175 0 175 C 0 175 -125 120 -125 35 C -125 -50 -110 -110 0 -110 Z" 
+          fill="#1c0a01" stroke="url(#gold-light)" stroke-width="4" stroke-linejoin="round" />
+
+    <!-- Shield Studs / Rivets (Representing Alliance/Tribes) -->
+    <circle cx="0" cy="-120" r="5" fill="url(#gold)" />
+    <circle cx="138" cy="15" r="5" fill="url(#gold)" />
+    <circle cx="-138" cy="15" r="5" fill="url(#gold)" />
+    <circle cx="85" cy="140" r="5" fill="url(#gold)" />
+    <circle cx="-85" cy="140" r="5" fill="url(#gold)" />
+    <circle cx="0" cy="188" r="5" fill="url(#gold)" />
+
+    <!-- Centerpiece Emblem: Fortress Gate / Kanaan Gate (Sovereign Castle) -->
+    <g fill="url(#gold)" stroke="url(#gold-light)" stroke-width="1.5" stroke-linejoin="round" transform="translate(0, 15)">
+      <!-- Fortress Base Walls -->
+      <path d="M-60 40 L60 40 L50 -10 L-50 -10 Z" fill="url(#gold)" />
+      <!-- Central Arch Gate -->
+      <path d="M-18 40 L-18 12 Q0 -6 18 12 L18 40 Z" fill="#140700" stroke="url(#gold-light)" stroke-width="3" />
+      
+      <!-- Left Tower -->
+      <path d="M-55 -10 L-35 -10 L-35 -50 L-55 -50 Z" />
+      <!-- Left Tower Battlements/Crenellations -->
+      <path d="M-57 -50 L-57 -60 L-51 -60 L-51 -54 L-45 -54 L-45 -60 L-39 -60 L-39 -51 L-35 -51" fill="none" stroke="url(#gold-light)" stroke-width="3" />
+      <circle cx="-45" cy="-30" r="4" fill="#140700" stroke="url(#gold-light)" stroke-width="1.5" />
+      
+      <!-- Right Tower -->
+      <path d="M35 -10 L55 -10 L55 -50 L35 -50 Z" />
+      <!-- Right Tower Battlements/Crenellations -->
+      <path d="M35 -51 L39 -51 L39 -60 L45 -60 L45 -54 L51 -54 L51 -60 L57 -60 L57 -50" fill="none" stroke="url(#gold-light)" stroke-width="3" />
+      <circle cx="45" cy="-30" r="4" fill="#140700" stroke="url(#gold-light)" stroke-width="1.5" />
+
+      <!-- Center Tower (The Sovereign Keep) -->
+      <path d="M-25 -10 L25 -10 L20 -70 L-20 -70 Z" />
+      <!-- Center Tower Battlements/Crenellations -->
+      <path d="M-22 -70 L-22 -80 L-14 -80 L-14 -74 L-6 -74 L-6 -80 L6 -80 L6 -74 L14 -74 L14 -80 L22 -80 L22 -70" fill="none" stroke="url(#gold-light)" stroke-width="3" />
+      <!-- Royal Crown Shield Ornament -->
+      <path d="M -8 -38 L 8 -38 L 12 -22 L -12 -22 Z" fill="#140700" stroke="url(#gold)" stroke-width="2" />
+      <polygon points="0,-34 -5,-26 5,-26" fill="url(#gold)" />
+    </g>
+  </g>
+</svg>

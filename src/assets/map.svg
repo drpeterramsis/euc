@@ -1,0 +1,15 @@
+<svg viewBox="0 0 1024 1536" xmlns="http://www.w3.org/2000/svg">
+  <!-- Interactive Tribe Regions polygons matching the 1024x1536 coordinates -->
+  <polygon id="asher" points="154,77 320,77 307,430 166,415" />
+  <polygon id="naphtali" points="320,77 538,77 525,307 307,430" />
+  <polygon id="zebulun" points="307,430 486,399 474,568 294,584" />
+  <polygon id="issachar" points="486,399 640,369 627,553 474,568" />
+  <polygon id="dan" points="154,415 307,430 294,584 154,614" />
+  <polygon id="manasseh" points="294,584 474,568 461,799 282,814" />
+  <polygon id="ephraim" points="474,568 627,553 614,737 461,799" />
+  <polygon id="benjamin" points="282,814 461,799 448,937 275,952" />
+  <polygon id="judah" points="154,614 627,553 614,737 448,937 275,952 154,1152" />
+  <polygon id="simeon" points="192,1152 448,1121 435,1336 186,1321" />
+  <polygon id="gad" points="755,307 922,292 909,768 742,783" />
+  <polygon id="reuben" points="742,783 909,768 896,1106 736,1121" />
+</svg>

@@ -215,42 +215,77 @@ export default function Schedule() {
 
         {/* live Event Countdown section */}
         {nextEvent && timeLeft && (
-          <div className="mb-5 bg-gray-900 text-white rounded-2xl p-4 shadow-md border border-gray-800 relative overflow-hidden">
-            <div className="absolute -top-12 -right-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
-                  <span className="text-[10px] uppercase font-black tracking-widest text-amber-400">
-                    Countdown to Next Event
+          <div className="w-full rounded-2xl bg-white border border-gray-100 shadow-sm p-6 sm:p-8 mb-8 text-center font-sans">
+            {/* Countdown Header */}
+            <div className="flex items-center justify-center gap-2 mb-2">
+              {nextEvent.icon && <span className="text-2xl select-none">{nextEvent.icon}</span>}
+              <span className="text-gray-900 font-extrabold text-lg">
+                {nextEvent.label}
+              </span>
+            </div>
+            <p className="text-gray-500 text-xs sm:text-sm font-medium mb-5">
+              Upcoming Scientific Meeting & Tour Details
+            </p>
+
+            {/* Countdown digits container (matching the home page dark island style) */}
+            <div className="bg-gray-900 rounded-2xl p-5 sm:p-6 w-full max-w-lg mx-auto">
+              <div className="flex items-end justify-center gap-1.5 sm:gap-3">
+
+                {/* Days */}
+                {timeLeft.days > 0 && (
+                  <>
+                    <div className="flex flex-col items-center">
+                      <span className="text-4xl sm:text-5xl font-black text-amber-400 tabular-nums leading-none">
+                        {String(timeLeft.days).padStart(2, "0")}
+                      </span>
+                      <span className="text-[10px] uppercase tracking-widest font-extrabold text-amber-300 mt-1.5">
+                        days
+                      </span>
+                    </div>
+                    <span className="text-3xl sm:text-4xl font-extrabold text-amber-300 opacity-70 mx-1 pb-4 select-none">
+                      :
+                    </span>
+                  </>
+                )}
+
+                {/* Hours */}
+                <div className="flex flex-col items-center">
+                  <span className="text-4xl sm:text-5xl font-black text-amber-400 tabular-nums leading-none">
+                    {String(timeLeft.hours).padStart(2, "0")}
+                  </span>
+                  <span className="text-[10px] uppercase tracking-widest font-extrabold text-amber-300 mt-1.5">
+                    hrs
                   </span>
                 </div>
-                <h3 className="text-xs sm:text-sm font-extrabold mt-1 text-gray-100 flex items-center gap-1.5 truncate max-w-xs sm:max-w-md">
-                  {nextEvent.icon && <span className="text-base select-none">{nextEvent.icon}</span>}
-                  <span className="truncate">{nextEvent.label}</span>
-                </h3>
-              </div>
-              
-              {/* Visual Countdown grid of dynamic time tiles */}
-              <div className="flex items-center gap-1.5">
-                {timeLeft.days > 0 && (
-                  <div className="flex flex-col items-center min-w-[36px] bg-white/5 border border-white/10 px-1.5 py-1 rounded">
-                    <span className="text-xs font-black text-amber-400 leading-none">{timeLeft.days}</span>
-                    <span className="text-[7px] text-gray-400 uppercase font-bold mt-0.5">days</span>
-                  </div>
-                )}
-                <div className="flex flex-col items-center min-w-[36px] bg-white/5 border border-white/10 px-1.5 py-1 rounded">
-                  <span className="text-xs font-black text-white leading-none">{String(timeLeft.hours).padStart(2, '0')}</span>
-                  <span className="text-[7px] text-gray-400 uppercase font-bold mt-0.5">hrs</span>
+
+                <span className="text-3xl sm:text-4xl font-extrabold text-amber-300 opacity-70 mx-1 pb-4 select-none">
+                  :
+                </span>
+
+                {/* Minutes */}
+                <div className="flex flex-col items-center">
+                  <span className="text-4xl sm:text-5xl font-black text-amber-400 tabular-nums leading-none">
+                    {String(timeLeft.minutes).padStart(2, "0")}
+                  </span>
+                  <span className="text-[10px] uppercase tracking-widest font-extrabold text-amber-300 mt-1.5">
+                    min
+                  </span>
                 </div>
-                <div className="flex flex-col items-center min-w-[36px] bg-white/5 border border-white/10 px-1.5 py-1 rounded">
-                  <span className="text-xs font-black text-white leading-none">{String(timeLeft.minutes).padStart(2, '0')}</span>
-                  <span className="text-[7px] text-gray-400 uppercase font-bold mt-0.5">min</span>
+
+                <span className="text-3xl sm:text-4xl font-extrabold text-amber-300 opacity-70 mx-1 pb-4 select-none">
+                  :
+                </span>
+
+                {/* Seconds */}
+                <div className="flex flex-col items-center">
+                  <span className="text-2xl sm:text-3xl font-normal text-white opacity-80 tabular-nums leading-none">
+                    {String(timeLeft.seconds).padStart(2, "0")}
+                  </span>
+                  <span className="text-[10px] uppercase tracking-widest font-normal text-white opacity-45 mt-1.5">
+                    sec
+                  </span>
                 </div>
-                <div className="flex flex-col items-center min-w-[36px] bg-amber-500/15 border border-amber-500/25 px-1.5 py-1 rounded">
-                  <span className="text-xs font-black text-amber-400 leading-none">{String(timeLeft.seconds).padStart(2, '0')}</span>
-                  <span className="text-[7px] text-amber-300 font-black uppercase mt-0.5">sec</span>
-                </div>
+
               </div>
             </div>
           </div>
@@ -258,36 +293,42 @@ export default function Schedule() {
 
         {/* Jumper Quick Anchor button to "Happening Now" / "Up Next" */}
         {jumpTarget && (
-          <div className="mb-6 flex justify-between items-center bg-amber-50/30 border border-amber-100 p-3 rounded-xl shadow-sm gap-3">
-            <div className="flex items-center gap-2.5 min-w-0">
+          <div className="mb-8 flex flex-col sm:flex-row justify-between items-stretch sm:items-center bg-amber-50/30 border border-amber-100 p-4 sm:p-3.5 rounded-xl shadow-sm gap-4 sm:gap-3">
+            <div className="flex items-start gap-2.5 min-w-0 flex-1">
               {activeEvent ? (
                 <>
-                  <span className="relative flex h-3 w-3 flex-shrink-0">
+                  <span className="relative flex h-3 w-3 flex-shrink-0 mt-1">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                   </span>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded uppercase tracking-wider">
                       Happening Now
                     </span>
-                    <p className="text-xs font-bold text-gray-800 truncate mt-1 flex items-center gap-1">
-                      {activeEvent.icon && <span className="select-none">{activeEvent.icon}</span>}
-                      <span className="truncate">{activeEvent.label}</span>
+                    <p className="text-xs font-bold text-gray-800 mt-1 flex items-start gap-1 whitespace-normal break-words">
+                      {activeEvent.icon && <span className="select-none text-sm mt-0.5 shrink-0">{activeEvent.icon}</span>}
+                      {/* COMMENT: Allow Up Next title to wrap up to 2 lines max, clip overflow gracefully if any, but do not show ellipsis "..." */}
+                      <span className="whitespace-normal break-words leading-snug flex-1 max-h-[2.4rem] overflow-hidden text-ellipsis-none" style={{ textOverflow: 'clip' }}>
+                        {activeEvent.label}
+                      </span>
                     </p>
                   </div>
                 </>
               ) : (
                 <>
-                  <span className="relative flex h-2.5 w-2.5 flex-shrink-0">
+                  <span className="relative flex h-2.5 w-2.5 flex-shrink-0 mt-1">
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400"></span>
                   </span>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <span className="text-[9px] font-black text-amber-700 bg-amber-50 border border-amber-100 px-1.5 py-0.5 rounded uppercase tracking-wider">
                       Up Next
                     </span>
-                    <p className="text-xs font-bold text-gray-800 truncate mt-1 flex items-center gap-1">
-                      {nextEvent.icon && <span className="select-none">{nextEvent.icon}</span>}
-                      <span className="truncate">{nextEvent.label}</span>
+                    <p className="text-xs font-bold text-gray-800 mt-1 flex items-start gap-1 whitespace-normal break-words">
+                      {nextEvent.icon && <span className="select-none text-sm mt-0.5 shrink-0">{nextEvent.icon}</span>}
+                      {/* COMMENT: Allow Up Next title to wrap up to 2 lines max, clip overflow gracefully if any, but do not show ellipsis "..." */}
+                      <span className="whitespace-normal break-words leading-snug flex-1 max-h-[2.4rem] overflow-hidden text-ellipsis-none" style={{ textOverflow: 'clip' }}>
+                        {nextEvent.label}
+                      </span>
                     </p>
                   </div>
                 </>
@@ -297,9 +338,9 @@ export default function Schedule() {
             <button
               onClick={handleJumpToCurrent}
               type="button"
-              className="flex-shrink-0 cursor-pointer bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 active:scale-95 text-black px-3.5 py-2 rounded-lg font-black text-[10px] flex items-center gap-1 uppercase tracking-wider transition-all shadow-sm"
+              className="flex-shrink-0 cursor-pointer bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 active:scale-95 text-black px-4 py-2.5 sm:px-3.5 sm:py-2 rounded-lg font-black text-[10px] flex items-center justify-center gap-1 uppercase tracking-wider transition-all shadow-sm self-stretch sm:self-center whitespace-nowrap"
             >
-              🚀 {activeEvent ? "GOTO NOW" : "Check What's Next"}
+              🚀 {activeEvent ? "GOTO NOW" : "CHECK WHAT'S NEXT"}
             </button>
           </div>
         )}

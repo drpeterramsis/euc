@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.973
+Version: 1.0.980
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -125,6 +125,10 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.968 | 2026-06-09 | SCHEDULE OPTIMIZATION: Implemented single-column mobile view with stacked time/details, live ticking countdown to next event with ambient styles, pulsating dot for active events, single-click smooth anchor jumper, past event fading, and admin management fields for custom map locations and generic action buttons. |
 | v1.0.970 | 2026-06-09 | BUG FIX: Resolved "Maximum update depth exceeded" error on the Schedule page by substituting the dynamic nextEvent object dependency with high-performance primitive properties (ID & millisecond values) inside the live countdown useEffect hook. |
 | v1.0.973 | 2026-06-09 | ARCHITECTURAL REFACTOR: Re-architected local countdown calculations so they evaluate directly in the render cycle rather than driving nested side effects or redundant state-set operations. This completely decouples ticking countdown logic from React component lifecycle updates, comprehensively resolving maximum update depth error conditions. |
+| v1.0.974 | 2026-06-16 | UI UPDATE: Enhanced Schedule page countdown card UI to match the big, bold visual style and dark timer island of the Home screen widget with centered prominent layout. |
+| v1.0.975 | 2026-06-16 | UI TWEAK: Adjusted Up Next banner style on the Schedule page to display the event title across multiple lines rather than truncating with ellipses, aligning icons to the top. |
+| v1.0.978 | 2026-06-16 | UI TWEAK: Removed all line-clamp and single-line truncation constraints in the Up Next/Happening Now banners on the Schedule page to allow the event title to wrap naturally across 2 lines on mobile without ellipses. |
+| v1.0.980 | 2026-06-17 | UI POLISH: Enhanced Schedule page mobile countdown padding & margins; redesigned Up Next banner on mobile utilizing clean stack layout with full-width, single-line "CHECK WHAT'S NEXT" button. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo
