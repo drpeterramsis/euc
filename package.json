@@ -1,7 +1,7 @@
 {
   "name": "euc-eva-uro-club",
   "private": true,
-  "version": "1.0.987",
+  "version": "1.0.993",
   "description": "EUC – EVA URO CLUB Prague Conference Trip Management App",
   "type": "module",
   "scripts": {

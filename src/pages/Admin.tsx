@@ -136,15 +136,39 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     id: "",
     title: "",
     speaker: "",
+    speakerJob: "",
     date: "",
     time: "",
     toTime: "",
     hall: "",
     link: "",
+    linkUrl: "",
+    linkTitle: "",
     timezoneDisplay: "both" as "both" | "prague" | "cairo",
     speakerPhoto: "",
     speakerWhatsApp: "",
   });
+
+  const [isSavingSession, setIsSavingSession] = useState(false);
+  const [selectedSessionDay, setSelectedSessionDay] = useState<string>("");
+
+  useEffect(() => {
+    if (sessionItems.length > 0) {
+      const uniqueDays = Array.from(new Set(sessionItems.map((s: any) => (s.date || "") as string)))
+        .filter(Boolean)
+        .sort((a: string, b: string) => a.localeCompare(b));
+      
+      if (uniqueDays.length > 0) {
+        if (!selectedSessionDay || !uniqueDays.includes(selectedSessionDay)) {
+          setSelectedSessionDay(uniqueDays[0]);
+        }
+      } else {
+        setSelectedSessionDay("");
+      }
+    } else {
+      setSelectedSessionDay("");
+    }
+  }, [sessionItems, selectedSessionDay]);
 
   // Tab 4 State (Features)
   const [featureSettings, setFeatureSettings] = useState<any>({});
@@ -1212,11 +1236,14 @@ export default function Admin({ initialTab }: AdminProps = {}) {
       id: "ses" + Date.now(),
       title: "",
       speaker: "",
+      speakerJob: "",
       date: "",
       time: "",
       toTime: "",
       hall: "",
       link: "",
+      linkUrl: "",
+      linkTitle: "",
       timezoneDisplay: "both",
       speakerPhoto: "",
       speakerWhatsApp: "",
@@ -1230,11 +1257,14 @@ export default function Admin({ initialTab }: AdminProps = {}) {
       id: item.id || "",
       title: item.title || "",
       speaker: item.speaker || "",
+      speakerJob: item.speakerJob || "",
       date: item.date || "",
       time: item.time || "",
       toTime: item.toTime || "",
       hall: item.hall || "",
-      link: item.link || "",
+      link: item.link || item.linkUrl || "",
+      linkUrl: item.linkUrl || item.link || "",
+      linkTitle: item.linkTitle || "",
       timezoneDisplay: item.timezoneDisplay || "both",
       speakerPhoto: item.speakerPhoto || "",
       speakerWhatsApp: item.speakerWhatsApp || "",
@@ -1244,11 +1274,15 @@ export default function Admin({ initialTab }: AdminProps = {}) {
   }
 
   async function handleSaveSession() {
+    if (isSavingSession) return;
     try {
+      setIsSavingSession(true);
       const localDatetime = `${sessionForm.date}T${sessionForm.time}`;
       const sessionFormWithUtc = {
         ...sessionForm,
         inputTimezone,
+        link: sessionForm.linkUrl || sessionForm.link || "",
+        linkUrl: sessionForm.linkUrl || sessionForm.link || "",
         datetime_utc: localToUtc(localDatetime, inputTimezone),
       };
 
@@ -1268,6 +1302,8 @@ export default function Admin({ initialTab }: AdminProps = {}) {
       showToast("Session saved successfully ✓", "success");
     } catch (err) {
       showToast("Failed to save session", "error");
+    } finally {
+      setIsSavingSession(false);
     }
   }
 
@@ -3329,61 +3365,119 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                 + Add Session
               </button>
             </div>
+
+            {/* DAY SELECTOR TOGGLE */}
+            {(() => {
+              const uniqueDays = Array.from(new Set(sessionItems.map((s: any) => (s.date || "") as string)))
+                .filter(Boolean)
+                .sort((a: string, b: string) => a.localeCompare(b));
+
+              if (uniqueDays.length === 0) return null;
+              return (
+                <div className="flex flex-wrap gap-2 mb-6 p-1.5 bg-gray-50 rounded-lg border border-gray-150">
+                  {uniqueDays.map((day) => (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => setSelectedSessionDay(day)}
+                      style={{ contentVisibility: 'auto' }}
+                      className={`px-4 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        selectedSessionDay === day
+                          ? "bg-white text-gray-950 border border-gray-250 shadow-sm font-black"
+                          : "text-gray-550 hover:text-gray-900 font-medium"
+                      }`}
+                    >
+                      📅 {day}
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
+
             <div className="space-y-4">
               {sessionItems.length === 0 && (
                 <p className="text-gray-400 text-center py-4">No sessions yet.</p>
               )}
-              {[...sessionItems]
-                .sort(
-                  (a, b) =>
-                    a.date.localeCompare(b.date) || a.time.localeCompare(b.time),
-                )
-                .map((session: any) => (
+              {sessionItems.length > 0 && (() => {
+                const filtered = sessionItems
+                  .filter((s) => !selectedSessionDay || s.date === selectedSessionDay)
+                  .sort(
+                    (a, b) =>
+                      a.date.localeCompare(b.date) || a.time.localeCompare(b.time),
+                  );
+
+                if (filtered.length === 0) {
+                  return (
+                    <p className="text-gray-450 text-center py-4 italic text-sm">
+                      No sessions listed for this day.
+                    </p>
+                  );
+                }
+
+                return filtered.map((session: any) => (
                   <div
                     key={session.id}
-                    className="border border-gray-200 p-4 rounded-xl bg-gray-50/50 hover:bg-gray-50 transition-colors"
+                    className="border border-gray-200 p-4 rounded-xl bg-gray-50/50 hover:bg-gray-50 transition-colors flex flex-col [@media(min-width:480px)]:flex-row justify-between items-start gap-4"
                   >
-                    <div className="font-bold flex justify-between items-start">
+                    <div className="flex items-start gap-3.5">
+                      {session.speakerPhoto ? (
+                        <img 
+                          src={session.speakerPhoto} 
+                          alt={session.speaker}
+                          className="w-14 h-14 rounded-full object-cover border border-gray-200 shadow-sm flex-shrink-0"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <div className="w-14 h-14 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-sm shadow-sm flex-shrink-0 text-xl">
+                          👤
+                        </div>
+                      )}
                       <div className="flex flex-col">
-                        <span className="text-gray-900">{session.title}</span>
-                        <span className="text-xs text-blue-600 font-bold uppercase mt-1">
+                        <span className="text-gray-900 font-bold text-sm sm:text-base">{session.title}</span>
+                        <span className="text-xs text-blue-650 font-bold uppercase mt-1">
                           🗣 {session.speaker}
                         </span>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEditSession(session)}
-                          className="text-blue-600 text-xs font-bold p-1 px-2 border border-blue-200 rounded bg-white hover:bg-blue-50 cursor-pointer"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteSession(session.id)}
-                          className="text-red-600 text-xs font-bold p-1 px-2 border border-red-200 rounded bg-white hover:bg-red-50 cursor-pointer"
-                        >
-                          Del
-                        </button>
+                        {session.speakerJob && (
+                          <span className="text-xs text-gray-500 font-medium mt-0.5 whitespace-pre-wrap">
+                            💼 {session.speakerJob}
+                          </span>
+                        )}
+                        <div className="text-xs text-gray-500 mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1">
+                          <span className="flex items-center gap-1 font-bold text-gray-700">
+                            📅 {session.date}
+                          </span>
+                          <span className="flex items-center gap-1 font-bold text-gray-700">
+                            ⏰ {formatTimeAmPm(session.time)}
+                            {session.toTime ? ` - ${formatTimeAmPm(session.toTime)}` : ""}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            🏛 {session.hall}
+                          </span>
+                          {(session.linkUrl || session.link) && (
+                            <span className="text-blue-600 truncate max-w-[200px]">
+                              🔗 {session.linkTitle ? session.linkTitle : (session.linkUrl || session.link)}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="text-xs text-gray-500 mt-3 flex flex-wrap items-center gap-4">
-                      <span className="flex items-center gap-1 font-bold text-gray-700">
-                        📅 {session.date}
-                      </span>
-                      <span className="flex items-center gap-1 font-bold text-gray-700">
-                        ⏰ {formatTimeAmPm(session.time)}
-                        {session.toTime ? ` - ${formatTimeAmPm(session.toTime)}` : ""}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        🏛 {session.hall}
-                      </span>
-                      {session.link && (
-                        <span className="text-blue-600 truncate max-w-[200px]">
-                          🔗 {session.link}
-                        </span>
-                      )}
+                    <div className="flex gap-2 self-end [@media(min-width:480px)]:self-start">
+                      <button
+                        onClick={() => handleEditSession(session)}
+                        className="text-blue-650 text-xs font-bold p-1 py-1.5 px-3 border border-blue-200 rounded-lg bg-white hover:bg-blue-50 cursor-pointer shadow-sm"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSession(session.id)}
+                        className="text-red-650 text-xs font-bold p-1 py-1.5 px-3 border border-red-200 rounded-lg bg-white hover:bg-red-50 cursor-pointer shadow-sm"
+                      >
+                        Del
+                      </button>
                     </div>
                   </div>
-                ))}
+                ));
+              })()}
             </div>
           </div>
         </div>
@@ -3421,7 +3515,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                 />
               </div>
               <div>
-                <label className="text-gray-600 font-medium text-sm">
+                <label className="text-gray-600 font-medium text-sm block">
                   Speaker
                 </label>
                 <input
@@ -3429,6 +3523,20 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                   value={sessionForm.speaker}
                   onChange={(e) =>
                     setSessionForm({ ...sessionForm, speaker: e.target.value })
+                  }
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
+                />
+              </div>
+              <div>
+                <label className="text-gray-600 font-medium text-sm block">
+                  Speaker Job (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Professor of Urology"
+                  value={sessionForm.speakerJob || ""}
+                  onChange={(e) =>
+                    setSessionForm({ ...sessionForm, speakerJob: e.target.value })
                   }
                   className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
                 />
@@ -3442,7 +3550,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                     <img
                       src={sessionForm.speakerPhoto}
                       alt="Speaker preview"
-                      className="w-12 h-12 rounded-full object-cover border border-gray-300"
+                      className="w-16 h-16 rounded-full object-cover border border-gray-300 shadow-sm flex-shrink-0"
                     />
                     <div className="flex-1">
                       <p className="text-xs text-green-600 font-semibold flex items-center gap-1">
@@ -3691,17 +3799,31 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                 />
               </div>
               <div>
-                <label className="text-gray-600 font-medium text-sm">
-                  Session Link (Optional)
+                <label className="text-gray-600 font-medium text-sm block">
+                  Session Link URL (Optional)
                 </label>
                 <input
                   type="url"
                   placeholder="https://..."
-                  value={sessionForm.link}
+                  value={sessionForm.linkUrl || sessionForm.link || ""}
                   onChange={(e) =>
-                    setSessionForm({ ...sessionForm, link: e.target.value })
+                    setSessionForm({ ...sessionForm, linkUrl: e.target.value, link: e.target.value })
                   }
                   className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
+                />
+              </div>
+              <div>
+                <label className="text-gray-650 font-medium text-xs block">
+                  Link Display Title (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Join Webinar, View Document"
+                  value={sessionForm.linkTitle || ""}
+                  onChange={(e) =>
+                    setSessionForm({ ...sessionForm, linkTitle: e.target.value })
+                  }
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500 text-xs"
                 />
               </div>
             </div>
@@ -3709,16 +3831,30 @@ export default function Admin({ initialTab }: AdminProps = {}) {
             {/* STICKY FOOTER */}
             <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0 rounded-b-xl">
               <button
+                type="button"
+                disabled={isSavingSession}
                 onClick={() => setShowSessionForm(false)}
-                className="px-5 py-2 rounded-lg bg-white border border-gray-300 shadow-sm text-gray-700 font-bold hover:bg-gray-50 transition-colors"
+                className="px-5 py-2 rounded-lg bg-white border border-gray-300 shadow-sm text-gray-700 font-bold hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Cancel
               </button>
               <button
+                type="button"
+                disabled={isSavingSession}
                 onClick={handleSaveSession}
-                className="px-5 py-2 rounded-lg bg-yellow-500 border border-yellow-600 shadow-sm text-gray-900 font-bold hover:bg-yellow-400 transition-colors"
+                className="px-5 py-2 rounded-lg bg-yellow-500 border border-yellow-600 shadow-sm text-gray-900 font-bold hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               >
-                Save
+                {isSavingSession ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-gray-900" xmlns="http://www.w3.org/2005/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving...
+                  </>
+                ) : (
+                  "Save"
+                )}
               </button>
             </div>
           </div>

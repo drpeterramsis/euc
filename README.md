@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.987
+Version: 1.0.993
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -132,6 +132,9 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.982 | 2026-06-18 | FEATURE: Added optional speaker photo upload (compressed Base64 JPEG) and optional Speaker WhatsApp contact inputs to the Create/Edit Session forms. Built a responsive "Ask Speaker on WhatsApp" interactive pop-up modal on the Sessions page, pre-populating the attendee's name, session details, and custom question before generating encoded wa.me hyperlinks. |
 | v1.0.984 | 2026-06-18 | Admin UI Improvements: Added Tab Toggle to switch between Schedule & Settings vs Sessions views in the admin panel. Resolved styling overflow of the Create/Edit Session Modal with screen viewport max-height bounding, internal scrolling, background body scroll locking, and sticky header/footer for pristine layout. |
 | v1.0.987 | 2026-06-18 | UI TWEAK: Minimized the white spaces under the name, title, and contact methods in the DirectoryCard component within the staff/doctors directory by shrinking card height to a compact 212px/272px layout and alignment of image aspect ratios to h-36. |
+| v1.0.989 | 2026-06-18 | SESSIONS UPDATE: Added Speaker Job / Title field to the Create/Edit Session pop-up modal inside the admin panel, and dynamically displayed the job title near the speaker's name in scientific sessions and admin listings. |
+| v1.0.992 | 2026-06-18 | SESSIONS ADMIN IMPROVEMENTS: Implemented day-by-day automatic grouping with interactive toggle, custom display titles for links, saving spinner loader with double-saving prevention, and larger speaker photography previews. |
+| v1.0.993 | 2026-06-18 | SESSIONS MOBILITY IMPROVEMENT: Grouped scientific sessions dynamically by date inside an elegant, interactive horizontal button toggle bar on the main Sessions list to streamline browsing. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo
