@@ -26,6 +26,11 @@ export default async function handler(req: any, res: any) {
     await kv.set(`user:${key}:subscription`, subscription);
     await kv.set(`push:sub:${key}`, subscription);
 
+    // Track active subscriber keys
+    await kv.sadd("push:subscribers", key);
+    if (userId) await kv.sadd("push:subscribers", userId);
+    if (username) await kv.sadd("push:subscribers", username);
+
     return res.status(200).json({ success: true, ok: true });
   } catch (err: any) {
     console.error("Error subscribing user to push:", err);

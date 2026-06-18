@@ -1,5 +1,7 @@
 import { kv } from "@vercel/kv";
 import webpush from "web-push";
+import path from "path";
+import fs from "fs";
 
 // Ensure VAPID details are set up
 if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
@@ -108,17 +110,71 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: "Title and body are required fields." });
     }
 
-    // 3. Fetch all active subscriptions across our indexes
-    const usernames: string[] = await kv.smembers("users:index") || [];
-    const results = { sent: 0, failed: 0, expired: 0 };
+    // 3. Fetch all active subscriptions across static and dynamic user keys/indices
+    let staticKeys: string[] = [];
+    try {
+      const usersPath = path.join(process.cwd(), "data", "users.json");
+      if (fs.existsSync(usersPath)) {
+        const usersData = JSON.parse(fs.readFileSync(usersPath, "utf-8"));
+        if (Array.isArray(usersData)) {
+          for (const u of usersData) {
+            if (u.username) {
+              staticKeys.push(u.username);
+              staticKeys.push(u.username.toLowerCase());
+            }
+            if (u.id) {
+              staticKeys.push(u.id);
+              staticKeys.push(u.id.toLowerCase());
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Failed to read static users.json:", e);
+    }
 
-    for (const username of usernames) {
-      let sub = await kv.get(`user:${username}:subscription`);
+    // Load active subscriber keys from the set index
+    let subscriberIndex: string[] = [];
+    try {
+      subscriberIndex = await kv.smembers("push:subscribers") || [];
+    } catch (e) {
+      console.error("Failed to read push:subscribers set:", e);
+    }
+
+    // Load legacy index keys
+    let legacyIndex: string[] = [];
+    try {
+      legacyIndex = await kv.smembers("users:index") || [];
+    } catch (e) {
+      console.error("Failed to read legacy users:index list:", e);
+    }
+
+    // Combine all potential subscriber keys
+    const allUniqueKeys = Array.from(new Set([
+      ...staticKeys,
+      ...subscriberIndex,
+      ...legacyIndex,
+      "admin",
+      "ADMIN",
+      "anonymous"
+    ])).filter(Boolean);
+
+    const results = { sent: 0, failed: 0, expired: 0 };
+    const processedEndpoints = new Set<string>();
+
+    for (const key of allUniqueKeys) {
+      let sub = await kv.get(`user:${key}:subscription`);
       if (!sub) {
-        sub = await kv.get(`push:sub:${username}`);
+        sub = await kv.get(`push:sub:${key}`);
       }
 
-      if (sub) {
+      if (sub && sub.endpoint) {
+        // Prevent duplicate sending to the same subscription endpoint
+        if (processedEndpoints.has(sub.endpoint)) {
+          continue;
+        }
+        processedEndpoints.add(sub.endpoint);
+
         try {
           await webpush.sendNotification(sub as any, JSON.stringify({
             title,
@@ -131,9 +187,9 @@ export default async function handler(req: any, res: any) {
           results.sent++;
         } catch (err: any) {
           if (err.statusCode === 410) {
-            // Subscription expired, remove from both keys
-            await kv.del(`user:${username}:subscription`);
-            await kv.del(`push:sub:${username}`);
+            // Subscription expired, remove from KV
+            await kv.del(`user:${key}:subscription`);
+            await kv.del(`push:sub:${key}`);
             results.expired++;
           } else {
             results.failed++;
