@@ -97,7 +97,7 @@ export default function Sessions() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{pageTitle}</h1>
         <span className="text-sm bg-yellow-105 text-yellow-800 px-3 py-1 rounded-full font-bold border border-yellow-250">
-          {sessions.length} sessions
+          {filteredSessions.length} sessions
         </span>
       </div>
 
@@ -113,8 +113,8 @@ export default function Sessions() {
                 onClick={() => setSelectedDate(dateStr)}
                 className={`px-4.5 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   isSelected
-                    ? "bg-white text-gray-950 border border-gray-250 shadow-sm font-black"
-                    : "text-gray-550 hover:text-gray-900 font-medium"
+                    ? "bg-yellow-400 text-black border border-yellow-500 shadow-sm font-black"
+                    : "bg-black text-white hover:bg-gray-800 font-medium"
                 }`}
               >
                 📅 {dateStr}

@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.993
+Version: 1.0.999
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -135,9 +135,12 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.989 | 2026-06-18 | SESSIONS UPDATE: Added Speaker Job / Title field to the Create/Edit Session pop-up modal inside the admin panel, and dynamically displayed the job title near the speaker's name in scientific sessions and admin listings. |
 | v1.0.992 | 2026-06-18 | SESSIONS ADMIN IMPROVEMENTS: Implemented day-by-day automatic grouping with interactive toggle, custom display titles for links, saving spinner loader with double-saving prevention, and larger speaker photography previews. |
 | v1.0.993 | 2026-06-18 | SESSIONS MOBILITY IMPROVEMENT: Grouped scientific sessions dynamically by date inside an elegant, interactive horizontal button toggle bar on the main Sessions list to streamline browsing. |
+| v1.0.995 | 2026-06-18 | PERSISTENCE ENGINE: Re-architected application to run on full-stack Express + Vite architecture, integrating robust Vercel KV (Upstash Redis) server-side routes to persist, fetch, query, index and dynamically update users' base profiles & data cells. |
+| v1.0.999 | 2026-06-18 | VERCEL KV CHECK-INS: Implemented Vercel Serverless Functions (`/api/*`) and Vercel KV persistence for Departure Trip check-ins. Added Check-ins configuration panel in Admin page and active Check-ins respondent lists for users with session and local storage cache states. Fixed Sessions UI selected-day count, active yellow-on-black button, and inactive black-on-white button custom styles. |
 
 ## Notes
-- All data is stored in /data JSON files in the GitHub repo
-- The GitHub PAT token must have read/write access to the repo
+- Base information and configurations are stored in /data JSON files
+- Users, roles and dynamic cells persistence is managed under high-performance Vercel KV keys
 - Passwords are plain text for now — upgrade to hashing in future versions
-- The app is fully client-side — no server needed
+- The app runs on a dual Express + Vite server (full-stack API backend proxying KV data)
+

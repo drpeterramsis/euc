@@ -24,6 +24,7 @@ import AdminDashboard from "./AdminDashboard";
 import AdminMessages from "./admin/AdminMessages";
 import AdminGalleries from "./admin/AdminGalleries";
 import SettingsTab from "../components/admin/SettingsTab";
+import AdminCheckinsTab from "../components/admin/AdminCheckinsTab";
 import { localToUtc, utcToDisplay, TZ_CAIRO, TZ_PRAGUE, utcToLocalInput, getUtcFromEvent, formatTimeAmPm } from "../utils/timezone";
 
 interface AdminProps {
@@ -4509,6 +4510,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
           <option value="media">🖼️ Media / Posts</option>
           <option value="categories">🎨 Categories</option>
           <option value="pageSettings">🔒 Page Access</option>
+          <option value="checkins">✅ Check-ins Manager</option>
         </select>
       </div>
 
@@ -4525,6 +4527,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
           { key: "media", label: "🖼️ Media / Posts" },
           { key: "categories", label: "🎨 Categories" },
           { key: "pageSettings", label: "🔒 Page Access" },
+          { key: "checkins", label: "✅ Check-ins" },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -4553,6 +4556,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
         {activeTab === "media" && renderTab5()}
         {activeTab === "categories" && renderTab6()}
         {activeTab === "pageSettings" && <SettingsTab />}
+        {activeTab === "checkins" && <AdminCheckinsTab />}
       </div>
     </Layout>
   );
