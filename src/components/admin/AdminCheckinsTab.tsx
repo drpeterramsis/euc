@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import { showToast } from "../Toast";
+import { apiUrl } from "../../utils/api";
 
 /**
  * @license
@@ -126,7 +127,7 @@ export default function AdminCheckinsTab() {
   // Fetch all trip segments
   const fetchTripsList = async () => {
     try {
-      const res = await fetch("/api/trips/list");
+      const res = await fetch(apiUrl("trips/list"));
       if (res.ok) {
         const data = await res.json();
         const list = data.trips || [];
@@ -149,7 +150,13 @@ export default function AdminCheckinsTab() {
     if (!selectedTripId) return;
     setLoadingCats(true);
     try {
-      const res = await fetch(`/api/checkinCats/list?tripId=${encodeURIComponent(selectedTripId)}&includeInactive=true`);
+      const res = await fetch(
+        apiUrl("checkins", {
+          action: "categories.list",
+          tripId: selectedTripId,
+          includeInactive: "true",
+        })
+      );
       if (res.ok) {
         const data = await res.json();
         const cats = data.categories || [];
@@ -174,7 +181,14 @@ export default function AdminCheckinsTab() {
     if (!selectedTripId) return;
     setLoadingGrouped(true);
     try {
-      const res = await fetch(`/api/checkins/activeByTrip?tripId=${encodeURIComponent(selectedTripId)}&role=admin&username=admin`);
+      const res = await fetch(
+        apiUrl("checkins", {
+          action: "activeByTrip",
+          tripId: selectedTripId,
+          role: "admin",
+          username: "admin",
+        })
+      );
       if (res.ok) {
         const data = await res.json();
         setGroupedCategories(data.categories || []);
@@ -229,10 +243,11 @@ export default function AdminCheckinsTab() {
 
     setSubmittingTrip(true);
     try {
-      const res = await fetch("/api/trips/create", {
+      const res = await fetch(apiUrl("trips"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "create",
           role: "admin",
           tripId: newTripId.trim(),
           title: newTripTitle.trim()
@@ -277,10 +292,11 @@ export default function AdminCheckinsTab() {
 
     setSavingTrip(true);
     try {
-      const res = await fetch("/api/trips/update", {
+      const res = await fetch(apiUrl("trips"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "update",
           role: "admin",
           tripId: selectedTripId,
           patch: {
@@ -309,10 +325,11 @@ export default function AdminCheckinsTab() {
   const handleResetTripResponses = async () => {
     setResettingTrip(true);
     try {
-      const res = await fetch("/api/trips/reset", {
+      const res = await fetch(apiUrl("trips"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "reset",
           role: "admin",
           tripId: selectedTripId
         })
@@ -338,10 +355,11 @@ export default function AdminCheckinsTab() {
   const handleDeleteTripEntirely = async () => {
     setDeletingTrip(true);
     try {
-      const res = await fetch("/api/trips/delete", {
+      const res = await fetch(apiUrl("trips"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "delete",
           role: "admin",
           tripId: selectedTripId,
           cascade: deleteTripCascade
@@ -353,7 +371,7 @@ export default function AdminCheckinsTab() {
         setIsDeletingTrip(false);
         
         // Find default/first remaining trip
-        const listRes = await fetch("/api/trips/list");
+        const listRes = await fetch(apiUrl("trips", { action: "list" }));
         const listData = await listRes.json();
         const list = listData.trips || [];
         setTrips(list);
@@ -390,12 +408,13 @@ export default function AdminCheckinsTab() {
 
     setSubmittingCat(true);
     try {
-      const res = await fetch("/api/checkinCats/create", {
+      const res = await fetch(apiUrl("checkins"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          action: "categories.create",
           role: "admin",
           tripId: selectedTripId,
           emoji: catEmoji.trim(),
@@ -440,10 +459,11 @@ export default function AdminCheckinsTab() {
 
     setSavingCat(true);
     try {
-      const res = await fetch("/api/checkinCats/update", {
+      const res = await fetch(apiUrl("checkins"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "categories.update",
           role: "admin",
           catId: editingCatId,
           patch: {
@@ -497,12 +517,13 @@ export default function AdminCheckinsTab() {
 
     setSubmittingCheckin(true);
     try {
-      const res = await fetch("/api/checkins/create", {
+      const res = await fetch(apiUrl("checkins"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          action: "checkins.create",
           role: "admin",
           tripId: selectedTripId,
           categoryId: selectedCatId,
@@ -566,10 +587,11 @@ export default function AdminCheckinsTab() {
 
     setSavingCheckin(true);
     try {
-      const res = await fetch("/api/checkins/update", {
+      const res = await fetch(apiUrl("checkins"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "checkins.update",
           role: "admin",
           checkinId: editingCheckinId,
           patch: {
@@ -607,10 +629,11 @@ export default function AdminCheckinsTab() {
   const handleDeleteCheckin = async () => {
     setDeletingCheckin(true);
     try {
-      const res = await fetch("/api/checkins/delete", {
+      const res = await fetch(apiUrl("checkins"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "checkins.delete",
           role: "admin",
           checkinId: deletingCheckinId
         })
@@ -642,7 +665,13 @@ export default function AdminCheckinsTab() {
     setStatusLoading(true);
 
     try {
-      const res = await fetch(`/api/checkins/status?checkinId=${checkinId}&role=admin`);
+      const res = await fetch(
+        apiUrl("checkins", {
+          action: "status",
+          checkinId,
+          role: "admin",
+        })
+      );
       if (res.ok) {
         const data = await res.json();
         setStatusResult(data);

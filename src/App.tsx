@@ -15,7 +15,7 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Schedule from './pages/Schedule';
 import Sessions from './pages/Sessions';
-import Admin from './pages/Admin';
+import Admin from './pages/AdminPage';
 import { 
   AdminUsers, AdminPosts, AdminCategories, AdminSessions, 
   AdminTripSchedule, AdminFlightHotel, AdminCountdown, 

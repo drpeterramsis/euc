@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { useApp } from "../context/AppContext";
 import { showToast } from "../components/Toast";
+import { apiUrl } from "../utils/api";
 
 /**
  * @license
@@ -51,7 +52,7 @@ export default function Checkins() {
 
   // Load Trips List
   useEffect(() => {
-    fetch("/api/trips/list")
+    fetch(apiUrl("trips", { action: "list" }))
       .then((res) => res.json())
       .then((data) => {
         const list = data.trips || [];
@@ -79,11 +80,18 @@ export default function Checkins() {
     setLoading(true);
     setError(null);
 
-    const roleParam = encodeURIComponent(fullUser.role.trim());
-    const usernameParam = encodeURIComponent(fullUser.username.trim());
-    const tripParam = encodeURIComponent(selectedTripId);
+    const roleParam = fullUser.role.trim();
+    const usernameParam = fullUser.username.trim();
+    const tripParam = selectedTripId;
 
-    fetch(`/api/checkins/activeByTrip?tripId=${tripParam}&role=${roleParam}&username=${usernameParam}`)
+    fetch(
+      apiUrl("checkins", {
+        action: "activeByTrip",
+        tripId: tripParam,
+        role: roleParam,
+        username: usernameParam,
+      })
+    )
       .then((res) => {
         if (!res.ok) {
           throw new Error("Failed to load active check-ins for the selected trip.");
@@ -118,16 +126,15 @@ export default function Checkins() {
     setActionLoadingId(id);
 
     const payload = {
+      action: currentlyChecked ? "checkins.uncheck" : "checkins.check",
       checkinId: id,
       username: fullUser.username,
       fullname: fullUser.fullname || fullUser.username,
       role: fullUser.role,
     };
 
-    const endpoint = currentlyChecked ? "/api/checkins/uncheck" : "/api/checkins/check";
-
     try {
-      const res = await fetch(endpoint, {
+      const res = await fetch(apiUrl("checkins"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

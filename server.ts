@@ -12,39 +12,59 @@ async function startServer() {
   app.use(express.json());
 
   // Api endpoints for Vercel KV persistence
-
-  // Check-ins routes delegation
-  app.post("/api/checkinCats/create", async (req, res) => {
+  
+  // General root handlers (maps to Vercel Serverless filenames directly)
+  app.get("/api/trips", async (req, res) => {
     try {
-      const handler = (await import("./api/checkinCats/create.js")).default;
+      const handler = (await import("./api/trips.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  app.get("/api/checkinCats/list", async (req, res) => {
+  app.post("/api/trips", async (req, res) => {
     try {
-      const handler = (await import("./api/checkinCats/list.js")).default;
+      const handler = (await import("./api/trips.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  app.post("/api/checkinCats/update", async (req, res) => {
+  app.get("/api/checkins", async (req, res) => {
     try {
-      const handler = (await import("./api/checkinCats/update.js")).default;
+      const handler = (await import("./api/checkins.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  // Trips routes
+  app.post("/api/checkins", async (req, res) => {
+    try {
+      const handler = (await import("./api/checkins.ts")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Trips routes mapped to /trips.ts
+  app.get("/api/trips/list", async (req, res) => {
+    try {
+      req.query.action = "list";
+      const handler = (await import("./api/trips.ts")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.post("/api/trips/create", async (req, res) => {
     try {
-      const handler = (await import("./api/trips/create.js")).default;
+      req.body.action = "create";
+      const handler = (await import("./api/trips.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -53,7 +73,8 @@ async function startServer() {
 
   app.post("/api/trips/update", async (req, res) => {
     try {
-      const handler = (await import("./api/trips/update.js")).default;
+      req.body.action = "update";
+      const handler = (await import("./api/trips.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -62,7 +83,8 @@ async function startServer() {
 
   app.post("/api/trips/delete", async (req, res) => {
     try {
-      const handler = (await import("./api/trips/delete.js")).default;
+      req.body.action = "delete";
+      const handler = (await import("./api/trips.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -71,52 +93,58 @@ async function startServer() {
 
   app.post("/api/trips/reset", async (req, res) => {
     try {
-      const handler = (await import("./api/trips/reset.js")).default;
+      req.body.action = "reset";
+      const handler = (await import("./api/trips.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  app.get("/api/trips/list", async (req, res) => {
+  app.post("/api/checkinCats/create", async (req, res) => {
     try {
-      const handler = (await import("./api/trips/list.js")).default;
+      req.body.action = "categories.create";
+      const handler = (await import("./api/checkins.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  app.post("/api/checkins/create", async (req, res) => {
+  app.get("/api/pageAccess", async (req, res) => {
     try {
-      const handler = (await import("./api/checkins/create.js")).default;
+      req.query.action = "checkins.get";
+      const handler = (await import("./api/pageAccess.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  app.post("/api/checkins/update", async (req, res) => {
+  app.post("/api/pageAccess", async (req, res) => {
     try {
-      const handler = (await import("./api/checkins/update.js")).default;
+      req.body.action = "checkins.set";
+      const handler = (await import("./api/pageAccess.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  app.post("/api/checkins/delete", async (req, res) => {
+  app.post("/api/checkinCats/update", async (req, res) => {
     try {
-      const handler = (await import("./api/checkins/delete.js")).default;
+      req.body.action = "categories.update";
+      const handler = (await import("./api/checkins.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  app.get("/api/checkins/active", async (req, res) => {
+  app.get("/api/checkinCats/list", async (req, res) => {
     try {
-      const handler = (await import("./api/checkins/active.js")).default;
+      req.query.action = "categories.list";
+      const handler = (await import("./api/checkins.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -125,34 +153,8 @@ async function startServer() {
 
   app.get("/api/checkins/activeByTrip", async (req, res) => {
     try {
-      const handler = (await import("./api/checkins/activeByTrip.js")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/checkins/check", async (req, res) => {
-    try {
-      const handler = (await import("./api/checkins/check.js")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/checkins/uncheck", async (req, res) => {
-    try {
-      const handler = (await import("./api/checkins/uncheck.js")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/checkins/respond", async (req, res) => {
-    try {
-      const handler = (await import("./api/checkins/respond.js")).default;
+      req.query.action = "activeByTrip";
+      const handler = (await import("./api/checkins.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -161,7 +163,58 @@ async function startServer() {
 
   app.get("/api/checkins/status", async (req, res) => {
     try {
-      const handler = (await import("./api/checkins/status.js")).default;
+      req.query.action = "status";
+      const handler = (await import("./api/checkins.ts")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/checkins/create", async (req, res) => {
+    try {
+      req.body.action = "checkins.create";
+      const handler = (await import("./api/checkins.ts")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/checkins/update", async (req, res) => {
+    try {
+      req.body.action = "checkins.update";
+      const handler = (await import("./api/checkins.ts")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/checkins/delete", async (req, res) => {
+    try {
+      req.body.action = "checkins.delete";
+      const handler = (await import("./api/checkins.ts")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/checkins/check", async (req, res) => {
+    try {
+      req.body.action = "checkins.check";
+      const handler = (await import("./api/checkins.ts")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/checkins/uncheck", async (req, res) => {
+    try {
+      req.body.action = "checkins.uncheck";
+      const handler = (await import("./api/checkins.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -349,6 +402,26 @@ async function startServer() {
 
   // Setup Vite middleware or serve static files
   if (process.env.NODE_ENV !== "production") {
+    // Gracefully handle stale browser/ServiceWorker requests to "/src/pages/admin" or "/src/pages/Admin" folders
+    // (without TS extensions) to avoid esbuild loader crashes ("Invalid loader value: admin")
+    app.use((req, res, next) => {
+      const url = req.url || "";
+      if (
+        (url.includes("/src/pages/admin") || url.includes("/src/pages/Admin")) &&
+        !url.includes(".tsx") &&
+        !url.includes(".ts") &&
+        !url.includes(".js") &&
+        !url.includes(".json") &&
+        !url.includes("/AdminFeaturePages") &&
+        !url.includes("/AdminGalleries") &&
+        !url.includes("/AdminMessages") &&
+        !url.includes("/AdminPlaceholder")
+      ) {
+        return res.status(404).send("Not found");
+      }
+      next();
+    });
+
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",

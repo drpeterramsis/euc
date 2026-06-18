@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { apiUrl } from "../utils/api";
 
 /**
  * @license
@@ -48,8 +49,8 @@ export default function CheckinsSection({ user }: CheckinsSectionProps) {
     setLoading(true);
     setError(null);
 
-    const roleQuery = encodeURIComponent(user.role.trim());
-    fetch(`/api/checkins/active?role=${roleQuery}&trip=departure`)
+    const roleQuery = user.role.trim();
+    fetch(apiUrl("checkins", { action: "active", role: roleQuery, trip: "departure" }))
       .then((res) => {
         if (!res.ok) {
           throw new Error("Failed to load active check-ins");
@@ -72,6 +73,7 @@ export default function CheckinsSection({ user }: CheckinsSectionProps) {
     setSubmittingId(checkinId);
 
     const payload = {
+      action: "checkins.respond",
       checkinId,
       username: user.username || user.username_github || "guest_" + Date.now(),
       fullname: user.name || user.fullname || user.username || "Guest User",
@@ -79,7 +81,7 @@ export default function CheckinsSection({ user }: CheckinsSectionProps) {
     };
 
     try {
-      const res = await fetch("/api/checkins/respond", {
+      const res = await fetch(apiUrl("checkins"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

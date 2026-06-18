@@ -1,5 +1,5 @@
 import React from 'react';
-import Admin from './Admin';
+import Admin from './AdminPage';
 
 // ─────────────────────────────────────────────
 // FILE: src/pages/AdminCategories.tsx

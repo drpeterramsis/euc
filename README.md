@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.1008
+Version: 1.0.1009
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -141,6 +141,7 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.1004 | 2026-06-18 | CATEGORIZED CHECK-INS SYSTEM: Upgraded check-ins system to support modular categories, multiselect role definitions, and full response statuses under custom Vercel KV structures with unchecking support. |
 | v1.0.1006 | 2026-06-18 | ADMIN CHECK-INS POWER-UPS: Added Admin Category Editing, Check-in Editing, and Check-in Deletion with secure transactional API endpoints. Designed custom overlaid modal editors with comprehensive role toggling, responsive status updates, and a unified global Toast/popup notification engine. |
 | v1.0.1008 | 2026-06-18 | MULTI-TRIP SYSTEM EXPANSION: Fully integrated dynamic travel segments management allowing planners to configure multiple trips, edit titles, wipe active completions, and execute safe cascades. Optimized user dashboards to load status logs natively for chosen itinerary subsets, and fully styled responsive modal overlays with interactive toasted alerts. |
+| v1.0.1009 | 2026-06-18 | VERCEL HOBBY LIMIT FIX: Consolidated all API endpoints into exactly 3 serverless functions (`trips.ts`, `checkins.ts`, `pageAccess.ts`) to comply with Vercel function count limits. Updated all frontend fetch calls, deleted deprecated function directories, and implemented internal routing logic for better performance. |
 
 ## Notes
 - Base information and configurations are stored in /data JSON files
