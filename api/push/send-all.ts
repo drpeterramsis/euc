@@ -29,20 +29,81 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const { title, body, url, iconUrl, badgeUrl, imageUrl, adminToken } = req.body || {};
+    // 1. Resolve session and role from various potential frameworks/authenticators
+    let userRole = null;
+    let userId = null;
+    let username = null;
 
-    // 1. Unified Admin Auth check with a temporary dev/config-driven debug override
-    const isDebugBypass = process.env.NODE_ENV !== "production" || process.env.DEBUG_BYPASS_AUTH === "true";
-    
-    if (!isDebugBypass) {
-      // Direct verification block: Validate that calling admin is authentic
-      const hasAuth = req.headers.authorization || adminToken;
-      if (!hasAuth) {
-        return res.status(401).json({ error: "Unauthorized: Admin privileges required" });
+    // A. Parse Authorization Header (e.g. bearer custom token or serialize user object)
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    if (authHeader && typeof authHeader === "string") {
+      const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+      try {
+        if (token.startsWith("{") && token.endsWith("}")) {
+          const session = JSON.parse(token);
+          userRole = session.role;
+          userId = session.id;
+          username = session.username;
+        } else {
+          username = token;
+        }
+      } catch (e) {
+        // Ignore JSON parsing errors for plain tokens
       }
     }
 
-    // 2. Minimum fields validation
+    // B. Parse Custom Headers (Vite / React client proxies)
+    if (req.headers["x-user-role"]) userRole = req.headers["x-user-role"];
+    if (req.headers["x-user-id"]) userId = req.headers["x-user-id"];
+    if (req.headers["x-user-username"]) username = req.headers["x-user-username"];
+
+    // C. Parse from Request Cookies (NextAuth / JWT / Custom cookies)
+    if (!userRole && req.cookies) {
+      const sessionCookie = req.cookies["next-auth.session-token"] || 
+                            req.cookies["__Secure-next-auth.session-token"] || 
+                            req.cookies["session"];
+      if (sessionCookie) {
+        // NextAuth or cookie-based check could be completed here
+      }
+    }
+
+    // D. Extract from request body
+    const { title, body, url, iconUrl, badgeUrl, imageUrl, adminToken, session } = req.body || {};
+    if (session) {
+      userRole = userRole || session.role;
+      userId = userId || session.id;
+      username = username || session.username;
+    }
+
+    // Normalize values
+    const normalizedRole = userRole ? String(userRole).toLowerCase().trim() : null;
+
+    // Temporary server-side debug log (does not leak credentials)
+    const isDebugBypass = process.env.NODE_ENV !== "production" || process.env.DEBUG_BYPASS_AUTH === "true";
+    console.log("[Push Send All API Auth Status]:", {
+      isDebugBypass,
+      hasAuthHeader: !!authHeader,
+      resolvedRole: userRole,
+      normalizedRole,
+      resolvedUserId: userId,
+      resolvedUsername: username,
+      adminTokenPassed: !!adminToken
+    });
+
+    // 2. Validate Authentication & Authorization
+    if (!isDebugBypass) {
+      // 401 Unauthorized: No credentials could be resolved
+      if (!userRole && !username && !adminToken) {
+        return res.status(401).json({ error: "Unauthorized: Authentication session not found." });
+      }
+
+      // 403 Forbidden: Logged in, but is NOT an admin
+      if (normalizedRole !== "admin" && adminToken !== "admin") {
+        return res.status(403).json({ error: "Forbidden: Administrative access required." });
+      }
+    }
+
+    // 3. Minimum fields validation
     if (!title || !body) {
       return res.status(400).json({ error: "Title and body are required fields." });
     }

@@ -38,11 +38,41 @@ export const AdminNotificationSender = () => {
         ...(audience === "single" && { userId: targetUserId }),
       };
       
+      const sessionRaw = localStorage.getItem("euc_user");
+      let headers: Record<string, string> = {
+        "Content-Type": "application/json"
+      };
+
+      if (sessionRaw) {
+        try {
+          const userObj = JSON.parse(sessionRaw);
+          headers["Authorization"] = `Bearer ${sessionRaw}`;
+          headers["X-User-Role"] = userObj.role || "";
+          headers["X-User-Id"] = userObj.id || "";
+          headers["X-User-Username"] = userObj.username || "";
+        } catch (e) {
+          console.error("Failed to parse euc_user session for headers", e);
+        }
+      }
+      
       const res = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        headers,
+        body: JSON.stringify({
+          ...payload,
+          session: sessionRaw ? JSON.parse(sessionRaw) : null
+        }),
       });
+
+      if (res.status === 401) {
+        setResult({ error: "401 Unauthorized: Session is missing or has expired. Please try logs out and sign in again." });
+        return;
+      }
+      if (res.status === 403) {
+        setResult({ error: "403 Forbidden: Administrative permission is required to broadcast notifications." });
+        return;
+      }
+
       const data = await res.json();
       setResult(data);
     } catch (err) {
