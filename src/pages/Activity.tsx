@@ -26,33 +26,20 @@ import {
   Users,
   Compass,
   Sparkles,
-  Bookmark
+  Bookmark,
+  Maximize2,
+  X
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "motion/react";
 
 export default function Activity() {
   const { messages, currentUser, content, updateMessages } = useApp() as any;
-  const [activeTab, setActiveTab] = useState<'messages' | 'notifications'>('messages');
   const [filterCategory, setFilterCategory] = useState<string>("all");
-  const location = useLocation();
-
-  const tabs = [
-    { id: 'messages', label: 'Messages' },
-    { id: 'notifications', label: 'Notifications' },
-  ] as const;
-
-  // Read URL search parameter to auto-select tab
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const tabParam = params.get("tab");
-    if (tabParam && ["messages", "notifications"].includes(tabParam)) {
-      setActiveTab(tabParam as any);
-    }
-  }, [location]);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   const centralAccess = content?.settings 
-    ? getPageAccess(currentUser?.id || "", currentUser?.role || "", activeTab === 'messages' ? "announcements" : activeTab, content.settings)
+    ? getPageAccess(currentUser?.id || "", currentUser?.role || "", "announcements", content.settings)
     : { enabled: true, comingSoon: false };
 
   // Helper nested access checks
@@ -62,20 +49,17 @@ export default function Activity() {
     return matchesRole(audienceObj, currentUser.role);
   };
 
-  // Mark visible notifications/messages of the active tab as read automatically
+  // Mark visible messages as read automatically
   useEffect(() => {
     if (!currentUser || !messages || messages.length === 0) return;
 
-    // Filter unread messages that belong to the current active category view
+    // Filter unread messages that belong to the messages list (excluding notifications)
     const unreadVisible = messages.filter((m: any) => {
       const isPublished = m.status === "published" && (!m.expiresAt || new Date(m.expiresAt).getTime() > Date.now());
       const isRead = m.readBy && m.readBy.includes(currentUser.id);
-      
-      const belongsToActiveTab = 
-        (activeTab === 'messages' && m.category !== 'notification') ||
-        (activeTab === 'notifications' && m.category === 'notification');
+      const belongs = m.category !== 'notification';
 
-      return isPublished && isMessageVisible(m) && belongsToActiveTab && !isRead;
+      return isPublished && isMessageVisible(m) && belongs && !isRead;
     });
 
     if (unreadVisible.length > 0) {
@@ -107,7 +91,7 @@ export default function Activity() {
         console.warn("Could not sync read-status to server:", err);
       });
     }
-  }, [messages, currentUser, activeTab, updateMessages]);
+  }, [messages, currentUser, updateMessages]);
 
   if (!centralAccess.enabled) {
     return (
@@ -170,22 +154,12 @@ export default function Activity() {
 
   // Filter raw array items based on selected tab & visibility
   const getItems = () => {
-    switch (activeTab) {
-      case 'messages':
-        return messages.filter((m: any) => m.category !== 'notification' && isMessageVisible(m) && (filterCategory === "all" || m.category === filterCategory));
-      case 'notifications':
-        return messages.filter((m: any) => m.category === 'notification' && isMessageVisible(m) && (filterCategory === "all" || m.category === filterCategory));
-      default:
-        return [];
-    }
+    return messages.filter((m: any) => m.category !== 'notification' && isMessageVisible(m) && (filterCategory === "all" || m.category === filterCategory));
   };
 
   // Sort and apply custom prioritization
   const getSortedItems = () => {
     const rawItems = getItems();
-    if (activeTab !== 'messages' && activeTab !== 'notifications') {
-      return rawItems;
-    }
 
     // Sort AppMessages logically representing full features of message center:
     // 1. Pinned status first
@@ -217,12 +191,9 @@ export default function Activity() {
     const unreadVis = messages.filter((m: any) => {
       const isPublished = m.status === "published" && (!m.expiresAt || new Date(m.expiresAt).getTime() > Date.now());
       const isRead = m.readBy && m.readBy.includes(currentUser.id);
-      
-      const belongsToActiveTab = 
-        (activeTab === 'messages' && m.category !== 'notification') ||
-        (activeTab === 'notifications' && m.category === 'notification');
+      const belongs = m.category !== 'notification';
 
-      return isPublished && isMessageVisible(m) && belongsToActiveTab && !isRead;
+      return isPublished && isMessageVisible(m) && belongs && !isRead;
     });
 
     if (unreadVis.length > 0) {
@@ -254,24 +225,20 @@ export default function Activity() {
 
   const sortedAndFilteredItems = getSortedItems();
   
-  // Calculate unread items count in current tab
-  const getTabUnreadCount = (tabId: typeof activeTab) => {
+  // Calculate unread items count in message center
+  const getUnreadCount = () => {
     if (!currentUser || !messages) return 0;
     return messages.filter((m: any) => {
       const isPublished = m.status === "published" && (!m.expiresAt || new Date(m.expiresAt).getTime() > Date.now());
       const isRead = m.readBy && m.readBy.includes(currentUser.id);
-      const belongs = 
-        (tabId === 'messages' && m.category !== 'notification') ||
-        (tabId === 'notifications' && m.category === 'notification');
+      const belongs = m.category !== 'notification';
       return isPublished && isMessageVisible(m) && belongs && !isRead;
     }).length;
   };
 
-  const hasUnreadInCurrentTab = getTabUnreadCount(activeTab) > 0;
+  const hasUnread = getUnreadCount() > 0;
 
-  const categories = activeTab === 'messages' || activeTab === 'notifications' 
-    ? ["all", ...new Set(messages.filter((m: any) => isMessageVisible(m) && (activeTab === 'messages' ? m.category !== 'notification' : m.category === 'notification')).map((m: any) => m.category || "General"))]
-    : [];
+  const categories = ["all", ...new Set(messages.filter((m: any) => isMessageVisible(m) && m.category !== 'notification').map((m: any) => m.category || "General"))];
 
   const getCategoryStyles = (category: string) => {
     switch (category?.toLowerCase()) {
@@ -322,57 +289,14 @@ export default function Activity() {
   return (
     <Layout>
       <div className="flex flex-col mb-6">
-        {/* Mobile View Navigation Dropdown */}
-        <div className="flex bg-gray-100 p-1 rounded-lg mb-4 sm:hidden">
-          <select 
-            value={activeTab}                
-            onChange={(e) => setActiveTab(e.target.value as any)}
-            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 focus:outline-none"
-          >
-            {tabs.map(tab => {
-              const count = getTabUnreadCount(tab.id);
-              return (
-                <option key={tab.id} value={tab.id}>
-                  {tab.label} {count > 0 ? `(${count} new)` : ""}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-
-        {/* Desktop View Navigation Pill Tabs */}
-        <div className="hidden sm:flex gap-2 overflow-x-auto pb-2 mb-4">
-          {tabs.map(tab => {
-            const count = getTabUnreadCount(tab.id);
-            return (
-              <button 
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex-shrink-0 px-4 py-2 text-sm font-semibold rounded-full transition flex items-center gap-2 ${
-                  activeTab === tab.id 
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                <span>{tab.label}</span>
-                {count > 0 && (
-                  <span className="bg-red-500 text-white text-[10px] h-4 min-w-4 px-1 rounded-full flex items-center justify-center font-black animate-pulse">
-                    {count}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
         {/* Categories, Action Buttons and Filter Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-4">
           <h1 className="text-2xl font-black text-gray-900 capitalize tracking-tight flex items-center gap-2">
-            <span>{activeTab}</span>
+            <span>Message Center</span>
           </h1>
           
           <div className="flex items-center gap-3">
-            {hasUnreadInCurrentTab && (
+            {hasUnread && (
               <button
                 onClick={handleMarkAllRead}
                 className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-black rounded-lg transition-colors duration-150"
@@ -382,7 +306,7 @@ export default function Activity() {
               </button>
             )}
 
-            {categories.length > 1 && (
+            {categories.length > 2 && (
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-wider hidden md:inline">Filter:</span>
                 <select 
@@ -401,7 +325,7 @@ export default function Activity() {
           </div>
         </div>
 
-        {hasUnreadInCurrentTab && (
+        {hasUnread && (
           <div className="sm:hidden mt-3">
             <button
               onClick={handleMarkAllRead}
@@ -423,7 +347,7 @@ export default function Activity() {
             </div>
             <div>
               <p className="text-lg font-bold text-gray-900">All clear!</p>
-              <p className="text-sm text-gray-400">No {activeTab} available at this time.</p>
+              <p className="text-sm text-gray-400">No messages available at this time.</p>
             </div>
           </div>
         ) : (
@@ -551,12 +475,23 @@ export default function Activity() {
                   </p>
 
                   {item.imageUrl && (
-                    <div className="mb-4 rounded-xl overflow-hidden border border-gray-100 max-w-xl shadow-inner bg-gray-50">
-                      <img
-                        src={item.imageUrl}
-                        alt="Message Attachment"
-                        className="w-full max-h-96 object-cover"
-                      />
+                    <div className="mb-5 mt-1 max-w-xl">
+                      <div 
+                        onClick={() => setLightboxImage(item.imageUrl)}
+                        className="group relative cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 shadow-xs hover:shadow-md transition-all duration-300 transform active:scale-[0.99]"
+                      >
+                        <img
+                          src={item.imageUrl}
+                          alt="Message Attachment"
+                          className="w-full max-h-80 object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        />
+                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <div className="bg-white/90 backdrop-blur-xs px-4 py-2 rounded-xl flex items-center gap-2 text-xs font-black text-gray-900 shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                            <Maximize2 className="w-3.5 h-3.5" />
+                            <span>Click to Expand</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
 
@@ -602,6 +537,32 @@ export default function Activity() {
           })
         )}
       </div>
+
+      {lightboxImage && (
+        <div 
+          onClick={() => setLightboxImage(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md transition-all duration-300 p-4"
+        >
+          <div className="absolute top-4 right-4 z-50">
+            <button 
+              onClick={() => setLightboxImage(null)}
+              className="p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all hover:scale-105 active:scale-95 duration-150"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+          <div 
+            onClick={(e) => e.stopPropagation()} 
+            className="relative w-full max-w-5xl rounded-3xl overflow-hidden bg-black shadow-2xl border border-white/10 max-h-[85vh]"
+          >
+            <img 
+              src={lightboxImage} 
+              alt="Message Attachment High Resolution" 
+              className="w-full h-auto max-h-[85vh] object-contain mx-auto"
+            />
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }
