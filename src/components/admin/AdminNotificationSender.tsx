@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 
 export const AdminNotificationSender = () => {
@@ -6,10 +6,22 @@ export const AdminNotificationSender = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [url, setUrl] = useState("/");
+  const [iconUrl, setIconUrl] = useState("");
+  const [badgeUrl, setBadgeUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  
+  const [routes, setRoutes] = useState<{label: string, path: string}[]>([]);
   const [audience, setAudience] = useState<"all" | "single">("all");
   const [targetUserId, setTargetUserId] = useState("");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/api/admin/routes')
+      .then(res => res.json())
+      .then(setRoutes)
+      .catch(console.error);
+  }, []);
 
   const send = async () => {
     setSending(true);
@@ -20,6 +32,9 @@ export const AdminNotificationSender = () => {
         title,
         body,
         url,
+        iconUrl,
+        badgeUrl,
+        imageUrl,
         ...(audience === "single" && { userId: targetUserId }),
       };
       
@@ -43,7 +58,19 @@ export const AdminNotificationSender = () => {
       <div className="space-y-4">
         <input className="w-full p-2 border rounded" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
         <textarea className="w-full p-2 border rounded" placeholder="Message body" value={body} onChange={(e) => setBody(e.target.value)} />
-        <input className="w-full p-2 border rounded" placeholder="URL (e.g. /dashboard)" value={url} onChange={(e) => setUrl(e.target.value)} />
+        
+        <div>
+          <label className="block text-sm font-medium mb-1">Target Page (Optional):</label>
+          <select className="w-full p-2 border rounded" value={url} onChange={(e) => setUrl(e.target.value)}>
+            <option value="/">Home</option>
+            {routes.map(r => <option key={r.path} value={r.path}>{r.label}</option>)}
+          </select>
+          <input className="w-full p-2 border rounded mt-2" placeholder="Or custom URL (e.g. /dashboard)" value={url} onChange={(e) => setUrl(e.target.value)} />
+        </div>
+        
+        <input className="w-full p-2 border rounded" placeholder="Icon URL (small, icon)" value={iconUrl} onChange={(e) => setIconUrl(e.target.value)} />
+        <input className="w-full p-2 border rounded" placeholder="Badge URL (smaller, icon)" value={badgeUrl} onChange={(e) => setBadgeUrl(e.target.value)} />
+        <input className="w-full p-2 border rounded" placeholder="Image URL (large, graphic)" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
         
         <div>
           <label className="block text-sm font-medium mb-1">Audience:</label>

@@ -21,8 +21,9 @@ self.addEventListener('push', (event: PushEvent) => {
   const title = data.title || 'EUC Update';
   const options = {
     body: data.body,
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-192x192.png',
+    icon: data.iconUrl || '/icons/icon-192x192.png',
+    badge: data.badgeUrl || '/icons/icon-192x192.png',
+    image: data.imageUrl,
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),

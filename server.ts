@@ -23,24 +23,33 @@ async function startServer() {
     res.json({ publicKey: process.env.VAPID_PUBLIC_KEY });
   });
 
+  app.get("/api/admin/routes", (req, res) => {
+    // Basic allowlist of routes
+    const routes = [
+      { label: "Dashboard", path: "/dashboard" },
+      { label: "Staff Directory", path: "/staff" },
+      { label: "Messages", path: "/messages" },
+      { label: "Check-ins", path: "/checkins" },
+    ];
+    res.json(routes);
+  });
+
   app.post("/api/push/subscribe", async (req, res) => {
     const { userId, subscription } = req.body;
-    await kv.hset(`user:${userId}:subscription`, subscription);
+    await kv.set(`user:${userId}:subscription`, subscription);
     res.status(200).json({ success: true });
   });
 
   app.post("/api/push/send-all", async (req, res) => {
-    // Admin check would be needed here, assuming role is in session, 
-    // but without shared auth we rely on applet security.
-    const { title, body, url } = req.body;
+    const { title, body, url, iconUrl, badgeUrl, imageUrl } = req.body;
     const usernames = await kv.smembers("users:index");
     const results = { sent: 0, failed: 0, expired: 0 };
     
     for (const username of usernames) {
-      const sub = await kv.hgetall(`user:${username}:subscription`);
+      const sub = await kv.get(`user:${username}:subscription`);
       if (sub) {
         try {
-          await webpush.sendNotification(sub as any, JSON.stringify({ title, body, url }));
+          await webpush.sendNotification(sub as any, JSON.stringify({ title, body, url, iconUrl, badgeUrl, imageUrl }));
           results.sent++;
         } catch (err: any) {
           if (err.statusCode === 410) {
@@ -56,12 +65,12 @@ async function startServer() {
   });
 
   app.post("/api/push/send-user", async (req, res) => {
-    const { userId, title, body, url } = req.body;
-    const sub = await kv.hgetall(`user:${userId}:subscription`);
+    const { userId, title, body, url, iconUrl, badgeUrl, imageUrl } = req.body;
+    const sub = await kv.get(`user:${userId}:subscription`);
     if (!sub) return res.status(404).json({ error: "No subscription found" });
 
     try {
-      await webpush.sendNotification(sub as any, JSON.stringify({ title, body, url }));
+      await webpush.sendNotification(sub as any, JSON.stringify({ title, body, url, iconUrl, badgeUrl, imageUrl }));
       res.status(200).json({ sent: 1 });
     } catch (err: any) {
       if (err.statusCode === 410) {
