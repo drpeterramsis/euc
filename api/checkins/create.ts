@@ -7,7 +7,7 @@ import crypto from "crypto";
  */
 
 // POST /api/checkins/create
-// Body: { title: string, rolesAllowed: string[], trip: "departure", role: string }
+// Body: { categoryId: string, title: string, description: string, buttonTitle: string, rolesAllowed: string[], role: string }
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
@@ -24,40 +24,52 @@ export default async function handler(req: any, res: any) {
       }
     }
 
-    const { title, rolesAllowed, trip, role } = body || {};
+    const { categoryId, title, description, buttonTitle, rolesAllowed, role } = body || {};
 
-    // Validate admin role
+    // Validate admin privilege
     if (role !== "admin") {
-      return res.status(403).json({ error: "Forbidden: Only administrators can create check-ins" });
+      return res.status(403).json({ error: "Forbidden: Only administrators can create check-ins." });
     }
 
-    // Validate inputs
+    if (!categoryId || typeof categoryId !== "string" || !categoryId.trim()) {
+      return res.status(400).json({ error: "categoryId is required" });
+    }
+
+    // Validate category exists and is active
+    const category: any = await kv.get(`checkinCat:${categoryId.trim()}`);
+    if (!category || category.active !== true) {
+      return res.status(400).json({ error: "Category not found or inactive" });
+    }
+
     if (!title || typeof title !== "string" || !title.trim()) {
       return res.status(400).json({ error: "title is required and must be a non-empty string" });
+    }
+
+    if (!buttonTitle || typeof buttonTitle !== "string" || !buttonTitle.trim()) {
+      return res.status(400).json({ error: "buttonTitle is required and must be a non-empty string" });
     }
 
     if (!Array.isArray(rolesAllowed) || rolesAllowed.length === 0) {
       return res.status(400).json({ error: "rolesAllowed must be a non-empty array of strings" });
     }
 
-    if (trip !== "departure") {
-      return res.status(400).json({ error: "trip must be 'departure'" });
-    }
-
     const id = crypto.randomUUID();
     const checkin = {
       id,
+      categoryId: categoryId.trim(),
       title: title.trim(),
+      description: typeof description === "string" ? description.trim() : "",
+      buttonTitle: buttonTitle.trim(),
       rolesAllowed: rolesAllowed.map((r: any) => String(r).trim().toLowerCase()),
-      trip,
+      trip: "departure",
       active: true,
       createdAt: Date.now()
     };
 
-    // Store checkin:{id} JSON in Vercel KV
+    // Store checkin:{id} JSON
     await kv.set(`checkin:${id}`, checkin);
-    // Add checkin ID to the departure trip index Set
-    await kv.sadd(`checkins:trip:${trip}`, id);
+    // SADD checkins:cat:{categoryId} id
+    await kv.sadd(`checkins:cat:${categoryId.trim()}`, id);
 
     return res.status(201).json({ id });
   } catch (err: any) {

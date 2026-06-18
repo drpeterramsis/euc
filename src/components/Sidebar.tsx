@@ -258,7 +258,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                   }`
                 }
               >
-                <span>✅ Check-ins Admin</span>
+                <span>✅ Manage Check-ins</span>
               </NavLink>
             </>
           )}

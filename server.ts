@@ -14,6 +14,24 @@ async function startServer() {
   // Api endpoints for Vercel KV persistence
 
   // Check-ins routes delegation
+  app.post("/api/checkinCats/create", async (req, res) => {
+    try {
+      const handler = (await import("./api/checkinCats/create.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/checkinCats/list", async (req, res) => {
+    try {
+      const handler = (await import("./api/checkinCats/list.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.post("/api/checkins/create", async (req, res) => {
     try {
       const handler = (await import("./api/checkins/create.js")).default;
@@ -26,6 +44,33 @@ async function startServer() {
   app.get("/api/checkins/active", async (req, res) => {
     try {
       const handler = (await import("./api/checkins/active.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/checkins/activeByTrip", async (req, res) => {
+    try {
+      const handler = (await import("./api/checkins/activeByTrip.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/checkins/check", async (req, res) => {
+    try {
+      const handler = (await import("./api/checkins/check.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/checkins/uncheck", async (req, res) => {
+    try {
+      const handler = (await import("./api/checkins/uncheck.js")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });

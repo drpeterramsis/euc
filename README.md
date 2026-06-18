@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.1001
+Version: 1.0.1004
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -138,6 +138,7 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.995 | 2026-06-18 | PERSISTENCE ENGINE: Re-architected application to run on full-stack Express + Vite architecture, integrating robust Vercel KV (Upstash Redis) server-side routes to persist, fetch, query, index and dynamically update users' base profiles & data cells. |
 | v1.0.999 | 2026-06-18 | VERCEL KV CHECK-INS: Implemented Vercel Serverless Functions (`/api/*`) and Vercel KV persistence for Departure Trip check-ins. Added Check-ins configuration panel in Admin page and active Check-ins respondent lists for users with session and local storage cache states. Fixed Sessions UI selected-day count, active yellow-on-black button, and inactive black-on-white button custom styles. |
 | v1.0.1001 | 2026-06-18 | ROLE-BASED CHECK-INS REFACTOR: Fully refactored Vercel serverless checkins APIs, eliminating manual ADMIN_KEY passwords for direct user session security checking. Added a permanent "/checkins" page and "/admin/checkins" page with proper sidebar selections and a minimalist live counts home dashboard shortcut. |
+| v1.0.1004 | 2026-06-18 | CATEGORIZED CHECK-INS SYSTEM: Upgraded check-ins system to support modular categories, multiselect role definitions, and full response statuses under custom Vercel KV structures with unchecking support. |
 
 ## Notes
 - Base information and configurations are stored in /data JSON files

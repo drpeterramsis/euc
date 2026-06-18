@@ -12,22 +12,27 @@ interface CheckinsShortcutProps {
 
 export default function CheckinsShortcut({ user }: CheckinsShortcutProps) {
   const navigate = useNavigate();
-  const [activeCount, setActiveCount] = useState<number>(0);
+  const [totalPending, setTotalPending] = useState<number>(0);
+  const [hasActiveCheckins, setHasActiveCheckins] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!user || !user.role) return;
+    if (!user || !user.role || !user.username) return;
 
     setLoading(true);
-    const roleQuery = encodeURIComponent(user.role.trim());
+    const roleParam = encodeURIComponent(user.role.trim());
+    const usernameParam = encodeURIComponent(user.username.trim());
 
-    fetch(`/api/checkins/active?role=${roleQuery}&trip=departure`)
+    fetch(`/api/checkins/activeByTrip?trip=departure&role=${roleParam}&username=${usernameParam}`)
       .then((res) => {
         if (res.ok) return res.json();
         throw new Error();
       })
       .then((data) => {
-        setActiveCount(data.checkins?.length || 0);
+        setTotalPending(data.totalPending || 0);
+        // Check if there are any check-ins at all
+        const anyActive = (data.categories || []).some((c: any) => (c.checkins || []).length > 0);
+        setHasActiveCheckins(anyActive);
       })
       .catch(() => {
         // Silently handle
@@ -39,30 +44,50 @@ export default function CheckinsShortcut({ user }: CheckinsShortcutProps) {
 
   if (!user) return null;
 
+  const isPending = totalPending > 0;
+
   return (
-    <div className="bg-gradient-to-br from-yellow-50 to-amber-50 border border-yellow-200 rounded-2xl p-4 mb-6 shadow-sm flex items-center justify-between font-sans">
+    <div
+      className={`border rounded-2xl p-4 mb-6 shadow-sm flex items-center justify-between font-sans transition-all duration-300 ${
+        isPending
+          ? "bg-yellow-400 border-yellow-500 text-black"
+          : "bg-gray-50 border-gray-200 text-gray-900"
+      }`}
+    >
       <div className="flex items-center gap-3">
         <div className="text-2xl">✈️</div>
         <div>
-          <h4 className="font-extrabold text-[#9F5F00] text-sm uppercase tracking-wide">
+          <h4
+            className={`font-black text-xs uppercase tracking-wide ${
+              isPending ? "text-black" : "text-gray-500"
+            }`}
+          >
             Check-ins (Departure)
           </h4>
-          <p className="text-xs text-gray-600 font-semibold">
+          <p className="text-xs font-semibold mt-0.5">
             {loading ? (
-              <span>Looking up check-ins...</span>
-            ) : activeCount > 0 ? (
-              <span className="text-yellow-800 font-bold">
-                📢 {activeCount} active check-in{activeCount > 1 ? "s" : ""} available
+              <span className={isPending ? "text-gray-800" : "text-gray-500"}>
+                Looking up check-ins...
               </span>
+            ) : isPending ? (
+              <span className="font-extrabold text-[#7c0000] animate-pulse">
+                📢 You have {totalPending} pending check-in{totalPending > 1 ? "s" : ""}
+              </span>
+            ) : hasActiveCheckins ? (
+              <span className="text-emerald-700 font-bold">✓ All caught up! No pending check-ins</span>
             ) : (
-              <span className="text-gray-550">No active check-ins right now</span>
+              <span className="text-gray-500">No active check-ins right now</span>
             )}
           </p>
         </div>
       </div>
       <button
         onClick={() => navigate("/checkins")}
-        className="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer border-none"
+        className={`px-4 py-2 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer border-none ${
+          isPending
+            ? "bg-black text-white hover:bg-gray-800"
+            : "bg-yellow-400 text-black hover:bg-yellow-500"
+        }`}
       >
         Open
       </button>
