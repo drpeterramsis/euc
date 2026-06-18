@@ -131,6 +131,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
   const [sessionItems, setSessionItems] = useState<any[]>([]);
   const [editingSession, setEditingSession] = useState<any | null>(null);
   const [showSessionForm, setShowSessionForm] = useState(false);
+  const [scheduleSubTab, setScheduleSubTab] = useState<"schedule" | "sessions">("schedule");
   const [sessionForm, setSessionForm] = useState({
     id: "",
     title: "",
@@ -141,6 +142,8 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     hall: "",
     link: "",
     timezoneDisplay: "both" as "both" | "prague" | "cairo",
+    speakerPhoto: "",
+    speakerWhatsApp: "",
   });
 
   // Tab 4 State (Features)
@@ -179,6 +182,18 @@ export default function Admin({ initialTab }: AdminProps = {}) {
       setInputAppVersion(APP_VERSION);
     }
   }, [settings?.appVersion]);
+
+  // Prevent background scrolling when session form modal is shown
+  useEffect(() => {
+    if (showSessionForm) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [showSessionForm]);
 
   // App Settings Tab state
   const [navLabelsForm, setNavLabelsForm] = useState<Record<string, string>>(
@@ -1203,13 +1218,27 @@ export default function Admin({ initialTab }: AdminProps = {}) {
       hall: "",
       link: "",
       timezoneDisplay: "both",
+      speakerPhoto: "",
+      speakerWhatsApp: "",
     });
     setShowSessionForm(true);
   }
 
   function handleEditSession(item: any) {
     setEditingSession(item);
-    setSessionForm({ ...item });
+    setSessionForm({
+      id: item.id || "",
+      title: item.title || "",
+      speaker: item.speaker || "",
+      date: item.date || "",
+      time: item.time || "",
+      toTime: item.toTime || "",
+      hall: item.hall || "",
+      link: item.link || "",
+      timezoneDisplay: item.timezoneDisplay || "both",
+      speakerPhoto: item.speakerPhoto || "",
+      speakerWhatsApp: item.speakerWhatsApp || "",
+    });
     setInputTimezone(item.inputTimezone || "Africa/Cairo");
     setShowSessionForm(true);
   }
@@ -1864,7 +1893,35 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     <div>
       <h2 className="text-xl font-bold mb-6">Schedule & Sessions Control</h2>
 
-      {/* ── 1. COUNTDOWN & TIMELINE SETTINGS ──────────────── */}
+      {/* ── SUB-TABS SELECTOR FOR SCHEDULE vs SESSIONS ── */}
+      <div className="flex bg-gray-100 p-1 rounded-lg w-full sm:max-w-md mb-6 font-sans">
+        <button
+          type="button"
+          onClick={() => setScheduleSubTab("schedule")}
+          className={`flex-1 text-center py-2 text-sm font-bold rounded-md transition-all cursor-pointer ${
+            scheduleSubTab === "schedule"
+              ? "bg-white text-black shadow-sm"
+              : "text-gray-500 hover:text-gray-950"
+          }`}
+        >
+          📅 Schedule & Settings
+        </button>
+        <button
+          type="button"
+          onClick={() => setScheduleSubTab("sessions")}
+          className={`flex-1 text-center py-2 text-sm font-bold rounded-md transition-all cursor-pointer ${
+            scheduleSubTab === "sessions"
+              ? "bg-white text-black shadow-sm"
+              : "text-gray-500 hover:text-gray-950"
+          }`}
+        >
+          🎓 Sessions
+        </button>
+      </div>
+
+      {scheduleSubTab === "schedule" && (
+        <>
+          {/* ── 1. COUNTDOWN & TIMELINE SETTINGS ──────────────── */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-150 mb-8 font-sans">
         <h3 className="font-extrabold text-lg text-gray-900 border-b pb-3 mb-4 flex items-center gap-2">
           <span>⏱️</span> Smart Countdown & Timeline Settings
@@ -3256,324 +3313,401 @@ export default function Admin({ initialTab }: AdminProps = {}) {
           </button>
         </div>
       </div>
+        </>
+      )}
 
-      <div className="grid grid-cols-1 gap-8">
-        {/* Sessions Manager */}
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-150">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-lg">🎓 Sessions Manager</h3>
-            <button
-              onClick={handleAddSession}
-              className="bg-black text-white hover:bg-gray-800 px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm cursor-pointer"
-            >
-              + Add Session
-            </button>
-          </div>
-          <div className="space-y-4">
-            {sessionItems.length === 0 && (
-              <p className="text-gray-400 text-center py-4">No sessions yet.</p>
-            )}
-            {[...sessionItems]
-              .sort(
-                (a, b) =>
-                  a.date.localeCompare(b.date) || a.time.localeCompare(b.time),
-              )
-              .map((session: any) => (
-                <div
-                  key={session.id}
-                  className="border border-gray-200 p-4 rounded-xl bg-gray-50/50 hover:bg-gray-50 transition-colors"
-                >
-                  <div className="font-bold flex justify-between items-start">
-                    <div className="flex flex-col">
-                      <span className="text-gray-900">{session.title}</span>
-                      <span className="text-xs text-blue-600 font-bold uppercase mt-1">
-                        🗣 {session.speaker}
-                      </span>
+      {scheduleSubTab === "sessions" && (
+        <div className="grid grid-cols-1 gap-8 animate-fade-in">
+          {/* Sessions Manager */}
+          <div className="bg-white p-6 rounded-lg shadow border border-gray-150">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-lg">🎓 Sessions Manager</h3>
+              <button
+                onClick={handleAddSession}
+                className="bg-black text-white hover:bg-gray-800 px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm cursor-pointer"
+              >
+                + Add Session
+              </button>
+            </div>
+            <div className="space-y-4">
+              {sessionItems.length === 0 && (
+                <p className="text-gray-400 text-center py-4">No sessions yet.</p>
+              )}
+              {[...sessionItems]
+                .sort(
+                  (a, b) =>
+                    a.date.localeCompare(b.date) || a.time.localeCompare(b.time),
+                )
+                .map((session: any) => (
+                  <div
+                    key={session.id}
+                    className="border border-gray-200 p-4 rounded-xl bg-gray-50/50 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="font-bold flex justify-between items-start">
+                      <div className="flex flex-col">
+                        <span className="text-gray-900">{session.title}</span>
+                        <span className="text-xs text-blue-600 font-bold uppercase mt-1">
+                          🗣 {session.speaker}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEditSession(session)}
+                          className="text-blue-600 text-xs font-bold p-1 px-2 border border-blue-200 rounded bg-white hover:bg-blue-50 cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSession(session.id)}
+                          className="text-red-600 text-xs font-bold p-1 px-2 border border-red-200 rounded bg-white hover:bg-red-50 cursor-pointer"
+                        >
+                          Del
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEditSession(session)}
-                        className="text-blue-600 text-xs font-bold p-1 px-2 border border-blue-200 rounded bg-white hover:bg-blue-50 cursor-pointer"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteSession(session.id)}
-                        className="text-red-600 text-xs font-bold p-1 px-2 border border-red-200 rounded bg-white hover:bg-red-50 cursor-pointer"
-                      >
-                        Del
-                      </button>
+                    <div className="text-xs text-gray-500 mt-3 flex flex-wrap items-center gap-4">
+                      <span className="flex items-center gap-1 font-bold text-gray-700">
+                        📅 {session.date}
+                      </span>
+                      <span className="flex items-center gap-1 font-bold text-gray-700">
+                        ⏰ {formatTimeAmPm(session.time)}
+                        {session.toTime ? ` - ${formatTimeAmPm(session.toTime)}` : ""}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        🏛 {session.hall}
+                      </span>
+                      {session.link && (
+                        <span className="text-blue-600 truncate max-w-[200px]">
+                          🔗 {session.link}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <div className="text-xs text-gray-500 mt-3 flex flex-wrap items-center gap-4">
-                    <span className="flex items-center gap-1 font-bold text-gray-700">
-                      📅 {session.date}
-                    </span>
-                    <span className="flex items-center gap-1 font-bold text-gray-700">
-                      ⏰ {formatTimeAmPm(session.time)}
-                      {session.toTime ? ` - ${formatTimeAmPm(session.toTime)}` : ""}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      🏛 {session.hall}
-                    </span>
-                    {session.link && (
-                      <span className="text-blue-600 truncate max-w-[200px]">
-                        🔗 {session.link}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
+                ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Modal removed as per requirements */}
 
       {showSessionForm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl border border-gray-200 w-full max-w-lg p-6 space-y-4 my-8">
-            <div className="flex items-center justify-between border-b pb-3 border-gray-100">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl border border-gray-200 w-full max-w-lg flex flex-col max-h-[90vh] md:max-h-[85vh] overflow-hidden">
+            {/* STICKY HEADER */}
+            <div className="flex items-center justify-between border-b px-6 py-4 border-gray-100 flex-shrink-0 bg-white">
               <h3 className="text-gray-900 font-bold text-lg">
                 {editingSession ? "Edit Session" : "Add Session"}
               </h3>
               <button
                 onClick={() => setShowSessionForm(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 p-1"
               >
                 ✕
               </button>
             </div>
 
-            <div>
-              <label className="text-gray-600 font-medium text-sm">Title</label>
-              <input
-                type="text"
-                value={sessionForm.title}
-                onChange={(e) =>
-                  setSessionForm({ ...sessionForm, title: e.target.value })
-                }
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
-              />
-            </div>
-            <div>
-              <label className="text-gray-600 font-medium text-sm">
-                Speaker
-              </label>
-              <input
-                type="text"
-                value={sessionForm.speaker}
-                onChange={(e) =>
-                  setSessionForm({ ...sessionForm, speaker: e.target.value })
-                }
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
-              />
-            </div>
-            <div>
-              <label className="text-gray-600 font-medium text-sm">Date</label>
-              <input
-                type="date"
-                value={sessionForm.date}
-                onChange={(e) =>
-                  setSessionForm({ ...sessionForm, date: e.target.value })
-                }
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+            {/* SCROLLABLE BODY */}
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
               <div>
-                <label className="text-gray-600 font-medium text-sm">
-                  From Time
-                </label>
+                <label className="text-gray-600 font-medium text-sm">Title</label>
                 <input
-                  type="time"
-                  value={sessionForm.time}
+                  type="text"
+                  value={sessionForm.title}
                   onChange={(e) =>
-                    setSessionForm({ ...sessionForm, time: e.target.value })
+                    setSessionForm({ ...sessionForm, title: e.target.value })
                   }
                   className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
                 />
               </div>
               <div>
                 <label className="text-gray-600 font-medium text-sm">
-                  To Time
+                  Speaker
                 </label>
                 <input
-                  type="time"
-                  value={sessionForm.toTime}
+                  type="text"
+                  value={sessionForm.speaker}
                   onChange={(e) =>
-                    setSessionForm({ ...sessionForm, toTime: e.target.value })
+                    setSessionForm({ ...sessionForm, speaker: e.target.value })
                   }
                   className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
                 />
               </div>
-            </div>
-
-            <div className="flex flex-col gap-1 mt-2 mb-2">
-              <label className="text-sm font-medium text-gray-700">
-                Timezone of this time
-              </label>
-              <div className="flex gap-3">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="inputTimezone_session"
-                    value="Africa/Cairo"
-                    checked={inputTimezone === "Africa/Cairo"}
-                    onChange={() => setInputTimezone("Africa/Cairo")}
-                    className="accent-blue-600"
-                  />
-                  <span className="text-sm text-gray-700">
-                    🇪🇬 Cairo (EET UTC+3)
-                  </span>
+              <div>
+                <label className="text-gray-600 font-medium text-sm block mb-1">
+                  Speaker Photo (Optional)
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="inputTimezone_session"
-                    value="Europe/Prague"
-                    checked={inputTimezone === "Europe/Prague"}
-                    onChange={() => setInputTimezone("Europe/Prague")}
-                    className="accent-blue-600"
-                  />
-                  <span className="text-sm text-gray-700">
-                    🇨🇿 Prague (CEST UTC+2)
-                  </span>
-                </label>
+                {sessionForm.speakerPhoto ? (
+                  <div className="flex items-center gap-3 bg-gray-50 p-2.5 rounded-lg border border-gray-200">
+                    <img
+                      src={sessionForm.speakerPhoto}
+                      alt="Speaker preview"
+                      className="w-12 h-12 rounded-full object-cover border border-gray-300"
+                    />
+                    <div className="flex-1">
+                      <p className="text-xs text-green-600 font-semibold flex items-center gap-1">
+                        ✓ Photo Loaded
+                      </p>
+                      <p className="text-[10px] text-gray-400">Compressed Base64 Image</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSessionForm({ ...sessionForm, speakerPhoto: "" })}
+                      className="text-xs text-red-600 font-bold hover:text-red-800 bg-red-50 hover:bg-red-105 px-2.5 py-1.5 rounded transition-all cursor-pointer"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        if (!file.type.startsWith("image/")) {
+                          alert("Please select a valid image file (JPG, PNG, WEBP).");
+                          return;
+                        }
+                        const maxSize = 2 * 1024 * 1025; // 2MB
+                        if (file.size > maxSize) {
+                          alert("File is too large! Maximum limit is 2 MB.");
+                          return;
+                        }
+                        try {
+                          const compressed = await compressImage(file);
+                          setSessionForm({ ...sessionForm, speakerPhoto: compressed });
+                        } catch (err) {
+                          alert("Error processing image.");
+                        }
+                      }}
+                      className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-yellow-50 file:text-yellow-750 hover:file:bg-yellow-100 transition-all border border-gray-205 rounded-lg p-2.5 bg-gray-50"
+                    />
+                  </div>
+                )}
               </div>
-              <p className="text-xs text-gray-400">
-                Select the timezone the time above was given to you in. Default
-                is Cairo since you are based in Egypt.
-              </p>
-
-              {/* Timezone Display Mode Selector for Scientific Session */}
-              <div className="flex flex-col gap-1 mt-3">
-                <label className="text-sm font-medium text-gray-700">
-                  Show time to users as
+              <div>
+                <label className="text-gray-600 font-medium text-sm">
+                  Speaker WhatsApp contact number (Optional)
                 </label>
-                <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 mt-1">
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="radio"
-                      name="sessionTzDisp"
-                      value="both"
-                      checked={(sessionForm.timezoneDisplay || "both") === "both"}
-                      onChange={() => setSessionForm({ ...sessionForm, timezoneDisplay: "both" })}
-                      className="accent-yellow-500 w-4 h-4"
-                    />
-                    <span className="text-sm text-gray-700">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                <input
+                  type="text"
+                  placeholder="e.g. +201234567890"
+                  value={sessionForm.speakerWhatsApp || ""}
+                  onChange={(e) =>
+                    setSessionForm({ ...sessionForm, speakerWhatsApp: e.target.value })
+                  }
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
+                />
+              </div>
+              <div>
+                <label className="text-gray-600 font-medium text-sm">Date</label>
+                <input
+                  type="date"
+                  value={sessionForm.date}
+                  onChange={(e) =>
+                    setSessionForm({ ...sessionForm, date: e.target.value })
+                  }
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-gray-600 font-medium text-sm">
+                    From Time
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="radio"
-                      name="sessionTzDisp"
-                      value="prague"
-                      checked={(sessionForm.timezoneDisplay || "both") === "prague"}
-                      onChange={() => setSessionForm({ ...sessionForm, timezoneDisplay: "prague" })}
-                      className="accent-yellow-500 w-4 h-4"
-                    />
-                    <span className="text-sm text-gray-700">🇨🇿 Prague only</span>
+                  <input
+                    type="time"
+                    value={sessionForm.time}
+                    onChange={(e) =>
+                      setSessionForm({ ...sessionForm, time: e.target.value })
+                    }
+                    className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
+                  />
+                </div>
+                <div>
+                  <label className="text-gray-600 font-medium text-sm">
+                    To Time
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="radio"
-                      name="sessionTzDisp"
-                      value="cairo"
-                      checked={(sessionForm.timezoneDisplay || "both") === "cairo"}
-                      onChange={() => setSessionForm({ ...sessionForm, timezoneDisplay: "cairo" })}
-                      className="accent-yellow-500 w-4 h-4"
-                    />
-                    <span className="text-sm text-gray-700">🇪🇬 Cairo only</span>
-                  </label>
+                  <input
+                    type="time"
+                    value={sessionForm.toTime}
+                    onChange={(e) =>
+                      setSessionForm({ ...sessionForm, toTime: e.target.value })
+                    }
+                    className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
+                  />
                 </div>
               </div>
 
-              {/* Live previews for scientific session */}
-              {(() => {
-                const d = sessionForm.date;
-                const tFrom = sessionForm.time;
-                const tTo = sessionForm.toTime;
-                const tz = inputTimezone || "Africa/Cairo";
-                if (!d) return null;
-                
-                const fromPrague = (() => {
-                  if (!tFrom) return "";
-                  try {
-                    const utc = localToUtc(`${d}T${tFrom}`, tz);
-                    return utcToDisplay(utc, TZ_PRAGUE).time;
-                  } catch { return ""; }
-                })();
-                const fromCairo = (() => {
-                  if (!tFrom) return "";
-                  try {
-                    const utc = localToUtc(`${d}T${tFrom}`, tz);
-                    return utcToDisplay(utc, TZ_CAIRO).time;
-                  } catch { return ""; }
-                })();
+              <div className="flex flex-col gap-1 mt-2 mb-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Timezone of this time
+                </label>
+                <div className="flex gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="inputTimezone_session"
+                      value="Africa/Cairo"
+                      checked={inputTimezone === "Africa/Cairo"}
+                      onChange={() => setInputTimezone("Africa/Cairo")}
+                      className="accent-blue-600"
+                    />
+                    <span className="text-sm text-gray-700">
+                      🇪🇬 Cairo (EET UTC+3)
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="inputTimezone_session"
+                      value="Europe/Prague"
+                      checked={inputTimezone === "Europe/Prague"}
+                      onChange={() => setInputTimezone("Europe/Prague")}
+                      className="accent-blue-600"
+                    />
+                    <span className="text-sm text-gray-700">
+                      🇨🇿 Prague (CEST UTC+2)
+                    </span>
+                  </label>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">
+                  Select the timezone the time above was given to you in. Default
+                  is Cairo since you are based in Egypt.
+                </p>
 
-                const toPrague = (() => {
-                  if (!tTo) return "";
-                  try {
-                    const utc = localToUtc(`${d}T${tTo}`, tz);
-                    return utcToDisplay(utc, TZ_PRAGUE).time;
-                  } catch { return ""; }
-                })();
-                const toCairo = (() => {
-                  if (!tTo) return "";
-                  try {
-                    const utc = localToUtc(`${d}T${tTo}`, tz);
-                    return utcToDisplay(utc, TZ_CAIRO).time;
-                  } catch { return ""; }
-                })();
-
-                if (!fromPrague && !toPrague) return null;
-
-                return (
-                  <div className="flex flex-col gap-1 px-3 py-2 mt-1.5 bg-yellow-50 rounded-lg border border-yellow-250 text-xs text-gray-700 font-semibold leading-normal">
-                    {fromPrague && fromCairo && (
-                      <div>
-                        🏁 Start: 🇨🇿 Prague: <strong>{fromPrague}</strong> | 🇪🇬 Cairo: <strong>{fromCairo}</strong>
-                      </div>
-                    )}
-                    {toPrague && toCairo && (
-                      <div className="border-t border-yellow-200/50 pt-1 mt-1">
-                        🛑 End: 🇨🇿 Prague: <strong>{toPrague}</strong> | 🇪🇬 Cairo: <strong>{toCairo}</strong>
-                      </div>
-                    )}
+                {/* Timezone Display Mode Selector for Scientific Session */}
+                <div className="flex flex-col gap-1 mt-3">
+                  <label className="text-sm font-medium text-gray-700">
+                    Show time to users as
+                  </label>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 mt-1">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="radio"
+                        name="sessionTzDisp"
+                        value="both"
+                        checked={(sessionForm.timezoneDisplay || "both") === "both"}
+                        onChange={() => setSessionForm({ ...sessionForm, timezoneDisplay: "both" })}
+                        className="accent-yellow-500 w-4 h-4"
+                      />
+                      <span className="text-sm text-gray-700">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="radio"
+                        name="sessionTzDisp"
+                        value="prague"
+                        checked={(sessionForm.timezoneDisplay || "both") === "prague"}
+                        onChange={() => setSessionForm({ ...sessionForm, timezoneDisplay: "prague" })}
+                        className="accent-yellow-500 w-4 h-4"
+                      />
+                      <span className="text-sm text-gray-700">🇨🇿 Prague only</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="radio"
+                        name="sessionTzDisp"
+                        value="cairo"
+                        checked={(sessionForm.timezoneDisplay || "both") === "cairo"}
+                        onChange={() => setSessionForm({ ...sessionForm, timezoneDisplay: "cairo" })}
+                        className="accent-yellow-500 w-4 h-4"
+                      />
+                      <span className="text-sm text-gray-700">🇪🇬 Cairo only</span>
+                    </label>
                   </div>
-                );
-              })()}
+                </div>
+
+                {/* Live previews for scientific session */}
+                {(() => {
+                  const d = sessionForm.date;
+                  const tFrom = sessionForm.time;
+                  const tTo = sessionForm.toTime;
+                  const tz = inputTimezone || "Africa/Cairo";
+                  if (!d) return null;
+                  
+                  const fromPrague = (() => {
+                    if (!tFrom) return "";
+                    try {
+                      const utc = localToUtc(`${d}T${tFrom}`, tz);
+                      return utcToDisplay(utc, TZ_PRAGUE).time;
+                    } catch { return ""; }
+                  })();
+                  const fromCairo = (() => {
+                    if (!tFrom) return "";
+                    try {
+                      const utc = localToUtc(`${d}T${tFrom}`, tz);
+                      return utcToDisplay(utc, TZ_CAIRO).time;
+                    } catch { return ""; }
+                  })();
+
+                  const toPrague = (() => {
+                    if (!tTo) return "";
+                    try {
+                      const utc = localToUtc(`${d}T${tTo}`, tz);
+                      return utcToDisplay(utc, TZ_PRAGUE).time;
+                    } catch { return ""; }
+                  })();
+                  const toCairo = (() => {
+                    if (!tTo) return "";
+                    try {
+                      const utc = localToUtc(`${d}T${tTo}`, tz);
+                      return utcToDisplay(utc, TZ_CAIRO).time;
+                    } catch { return ""; }
+                  })();
+
+                  if (!fromPrague && !toPrague) return null;
+
+                  return (
+                    <div className="flex flex-col gap-1 px-3 py-2 mt-2 bg-yellow-50 rounded-lg border border-yellow-250 text-xs text-gray-700 font-semibold leading-normal">
+                      {fromPrague && fromCairo && (
+                        <div>
+                          🏁 Start: 🇨🇿 Prague: <strong>{fromPrague}</strong> | 🇪🇬 Cairo: <strong>{fromCairo}</strong>
+                        </div>
+                      )}
+                      {toPrague && toCairo && (
+                        <div className="border-t border-yellow-200/50 pt-1 mt-1">
+                          🛑 End: 🇨🇿 Prague: <strong>{toPrague}</strong> | 🇪🇬 Cairo: <strong>{toCairo}</strong>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              <div>
+                <label className="text-gray-600 font-medium text-sm">
+                  Hall / Location
+                </label>
+                <input
+                  type="text"
+                  value={sessionForm.hall}
+                  onChange={(e) =>
+                    setSessionForm({ ...sessionForm, hall: e.target.value })
+                  }
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
+                />
+              </div>
+              <div>
+                <label className="text-gray-600 font-medium text-sm">
+                  Session Link (Optional)
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://..."
+                  value={sessionForm.link}
+                  onChange={(e) =>
+                    setSessionForm({ ...sessionForm, link: e.target.value })
+                  }
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="text-gray-600 font-medium text-sm">
-                Hall / Location
-              </label>
-              <input
-                type="text"
-                value={sessionForm.hall}
-                onChange={(e) =>
-                  setSessionForm({ ...sessionForm, hall: e.target.value })
-                }
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
-              />
-            </div>
-            <div>
-              <label className="text-gray-600 font-medium text-sm">
-                Session Link (Optional)
-              </label>
-              <input
-                type="url"
-                placeholder="https://..."
-                value={sessionForm.link}
-                onChange={(e) =>
-                  setSessionForm({ ...sessionForm, link: e.target.value })
-                }
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-medium rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-yellow-500"
-              />
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+            {/* STICKY FOOTER */}
+            <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0 rounded-b-xl">
               <button
                 onClick={() => setShowSessionForm(false)}
                 className="px-5 py-2 rounded-lg bg-white border border-gray-300 shadow-sm text-gray-700 font-bold hover:bg-gray-50 transition-colors"
