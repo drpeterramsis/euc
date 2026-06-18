@@ -14,7 +14,10 @@ export default function CheckinsShortcut({ user }: CheckinsShortcutProps) {
   const navigate = useNavigate();
   const [totalPending, setTotalPending] = useState<number>(0);
   const [hasActiveCheckins, setHasActiveCheckins] = useState<boolean>(false);
+  const [tripTitle, setTripTitle] = useState<string>("Checking state...");
   const [loading, setLoading] = useState(false);
+
+  const selectedTripId = localStorage.getItem("selected_trip_id") || "departure";
 
   useEffect(() => {
     if (!user || !user.role || !user.username) return;
@@ -22,25 +25,27 @@ export default function CheckinsShortcut({ user }: CheckinsShortcutProps) {
     setLoading(true);
     const roleParam = encodeURIComponent(user.role.trim());
     const usernameParam = encodeURIComponent(user.username.trim());
+    const tripParam = encodeURIComponent(selectedTripId);
 
-    fetch(`/api/checkins/activeByTrip?trip=departure&role=${roleParam}&username=${usernameParam}`)
+    fetch(`/api/checkins/activeByTrip?tripId=${tripParam}&role=${roleParam}&username=${usernameParam}`)
       .then((res) => {
         if (res.ok) return res.json();
         throw new Error();
       })
       .then((data) => {
         setTotalPending(data.totalPending || 0);
-        // Check if there are any check-ins at all
+        setTripTitle(data.trip?.title || "Trip Milestones");
         const anyActive = (data.categories || []).some((c: any) => (c.checkins || []).length > 0);
         setHasActiveCheckins(anyActive);
       })
       .catch(() => {
-        // Silently handle
+        // Silently fallback labels
+        setTripTitle("Trip Milestones");
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [user]);
+  }, [user, selectedTripId]);
 
   if (!user) return null;
 
@@ -50,7 +55,7 @@ export default function CheckinsShortcut({ user }: CheckinsShortcutProps) {
     <div
       className={`border rounded-2xl p-4 mb-6 shadow-sm flex items-center justify-between font-sans transition-all duration-300 ${
         isPending
-          ? "bg-yellow-400 border-yellow-500 text-black"
+          ? "bg-yellow-400 border-yellow-500 text-black animate-pulse"
           : "bg-gray-50 border-gray-200 text-gray-900"
       }`}
     >
@@ -62,7 +67,7 @@ export default function CheckinsShortcut({ user }: CheckinsShortcutProps) {
               isPending ? "text-black" : "text-gray-500"
             }`}
           >
-            Check-ins (Departure)
+            Check-ins ({tripTitle})
           </h4>
           <p className="text-xs font-semibold mt-0.5">
             {loading ? (
@@ -70,13 +75,13 @@ export default function CheckinsShortcut({ user }: CheckinsShortcutProps) {
                 Looking up check-ins...
               </span>
             ) : isPending ? (
-              <span className="font-extrabold text-[#7c0000] animate-pulse">
-                📢 You have {totalPending} pending check-in{totalPending > 1 ? "s" : ""}
+              <span className="font-extrabold text-[#7c0000]">
+                📢 You have {totalPending} pending milestone{totalPending > 1 ? "s" : ""}
               </span>
             ) : hasActiveCheckins ? (
               <span className="text-emerald-700 font-bold">✓ All caught up! No pending check-ins</span>
             ) : (
-              <span className="text-gray-500">No active check-ins right now</span>
+              <span className="text-gray-500">No active check-ins configured</span>
             )}
           </p>
         </div>

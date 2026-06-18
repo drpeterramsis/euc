@@ -1,4 +1,5 @@
 import { kv } from "@vercel/kv";
+import { invalidateTripCache } from "../cacheHelper";
 
 /**
  * @license
@@ -65,6 +66,10 @@ export default async function handler(req: any, res: any) {
     if (!removedCount) {
       return res.status(409).json({ error: "Conflict: You are not checked-in to this check-in" });
     }
+
+    // Invalidate cached endpoints for this trip
+    const tripId = checkin.tripId || "departure";
+    await invalidateTripCache(tripId);
 
     return res.status(200).json({ ok: true });
   } catch (err: any) {

@@ -1,5 +1,6 @@
 import { kv } from "@vercel/kv";
 import crypto from "crypto";
+import { invalidateTripCache } from "../cacheHelper";
 
 /**
  * @license
@@ -7,7 +8,7 @@ import crypto from "crypto";
  */
 
 // POST /api/checkins/create
-// Body: { categoryId: string, title: string, description: string, buttonTitle: string, rolesAllowed: string[], role: string }
+// Body: { role: string, tripId: string, categoryId: string, title: string, description: string, buttonTitle: string, rolesAllowed: string[] }
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
@@ -24,21 +25,35 @@ export default async function handler(req: any, res: any) {
       }
     }
 
-    const { categoryId, title, description, buttonTitle, rolesAllowed, role } = body || {};
+    const { role, tripId, categoryId, title, description, buttonTitle, rolesAllowed } = body || {};
 
     // Validate admin privilege
     if (role !== "admin") {
       return res.status(403).json({ error: "Forbidden: Only administrators can create check-ins." });
     }
 
+    if (!tripId || typeof tripId !== "string" || !tripId.trim()) {
+      return res.status(400).json({ error: "tripId is required" });
+    }
+
+    const cleanTripId = tripId.trim();
+
     if (!categoryId || typeof categoryId !== "string" || !categoryId.trim()) {
       return res.status(400).json({ error: "categoryId is required" });
     }
 
-    // Validate category exists and is active
-    const category: any = await kv.get(`checkinCat:${categoryId.trim()}`);
-    if (!category || category.active !== true) {
-      return res.status(400).json({ error: "Category not found or inactive" });
+    const cleanCatId = categoryId.trim();
+
+    // Validate category exists
+    const category: any = await kv.get(`checkinCat:${cleanCatId}`);
+    if (!category) {
+      return res.status(400).json({ error: "Category not found" });
+    }
+
+    // Ensure category is mapped to this trip
+    const catTripId = category.tripId || "departure";
+    if (catTripId !== cleanTripId) {
+      return res.status(400).json({ error: `Category trip scope mismatch: Category belongs to '${catTripId}', not '${cleanTripId}'` });
     }
 
     if (!title || typeof title !== "string" || !title.trim()) {
@@ -56,20 +71,24 @@ export default async function handler(req: any, res: any) {
     const id = crypto.randomUUID();
     const checkin = {
       id,
-      categoryId: categoryId.trim(),
+      tripId: cleanTripId,
+      categoryId: cleanCatId,
       title: title.trim(),
       description: typeof description === "string" ? description.trim() : "",
       buttonTitle: buttonTitle.trim(),
       rolesAllowed: rolesAllowed.map((r: any) => String(r).trim().toLowerCase()),
-      trip: "departure",
       active: true,
       createdAt: Date.now()
     };
 
     // Store checkin:{id} JSON
     await kv.set(`checkin:${id}`, checkin);
-    // SADD checkins:cat:{categoryId} id
-    await kv.sadd(`checkins:cat:${categoryId.trim()}`, id);
+    
+    // Add to categories index
+    await kv.sadd(`checkins:cat:${cleanCatId}`, id);
+
+    // Invalidate cached results for this trip
+    await invalidateTripCache(cleanTripId);
 
     return res.status(201).json({ id });
   } catch (err: any) {

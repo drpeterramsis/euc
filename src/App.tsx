@@ -34,6 +34,7 @@ import { useApp } from './context/AppContext';
 import { getFeatureStatus } from './utils/featureAccess';
 import { useSwipeBack } from './hooks/useSwipeBack';
 import { getPageAccess as getCentralPageAccess } from './lib/pageAccess';
+import { ToastContainer } from './components/Toast';
 
 /**
  * ProtectedRoute component verifies authentication synchronously.
@@ -162,6 +163,7 @@ export default function App() {
 
   return (
     <>
+      <ToastContainer />
       {isBackgroundRefreshing && (
         <div className="fixed bottom-4 right-4 z-50
                         flex items-center gap-2

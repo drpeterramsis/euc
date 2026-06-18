@@ -32,9 +32,82 @@ async function startServer() {
     }
   });
 
+  app.post("/api/checkinCats/update", async (req, res) => {
+    try {
+      const handler = (await import("./api/checkinCats/update.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Trips routes
+  app.post("/api/trips/create", async (req, res) => {
+    try {
+      const handler = (await import("./api/trips/create.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/trips/update", async (req, res) => {
+    try {
+      const handler = (await import("./api/trips/update.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/trips/delete", async (req, res) => {
+    try {
+      const handler = (await import("./api/trips/delete.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/trips/reset", async (req, res) => {
+    try {
+      const handler = (await import("./api/trips/reset.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/trips/list", async (req, res) => {
+    try {
+      const handler = (await import("./api/trips/list.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.post("/api/checkins/create", async (req, res) => {
     try {
       const handler = (await import("./api/checkins/create.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/checkins/update", async (req, res) => {
+    try {
+      const handler = (await import("./api/checkins/update.js")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/checkins/delete", async (req, res) => {
+    try {
+      const handler = (await import("./api/checkins/delete.js")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });

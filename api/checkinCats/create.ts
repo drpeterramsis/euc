@@ -1,5 +1,6 @@
 import { kv } from "@vercel/kv";
 import crypto from "crypto";
+import { invalidateTripCache } from "../cacheHelper";
 
 /**
  * @license
@@ -7,7 +8,7 @@ import crypto from "crypto";
  */
 
 // POST /api/checkinCats/create
-// Body: { emoji: string, title: string, details: string, role: string }
+// Body: { role: "admin", tripId: string, emoji: string, title: string, details: string }
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
@@ -24,11 +25,23 @@ export default async function handler(req: any, res: any) {
       }
     }
 
-    const { emoji, title, details, role } = body || {};
+    const { role, tripId, emoji, title, details } = body || {};
 
     // Validate admin privilege
     if (role !== "admin") {
       return res.status(403).json({ error: "Forbidden: Only administrators can create categories." });
+    }
+
+    if (!tripId || typeof tripId !== "string" || !tripId.trim()) {
+      return res.status(400).json({ error: "tripId is required" });
+    }
+
+    const cleanTripId = tripId.trim();
+
+    // Validate trip exists
+    const tripExists = await kv.get(`trip:${cleanTripId}`);
+    if (!tripExists) {
+      return res.status(404).json({ error: `Trip '${cleanTripId}' does not exist` });
     }
 
     if (!title || typeof title !== "string" || !title.trim()) {
@@ -38,18 +51,22 @@ export default async function handler(req: any, res: any) {
     const id = crypto.randomUUID();
     const category = {
       id,
+      tripId: cleanTripId,
       emoji: typeof emoji === "string" ? emoji.trim() : "",
       title: title.trim(),
       details: typeof details === "string" ? details.trim() : "",
-      trip: "departure",
       active: true,
       createdAt: Date.now()
     };
 
     // Store checkinCat:{id} JSON
     await kv.set(`checkinCat:${id}`, category);
-    // Add to Set
-    await kv.sadd("checkinCats:trip:departure", id);
+    
+    // Add to trip-specific categories set
+    await kv.sadd(`checkinCats:trip:${cleanTripId}`, id);
+
+    // Invalidate cached endpoints for this trip
+    await invalidateTripCache(cleanTripId);
 
     return res.status(201).json({ id });
   } catch (err: any) {

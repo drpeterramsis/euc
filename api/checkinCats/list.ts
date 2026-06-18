@@ -5,7 +5,7 @@ import { kv } from "@vercel/kv";
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// GET /api/checkinCats/list?trip=departure
+// GET /api/checkinCats/list?tripId={tripId}
 export default async function handler(req: any, res: any) {
   if (req.method !== "GET") {
     res.setHeader("Allow", ["GET"]);
@@ -13,19 +13,19 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const trip = req.query.trip || "departure";
+    const tripId = (req.query.tripId || req.query.trip || "departure").trim();
+    const includeInactive = req.query.includeInactive === "true";
 
-    if (trip !== "departure") {
-      return res.status(400).json({ error: "Only 'departure' trip is supported." });
-    }
-
-    const ids: string[] = await kv.smembers("checkinCats:trip:departure") || [];
+    const ids: string[] = await kv.smembers(`checkinCats:trip:${tripId}`) || [];
     const categories: any[] = [];
 
     for (const id of ids) {
       const cat: any = await kv.get(`checkinCat:${id}`);
-      if (cat && cat.active === true) {
-        categories.push(cat);
+      if (cat) {
+        const isActive = cat.active === undefined || cat.active === true;
+        if (isActive || includeInactive) {
+          categories.push(cat);
+        }
       }
     }
 
