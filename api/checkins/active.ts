@@ -24,25 +24,27 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: "trip is required" });
     }
 
-    const tripClean = trip.trim();
-    const roleClean = role.trim();
+    const tripClean = trip.trim().toLowerCase();
+    const roleClean = role.trim().toLowerCase();
 
-    // Read IDs from set index checkins:trip:{trip}
+    // Read IDs from the set index checkins:trip:{trip}
     const ids: string[] = await kv.smembers(`checkins:trip:${tripClean}`) || [];
     const checkins: any[] = [];
 
     for (const id of ids) {
       const checkin: any = await kv.get(`checkin:${id}`);
       if (checkin) {
-        if (checkin.active === true && Array.isArray(checkin.rolesAllowed) && checkin.rolesAllowed.includes(roleClean)) {
-          // Check if user has already responded to this check-in
-          // We don't do that check inside active, but the frontend needs to know or we can let active list them
+        // Ensure active state and that the user's role is allowed
+        const allowedRoles = Array.isArray(checkin.rolesAllowed)
+          ? checkin.rolesAllowed.map((r: any) => String(r).trim().toLowerCase())
+          : [];
+        if (checkin.active === true && (allowedRoles.includes(roleClean) || roleClean === "admin")) {
           checkins.push(checkin);
         }
       }
     }
 
-    // Sort by createdAt desc if possible
+    // Sort by createdAt desc
     checkins.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
     return res.status(200).json({ checkins });

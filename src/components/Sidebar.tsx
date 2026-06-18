@@ -39,7 +39,8 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
     sessions: "Sessions",
     media: "News Feed",
     directory: "Staff Directory",
-    profile: "My Profile"
+    profile: "My Profile",
+    checkins: "Check-ins"
   };
 
   const sidebarClass = `
@@ -58,6 +59,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
     { key: "media",      path: "/media",       icon: "🖼️", featureKey: "photoGallery" },
     { key: "directory",  path: "/directory",   icon: "👥" },
     { key: "profile",    path: "/profile",     icon: "👤" },
+    { key: "checkins",   path: "/checkins",    icon: "✈️" },
   ];
 
   // Get order from config, fallback to default
@@ -236,7 +238,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                 to="/admin"
                 onClick={() => onClose?.()}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-all font-bold ${
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-all font-bold mb-2 ${
                     isActive
                       ? "bg-yellow-50 text-black shadow-sm font-bold"
                       : "bg-yellow-50 text-yellow-700 hover:bg-yellow-10 border border-yellow-250 font-bold"
@@ -244,6 +246,19 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                 }
               >
                 <span>👥 Admin Panel</span>
+              </NavLink>
+              <NavLink
+                to="/admin/checkins"
+                onClick={() => onClose?.()}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-all font-bold ${
+                    isActive
+                      ? "bg-yellow-50 text-black shadow-sm font-bold"
+                      : "bg-yellow-50 text-yellow-700 hover:bg-yellow-10 border border-yellow-250 font-bold"
+                  }`
+                }
+              >
+                <span>✅ Check-ins Admin</span>
               </NavLink>
             </>
           )}

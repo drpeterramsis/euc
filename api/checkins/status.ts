@@ -5,8 +5,7 @@ import { kv } from "@vercel/kv";
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// GET /api/checkins/status?checkinId=...
-// Headers: x-admin-key
+// GET /api/checkins/status?checkinId=...&role=admin
 export default async function handler(req: any, res: any) {
   if (req.method !== "GET") {
     res.setHeader("Allow", ["GET"]);
@@ -14,14 +13,13 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const adminKey = req.headers["x-admin-key"] || req.headers["X-Admin-Key"] || req.headers["x-admin-key".toLowerCase()];
-    const expectedKey = process.env.ADMIN_KEY;
+    const checkinId = req.query.checkinId;
+    const role = req.query.role;
 
-    if (!adminKey || !expectedKey || adminKey !== expectedKey) {
-      return res.status(401).json({ error: "Unauthorized" });
+    if (role !== "admin") {
+      return res.status(403).json({ error: "Forbidden: Admin access only" });
     }
 
-    const checkinId = req.query.checkinId;
     if (!checkinId || typeof checkinId !== "string" || !checkinId.trim()) {
       return res.status(400).json({ error: "checkinId is required" });
     }

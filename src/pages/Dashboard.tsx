@@ -19,7 +19,7 @@ import DualClock from '../components/DualClock';
 import { readJSON } from '../utils/github';
 import GalleryCard from '../components/GalleryCard';
 import { formatTimeAmPm, splitAmPm } from '../utils/timezone';
-import CheckinsSection from '../components/CheckinsSection';
+import CheckinsShortcut from '../components/CheckinsShortcut';
 
 // ─────────────────────────────────────────────
 // SUMMARY CARD FOR FLIGHTS (Compact, clean with icons)
@@ -199,7 +199,7 @@ export default function Dashboard() {
         </h1>
       </div>
 
-      <CheckinsSection user={fullUser} />
+      <CheckinsShortcut user={fullUser} />
 
       {/* Latest Posts */}
       <div className="bg-white p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 mb-8">

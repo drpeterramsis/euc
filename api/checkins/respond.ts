@@ -6,7 +6,7 @@ import { kv } from "@vercel/kv";
  */
 
 // POST /api/checkins/respond
-// Body JSON: { "checkinId": string, "username": string, "fullname": string, "role": string }
+// Body: { "checkinId": string, "username": string, "fullname": string, "role": string }
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
@@ -43,7 +43,7 @@ export default async function handler(req: any, res: any) {
 
     const checkinIdClean = checkinId.trim();
     const lowerUsername = username.trim().toLowerCase();
-    const roleClean = role.trim();
+    const roleClean = role.trim().toLowerCase();
 
     // Ensure check-in exists and active === true
     const checkin: any = await kv.get(`checkin:${checkinIdClean}`);
@@ -56,7 +56,11 @@ export default async function handler(req: any, res: any) {
     }
 
     // Ensure role is allowed
-    if (!Array.isArray(checkin.rolesAllowed) || !checkin.rolesAllowed.includes(roleClean)) {
+    const allowedRoles = Array.isArray(checkin.rolesAllowed)
+      ? checkin.rolesAllowed.map((r: any) => String(r).trim().toLowerCase())
+      : [];
+
+    if (!allowedRoles.includes(roleClean) && roleClean !== "admin") {
       return res.status(403).json({ error: "Your role is not authorized to respond to this check-in" });
     }
 
@@ -66,7 +70,7 @@ export default async function handler(req: any, res: any) {
       const userData = {
         username: lowerUsername,
         fullname: fullname.trim(),
-        role: roleClean
+        role: role.trim() // preserve original casing
       };
       await kv.hset(`user:${lowerUsername}`, userData);
       await kv.sadd("users:index", lowerUsername);

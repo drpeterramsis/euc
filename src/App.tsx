@@ -28,6 +28,8 @@ import Media from './pages/Media';
 import Messages from './pages/Messages';
 import Staff from './pages/Staff';
 import Directory from './pages/Directory'; 
+import Checkins from './pages/Checkins';
+import AdminCheckins from './pages/AdminCheckins';
 import { useApp } from './context/AppContext';
 import { getFeatureStatus } from './utils/featureAccess';
 import { useSwipeBack } from './hooks/useSwipeBack';
@@ -132,6 +134,8 @@ function AppRoutes() {
       <Route path="/media" element={<ProtectedRoute><FeatureRoute featureKey="photoGallery"><Media /></FeatureRoute></ProtectedRoute>} />
       <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
       <Route path="/directory" element={<ProtectedRoute><Directory /></ProtectedRoute>} /> {/* ← NEW */}
+      <Route path="/checkins" element={<ProtectedRoute><Checkins /></ProtectedRoute>} />
+      <Route path="/admin/checkins" element={<AdminRoute><AdminCheckins /></AdminRoute>} />
       <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
       <Route path="/access-denied" element={<ProtectedRoute><AccessDenied /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />

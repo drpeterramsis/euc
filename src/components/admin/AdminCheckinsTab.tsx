@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useApp } from "../../context/AppContext";
 
 /**
  * @license
@@ -15,9 +16,7 @@ interface Checkin {
 }
 
 export default function AdminCheckinsTab() {
-  const [adminKey, setAdminKey] = useState(() => {
-    return localStorage.getItem("admin_api_key") || "";
-  });
+  const { currentUser } = useApp();
 
   const [title, setTitle] = useState("");
   const [rolesSelected, setRolesSelected] = useState<string[]>(["attendee", "doctor"]);
@@ -31,12 +30,7 @@ export default function AdminCheckinsTab() {
   // Available selectable roles
   const availableRoles = ["admin", "super_user", "attendee", "doctor", "staff"];
 
-  const handleSaveAdminKey = (val: string) => {
-    setAdminKey(val);
-    localStorage.setItem("admin_api_key", val);
-  };
-
-  // Fetch check-ins list for admins (we can use the active endpoint for "admin" role)
+  // Fetch check-ins list for admins
   const fetchCheckins = async () => {
     try {
       const res = await fetch(`/api/checkins/active?role=admin&trip=departure`);
@@ -71,10 +65,6 @@ export default function AdminCheckinsTab() {
       alert("Please select at least one role.");
       return;
     }
-    if (!adminKey.trim()) {
-      alert("Please enter the Admin Key first.");
-      return;
-    }
 
     setLoading(true);
     try {
@@ -82,12 +72,12 @@ export default function AdminCheckinsTab() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-admin-key": adminKey.trim(),
         },
         body: JSON.stringify({
           title: title.trim(),
           rolesAllowed: rolesSelected,
           trip,
+          role: "admin", // Enforced for simple role check
         }),
       });
 
@@ -112,18 +102,8 @@ export default function AdminCheckinsTab() {
     setStatusResult(null);
     setStatusLoading(true);
 
-    if (!adminKey.trim()) {
-      alert("Please enter the Admin Key first to query respondents.");
-      setStatusLoading(false);
-      return;
-    }
-
     try {
-      const res = await fetch(`/api/checkins/status?checkinId=${checkinId}`, {
-        headers: {
-          "x-admin-key": adminKey.trim(),
-        },
-      });
+      const res = await fetch(`/api/checkins/status?checkinId=${checkinId}&role=admin`);
 
       if (res.ok) {
         const data = await res.json();
@@ -146,25 +126,8 @@ export default function AdminCheckinsTab() {
           <span>✅</span> Departure Check-ins Management
         </h2>
         <p className="text-sm text-gray-500 font-medium">
-          Create custom check-ins for the departure trip (e.g., "Arrived at Cairo Airport" or "Boarded Flight") and configure visible roles.
+          Create, view, and query check-in statuses role-by-role for the departure trip itinerary. No admin key required.
         </p>
-      </div>
-
-      {/* Admin Credentials Setup */}
-      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg space-y-2">
-        <label className="block text-xs font-black text-yellow-800 uppercase tracking-wider">
-          🔑 Admin Protection Key (Matches ADMIN_KEY Env Var)
-        </label>
-        <p className="text-xs text-yellow-700 font-medium mb-1">
-          Required to authorize create and status lookups securely. Saved locally.
-        </p>
-        <input
-          type="password"
-          placeholder="Enter Admin Key"
-          className="w-full sm:max-w-md border border-yellow-300 p-2.5 rounded-lg font-bold text-gray-950 bg-white outline-none focus:ring-2 focus:ring-yellow-400"
-          value={adminKey}
-          onChange={(e) => handleSaveAdminKey(e.target.value)}
-        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -221,15 +184,16 @@ export default function AdminCheckinsTab() {
               className="w-full border border-gray-200 p-2.5 rounded-lg outline-none font-bold text-gray-950 bg-gray-50"
               value={trip}
               onChange={(e) => setTrip(e.target.value)}
+              disabled
             >
-              <option value="departure">Departure</option>
+              <option value="departure">Departure (Fixed)</option>
             </select>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-black text-white py-3 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors disabled:bg-gray-400 cursor-pointer"
+            className="w-full bg-black text-white py-3 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors disabled:bg-gray-400 cursor-pointer border-none"
           >
             {loading ? "Creating..." : "✨ Publish Check-In"}
           </button>
@@ -244,7 +208,7 @@ export default function AdminCheckinsTab() {
             <button
               onClick={fetchCheckins}
               type="button"
-              className="text-xs bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded font-bold transition-all text-gray-600 cursor-pointer"
+              className="text-xs bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded font-bold transition-all text-gray-600 cursor-pointer border-none"
             >
               🔄 Refresh
             </button>
@@ -260,14 +224,14 @@ export default function AdminCheckinsTab() {
                 <div key={c.id} className="p-4 bg-gray-50 rounded-lg border border-gray-150 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="space-y-1">
                     <p className="font-extrabold text-sm text-gray-950">{c.title}</p>
-                    <p className="text-[10px] text-gray-500 font-semibold font-sans">
+                    <p className="text-[10px] text-gray-550 font-semibold font-sans">
                       ID: {c.id} · Allowed: {c.rolesAllowed.join(", ")}
                     </p>
                   </div>
                   <button
                     onClick={() => handleCheckStatus(c.id)}
                     type="button"
-                    className="self-start sm:self-auto px-3.5 py-1.5 bg-gray-900 text-white rounded font-bold text-xs hover:bg-black uppercase tracking-wider transition-colors cursor-pointer"
+                    className="self-start sm:self-auto px-3.5 py-1.5 bg-gray-900 text-white rounded font-bold text-xs hover:bg-black uppercase tracking-wider transition-colors cursor-pointer border-none"
                   >
                     📊 Status
                   </button>
@@ -286,7 +250,7 @@ export default function AdminCheckinsTab() {
                 <button
                   onClick={() => setSelectedStatusId(null)}
                   type="button"
-                  className="text-gray-400 hover:text-white font-bold text-sm"
+                  className="text-gray-400 hover:text-white font-bold text-sm bg-transparent border-none cursor-pointer"
                 >
                   ✕ Close
                 </button>

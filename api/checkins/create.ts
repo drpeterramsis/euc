@@ -7,8 +7,7 @@ import crypto from "crypto";
  */
 
 // POST /api/checkins/create
-// Headers: x-admin-key
-// Body: { "title": string, "rolesAllowed": string[], "trip": "departure" }
+// Body: { title: string, rolesAllowed: string[], trip: "departure", role: string }
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
@@ -16,13 +15,6 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const adminKey = req.headers["x-admin-key"] || req.headers["X-Admin-Key"] || req.headers["x-admin-key".toLowerCase()];
-    const expectedKey = process.env.ADMIN_KEY;
-
-    if (!adminKey || !expectedKey || adminKey !== expectedKey) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
     let body = req.body;
     if (typeof body === "string") {
       try {
@@ -32,10 +24,16 @@ export default async function handler(req: any, res: any) {
       }
     }
 
-    const { title, rolesAllowed, trip } = body || {};
+    const { title, rolesAllowed, trip, role } = body || {};
 
+    // Validate admin role
+    if (role !== "admin") {
+      return res.status(403).json({ error: "Forbidden: Only administrators can create check-ins" });
+    }
+
+    // Validate inputs
     if (!title || typeof title !== "string" || !title.trim()) {
-      return res.status(400).json({ error: "title is required and must be a string" });
+      return res.status(400).json({ error: "title is required and must be a non-empty string" });
     }
 
     if (!Array.isArray(rolesAllowed) || rolesAllowed.length === 0) {
@@ -50,15 +48,15 @@ export default async function handler(req: any, res: any) {
     const checkin = {
       id,
       title: title.trim(),
-      rolesAllowed: rolesAllowed.map((r: any) => String(r).trim()),
+      rolesAllowed: rolesAllowed.map((r: any) => String(r).trim().toLowerCase()),
       trip,
       active: true,
       createdAt: Date.now()
     };
 
-    // Store JSON in KV
+    // Store checkin:{id} JSON in Vercel KV
     await kv.set(`checkin:${id}`, checkin);
-    // Add to trip index set
+    // Add checkin ID to the departure trip index Set
     await kv.sadd(`checkins:trip:${trip}`, id);
 
     return res.status(201).json({ id });
