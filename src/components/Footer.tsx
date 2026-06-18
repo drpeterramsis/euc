@@ -50,9 +50,7 @@ export default function Footer() {
     ? verInfo.commitSha.slice(0, 7)
     : verInfo.commitSha;
 
-  const versionDetails = shortCommit && formattedBuildTime
-    ? `${verInfo.version} (commit ${shortCommit}, built ${formattedBuildTime})`
-    : verInfo.version;
+  const versionDetails = verInfo.version;
 
   return (
     <footer className="p-4 border-t border-gray-200 bg-white text-center text-sm text-gray-500">

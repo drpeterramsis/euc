@@ -9,6 +9,7 @@ import { useApp } from "../../context/AppContext";
 import { writeJSON } from "../../utils/github";
 import { ensureHttps } from "../../utils/linkUtils";
 import { localToUtc, utcToDisplay, TZ_CAIRO, TZ_PRAGUE } from "../../utils/timezone";
+import { compressImage } from "../../utils/image";
 
 // COMMENT: Safely formats a UTC ISO string to Cairo local ISO format (YYYY-MM-DDTHH:mm) using standard parts translation.
 const getCairoDatetimeLocal = (utcIso: string): string => {
@@ -59,6 +60,7 @@ export default function AdminMessages() {
     expiresAt: "",
     pinned: false,
     buttons: [] as any[],
+    imageUrl: "",
     inputTimezone: "Africa/Cairo",
     inputTimezoneExpires: "Africa/Cairo",
     timezoneDisplay: "both" as "both" | "prague" | "cairo",
@@ -101,6 +103,7 @@ export default function AdminMessages() {
       expiresAt: msg.expiresAt ? getCairoDatetimeLocal(msg.expiresAt) : "",
       pinned: msg.pinned || false,
       buttons: msg.buttons ? JSON.parse(JSON.stringify(msg.buttons)) : [],
+      imageUrl: msg.imageUrl || "",
       inputTimezone: msg.inputTimezone || "Africa/Cairo",
       inputTimezoneExpires: msg.inputTimezoneExpires || "Africa/Cairo",
       timezoneDisplay: msg.timezoneDisplay || "both",
@@ -121,6 +124,7 @@ export default function AdminMessages() {
       expiresAt: "",
       pinned: false,
       buttons: [],
+      imageUrl: "",
       inputTimezone: "Africa/Cairo",
       inputTimezoneExpires: "Africa/Cairo",
       timezoneDisplay: "both",
@@ -230,6 +234,7 @@ export default function AdminMessages() {
       createdBy: "admin",
       readBy: editingMsg?.readBy || [],
       pinned: form.pinned,
+      imageUrl: form.imageUrl || "",
       inputTimezone: form.inputTimezone || "Africa/Cairo",
       inputTimezoneExpires: form.inputTimezoneExpires || "Africa/Cairo",
       timezoneDisplay: form.timezoneDisplay || "both",
@@ -335,6 +340,53 @@ export default function AdminMessages() {
                 className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
               />
             </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">
+                Image / Photo (Optional)
+              </label>
+              <div className="flex flex-col gap-2">
+                {form.imageUrl ? (
+                  <div className="relative w-full max-w-md rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                    <img
+                      src={form.imageUrl}
+                      alt="Uploaded preview"
+                      className="w-full h-48 object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, imageUrl: "" })}
+                      className="absolute top-2 right-2 px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-bold text-xs"
+                    >
+                      ✕ Remove Photo
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer max-w-md">
+                    <span className="text-3xl mb-1">📸</span>
+                    <span className="text-xs font-bold text-gray-700 uppercase tracking-tighter">
+                      Click to Upload or Drag Photo
+                    </span>
+                    <span className="text-[10px] text-gray-400 mt-1">Accepts images & compresses optimized formats</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          try {
+                            const res = await compressImage(file);
+                            setForm((prev) => ({ ...prev, imageUrl: res }));
+                          } catch (err) {
+                            showToast("Failed to process image", "error");
+                          }
+                        }
+                      }}
+                    />
+                  </label>
+                )}
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-1">
@@ -349,6 +401,7 @@ export default function AdminMessages() {
                   className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-medium focus:ring-yellow-500 focus:border-yellow-500"
                 >
                   <option value="general">General</option>
+                  <option value="notification">Notification</option>
                   <option value="schedule">Schedule</option>
                   <option value="logistics">Logistics</option>
                   <option value="urgent">Urgent</option>
@@ -853,6 +906,11 @@ export default function AdminMessages() {
                     )}
                   </div>
                   <p className="text-xs text-gray-500 line-clamp-2">{m.body}</p>
+                  {m.imageUrl && (
+                    <div className="mt-2 rounded-lg overflow-hidden border border-gray-100 max-h-32 bg-gray-50">
+                      <img src={m.imageUrl} alt="Uploaded attachment preview" className="w-full h-24 object-cover" />
+                    </div>
+                  )}
                 </div>
                 <div className="border-t border-gray-50 pt-3 mt-3 flex items-center justify-between text-xs text-gray-500">
                   <div className="flex flex-col gap-1">

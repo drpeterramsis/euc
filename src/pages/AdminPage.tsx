@@ -4501,13 +4501,9 @@ export default function Admin({ initialTab }: AdminProps = {}) {
             Management Suite
           </p>
         </div>
-        <div className="flex flex-col items-start sm:items-end w-full sm:w-auto text-left sm:text-right">
+        <div className="flex flex-col items-start sm:items-end w-full sm:w-auto">
           <span className="bg-yellow-500 text-black px-3 py-1 rounded-full text-xs font-black shadow-sm">
             {verInfo.version}
-          </span>
-          <span className="text-[11px] text-gray-400 font-mono mt-1">
-            {verInfo.commitSha && verInfo.commitSha !== "local-dev" ? `commit ${verInfo.commitSha.slice(0, 7)}` : `local-dev`}
-            {verInfo.buildTime && ` | built ${new Date(verInfo.buildTime).toISOString().slice(0, 16).replace("T", " ")}`}
           </span>
         </div>
       </div>
