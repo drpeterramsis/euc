@@ -25,6 +25,7 @@ import AdminMessages from "./admin/AdminMessages";
 import AdminGalleries from "./admin/AdminGalleries";
 import SettingsTab from "../components/admin/SettingsTab";
 import AdminCheckinsTab from "../components/admin/AdminCheckinsTab";
+import { AdminNotificationSender } from "../components/admin/AdminNotificationSender";
 import { localToUtc, utcToDisplay, TZ_CAIRO, TZ_PRAGUE, utcToLocalInput, getUtcFromEvent, formatTimeAmPm } from "../utils/timezone";
 
 interface AdminProps {
@@ -4511,6 +4512,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
           <option value="categories">🎨 Categories</option>
           <option value="pageSettings">🔒 Page Access</option>
           <option value="checkins">✅ Check-ins Manager</option>
+          <option value="notifications">🔔 Notifications</option>
         </select>
       </div>
 
@@ -4528,6 +4530,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
           { key: "categories", label: "🎨 Categories" },
           { key: "pageSettings", label: "🔒 Page Access" },
           { key: "checkins", label: "✅ Check-ins" },
+          { key: "notifications", label: "🔔 Notifications" },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -4557,6 +4560,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
         {activeTab === "categories" && renderTab6()}
         {activeTab === "pageSettings" && <SettingsTab />}
         {activeTab === "checkins" && <AdminCheckinsTab />}
+        {activeTab === "notifications" && <AdminNotificationSender />}
       </div>
     </Layout>
   );

@@ -69,7 +69,7 @@ export default function AdminCheckinsTab() {
   const [checkinTitle, setCheckinTitle] = useState("");
   const [checkinDesc, setCheckinDesc] = useState("");
   const [checkinBtn, setCheckinBtn] = useState("I arrived 📍");
-  const [rolesSelected, setRolesSelected] = useState<string[]>(["attendee", "doctor"]);
+  const [rolesSelected, setRolesSelected] = useState<string[]>(["doctor", "staff"]);
   const [submittingCheckin, setSubmittingCheckin] = useState(false);
 
   // Form states - Trip Management Overlays
@@ -185,6 +185,7 @@ export default function AdminCheckinsTab() {
           tripId: selectedTripId,
           role: "admin",
           username: "admin",
+          includeInactive: "true",
         },
       });
       if (res.ok) {
@@ -473,6 +474,58 @@ export default function AdminCheckinsTab() {
     } finally {
       setSavingCat(false);
     }
+  };
+
+  const handleDeleteCategory = async (catId: string) => {
+    if(!confirm("Are you sure you want to delete this category?")) return;
+    try {
+      const res = await apiFetch("categories/delete", {
+        method: "POST",
+        body: {
+          role: "admin",
+          catId: catId
+        }
+      });
+      if (res.ok) {
+        showToast("Category deleted successfully 🗑️", "success");
+        await fetchCategoriesList();
+        await fetchGroupedStatus();
+      } else {
+        const err = await res.json();
+        showToast(err.error || "Failed to delete category.", "error");
+      }
+    } catch (err: any) {
+      showToast(`Network error: ${err.message}`, "error");
+    }
+  };
+
+  const handleToggleCategoryActive = async (catId: string, currentActive: boolean) => {
+    try {
+        const res = await apiFetch("categories/update", {
+          method: "POST",
+          body: {
+            role: "admin",
+            catId: catId,
+            patch: {
+              active: !currentActive
+            }
+          }
+        });
+        if (res.ok) {
+          showToast(`Category set to ${!currentActive ? "Active" : "Inactive"}!`, "success");
+          await fetchCategoriesList();
+          await fetchGroupedStatus();
+        } else {
+          showToast("Failed to update category status.", "error");
+        }
+    } catch (err: any) {
+        showToast(`Network error: ${err.message}`, "error");
+    }
+  };
+
+  const handleMoveCheckinItem = async (cat: any, item: any, direction: number) => {
+    // Basic conceptual placeholder for reordering as backend support not confirmed
+    showToast("Reordering functionality requires backend support.", "info");
   };
 
   // 3) CHECK-INS CRUD - Create
@@ -946,13 +999,25 @@ export default function AdminCheckinsTab() {
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+                    <div className="flex items-center gap-2 mt-2 xs:mt-0">
+                      <button 
+                        onClick={() => openEditCategory(cat)} 
+                        className="text-[11px] bg-white border border-gray-300 px-3 py-1.5 rounded-lg font-bold hover:bg-gray-100 flex items-center gap-1 cursor-pointer"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteCategory(cat.id)} 
+                        className="text-[11px] bg-red-50 text-red-700 border border-red-200 px-3 py-1.5 rounded-lg font-bold hover:bg-red-100 flex items-center gap-1 cursor-pointer"
+                      >
+                        🗑️ Delete
+                      </button>
                       <button
-                        onClick={() => openEditCategory(cat)}
+                        onClick={() => handleToggleCategoryActive(cat.id, cat.active !== false)}
                         type="button"
                         className="text-[10px] bg-white hover:bg-gray-150 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded border border-gray-200 font-extrabold transition-all text-gray-800 cursor-pointer"
                       >
-                        ✏️ Edit
+                        {cat.active !== false ? "🔴 Inactivate" : "🟢 Activate"}
                       </button>
                       <span className="text-[9px] bg-gray-200 text-gray-600 font-black px-1.5 py-0.5 rounded">
                         ID: {cat.id ? cat.id.slice(0, 8) : "N/A"}
@@ -966,7 +1031,7 @@ export default function AdminCheckinsTab() {
                   ) : (
                     <div className="divide-y divide-gray-150">
                       {cat.checkins.map((item) => (
-                        <div key={item.id} className={`p-2.5 sm:p-3 flex flex-col xs:flex-row xs:items-center justify-between gap-2.5 sm:gap-3 hover:bg-yellow-55/20 transition-colors ${item.active !== false ? 'bg-white' : 'bg-zinc-100 opacity-80'} rounded-lg border border-gray-100/50 m-1 sm:m-0`}>
+                        <div key={item.id} className={`p-2.5 sm:p-3 flex items-center justify-between gap-2.5 sm:gap-3 hover:bg-yellow-55/20 transition-colors ${item.active !== false ? 'bg-white' : 'bg-zinc-100 opacity-80'} rounded-lg border border-gray-100/50 m-1 sm:m-0`}>
                           <div className="space-y-0.5 min-w-0 max-w-full">
                             <div className="flex items-center gap-1.5 flex-wrap">
                               <p className="font-bold text-xs text-gray-950 break-words [overflow-wrap:anywhere]">{item.title}</p>
@@ -976,7 +1041,7 @@ export default function AdminCheckinsTab() {
                                 </span>
                               )}
                             </div>
-                            <p className="text-[10px] text-gray-400 font-semibold leading-relaxed break-words [overflow-wrap:anywhere]">
+                              <p className="text-[10px] text-gray-400 font-semibold leading-relaxed break-words [overflow-wrap:anywhere]">
                               Btn: "{item.buttonTitle}" · Allowed: {item.rolesAllowed.join(", ")}
                             </p>
                           </div>
@@ -1469,7 +1534,7 @@ export default function AdminCheckinsTab() {
                 type="button"
                 disabled={deletingCheckin}
                 onClick={handleDeleteCheckin}
-                className="px-3.5 py-1.5 bg-red-650 hover:bg-red-700 text-white rounded-lg font-black text-xs uppercase tracking-wider cursor-pointer border-none"
+                className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-black text-xs uppercase tracking-wider cursor-pointer border border-red-700"
               >
                 {deletingCheckin ? "Deleting..." : "Yes, Delete"}
               </button>

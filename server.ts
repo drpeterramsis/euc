@@ -3,6 +3,13 @@ import express from "express";
 import path from "path";
 import { kv } from "@vercel/kv";
 import { createServer as createViteServer } from "vite";
+import webpush from "web-push";
+
+webpush.setVapidDetails(
+  "mailto:contact@euc.app",
+  process.env.VAPID_PUBLIC_KEY!,
+  process.env.VAPID_PRIVATE_KEY!
+);
 
 async function startServer() {
   const app = express();
@@ -11,8 +18,61 @@ async function startServer() {
   // Middleware to parse incoming request bodies as JSON
   app.use(express.json());
 
-  // Api endpoints for Vercel KV persistence
-  
+  // API endpoints for notifications
+  app.get("/api/push/vapidPublicKey", (req, res) => {
+    res.json({ publicKey: process.env.VAPID_PUBLIC_KEY });
+  });
+
+  app.post("/api/push/subscribe", async (req, res) => {
+    const { userId, subscription } = req.body;
+    await kv.hset(`user:${userId}:subscription`, subscription);
+    res.status(200).json({ success: true });
+  });
+
+  app.post("/api/push/send-all", async (req, res) => {
+    // Admin check would be needed here, assuming role is in session, 
+    // but without shared auth we rely on applet security.
+    const { title, body, url } = req.body;
+    const usernames = await kv.smembers("users:index");
+    const results = { sent: 0, failed: 0, expired: 0 };
+    
+    for (const username of usernames) {
+      const sub = await kv.hgetall(`user:${username}:subscription`);
+      if (sub) {
+        try {
+          await webpush.sendNotification(sub as any, JSON.stringify({ title, body, url }));
+          results.sent++;
+        } catch (err: any) {
+          if (err.statusCode === 410) {
+            await kv.del(`user:${username}:subscription`);
+            results.expired++;
+          } else {
+            results.failed++;
+          }
+        }
+      }
+    }
+    res.status(200).json(results);
+  });
+
+  app.post("/api/push/send-user", async (req, res) => {
+    const { userId, title, body, url } = req.body;
+    const sub = await kv.hgetall(`user:${userId}:subscription`);
+    if (!sub) return res.status(404).json({ error: "No subscription found" });
+
+    try {
+      await webpush.sendNotification(sub as any, JSON.stringify({ title, body, url }));
+      res.status(200).json({ sent: 1 });
+    } catch (err: any) {
+      if (err.statusCode === 410) {
+        await kv.del(`user:${userId}:subscription`);
+        res.status(400).json({ error: "Subscription expired" });
+      } else {
+        res.status(500).json({ error: "Failed to send" });
+      }
+    }
+  });
+
   // Consolidated Vercel Gateway Handler matching /api/index.ts
   app.all("/api/index", async (req, res) => {
     try {

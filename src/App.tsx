@@ -19,7 +19,7 @@ import Admin from './pages/AdminPage';
 import { 
   AdminUsers, AdminPosts, AdminCategories, AdminSessions, 
   AdminTripSchedule, AdminFlightHotel, AdminCountdown, 
-  AdminMedia, AdminDirectory, AdminNotifications, 
+  AdminMedia, AdminDirectory, 
   AdminSettings, AdminAppearance 
 } from './pages/admin/AdminFeaturePages';
 import ComingSoon from './pages/ComingSoon';
@@ -35,6 +35,7 @@ import { getFeatureStatus } from './utils/featureAccess';
 import { useSwipeBack } from './hooks/useSwipeBack';
 import { getPageAccess as getCentralPageAccess } from './lib/pageAccess';
 import { ToastContainer } from './components/Toast';
+import { NotificationManager } from './components/NotificationManager';
 
 /**
  * ProtectedRoute component verifies authentication synchronously.
@@ -129,7 +130,7 @@ function AppRoutes() {
       <Route path="/admin/countdown" element={<AdminRoute><AdminCountdown /></AdminRoute>} />
       <Route path="/admin/media" element={<AdminRoute><AdminMedia /></AdminRoute>} />
       <Route path="/admin/directory" element={<AdminRoute><AdminDirectory /></AdminRoute>} />
-      <Route path="/admin/notifications" element={<AdminRoute><AdminNotifications /></AdminRoute>} />
+
       <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
       <Route path="/admin/appearance" element={<AdminRoute><AdminAppearance /></AdminRoute>} />
       <Route path="/media" element={<ProtectedRoute><FeatureRoute featureKey="photoGallery"><Media /></FeatureRoute></ProtectedRoute>} />
@@ -164,6 +165,7 @@ export default function App() {
   return (
     <>
       <ToastContainer />
+      <NotificationManager />
       {isBackgroundRefreshing && (
         <div className="fixed bottom-4 right-4 z-50
                         flex items-center gap-2

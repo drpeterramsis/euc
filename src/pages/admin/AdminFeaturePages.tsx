@@ -100,8 +100,5 @@ export const AdminMedia = () => <AdminPlaceholder title="Media & Gallery" />;
 export const AdminDirectory = () => (
   <AdminPlaceholder title="Staff Directory" />
 );
-export const AdminNotifications = () => (
-  <AdminPlaceholder title="Push Notifications" />
-);
 export const AdminSettings = () => <AdminPlaceholder title="App Settings" />;
 export const AdminAppearance = () => <AdminPlaceholder title="Appearance" />;
