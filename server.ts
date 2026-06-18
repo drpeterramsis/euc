@@ -41,6 +41,7 @@ async function startServer() {
   });
 
   app.post("/api/push/send-all", async (req, res) => {
+    console.log("POST /api/push/send-all hit");
     const { title, body, url, iconUrl, badgeUrl, imageUrl } = req.body;
     const usernames = await kv.smembers("users:index");
     const results = { sent: 0, failed: 0, expired: 0 };
