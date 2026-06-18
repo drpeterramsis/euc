@@ -13,208 +13,51 @@ async function startServer() {
 
   // Api endpoints for Vercel KV persistence
   
-  // General root handlers (maps to Vercel Serverless filenames directly)
-  app.get("/api/trips", async (req, res) => {
+  // Consolidated Vercel Gateway Handler matching /api/index.ts
+  app.all("/api/index", async (req, res) => {
     try {
-      const handler = (await import("./api/trips.ts")).default;
+      const handler = (await import("./api/index.ts")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      console.error("Local gateway error:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Backward compatibility legacy redirects (transparently mapping legacy REST requests to the consolidated gateway)
+  app.all("/api/trips*", async (req, res, next) => {
+    const subpath = req.path.replace(/^\/api\/trips\/?/, "");
+    if (subpath === "list") {
+      req.query.path = "trips/list";
+    } else {
+      req.query.path = "trips/" + subpath;
+    }
+    req.body.path = req.query.path;
+    try {
+      const handler = (await import("./api/index.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  app.post("/api/trips", async (req, res) => {
+  app.all("/api/checkins*", async (req, res, next) => {
+    const subpath = req.path.replace(/^\/api\/checkins\/?/, "");
+    req.query.path = "checkins/" + subpath;
+    req.body.path = req.query.path;
     try {
-      const handler = (await import("./api/trips.ts")).default;
+      const handler = (await import("./api/index.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  app.get("/api/checkins", async (req, res) => {
+  app.all("/api/pageAccess*", async (req, res, next) => {
+    req.query.path = "pageAccess/checkins/get";
+    req.body.path = req.query.path;
     try {
-      const handler = (await import("./api/checkins.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/checkins", async (req, res) => {
-    try {
-      const handler = (await import("./api/checkins.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  // Trips routes mapped to /trips.ts
-  app.get("/api/trips/list", async (req, res) => {
-    try {
-      req.query.action = "list";
-      const handler = (await import("./api/trips.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/trips/create", async (req, res) => {
-    try {
-      req.body.action = "create";
-      const handler = (await import("./api/trips.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/trips/update", async (req, res) => {
-    try {
-      req.body.action = "update";
-      const handler = (await import("./api/trips.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/trips/delete", async (req, res) => {
-    try {
-      req.body.action = "delete";
-      const handler = (await import("./api/trips.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/trips/reset", async (req, res) => {
-    try {
-      req.body.action = "reset";
-      const handler = (await import("./api/trips.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/checkinCats/create", async (req, res) => {
-    try {
-      req.body.action = "categories.create";
-      const handler = (await import("./api/checkins.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.get("/api/pageAccess", async (req, res) => {
-    try {
-      req.query.action = "checkins.get";
-      const handler = (await import("./api/pageAccess.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/pageAccess", async (req, res) => {
-    try {
-      req.body.action = "checkins.set";
-      const handler = (await import("./api/pageAccess.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/checkinCats/update", async (req, res) => {
-    try {
-      req.body.action = "categories.update";
-      const handler = (await import("./api/checkins.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.get("/api/checkinCats/list", async (req, res) => {
-    try {
-      req.query.action = "categories.list";
-      const handler = (await import("./api/checkins.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.get("/api/checkins/activeByTrip", async (req, res) => {
-    try {
-      req.query.action = "activeByTrip";
-      const handler = (await import("./api/checkins.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.get("/api/checkins/status", async (req, res) => {
-    try {
-      req.query.action = "status";
-      const handler = (await import("./api/checkins.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/checkins/create", async (req, res) => {
-    try {
-      req.body.action = "checkins.create";
-      const handler = (await import("./api/checkins.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/checkins/update", async (req, res) => {
-    try {
-      req.body.action = "checkins.update";
-      const handler = (await import("./api/checkins.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/checkins/delete", async (req, res) => {
-    try {
-      req.body.action = "checkins.delete";
-      const handler = (await import("./api/checkins.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/checkins/check", async (req, res) => {
-    try {
-      req.body.action = "checkins.check";
-      const handler = (await import("./api/checkins.ts")).default;
-      await handler(req, res);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.post("/api/checkins/uncheck", async (req, res) => {
-    try {
-      req.body.action = "checkins.uncheck";
-      const handler = (await import("./api/checkins.ts")).default;
+      const handler = (await import("./api/index.ts")).default;
       await handler(req, res);
     } catch (err: any) {
       res.status(500).json({ error: err.message });

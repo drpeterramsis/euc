@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import { showToast } from "../Toast";
-import { apiUrl } from "../../utils/api";
+import { apiFetch } from "../../utils/api";
 
 /**
  * @license
@@ -127,7 +127,7 @@ export default function AdminCheckinsTab() {
   // Fetch all trip segments
   const fetchTripsList = async () => {
     try {
-      const res = await fetch(apiUrl("trips/list"));
+      const res = await apiFetch("trips/list");
       if (res.ok) {
         const data = await res.json();
         const list = data.trips || [];
@@ -150,13 +150,12 @@ export default function AdminCheckinsTab() {
     if (!selectedTripId) return;
     setLoadingCats(true);
     try {
-      const res = await fetch(
-        apiUrl("checkins", {
-          action: "categories.list",
+      const res = await apiFetch("categories/list", {
+        params: {
           tripId: selectedTripId,
           includeInactive: "true",
-        })
-      );
+        },
+      });
       if (res.ok) {
         const data = await res.json();
         const cats = data.categories || [];
@@ -181,14 +180,13 @@ export default function AdminCheckinsTab() {
     if (!selectedTripId) return;
     setLoadingGrouped(true);
     try {
-      const res = await fetch(
-        apiUrl("checkins", {
-          action: "activeByTrip",
+      const res = await apiFetch("checkins/activeByTrip", {
+        params: {
           tripId: selectedTripId,
           role: "admin",
           username: "admin",
-        })
-      );
+        },
+      });
       if (res.ok) {
         const data = await res.json();
         setGroupedCategories(data.categories || []);
@@ -243,15 +241,13 @@ export default function AdminCheckinsTab() {
 
     setSubmittingTrip(true);
     try {
-      const res = await fetch(apiUrl("trips"), {
+      const res = await apiFetch("trips/create", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "create",
+        body: {
           role: "admin",
           tripId: newTripId.trim(),
           title: newTripTitle.trim()
-        })
+        }
       });
 
       if (res.ok) {
@@ -292,18 +288,16 @@ export default function AdminCheckinsTab() {
 
     setSavingTrip(true);
     try {
-      const res = await fetch(apiUrl("trips"), {
+      const res = await apiFetch("trips/update", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "update",
+        body: {
           role: "admin",
           tripId: selectedTripId,
           patch: {
             title: editingTripTitle.trim(),
             active: editingTripActive
           }
-        })
+        }
       });
 
       if (res.ok) {
@@ -325,14 +319,12 @@ export default function AdminCheckinsTab() {
   const handleResetTripResponses = async () => {
     setResettingTrip(true);
     try {
-      const res = await fetch(apiUrl("trips"), {
+      const res = await apiFetch("trips/reset", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "reset",
+        body: {
           role: "admin",
           tripId: selectedTripId
-        })
+        }
       });
 
       if (res.ok) {
@@ -355,15 +347,13 @@ export default function AdminCheckinsTab() {
   const handleDeleteTripEntirely = async () => {
     setDeletingTrip(true);
     try {
-      const res = await fetch(apiUrl("trips"), {
+      const res = await apiFetch("trips/delete", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "delete",
+        body: {
           role: "admin",
           tripId: selectedTripId,
           cascade: deleteTripCascade
-        })
+        }
       });
 
       if (res.ok) {
@@ -371,7 +361,7 @@ export default function AdminCheckinsTab() {
         setIsDeletingTrip(false);
         
         // Find default/first remaining trip
-        const listRes = await fetch(apiUrl("trips", { action: "list" }));
+        const listRes = await apiFetch("trips/list");
         const listData = await listRes.json();
         const list = listData.trips || [];
         setTrips(list);
@@ -408,19 +398,15 @@ export default function AdminCheckinsTab() {
 
     setSubmittingCat(true);
     try {
-      const res = await fetch(apiUrl("checkins"), {
+      const res = await apiFetch("categories/create", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "categories.create",
+        body: {
           role: "admin",
           tripId: selectedTripId,
           emoji: catEmoji.trim(),
           title: catTitle.trim(),
           details: catDetails.trim(),
-        }),
+        },
       });
 
       if (!res.ok) {
@@ -459,11 +445,9 @@ export default function AdminCheckinsTab() {
 
     setSavingCat(true);
     try {
-      const res = await fetch(apiUrl("checkins"), {
+      const res = await apiFetch("categories/update", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "categories.update",
+        body: {
           role: "admin",
           catId: editingCatId,
           patch: {
@@ -472,7 +456,7 @@ export default function AdminCheckinsTab() {
             details: editingCatDetails.trim(),
             active: editingCatActive
           }
-        })
+        }
       });
 
       if (!res.ok) {
@@ -517,13 +501,9 @@ export default function AdminCheckinsTab() {
 
     setSubmittingCheckin(true);
     try {
-      const res = await fetch(apiUrl("checkins"), {
+      const res = await apiFetch("checkins/create", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "checkins.create",
+        body: {
           role: "admin",
           tripId: selectedTripId,
           categoryId: selectedCatId,
@@ -531,7 +511,7 @@ export default function AdminCheckinsTab() {
           description: checkinDesc.trim(),
           buttonTitle: checkinBtn.trim(),
           rolesAllowed: rolesSelected,
-        }),
+        },
       });
 
       if (!res.ok) {
@@ -587,11 +567,9 @@ export default function AdminCheckinsTab() {
 
     setSavingCheckin(true);
     try {
-      const res = await fetch(apiUrl("checkins"), {
+      const res = await apiFetch("checkins/update", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "checkins.update",
+        body: {
           role: "admin",
           checkinId: editingCheckinId,
           patch: {
@@ -601,7 +579,7 @@ export default function AdminCheckinsTab() {
             rolesAllowed: editingCheckinRoles,
             active: editingCheckinActive
           }
-        })
+        }
       });
 
       if (!res.ok) {
@@ -629,14 +607,12 @@ export default function AdminCheckinsTab() {
   const handleDeleteCheckin = async () => {
     setDeletingCheckin(true);
     try {
-      const res = await fetch(apiUrl("checkins"), {
+      const res = await apiFetch("checkins/delete", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "checkins.delete",
+        body: {
           role: "admin",
           checkinId: deletingCheckinId
-        })
+        }
       });
 
       if (!res.ok) {
@@ -665,13 +641,12 @@ export default function AdminCheckinsTab() {
     setStatusLoading(true);
 
     try {
-      const res = await fetch(
-        apiUrl("checkins", {
-          action: "status",
+      const res = await apiFetch("checkins/status", {
+        params: {
           checkinId,
           role: "admin",
-        })
-      );
+        }
+      });
       if (res.ok) {
         const data = await res.json();
         setStatusResult(data);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiUrl } from "../utils/api";
+import { apiFetch } from "../utils/api";
 
 /**
  * @license
@@ -28,14 +28,13 @@ export default function CheckinsShortcut({ user }: CheckinsShortcutProps) {
     const usernameParam = user.username.trim();
     const tripParam = selectedTripId;
 
-    fetch(
-      apiUrl("checkins", {
-        action: "activeByTrip",
+    apiFetch("checkins/activeByTrip", {
+      params: {
         tripId: tripParam,
         role: roleParam,
         username: usernameParam,
-      })
-    )
+      },
+    })
       .then((res) => {
         if (res.ok) return res.json();
         throw new Error();
