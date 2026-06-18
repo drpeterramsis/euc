@@ -19,6 +19,14 @@ async function startServer() {
   app.use(express.json());
 
   // API endpoints for notifications
+  app.get("/api/version", (req, res) => {
+    res.json({
+      version: process.env.APP_VERSION || "1.0.0",
+      commitSha: process.env.VERCEL_GIT_COMMIT_SHA || "dev",
+      buildTime: process.env.BUILD_TIME || new Date().toISOString(),
+    });
+  });
+
   app.get("/api/push/vapidPublicKey", (req, res) => {
     res.json({ publicKey: process.env.VAPID_PUBLIC_KEY });
   });
@@ -67,6 +75,13 @@ async function startServer() {
 
   app.post("/api/push/send-user", async (req, res) => {
     const { userId, title, body, url, iconUrl, badgeUrl, imageUrl } = req.body;
+    
+    // Save to KV
+    const id = Date.now().toString();
+    const notif = { id, title, body, url, iconUrl, badgeUrl, imageUrl, createdAt: Date.now() };
+    await kv.hset(`notif:${id}`, notif as any);
+    await kv.zadd(`user:notifs:${userId}`, { score: Date.now(), member: id });
+
     const sub = await kv.get(`user:${userId}:subscription`);
     if (!sub) return res.status(404).json({ error: "No subscription found" });
 
@@ -81,6 +96,42 @@ async function startServer() {
         res.status(500).json({ error: "Failed to send" });
       }
     }
+  });
+
+  // Notification APIs
+  app.get("/api/notifications", async (req, res) => {
+     // Expect userId in query param for simple auth bypass (current pattern)
+     const userId = req.query.userId as string;
+     if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+     // Fetch user notifs
+     const notifIds = await kv.zrevrange(`user:notifs:${userId}`, 0, -1);
+     const notifs = await Promise.all(notifIds.map(id => kv.hgetall(`notif:${id}`)));
+     
+     // Fetch read set
+     const readIds = await kv.smembers(`user:notifs:read:${userId}`);
+     
+     const result = notifs.map(n => ({
+         ...n,
+         read: readIds.includes((n as any).id)
+     }));
+     
+     res.status(200).json(result);
+  });
+
+  app.post("/api/notifications/mark-read", async (req, res) => {
+      const { userId, id, all } = req.body;
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+      if (all) {
+          const notifIds = await kv.zrange(`user:notifs:${userId}`, 0, -1);
+          await kv.sadd(`user:notifs:read:${userId}`, ...notifIds);
+      } else if (id) {
+          await kv.sadd(`user:notifs:read:${userId}`, id);
+      } else {
+          return res.status(400).json({ error: "Missing id or all flag" });
+      }
+      res.status(200).json({ success: true });
   });
 
   // Consolidated Vercel Gateway Handler matching /api/index.ts

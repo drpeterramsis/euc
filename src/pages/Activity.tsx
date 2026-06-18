@@ -65,7 +65,19 @@ export default function Activity() {
   return (
     <Layout>
       <div className="flex flex-col mb-6">
-        <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
+        <div className="flex bg-gray-100 p-1 rounded-lg mb-4 sm:hidden">
+          <select 
+            value={activeTab}                
+            onChange={(e) => setActiveTab(e.target.value as any)}
+            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-700"
+          >
+            {tabs.map(tab => (
+              <option key={tab.id} value={tab.id}>{tab.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="hidden sm:flex gap-2 overflow-x-auto pb-2 mb-4">
           {tabs.map(tab => (
             <button 
               key={tab.id}
