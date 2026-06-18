@@ -1,5 +1,5 @@
 # EUC – EVA URO CLUB
-Version: 1.0.984
+Version: 1.0.987
 
 ## What is EUC?
 EUC (EVA URO CLUB) is a professional conference trip management WebApp
@@ -131,6 +131,7 @@ VITE_GITHUB_BRANCH         → e.g., main
 | v1.0.980 | 2026-06-17 | UI POLISH: Enhanced Schedule page mobile countdown padding & margins; redesigned Up Next banner on mobile utilizing clean stack layout with full-width, single-line "CHECK WHAT'S NEXT" button. |
 | v1.0.982 | 2026-06-18 | FEATURE: Added optional speaker photo upload (compressed Base64 JPEG) and optional Speaker WhatsApp contact inputs to the Create/Edit Session forms. Built a responsive "Ask Speaker on WhatsApp" interactive pop-up modal on the Sessions page, pre-populating the attendee's name, session details, and custom question before generating encoded wa.me hyperlinks. |
 | v1.0.984 | 2026-06-18 | Admin UI Improvements: Added Tab Toggle to switch between Schedule & Settings vs Sessions views in the admin panel. Resolved styling overflow of the Create/Edit Session Modal with screen viewport max-height bounding, internal scrolling, background body scroll locking, and sticky header/footer for pristine layout. |
+| v1.0.987 | 2026-06-18 | UI TWEAK: Minimized the white spaces under the name, title, and contact methods in the DirectoryCard component within the staff/doctors directory by shrinking card height to a compact 212px/272px layout and alignment of image aspect ratios to h-36. |
 
 ## Notes
 - All data is stored in /data JSON files in the GitHub repo

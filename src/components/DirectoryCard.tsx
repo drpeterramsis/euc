@@ -27,10 +27,10 @@ export function DirectoryCard({ user, currentUser }: DirectoryCardProps) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm
                     overflow-hidden flex flex-col font-sans"
-         style={{ height: canContact ? "340px" : "300px" }}>
+         style={{ height: canContact ? "272px" : "212px" }}>
 
       {/* Photo — dynamic height depending on contact actions */}
-      <div className={`relative w-full flex-shrink-0 overflow-hidden bg-gray-100 ${canContact ? "h-40" : "h-44"}`}>
+      <div className="relative w-full h-36 flex-shrink-0 overflow-hidden bg-gray-100">
         {photo ? (
           <img
             src={photo}
