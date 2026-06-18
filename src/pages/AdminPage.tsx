@@ -201,6 +201,36 @@ export default function Admin({ initialTab }: AdminProps = {}) {
   const [inputAppVersion, setInputAppVersion] = useState("");
   const [isSavingVersion, setIsSavingVersion] = useState(false);
 
+  const [verInfo, setVerInfo] = useState({
+    version: APP_VERSION,
+    commitSha: "local-dev",
+    buildTime: ""
+  });
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/version")
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw new Error("Failed to load version");
+      })
+      .then((data) => {
+        if (active && data.version) {
+          setVerInfo({
+            version: data.version,
+            commitSha: data.commitSha || "local-dev",
+            buildTime: data.buildTime || ""
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not fetch version API inside admin page:", err);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   useEffect(() => {
     if (settings?.appVersion) {
       setInputAppVersion(settings.appVersion);
@@ -4462,7 +4492,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
   return (
     <Layout>
       {/* Admin Version Badge */}
-      <div className="mb-6 flex justify-between items-center bg-black p-4 rounded-xl shadow-lg border border-gray-800">
+      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-black p-4 rounded-xl shadow-lg border border-gray-800 gap-2">
         <div>
           <h1 className="text-2xl font-black text-white tracking-tight uppercase">
             Admin Control Panel
@@ -4471,12 +4501,13 @@ export default function Admin({ initialTab }: AdminProps = {}) {
             Management Suite
           </p>
         </div>
-        <div className="flex flex-col items-end">
+        <div className="flex flex-col items-start sm:items-end w-full sm:w-auto text-left sm:text-right">
           <span className="bg-yellow-500 text-black px-3 py-1 rounded-full text-xs font-black shadow-sm">
-            v{settings?.appVersion || APP_VERSION}
+            {verInfo.version}
           </span>
-          <span className="text-[10px] text-gray-500 font-bold mt-1 uppercase tracking-tighter">
-            Current Build
+          <span className="text-[11px] text-gray-400 font-mono mt-1">
+            {verInfo.commitSha && verInfo.commitSha !== "local-dev" ? `commit ${verInfo.commitSha.slice(0, 7)}` : `local-dev`}
+            {verInfo.buildTime && ` | built ${new Date(verInfo.buildTime).toISOString().slice(0, 16).replace("T", " ")}`}
           </span>
         </div>
       </div>

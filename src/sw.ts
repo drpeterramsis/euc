@@ -8,7 +8,7 @@ precacheAndRoute(self.__WB_MANIFEST || []);
 
 self.addEventListener('push', (event: PushEvent) => {
   console.log('[Service Worker] Push Notification Received.');
-  let data = { title: 'EUC Update', body: 'A new update is available!', url: '/' };
+  let data: any = { title: 'EUC Update', body: 'A new update is available!', url: '/' };
   
   if (event.data) {
     try {

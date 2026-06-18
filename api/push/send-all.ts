@@ -163,9 +163,9 @@ export default async function handler(req: any, res: any) {
     const processedEndpoints = new Set<string>();
 
     for (const key of allUniqueKeys) {
-      let sub = await kv.get(`user:${key}:subscription`);
+      let sub = await kv.get(`user:${key}:subscription`) as any;
       if (!sub) {
-        sub = await kv.get(`push:sub:${key}`);
+        sub = await kv.get(`push:sub:${key}`) as any;
       }
 
       if (sub && sub.endpoint) {

@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { kv } from "@vercel/kv";
 import { createServer as createViteServer } from "vite";
 import webpush from "web-push";
@@ -20,11 +21,21 @@ async function startServer() {
 
   // API endpoints for notifications
   app.get("/api/version", (req, res) => {
-    res.json({
-      version: process.env.APP_VERSION || "1.0.0",
-      commitSha: process.env.VERCEL_GIT_COMMIT_SHA || "dev",
-      buildTime: process.env.BUILD_TIME || new Date().toISOString(),
-    });
+    try {
+      const versionPath = path.join(process.cwd(), "src", "version.json");
+      let versionData = { major: 1, minor: 0, patch: 0, buildTime: "", commitSha: "" };
+      if (fs.existsSync(versionPath)) {
+        versionData = JSON.parse(fs.readFileSync(versionPath, "utf-8"));
+      }
+      const versionStr = `v${versionData.major}.${versionData.minor}.${String(versionData.patch).padStart(3, "0")}`;
+      res.json({
+        version: versionStr,
+        commitSha: process.env.VERCEL_GIT_COMMIT_SHA || versionData.commitSha || "local-dev",
+        buildTime: versionData.buildTime || new Date().toISOString(),
+      });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
   });
 
   app.get("/api/push/vapidPublicKey", (req, res) => {
@@ -105,14 +116,14 @@ async function startServer() {
      if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
      // Fetch user notifs
-     const notifIds = await kv.zrevrange(`user:notifs:${userId}`, 0, -1);
-     const notifs = await Promise.all(notifIds.map(id => kv.hgetall(`notif:${id}`)));
+     const notifIds = await (kv as any).zrevrange(`user:notifs:${userId}`, 0, -1);
+     const notifs = await Promise.all(notifIds.map((id: string) => kv.hgetall(`notif:${id}`)));
      
      // Fetch read set
      const readIds = await kv.smembers(`user:notifs:read:${userId}`);
      
      const result = notifs.map(n => ({
-         ...n,
+         ...(n as any),
          read: readIds.includes((n as any).id)
      }));
      
@@ -125,7 +136,9 @@ async function startServer() {
 
       if (all) {
           const notifIds = await kv.zrange(`user:notifs:${userId}`, 0, -1);
-          await kv.sadd(`user:notifs:read:${userId}`, ...notifIds);
+          if (notifIds && notifIds.length > 0) {
+              await (kv as any).sadd(`user:notifs:read:${userId}`, ...notifIds);
+          }
       } else if (id) {
           await kv.sadd(`user:notifs:read:${userId}`, id);
       } else {

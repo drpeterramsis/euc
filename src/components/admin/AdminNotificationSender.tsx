@@ -24,6 +24,22 @@ export const AdminNotificationSender = () => {
       .catch(console.error);
   }, []);
 
+  useEffect(() => {
+    if (!sending) return;
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      // standard spec for beforeunload message: modern browsers do not show actual custom text but ask for confirmation.
+      e.returnValue = "Please don't reload or close this page until it finishes.";
+      return e.returnValue;
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [sending]);
+
   const send = async () => {
     setSending(true);
     setResult(null);
@@ -66,7 +82,7 @@ export const AdminNotificationSender = () => {
       });
 
       if (res.status === 401) {
-        setResult({ error: "401 Unauthorized: Session is missing or has expired. Please try logs out and sign in again." });
+        setResult({ error: "401 Unauthorized: Session is missing or has expired. Please try logging out and signing in again." });
         return;
       }
       if (res.status === 403) {
@@ -84,35 +100,115 @@ export const AdminNotificationSender = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6 relative">
+      {/* Full screen sending block overlay modal */}
+      {sending && (
+        <div 
+          className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 text-center border border-gray-100 flex flex-col items-center gap-6">
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-blue-100 rounded-full flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-gray-900">
+                Sending notification…
+              </h3>
+              <p className="text-sm text-gray-500 font-medium">
+                Broadcasting messages to registered devices.
+              </p>
+            </div>
+
+            <div className="p-4 bg-yellow-50 text-yellow-800 border border-yellow-100 rounded-xl text-xs font-semibold leading-relaxed">
+              ⚠️ Please don’t reload or close this page until it finishes.
+            </div>
+          </div>
+        </div>
+      )}
+
       <h2 className="text-lg font-bold mb-4">Compose & Send Notification</h2>
       <div className="space-y-4">
-        <input className="w-full p-2 border rounded" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-        <textarea className="w-full p-2 border rounded" placeholder="Message body" value={body} onChange={(e) => setBody(e.target.value)} />
+        <input 
+          className="w-full p-2 border rounded disabled:bg-gray-50 disabled:text-gray-400" 
+          placeholder="Title" 
+          value={title} 
+          onChange={(e) => setTitle(e.target.value)} 
+          disabled={sending}
+        />
+        <textarea 
+          className="w-full p-2 border rounded disabled:bg-gray-50 disabled:text-gray-400" 
+          placeholder="Message body" 
+          value={body} 
+          onChange={(e) => setBody(e.target.value)} 
+          disabled={sending}
+        />
         
         <div>
           <label className="block text-sm font-medium mb-1">Target Page (Optional):</label>
-          <select className="w-full p-2 border rounded" value={url} onChange={(e) => setUrl(e.target.value)}>
+          <select 
+            className="w-full p-2 border rounded disabled:bg-gray-50 disabled:text-gray-400" 
+            value={url} 
+            onChange={(e) => setUrl(e.target.value)}
+            disabled={sending}
+          >
             <option value="/">Home</option>
             {routes.map(r => <option key={r.path} value={r.path}>{r.label}</option>)}
           </select>
-          <input className="w-full p-2 border rounded mt-2" placeholder="Or custom URL (e.g. /dashboard)" value={url} onChange={(e) => setUrl(e.target.value)} />
+          <input 
+            className="w-full p-2 border rounded mt-2 disabled:bg-gray-50 disabled:text-gray-400" 
+            placeholder="Or custom URL (e.g. /dashboard)" 
+            value={url} 
+            onChange={(e) => setUrl(e.target.value)} 
+            disabled={sending}
+          />
         </div>
         
-        <input className="w-full p-2 border rounded" placeholder="Icon URL (small, icon)" value={iconUrl} onChange={(e) => setIconUrl(e.target.value)} />
-        <input className="w-full p-2 border rounded" placeholder="Badge URL (smaller, icon)" value={badgeUrl} onChange={(e) => setBadgeUrl(e.target.value)} />
-        <input className="w-full p-2 border rounded" placeholder="Image URL (large, graphic)" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+        <input 
+          className="w-full p-2 border rounded disabled:bg-gray-50 disabled:text-gray-400" 
+          placeholder="Icon URL (small, icon)" 
+          value={iconUrl} 
+          onChange={(e) => setIconUrl(e.target.value)} 
+          disabled={sending}
+        />
+        <input 
+          className="w-full p-2 border rounded disabled:bg-gray-50 disabled:text-gray-400" 
+          placeholder="Badge URL (smaller, icon)" 
+          value={badgeUrl} 
+          onChange={(e) => setBadgeUrl(e.target.value)} 
+          disabled={sending}
+        />
+        <input 
+          className="w-full p-2 border rounded disabled:bg-gray-50 disabled:text-gray-400" 
+          placeholder="Image URL (large, graphic)" 
+          value={imageUrl} 
+          onChange={(e) => setImageUrl(e.target.value)} 
+          disabled={sending}
+        />
         
         <div>
           <label className="block text-sm font-medium mb-1">Audience:</label>
-          <select className="w-full p-2 border rounded" value={audience} onChange={(e) => setAudience(e.target.value as "all" | "single")}>
+          <select 
+            className="w-full p-2 border rounded disabled:bg-gray-50 disabled:text-gray-400" 
+            value={audience} 
+            onChange={(e) => setAudience(e.target.value as "all" | "single")}
+            disabled={sending}
+          >
             <option value="all">All subscribers</option>
             <option value="single">Single user</option>
           </select>
         </div>
 
         {audience === "single" && (
-          <select className="w-full p-2 border rounded" value={targetUserId} onChange={(e) => setTargetUserId(e.target.value)}>
+          <select 
+            className="w-full p-2 border rounded disabled:bg-gray-50 disabled:text-gray-400" 
+            value={targetUserId} 
+            onChange={(e) => setTargetUserId(e.target.value)}
+            disabled={sending}
+          >
             <option value="">Select a user</option>
             {users.map((u: any) => <option key={u.id} value={u.username}>{u.fullname} (@{u.username})</option>)}
           </select>
