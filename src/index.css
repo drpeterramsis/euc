@@ -25,6 +25,8 @@ html, body {
   background-color: #ffffff !important;
   color: #111111 !important;
   color-scheme: light only !important;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Force all elements to respect light scheme */

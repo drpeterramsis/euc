@@ -934,23 +934,23 @@ export default function AdminCheckinsTab() {
                 <div key={cat.id} className="border border-gray-150 rounded-xl bg-gray-50 overflow-hidden">
                   
                   {/* Category Header Bar */}
-                  <div className={`p-3.5 border-b border-gray-150 flex items-center justify-between ${cat.active !== false ? 'bg-gray-100' : 'bg-gray-200 opacity-75'}`}>
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <p className="font-extrabold text-xs text-gray-950 flex items-center gap-1.5">
-                        <span className="text-base">{cat.emoji || "📁"}</span>
-                        {cat.title}
+                  <div className={`p-2.5 sm:p-3.5 border-b border-gray-150 flex flex-col xs:flex-row xs:items-center justify-between gap-2 ${cat.active !== false ? 'bg-gray-100' : 'bg-gray-200 opacity-75'}`}>
+                    <div className="flex items-center gap-1.5 flex-wrap min-w-0 max-w-full">
+                      <p className="font-extrabold text-xs text-gray-950 flex items-center gap-1.5 break-words [overflow-wrap:anywhere]">
+                        <span className="text-base shrink-0">{cat.emoji || "📁"}</span>
+                        <span className="truncate">{cat.title}</span>
                       </p>
                       {cat.active === false && (
-                        <span className="text-[9px] bg-red-100 text-red-700 font-extrabold px-1.5 py-0.5 rounded border border-red-200 animate-pulse">
+                        <span className="text-[9px] bg-red-100 text-red-700 font-extrabold px-1.5 py-0.5 rounded border border-red-200 animate-pulse shrink-0">
                           Inactive
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 flex-wrap shrink-0">
                       <button
                         onClick={() => openEditCategory(cat)}
                         type="button"
-                        className="text-[10px] bg-white hover:bg-gray-150 px-2.5 py-1 rounded border border-gray-200 font-extrabold transition-all text-gray-800 cursor-pointer"
+                        className="text-[10px] bg-white hover:bg-gray-150 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded border border-gray-200 font-extrabold transition-all text-gray-800 cursor-pointer"
                       >
                         ✏️ Edit
                       </button>
@@ -966,39 +966,39 @@ export default function AdminCheckinsTab() {
                   ) : (
                     <div className="divide-y divide-gray-150">
                       {cat.checkins.map((item) => (
-                        <div key={item.id} className={`p-3 flex items-center justify-between gap-3 hover:bg-yellow-55/20 transition-colors ${item.active !== false ? 'bg-white' : 'bg-zinc-100 opacity-80'}`}>
-                          <div className="space-y-0.5">
+                        <div key={item.id} className={`p-2.5 sm:p-3 flex flex-col xs:flex-row xs:items-center justify-between gap-2.5 sm:gap-3 hover:bg-yellow-55/20 transition-colors ${item.active !== false ? 'bg-white' : 'bg-zinc-100 opacity-80'} rounded-lg border border-gray-100/50 m-1 sm:m-0`}>
+                          <div className="space-y-0.5 min-w-0 max-w-full">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <p className="font-bold text-xs text-gray-950">{item.title}</p>
+                              <p className="font-bold text-xs text-gray-950 break-words [overflow-wrap:anywhere]">{item.title}</p>
                               {item.active === false && (
                                 <span className="text-[8px] bg-zinc-200 text-zinc-600 font-black px-1.5 py-0.5 rounded border border-zinc-300">
                                   Inactive
                                 </span>
                               )}
                             </div>
-                            <p className="text-[10px] text-gray-400 font-semibold leading-relaxed">
+                            <p className="text-[10px] text-gray-400 font-semibold leading-relaxed break-words [overflow-wrap:anywhere]">
                               Btn: "{item.buttonTitle}" · Allowed: {item.rolesAllowed.join(", ")}
                             </p>
                           </div>
-                          <div className="flex items-center gap-1.5 shrink-0">
+                          <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 shrink-0 max-w-full">
                             <button
                               onClick={() => handleCheckStatus(item.id, item.title)}
                               type="button"
-                              className="bg-gray-950 hover:bg-black text-white px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider cursor-pointer border-none shadow-none"
+                              className="bg-gray-950 hover:bg-black text-white px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider cursor-pointer border-none shadow-none"
                             >
                               📊 Status
                             </button>
                             <button
                               onClick={() => openEditCheckin(item)}
                               type="button"
-                              className="bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 px-2 py-1 rounded text-[10px] font-bold cursor-pointer"
+                              className="bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-bold cursor-pointer"
                             >
                               ✏️ Edit
                             </button>
                             <button
                               onClick={() => openDeleteCheckin(item)}
                               type="button"
-                              className="bg-white hover:bg-red-50 text-red-650 border border-red-200 px-2 py-1 rounded text-[10px] font-bold cursor-pointer"
+                              className="bg-white hover:bg-red-50 text-red-650 border border-red-200 px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-bold cursor-pointer"
                             >
                               🗑️ Delete
                             </button>
@@ -1195,7 +1195,7 @@ export default function AdminCheckinsTab() {
             <p className="text-xs text-gray-650 leading-relaxed font-semibold mb-4">
               Are you absolutely sure you want to clear <strong className="text-gray-900 font-extrabold">all checkpoint completions</strong> for trip <strong className="text-gray-950 font-black">"{currentTripSegment?.title}"</strong>? This will reset all participant badges to "unchecked" but will NOT delete categories/milestones.
             </p>
-            <div className="flex items-center justify-end gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2.5 max-w-full">
               <button
                 type="button"
                 onClick={() => setIsResettingTrip(false)}
@@ -1240,7 +1240,7 @@ export default function AdminCheckinsTab() {
               </label>
             </div>
 
-            <div className="flex items-center justify-end gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2.5 max-w-full">
               <button
                 type="button"
                 onClick={() => setIsDeletingTrip(false)}
@@ -1457,7 +1457,7 @@ export default function AdminCheckinsTab() {
             <p className="text-xs text-gray-650 leading-relaxed font-semibold mb-4">
               Are you absolutely sure you want to delete <strong className="text-gray-950 font-black">"{deletingCheckinTitle}"</strong>? All participant respond logs will be wiped. This action is permanent and cannot be undone.
             </p>
-            <div className="flex items-center justify-end gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2.5 max-w-full">
               <button
                 type="button"
                 onClick={() => setIsDeletingCheckin(false)}

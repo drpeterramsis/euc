@@ -14,6 +14,7 @@ import { getLabel } from '../utils/labels';
 import { displayPhone } from '../utils/phone';
 import { readJSON } from '../utils/github';
 import { formatTimeAmPm, splitAmPm } from '../utils/timezone';
+import { isPushSupported, getExistingSubscription, subscribeUser, sendTestNotification } from "../utils/push";
 
 // ─────────────────────────────────────────────
 // DETAIL ROW COMPONENT (High-contrast label vs value typography)
@@ -52,6 +53,71 @@ export default function Profile() {
   const viewAs = sessionStorage.getItem("euc_view_as");
   const displayUser = viewAs ? JSON.parse(viewAs) : currentUser;
   const fullUser = users.find(u => u.id === displayUser?.id) || displayUser;
+
+  // Push Notification state
+  const [pushSupported, setPushSupported] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
+  const [pushError, setPushError] = useState<string | null>(null);
+  const [pushSuccess, setPushSuccess] = useState<string | null>(null);
+
+  // Check support and active subscription status on mount
+  useEffect(() => {
+    const supported = isPushSupported();
+    setPushSupported(supported);
+    if (supported) {
+      getExistingSubscription()
+        .then((sub) => {
+          setIsSubscribed(!!sub);
+        })
+        .catch((err) => {
+          console.error("Error fetching push subscription:", err);
+        });
+    }
+  }, []);
+
+  const handleEnableNotifications = async () => {
+    if (!fullUser) return;
+    setPushLoading(true);
+    setPushError(null);
+    setPushSuccess(null);
+
+    const result = await subscribeUser(
+      fullUser.id || fullUser.username,
+      fullUser.username,
+      fullUser.role
+    );
+
+    setPushLoading(false);
+    if (result.success) {
+      setIsSubscribed(true);
+      setPushSuccess("Notifications enabled successfully!");
+    } else {
+      setPushError(result.error || "Failed to subscribe to push notifications.");
+    }
+  };
+
+  const handleSendTestNotification = async () => {
+    if (!fullUser) return;
+    setPushLoading(true);
+    setPushError(null);
+    setPushSuccess(null);
+
+    const result = await sendTestNotification(
+      fullUser.id || fullUser.username,
+      fullUser.username
+    );
+
+    setPushLoading(false);
+    if (result.success) {
+      setPushSuccess("Test notification request sent to server!");
+    } else {
+      setPushError(result.error || "Failed to send test notification.");
+    }
+  };
+
+  const hasUserRoles = users.some(u => u.role);
+  const showTestButton = !hasUserRoles || (fullUser?.role && fullUser.role.toLowerCase() === "admin");
 
   // Fetch full schedule details dynamically on mount
   useEffect(() => {
@@ -112,6 +178,61 @@ export default function Profile() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* PUSH NOTIFICATIONS MANAGEMENT */}
+      <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 mb-8">
+        <h3 className="text-lg font-bold text-gray-900 mb-2 font-sans flex items-center gap-2">
+          🔔 Push Notifications
+        </h3>
+        <p className="text-xs text-gray-500 mb-4 font-sans leading-relaxed">
+          Stay updated instantly with flight announcements, hotel details, and schedule milestones. Enabled notifications will deliver updates directly to your screen.
+        </p>
+
+        {!pushSupported ? (
+          <div className="text-xs text-amber-600 bg-amber-50 p-3 rounded-lg font-sans border border-amber-100">
+            ⚠ Push notifications are not supported by this browser. Please ensure you are viewing over HTTPS and that your browser supports Service Workers.
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={handleEnableNotifications}
+                disabled={pushLoading}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm cursor-pointer ${
+                  isSubscribed 
+                    ? "border border-emerald-500 text-emerald-800 bg-emerald-50 hover:bg-emerald-100" 
+                    : "bg-yellow-400 text-black hover:bg-yellow-500 hover:shadow"
+                }`}
+              >
+                {pushLoading ? "Processing..." : isSubscribed ? "✓ Notifications Enabled" : "Enable Notifications"}
+              </button>
+
+              {showTestButton && (
+                <button
+                  type="button"
+                  onClick={handleSendTestNotification}
+                  disabled={pushLoading}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 transition shadow-sm cursor-pointer"
+                >
+                  Send Test Notification
+                </button>
+              )}
+            </div>
+
+            {pushSuccess && (
+              <p className="text-xs text-emerald-600 font-semibold font-sans mt-1">
+                ✓ {pushSuccess}
+              </p>
+            )}
+            {pushError && (
+              <p className="text-xs text-red-600 font-semibold font-sans mt-1">
+                ⚠ {pushError}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
 

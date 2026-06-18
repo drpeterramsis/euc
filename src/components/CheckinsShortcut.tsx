@@ -18,41 +18,52 @@ export default function CheckinsShortcut({ user }: CheckinsShortcutProps) {
   const [tripTitle, setTripTitle] = useState<string>("Checking state...");
   const [loading, setLoading] = useState(false);
 
-  const selectedTripId = localStorage.getItem("selected_trip_id") || "departure";
-
+  // Stay synchronized with selected itineraries in real-time
   useEffect(() => {
     if (!user || !user.role || !user.username) return;
 
-    setLoading(true);
     const roleParam = user.role.trim();
     const usernameParam = user.username.trim();
-    const tripParam = selectedTripId;
 
-    apiFetch("checkins/activeByTrip", {
-      params: {
-        tripId: tripParam,
-        role: roleParam,
-        username: usernameParam,
-      },
-    })
-      .then((res) => {
-        if (res.ok) return res.json();
-        throw new Error();
+    const fetchStatus = () => {
+      const tripParam = localStorage.getItem("selected_trip_id") || "departure";
+      setLoading(true);
+      apiFetch("checkins/activeByTrip", {
+        params: {
+          tripId: tripParam,
+          role: roleParam,
+          username: usernameParam,
+        },
       })
-      .then((data) => {
-        setTotalPending(data.totalPending || 0);
-        setTripTitle(data.trip?.title || "Trip Milestones");
-        const anyActive = (data.categories || []).some((c: any) => (c.checkins || []).length > 0);
-        setHasActiveCheckins(anyActive);
-      })
-      .catch(() => {
-        // Silently fallback labels
-        setTripTitle("Trip Milestones");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [user, selectedTripId]);
+        .then((res) => {
+          if (res.ok) return res.json();
+          throw new Error();
+        })
+        .then((data) => {
+          setTotalPending(data.totalPending || 0);
+          setTripTitle(data.trip?.title || "Trip Milestones");
+          const anyActive = (data.categories || []).some((c: any) => (c.checkins || []).length > 0);
+          setHasActiveCheckins(anyActive);
+        })
+        .catch(() => {
+          // Silently fallback labels
+          setTripTitle("Trip Milestones");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    };
+
+    fetchStatus();
+
+    window.addEventListener("focus", fetchStatus);
+    window.addEventListener("storage", fetchStatus);
+
+    return () => {
+      window.removeEventListener("focus", fetchStatus);
+      window.removeEventListener("storage", fetchStatus);
+    };
+  }, [user]);
 
   if (!user) return null;
 

@@ -1,4 +1,5 @@
 import { kv } from "@vercel/kv";
+import webpush from "web-push";
 
 /**
  * Helper to invalidate cached responses for a specific trip.
@@ -69,14 +70,26 @@ export default async function handler(req: any, res: any) {
             }
           }
         }
+        allCheckins.sort((a, b) => {
+          const orderA = typeof a.order === "number" ? a.order : 0;
+          const orderB = typeof b.order === "number" ? b.order : 0;
+          if (orderA !== orderB) return orderA - orderB;
+          return (a.createdAt || 0) - (b.createdAt || 0);
+        });
         return res.status(200).json({ checkins: allCheckins });
       }
 
       if (path === "checkins/activeByTrip") {
         const { tripId, role, username } = query;
-        const catIds: string[] = await kv.smembers(`checkinCats:trip:${tripId}`) || [];
+        const trip = tripId ? await kv.get(`trip:${tripId}`) : null;
+        const catIds: string[] = tripId ? await kv.smembers(`checkinCats:trip:${tripId}`) || [] : [];
+        const userRole = (role || "").toLowerCase().trim();
+        const isAdminUser = userRole === "admin";
+
         const categories = await Promise.all(catIds.map(async (catId) => {
           const cat = await kv.get(`checkinCat:${catId}`) as any;
+          if (!cat) return null;
+
           const checkinIds: string[] = await kv.smembers(`checkins:cat:${catId}`) || [];
           const checkins = await Promise.all(checkinIds.map(async (cId) => {
             const c = await kv.get(`checkin:${cId}`) as any;
@@ -84,9 +97,54 @@ export default async function handler(req: any, res: any) {
             const checked = await kv.sismember(`checkin:${cId}:users`, username);
             return { ...c, checked };
           }));
-          return { ...cat, checkins: checkins.filter(Boolean) };
+
+          const filteredCheckins = checkins.filter((c: any) => {
+            if (!c) return false;
+            // Inactive/draft checkins are only visible to admin
+            if (!isAdminUser && c.active === false) return false;
+            // Check roles allowed
+            if (!isAdminUser && c.rolesAllowed && c.rolesAllowed.length > 0) {
+              const allowed = c.rolesAllowed.map((r: string) => r.toLowerCase().trim());
+              return allowed.includes(userRole);
+            }
+            return true;
+          });
+
+          filteredCheckins.sort((a: any, b: any) => {
+            const orderA = typeof a.order === "number" ? a.order : 0;
+            const orderB = typeof b.order === "number" ? b.order : 0;
+            if (orderA !== orderB) return orderA - orderB;
+            return (a.createdAt || 0) - (b.createdAt || 0);
+          });
+
+          return { ...cat, checkins: filteredCheckins };
         }));
-        return res.status(200).json({ categories: categories.filter(c => c && c.active !== false) });
+
+        const activeCategories = categories.filter(c => c && c.active !== false);
+
+        // Calculate total pending checkins based on activeCategories
+        let totalPending = 0;
+        for (const cat of activeCategories) {
+          if (!cat.checkins) continue;
+          for (const c of cat.checkins) {
+            if (c.active === false) continue;
+            if (c.checked) continue;
+            
+            // For totalPending tracking, ensure it matches user's role
+            const isAllowed = isAdminUser || !c.rolesAllowed || c.rolesAllowed.length === 0 || 
+              c.rolesAllowed.map((r: string) => r.toLowerCase().trim()).includes(userRole);
+            
+            if (isAllowed) {
+              totalPending++;
+            }
+          }
+        }
+
+        return res.status(200).json({ 
+          categories: activeCategories,
+          totalPending,
+          trip
+        });
       }
 
       if (path === "checkins/status") {
@@ -196,9 +254,33 @@ export default async function handler(req: any, res: any) {
 
       if (path === "checkins/create") {
          if (role !== "admin") return res.status(403).json({ error: "Forbidden" });
-         const { categoryId, ...data } = body;
+         const { categoryId, tripId, ...data } = body;
          const cId = Date.now().toString();
-         await kv.set(`checkin:${cId}`, { id: cId, categoryId, ...data, active: true });
+
+         let resolvedTripId = tripId;
+         if (!resolvedTripId && categoryId) {
+            const cat = await kv.get(`checkinCat:${categoryId}`) as any;
+            if (cat) resolvedTripId = cat.tripId;
+         }
+
+         let maxOrder = 0;
+         if (resolvedTripId) {
+            const catIds: string[] = await kv.smembers(`checkinCats:trip:${resolvedTripId}`) || [];
+            for (const catId of catIds) {
+               const checkinIds: string[] = await kv.smembers(`checkins:cat:${catId}`) || [];
+               for (const cid of checkinIds) {
+                  const checkinItem: any = await kv.get(`checkin:${cid}`);
+                  if (checkinItem && typeof checkinItem.order === "number") {
+                     if (checkinItem.order > maxOrder) {
+                        maxOrder = checkinItem.order;
+                     }
+                  }
+               }
+            }
+         }
+         const newOrder = maxOrder + 1;
+
+         await kv.set(`checkin:${cId}`, { id: cId, categoryId, ...data, order: newOrder, active: true, createdAt: Date.now() });
          await kv.sadd(`checkins:cat:${categoryId}`, cId);
          return res.status(201).json({ id: cId });
       }
@@ -220,6 +302,27 @@ export default async function handler(req: any, res: any) {
          await kv.del(`checkin:${checkinId}`);
          await kv.del(`checkin:${checkinId}:users`);
          await kv.srem(`checkins:cat:${item.categoryId}`, checkinId);
+         return res.status(200).json({ ok: true });
+      }
+
+      if (path === "checkins/reorder" || body.action === "checkins.reorder") {
+         if (role !== "admin") return res.status(403).json({ error: "Forbidden" });
+         const { tripId, items } = body;
+         if (!items || !Array.isArray(items)) {
+            return res.status(400).json({ error: "Invalid items list" });
+         }
+         for (const item of items) {
+            if (item && item.id && typeof item.order === "number") {
+               const checkin = await kv.get(`checkin:${item.id}`) as any;
+               if (checkin) {
+                  checkin.order = item.order;
+                  await kv.set(`checkin:${item.id}`, checkin);
+               }
+            }
+         }
+         if (tripId) {
+            await invalidateTripCache(tripId);
+         }
          return res.status(200).json({ ok: true });
       }
 
@@ -246,6 +349,46 @@ export default async function handler(req: any, res: any) {
          const { config } = body;
          await kv.set("setting:checkins.config", config);
          return res.status(200).json({ ok: true });
+      }
+
+      if (path === "push/subscribe") {
+         const { subscription, userId, username } = body;
+         if (!subscription || !subscription.endpoint) {
+            return res.status(400).json({ error: "Subscription object and endpoint are required" });
+         }
+         const key = userId || username || "anonymous";
+         await kv.set(`push:sub:${key}`, subscription);
+         return res.status(200).json({ ok: true });
+      }
+
+      if (path === "push/sendTest") {
+         const { userId, username } = body;
+         const key = userId || username || "anonymous";
+         const subscription = await kv.get(`push:sub:${key}`) as any;
+         
+         if (!subscription) {
+            return res.status(404).json({ error: "No active push subscription found for this user" });
+         }
+
+         const subject = process.env.VAPID_SUBJECT || "mailto:peter.ramsis.salib@gmail.com";
+         const publicKey = process.env.VITE_VAPID_PUBLIC_KEY || process.env.VAPID_PUBLIC_KEY || "";
+         const privateKey = process.env.VAPID_PRIVATE_KEY || "";
+
+         if (!publicKey || !privateKey) {
+            return res.status(400).json({ error: "VAPID key configuration is incomplete on the server" });
+         }
+
+         try {
+            webpush.setVapidDetails(subject, publicKey, privateKey);
+            await webpush.sendNotification(subscription, JSON.stringify({
+               title: "EUC",
+               body: "Test notification works successfully!",
+               url: "/"
+            }));
+            return res.status(200).json({ ok: true });
+         } catch (error: any) {
+            return res.status(500).json({ error: error.message || "Failed to send notification via web-push" });
+         }
       }
     }
 
