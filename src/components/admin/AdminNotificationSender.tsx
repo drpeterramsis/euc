@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
+import { Loader2 } from "lucide-react";
 
 export const AdminNotificationSender = () => {
   const { users } = useApp() as any;
@@ -120,11 +121,25 @@ export const AdminNotificationSender = () => {
         <button 
           onClick={send} 
           disabled={sending || !title || !body || (audience === 'single' && !targetUserId)}
-          className="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 disabled:opacity-50"
+          className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors w-full sm:w-auto"
         >
-          {sending ? "Sending..." : "Send Notification"}
+          {sending ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Sending Broadcast... Please wait</span>
+            </>
+          ) : (
+            "Send Notification"
+          )}
         </button>
       </div>
+      
+      {sending && (
+        <div className="mt-4 p-3 bg-yellow-50 text-yellow-800 border border-yellow-100 rounded text-sm flex items-center gap-2">
+          <Loader2 className="w-4 h-4 animate-spin text-yellow-600" />
+          <span>Broadcasting push subscription notifications. Please do not close or refresh this page. This could take up to a minute depending on target list size.</span>
+        </div>
+      )}
       
       {result && (
         <div className="mt-4 p-4 rounded bg-gray-100 text-sm">
