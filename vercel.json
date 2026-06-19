@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/api/admin/users/:id", "destination": "/api/admin/users.ts?id=$1" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]

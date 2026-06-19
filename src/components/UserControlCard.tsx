@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { showToast } from './Toast';
 import { localToUtc, utcToDisplay, TZ_CAIRO, TZ_PRAGUE } from "../utils/timezone";
+import { getDefaultFlightDetails, getDefaultHotelDetails } from "../context/AppContext";
 
 const DEFAULT_FEATURE_ACCESS = {
   sessions:       { access: true,  status: "full" },
@@ -68,6 +69,7 @@ const FIELD_SECTIONS = [
 export default function UserControlCard({ isOpen, mode, user, onClose, onSave }: any) {
   const [activeTab, setActiveTab] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [applyToAllTravel, setApplyToAllTravel] = useState(false);
   const [applyFeaturesToAll, setApplyFeaturesToAll] = useState(false);
@@ -105,30 +107,93 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
   const [travelData, setTravelData] = useState(() => {
     if (mode === "edit" && user) {
       return {
-        flightNumber:     user.flightDetails?.flightNumber     || "",
-        departureDate:    user.flightDetails?.departureDate    || "",
-        departureTime:    user.flightDetails?.departureTime    || "",
-        departureAirport: user.flightDetails?.departureAirport || "",
-        arrivalAirport:   user.flightDetails?.arrivalAirport   || "",
-        arrivalTime:      user.flightDetails?.arrivalTime      || "",
-        returnFlight:     user.flightDetails?.returnFlight     || "",
-        returnDate:       user.flightDetails?.returnDate       || "",
-        returnTime:       user.flightDetails?.returnTime       || "",
+        bookingReference:    user.flightDetails?.bookingReference    || "",
+        ticketNumber:        user.flightDetails?.ticketNumber        || "",
+        documentIssueDate:   user.flightDetails?.documentIssueDate   || "",
+        airlineCode:         user.flightDetails?.airlineCode         || "",
+        frequentFlyerNumber: user.flightDetails?.frequentFlyerNumber || "",
+        bookingStatus:       user.flightDetails?.bookingStatus       || "",
+        cabinClass:          user.flightDetails?.cabinClass          || "",
+        baggageAllowance:    user.flightDetails?.baggageAllowance    || "",
+        aircraft:            user.flightDetails?.aircraft            || "",
+        meal:                user.flightDetails?.meal                || "",
+        duration:            user.flightDetails?.duration            || "",
+        departure: {
+          flightNumber:      user.flightDetails?.departure?.flightNumber     || "",
+          date:              user.flightDetails?.departure?.date             || "",
+          time:              user.flightDetails?.departure?.time             || "",
+          departureAirport:  user.flightDetails?.departure?.departureAirport || "",
+          departureAirportLink: user.flightDetails?.departure?.departureAirportLink || "",
+          arrivalAirport:    user.flightDetails?.departure?.arrivalAirport   || "",
+          arrivalAirportLink:   user.flightDetails?.departure?.arrivalAirportLink   || "",
+          terminal:          user.flightDetails?.departure?.terminal         || "",
+          gate:              user.flightDetails?.departure?.gate             || "",
+          inputTimezone:     user.flightDetails?.departure?.inputTimezone     || "Africa/Cairo",
+          timezoneDisplay:   user.flightDetails?.departure?.timezoneDisplay   || "both",
+          // New fields
+          arrivalTime:       user.flightDetails?.departure?.arrivalTime       || "",
+          arrivalDate:       user.flightDetails?.departure?.arrivalDate       || "",
+          arrivalTerminal:   user.flightDetails?.departure?.arrivalTerminal   || "",
+          arrivalGate:       user.flightDetails?.departure?.arrivalGate       || "",
+          duration:          user.flightDetails?.departure?.duration          || user.flightDetails?.duration || "",
+          aircraft:          user.flightDetails?.departure?.aircraft          || user.flightDetails?.aircraft || "",
+          baggage:           user.flightDetails?.departure?.baggage           || user.flightDetails?.baggageAllowance || "2 Piece(s)",
+          meal:              user.flightDetails?.departure?.meal              || user.flightDetails?.meal || "Meal",
+          cabinClass:        user.flightDetails?.departure?.cabinClass        || user.flightDetails?.cabinClass || "Economy",
+          bookingStatus:     user.flightDetails?.departure?.bookingStatus     || user.flightDetails?.bookingStatus || "Confirmed",
+          frequentFlyerNumber: user.flightDetails?.departure?.frequentFlyerNumber || user.flightDetails?.frequentFlyerNumber || "",
+        },
+        arrival: {
+          flightNumber:      user.flightDetails?.arrival?.flightNumber       || "",
+          date:              user.flightDetails?.arrival?.date               || "",
+          time:              user.flightDetails?.arrival?.time               || "",
+          departureAirport:  user.flightDetails?.arrival?.departureAirport || "",
+          departureAirportLink: user.flightDetails?.arrival?.departureAirportLink || "",
+          arrivalAirport:    user.flightDetails?.arrival?.arrivalAirport   || "",
+          arrivalAirportLink:   user.flightDetails?.arrival?.arrivalAirportLink   || "",
+          terminal:          user.flightDetails?.arrival?.terminal           || "",
+          gate:              user.flightDetails?.arrival?.gate               || "",
+          inputTimezone:     user.flightDetails?.arrival?.inputTimezone     || "Africa/Cairo",
+          timezoneDisplay:   user.flightDetails?.arrival?.timezoneDisplay   || "both",
+          // New fields
+          arrivalTime:       user.flightDetails?.arrival?.arrivalTime       || "",
+          arrivalDate:       user.flightDetails?.arrival?.arrivalDate       || "",
+          arrivalTerminal:   user.flightDetails?.arrival?.arrivalTerminal   || "",
+          arrivalGate:       user.flightDetails?.arrival?.arrivalGate       || "",
+          duration:          user.flightDetails?.arrival?.duration          || user.flightDetails?.duration || "",
+          aircraft:          user.flightDetails?.arrival?.aircraft          || user.flightDetails?.aircraft || "",
+          baggage:           user.flightDetails?.arrival?.baggage           || user.flightDetails?.baggageAllowance || "2 Piece(s)",
+          meal:              user.flightDetails?.arrival?.meal              || user.flightDetails?.meal || "Meal",
+          cabinClass:        user.flightDetails?.arrival?.cabinClass        || user.flightDetails?.cabinClass || "Economy",
+          bookingStatus:     user.flightDetails?.arrival?.bookingStatus     || user.flightDetails?.bookingStatus || "Confirmed",
+          frequentFlyerNumber: user.flightDetails?.arrival?.frequentFlyerNumber || user.flightDetails?.frequentFlyerNumber || "",
+        },
         hotelName:        user.hotel?.name                     || "",
         hotelAddress:     user.hotel?.address                  || "",
         checkIn:          user.hotel?.checkIn                  || "",
         checkOut:         user.hotel?.checkOut                 || "",
         roomNumber:       user.hotel?.roomNumber               || "",
         mapsLink:         user.hotel?.mapsLink                 || "",
+        hotelPhotoUrl:    user.hotel?.photoUrl                 || "",
         transfers:        user.transfers                       || [],
       };
     }
     return {
-      flightNumber: "", departureDate: "", departureTime: "",
-      departureAirport: "", arrivalAirport: "", arrivalTime: "",
-      returnFlight: "", returnDate: "", returnTime: "",
+      bookingReference:    "",
+      ticketNumber:        "",
+      documentIssueDate:   "",
+      airlineCode:         "",
+      frequentFlyerNumber: "",
+      bookingStatus:       "",
+      cabinClass:          "",
+      baggageAllowance:    "",
+      aircraft:            "",
+      meal:                "",
+      duration:            "",
+      departure: { flightNumber: "", date: "", time: "", departureAirport: "", departureAirportLink: "", arrivalAirport: "", arrivalAirportLink: "", terminal: "", gate: "", inputTimezone: "Africa/Cairo", timezoneDisplay: "both", arrivalTime: "", arrivalDate: "", arrivalTerminal: "", arrivalGate: "", duration: "", aircraft: "", baggage: "2 Piece(s)", meal: "Meal", cabinClass: "Economy", bookingStatus: "Confirmed", frequentFlyerNumber: "" },
+      arrival: { flightNumber: "", date: "", time: "", departureAirport: "", departureAirportLink: "", arrivalAirport: "", arrivalAirportLink: "", terminal: "", gate: "", inputTimezone: "Africa/Cairo", timezoneDisplay: "both", arrivalTime: "", arrivalDate: "", arrivalTerminal: "", arrivalGate: "", duration: "", aircraft: "", baggage: "2 Piece(s)", meal: "Meal", cabinClass: "Economy", bookingStatus: "Confirmed", frequentFlyerNumber: "" },
       hotelName: "", hotelAddress: "", checkIn: "",
-      checkOut: "", roomNumber: "", mapsLink: "", transfers: [],
+      checkOut: "", roomNumber: "", mapsLink: "", hotelPhotoUrl: "", transfers: [],
     };
   });
 
@@ -149,68 +214,265 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
   useEffect(() => {
     if (!isOpen) return;
 
-    if (mode === "edit" && user) {
-      setFormData({
-        id:       user.id       || "",
-        name:     user.name     || "",
-        username: user.username || "",
-        password: user.password || "",
-        role:     user.role     || "doctor",
-        title:    user.title    || "",
-        email:    user.email    || "",
-        phone:    user.phone    || "",
-        photoUrl: user.photoUrl || user.photo || "",
-        status:   user.status   ?? true,
-      });
+    if (mode === "edit" && user?.id) {
+      const fetchFullUser = async () => {
+        setIsLoading(true);
+        try {
+          const response = await fetch(`/api/admin/users/${user.id}`);
+          if (!response.ok) {
+            throw new Error("Failed to load user details");
+          }
+          const { user: rawUser } = await response.json();
+          let fetchedUser = rawUser;
+          if (fetchedUser) {
+            if (!fetchedUser.flightDetails || !fetchedUser.flightDetails.departure || !fetchedUser.flightDetails.departure.flightNumber) {
+              fetchedUser = {
+                ...fetchedUser,
+                flightDetails: getDefaultFlightDetails(fetchedUser.name)
+              };
+            }
+            if (!fetchedUser.hotel || !fetchedUser.hotel.name) {
+              fetchedUser = {
+                ...fetchedUser,
+                hotel: getDefaultHotelDetails()
+              };
+            }
+          }
 
-      setTravelData({
-        departure: {
-          flightNumber:     user.flightDetails?.departure?.flightNumber     || "",
-          date:             user.flightDetails?.departure?.date             || "",
-          time:             user.flightDetails?.departure?.time             || "",
-          departureAirport: user.flightDetails?.departure?.departureAirport || "",
-          arrivalAirport:   user.flightDetails?.departure?.arrivalAirport   || "",
-          terminal:         user.flightDetails?.departure?.terminal         || "",
-          gate:             user.flightDetails?.departure?.gate             || "",
-        },
-        arrival: {
-          flightNumber:     user.flightDetails?.arrival?.flightNumber       || "",
-          date:             user.flightDetails?.arrival?.date               || "",
-          time:             user.flightDetails?.arrival?.time               || "",
-          departureAirport: user.flightDetails?.arrival?.departureAirport || "",
-          arrivalAirport:   user.flightDetails?.arrival?.arrivalAirport   || "",
-          terminal:         user.flightDetails?.arrival?.terminal           || "",
-          gate:             user.flightDetails?.arrival?.gate               || "",
-        },
-        hotelName:        user.hotel?.name                     || "",
-        hotelAddress:     user.hotel?.address                  || "",
-        checkIn:          user.hotel?.checkIn                  || "",
-        checkOut:         user.hotel?.checkOut                 || "",
-        roomNumber:       user.hotel?.roomNumber               || "",
-        mapsLink:         user.hotel?.mapsLink                 || "",
-        transfers:        user.transfers                       || [],
-      });
+          if (fetchedUser) {
+            setFormData({
+              id:       fetchedUser.id       || "",
+              name:     fetchedUser.name     || "",
+              username: fetchedUser.username || "",
+              password: fetchedUser.password || "",
+              role:     fetchedUser.role     || "doctor",
+              title:    fetchedUser.title    || "",
+              email:    fetchedUser.email    || "",
+              phone:    fetchedUser.phone    || "",
+              photoUrl: fetchedUser.photoUrl || fetchedUser.photo || "",
+              status:   fetchedUser.status   ?? true,
+            });
 
-      setFeatureAccess({
-        ...DEFAULT_FEATURE_ACCESS,
-        ...(user.featureAccess || {}),
-      });
+            setTravelData({
+              bookingReference:    fetchedUser.flightDetails?.bookingReference    || "",
+              ticketNumber:        fetchedUser.flightDetails?.ticketNumber        || "",
+              documentIssueDate:   fetchedUser.flightDetails?.documentIssueDate   || "",
+              airlineCode:         fetchedUser.flightDetails?.airlineCode         || "",
+              frequentFlyerNumber: fetchedUser.flightDetails?.frequentFlyerNumber || "",
+              bookingStatus:       fetchedUser.flightDetails?.bookingStatus       || "",
+              cabinClass:          fetchedUser.flightDetails?.cabinClass          || "",
+              baggageAllowance:    fetchedUser.flightDetails?.baggageAllowance    || "",
+              aircraft:            fetchedUser.flightDetails?.aircraft            || "",
+              meal:                fetchedUser.flightDetails?.meal                || "",
+              duration:            fetchedUser.flightDetails?.duration            || "",
+              departure: {
+                flightNumber:      fetchedUser.flightDetails?.departure?.flightNumber     || "",
+                date:              fetchedUser.flightDetails?.departure?.date             || "",
+                time:              fetchedUser.flightDetails?.departure?.time             || "",
+                departureAirport:  fetchedUser.flightDetails?.departure?.departureAirport || "",
+                departureAirportLink: fetchedUser.flightDetails?.departure?.departureAirportLink || "",
+                arrivalAirport:    fetchedUser.flightDetails?.departure?.arrivalAirport   || "",
+                arrivalAirportLink:   fetchedUser.flightDetails?.departure?.arrivalAirportLink   || "",
+                terminal:          fetchedUser.flightDetails?.departure?.terminal         || "",
+                gate:              fetchedUser.flightDetails?.departure?.gate             || "",
+                inputTimezone:     fetchedUser.flightDetails?.departure?.inputTimezone     || "Africa/Cairo",
+                timezoneDisplay:   fetchedUser.flightDetails?.departure?.timezoneDisplay   || "both",
+                arrivalTime:       fetchedUser.flightDetails?.departure?.arrivalTime       || "",
+                arrivalDate:       fetchedUser.flightDetails?.departure?.arrivalDate       || "",
+                arrivalTerminal:   fetchedUser.flightDetails?.departure?.arrivalTerminal   || "",
+                arrivalGate:       fetchedUser.flightDetails?.departure?.arrivalGate       || "",
+                duration:          fetchedUser.flightDetails?.departure?.duration          || fetchedUser.flightDetails?.duration || "",
+                aircraft:          fetchedUser.flightDetails?.departure?.aircraft          || fetchedUser.flightDetails?.aircraft || "",
+                baggage:           fetchedUser.flightDetails?.departure?.baggage           || fetchedUser.flightDetails?.baggageAllowance || "2 Piece(s)",
+                meal:              fetchedUser.flightDetails?.departure?.meal              || fetchedUser.flightDetails?.meal || "Meal",
+                cabinClass:        fetchedUser.flightDetails?.departure?.cabinClass        || fetchedUser.flightDetails?.cabinClass || "Economy",
+                bookingStatus:     fetchedUser.flightDetails?.departure?.bookingStatus     || fetchedUser.flightDetails?.bookingStatus || "Confirmed",
+                frequentFlyerNumber: fetchedUser.flightDetails?.departure?.frequentFlyerNumber || fetchedUser.flightDetails?.frequentFlyerNumber || "",
+              },
+              arrival: {
+                flightNumber:      fetchedUser.flightDetails?.arrival?.flightNumber       || "",
+                date:              fetchedUser.flightDetails?.arrival?.date               || "",
+                time:              fetchedUser.flightDetails?.arrival?.time               || "",
+                departureAirport:  fetchedUser.flightDetails?.arrival?.departureAirport || "",
+                departureAirportLink: fetchedUser.flightDetails?.arrival?.departureAirportLink || "",
+                arrivalAirport:    fetchedUser.flightDetails?.arrival?.arrivalAirport   || "",
+                arrivalAirportLink:   fetchedUser.flightDetails?.arrival?.arrivalAirportLink   || "",
+                terminal:          fetchedUser.flightDetails?.arrival?.terminal           || "",
+                gate:              fetchedUser.flightDetails?.arrival?.gate               || "",
+                inputTimezone:     fetchedUser.flightDetails?.arrival?.inputTimezone     || "Africa/Cairo",
+                timezoneDisplay:   fetchedUser.flightDetails?.arrival?.timezoneDisplay   || "both",
+                arrivalTime:       fetchedUser.flightDetails?.arrival?.arrivalTime       || "",
+                arrivalDate:       fetchedUser.flightDetails?.arrival?.arrivalDate       || "",
+                arrivalTerminal:   fetchedUser.flightDetails?.arrival?.arrivalTerminal   || "",
+                arrivalGate:       fetchedUser.flightDetails?.arrival?.arrivalGate       || "",
+                duration:          fetchedUser.flightDetails?.arrival?.duration          || fetchedUser.flightDetails?.duration || "",
+                aircraft:          fetchedUser.flightDetails?.arrival?.aircraft          || fetchedUser.flightDetails?.aircraft || "",
+                baggage:           fetchedUser.flightDetails?.arrival?.baggage           || fetchedUser.flightDetails?.baggageAllowance || "2 Piece(s)",
+                meal:              fetchedUser.flightDetails?.arrival?.meal              || fetchedUser.flightDetails?.meal || "Meal",
+                cabinClass:        fetchedUser.flightDetails?.arrival?.cabinClass        || fetchedUser.flightDetails?.cabinClass || "Economy",
+                bookingStatus:     fetchedUser.flightDetails?.arrival?.bookingStatus     || fetchedUser.flightDetails?.bookingStatus || "Confirmed",
+                frequentFlyerNumber: fetchedUser.flightDetails?.arrival?.frequentFlyerNumber || fetchedUser.flightDetails?.frequentFlyerNumber || "",
+              },
+              hotelName:        fetchedUser.hotel?.name                     || "",
+              hotelAddress:     fetchedUser.hotel?.address                  || "",
+              checkIn:          fetchedUser.hotel?.checkIn                  || "",
+              checkOut:         fetchedUser.hotel?.checkOut                 || "",
+              roomNumber:       fetchedUser.hotel?.roomNumber               || "",
+              mapsLink:         fetchedUser.hotel?.mapsLink                 || "",
+              hotelPhotoUrl:    fetchedUser.hotel?.photoUrl                 || "",
+              transfers:        fetchedUser.transfers                       || [],
+            });
 
-      setVisibleFields({
-        ...DEFAULT_VISIBLE_FIELDS,
-        ...(user.visibleFields || {}),
-      });
+            setFeatureAccess({
+              ...DEFAULT_FEATURE_ACCESS,
+              ...(fetchedUser.featureAccess || {}),
+            });
 
+            setVisibleFields({
+              ...DEFAULT_VISIBLE_FIELDS,
+              ...(fetchedUser.visibleFields || {}),
+            });
+          }
+        } catch (err: any) {
+          showToast(`Note: Using fallback details (${err.message || "Failed to fetch from server"})`, "info");
+          
+          let fallbackUser = user;
+          if (fallbackUser) {
+            if (!fallbackUser.flightDetails || !fallbackUser.flightDetails.departure || !fallbackUser.flightDetails.departure.flightNumber) {
+              fallbackUser = {
+                ...fallbackUser,
+                flightDetails: getDefaultFlightDetails(fallbackUser.name)
+              };
+            }
+            if (!fallbackUser.hotel || !fallbackUser.hotel.name) {
+              fallbackUser = {
+                ...fallbackUser,
+                hotel: getDefaultHotelDetails()
+              };
+            }
+          }
+
+          if (fallbackUser) {
+            setFormData({
+              id:       fallbackUser.id       || "",
+              name:     fallbackUser.name     || "",
+              username: fallbackUser.username || "",
+              password: fallbackUser.password || "",
+              role:     fallbackUser.role     || "doctor",
+              title:    fallbackUser.title    || "",
+              email:    fallbackUser.email    || "",
+              phone:    fallbackUser.phone    || "",
+              photoUrl: fallbackUser.photoUrl || fallbackUser.photo || "",
+              status:   fallbackUser.status   ?? true,
+            });
+
+            setTravelData({
+              bookingReference:    fallbackUser.flightDetails?.bookingReference    || "",
+              ticketNumber:        fallbackUser.flightDetails?.ticketNumber        || "",
+              documentIssueDate:   fallbackUser.flightDetails?.documentIssueDate   || "",
+              airlineCode:         fallbackUser.flightDetails?.airlineCode         || "",
+              frequentFlyerNumber: fallbackUser.flightDetails?.frequentFlyerNumber || "",
+              bookingStatus:       fallbackUser.flightDetails?.bookingStatus       || "",
+              cabinClass:          fallbackUser.flightDetails?.cabinClass          || "",
+              baggageAllowance:    fallbackUser.flightDetails?.baggageAllowance    || "",
+              aircraft:            fallbackUser.flightDetails?.aircraft            || "",
+              meal:                fallbackUser.flightDetails?.meal                || "",
+              duration:            fallbackUser.flightDetails?.duration            || "",
+              departure: {
+                flightNumber:      fallbackUser.flightDetails?.departure?.flightNumber     || "",
+                date:              fallbackUser.flightDetails?.departure?.date             || "",
+                time:              fallbackUser.flightDetails?.departure?.time             || "",
+                departureAirport:  fallbackUser.flightDetails?.departure?.departureAirport || "",
+                departureAirportLink: fallbackUser.flightDetails?.departure?.departureAirportLink || "",
+                arrivalAirport:    fallbackUser.flightDetails?.departure?.arrivalAirport   || "",
+                arrivalAirportLink:   fallbackUser.flightDetails?.departure?.arrivalAirportLink   || "",
+                terminal:          fallbackUser.flightDetails?.departure?.terminal         || "",
+                gate:              fallbackUser.flightDetails?.departure?.gate             || "",
+                inputTimezone:     fallbackUser.flightDetails?.departure?.inputTimezone     || "Africa/Cairo",
+                timezoneDisplay:   fallbackUser.flightDetails?.departure?.timezoneDisplay   || "both",
+                arrivalTime:       fallbackUser.flightDetails?.departure?.arrivalTime       || "",
+                arrivalDate:       fallbackUser.flightDetails?.departure?.arrivalDate       || "",
+                arrivalTerminal:   fallbackUser.flightDetails?.departure?.arrivalTerminal   || "",
+                arrivalGate:       fallbackUser.flightDetails?.departure?.arrivalGate       || "",
+                duration:          fallbackUser.flightDetails?.departure?.duration          || fallbackUser.flightDetails?.duration || "",
+                aircraft:          fallbackUser.flightDetails?.departure?.aircraft          || fallbackUser.flightDetails?.aircraft || "",
+                baggage:           fallbackUser.flightDetails?.departure?.baggage           || fallbackUser.flightDetails?.baggageAllowance || "2 Piece(s)",
+                meal:              fallbackUser.flightDetails?.departure?.meal              || fallbackUser.flightDetails?.meal || "Meal",
+                cabinClass:        fallbackUser.flightDetails?.departure?.cabinClass        || fallbackUser.flightDetails?.cabinClass || "Economy",
+                bookingStatus:     fallbackUser.flightDetails?.departure?.bookingStatus     || fallbackUser.flightDetails?.bookingStatus || "Confirmed",
+                frequentFlyerNumber: fallbackUser.flightDetails?.departure?.frequentFlyerNumber || fallbackUser.flightDetails?.frequentFlyerNumber || "",
+              },
+              arrival: {
+                flightNumber:      fallbackUser.flightDetails?.arrival?.flightNumber       || "",
+                date:              fallbackUser.flightDetails?.arrival?.date               || "",
+                time:              fallbackUser.flightDetails?.arrival?.time               || "",
+                departureAirport:  fallbackUser.flightDetails?.arrival?.departureAirport || "",
+                departureAirportLink: fallbackUser.flightDetails?.arrival?.departureAirportLink || "",
+                arrivalAirport:    fallbackUser.flightDetails?.arrival?.arrivalAirport   || "",
+                arrivalAirportLink:   fallbackUser.flightDetails?.arrival?.arrivalAirportLink   || "",
+                terminal:          fallbackUser.flightDetails?.arrival?.terminal           || "",
+                gate:              fallbackUser.flightDetails?.arrival?.gate               || "",
+                inputTimezone:     fallbackUser.flightDetails?.arrival?.inputTimezone     || "Africa/Cairo",
+                timezoneDisplay:   fallbackUser.flightDetails?.arrival?.timezoneDisplay   || "both",
+                arrivalTime:       fallbackUser.flightDetails?.arrival?.arrivalTime       || "",
+                arrivalDate:       fallbackUser.flightDetails?.arrival?.arrivalDate       || "",
+                arrivalTerminal:   fallbackUser.flightDetails?.arrival?.arrivalTerminal   || "",
+                arrivalGate:       fallbackUser.flightDetails?.arrival?.arrivalGate       || "",
+                duration:          fallbackUser.flightDetails?.arrival?.duration          || fallbackUser.flightDetails?.duration || "",
+                aircraft:          fallbackUser.flightDetails?.arrival?.aircraft          || fallbackUser.flightDetails?.aircraft || "",
+                baggage:           fallbackUser.flightDetails?.arrival?.baggage           || fallbackUser.flightDetails?.baggageAllowance || "2 Piece(s)",
+                meal:              fallbackUser.flightDetails?.arrival?.meal              || fallbackUser.flightDetails?.meal || "Meal",
+                cabinClass:        fallbackUser.flightDetails?.arrival?.cabinClass        || fallbackUser.flightDetails?.cabinClass || "Economy",
+                bookingStatus:     fallbackUser.flightDetails?.arrival?.bookingStatus     || fallbackUser.flightDetails?.bookingStatus || "Confirmed",
+                frequentFlyerNumber: fallbackUser.flightDetails?.arrival?.frequentFlyerNumber || fallbackUser.flightDetails?.frequentFlyerNumber || "",
+              },
+              hotelName:           fallbackUser.hotel?.name                     || "",
+              hotelAddress:        fallbackUser.hotel?.address                  || "",
+              checkIn:             fallbackUser.hotel?.checkIn                  || "",
+              checkOut:            fallbackUser.hotel?.checkOut                 || "",
+              roomNumber:          fallbackUser.hotel?.roomNumber               || "",
+              mapsLink:            fallbackUser.hotel?.mapsLink                 || "",
+              hotelPhotoUrl:       fallbackUser.hotel?.photoUrl                 || "",
+              transfers:           fallbackUser.transfers                       || [],
+            });
+
+            setFeatureAccess({
+              ...DEFAULT_FEATURE_ACCESS,
+              ...(fallbackUser.featureAccess || {}),
+            });
+
+            setVisibleFields({
+              ...DEFAULT_VISIBLE_FIELDS,
+              ...(fallbackUser.visibleFields || {}),
+            });
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchFullUser();
     } else if (mode === "create") {
       setFormData({
         id: "u" + Date.now(),
         name: "", username: "", password: "",
-        role: "doctor", email: "", phone: "",
+        role: "doctor", title: "", email: "", phone: "",
         photoUrl: "", status: true,
       });
       setTravelData({
-        departure: { flightNumber: "", date: "", time: "", departureAirport: "", arrivalAirport: "", terminal: "", gate: "" },
-        arrival: { flightNumber: "", date: "", time: "", departureAirport: "", arrivalAirport: "", terminal: "", gate: "" },
+        bookingReference:    "",
+        ticketNumber:        "",
+        documentIssueDate:   "",
+        airlineCode:         "",
+        frequentFlyerNumber: "",
+        bookingStatus:       "",
+        cabinClass:          "",
+        baggageAllowance:    "",
+        aircraft:            "",
+        meal:                "",
+        duration:            "",
+        departure: { flightNumber: "", date: "", time: "", departureAirport: "", departureAirportLink: "", arrivalAirport: "", arrivalAirportLink: "", terminal: "", gate: "", inputTimezone: "Africa/Cairo", timezoneDisplay: "both" },
+        arrival: { flightNumber: "", date: "", time: "", departureAirport: "", departureAirportLink: "", arrivalAirport: "", arrivalAirportLink: "", terminal: "", gate: "", inputTimezone: "Africa/Cairo", timezoneDisplay: "both" },
         hotelName: "", hotelAddress: "", checkIn: "",
         checkOut: "", roomNumber: "", mapsLink: "", transfers: [],
       });
@@ -218,6 +480,8 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
       setVisibleFields({ ...DEFAULT_VISIBLE_FIELDS });
     }
     setApplyToAllTravel(false);
+    setApplyFeaturesToAll(false);
+    setApplyFieldsToAll(false);
   }, [isOpen, user, mode]);
 
   const departurePragueDisplay = useMemo(() => {
@@ -356,8 +620,19 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
         isActive: formData.status, 
 
         flightDetails: {
-          departure: travelData.departure,
-          arrival:   travelData.arrival,
+          bookingReference:    travelData.bookingReference,
+          ticketNumber:        travelData.ticketNumber,
+          documentIssueDate:   travelData.documentIssueDate,
+          airlineCode:         travelData.airlineCode,
+          frequentFlyerNumber: travelData.frequentFlyerNumber,
+          bookingStatus:       travelData.bookingStatus,
+          cabinClass:          travelData.cabinClass,
+          baggageAllowance:    travelData.baggageAllowance,
+          aircraft:            travelData.aircraft,
+          meal:                travelData.meal,
+          duration:            travelData.duration,
+          departure:           travelData.departure,
+          arrival:             travelData.arrival,
         },
         hotel: {
           name:       travelData.hotelName,
@@ -366,6 +641,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
           checkOut:   travelData.checkOut,
           roomNumber: travelData.roomNumber,
           mapsLink:   travelData.mapsLink,
+          photoUrl:   travelData.hotelPhotoUrl,
         },
         transfers: travelData.transfers,
         featureAccess: { ...featureAccess },
@@ -404,7 +680,13 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
           ))}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 relative">
+          {isLoading && (
+            <div className="absolute inset-0 bg-white/80 flex flex-col items-center justify-center z-50">
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-yellow-500 border-t-transparent"></div>
+              <p className="mt-3 text-sm font-semibold text-gray-600">Loading latest user details...</p>
+            </div>
+          )}
           {activeTab === 1 && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -479,20 +761,164 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
 
           {activeTab === 2 && (
             <div className="space-y-6">
-              <div className="p-4 border rounded bg-gray-50">
-                <h3 className="font-bold mb-3">🛫 Departure Trip (To Prague)</h3>
+              <div className="p-4 border rounded bg-gray-50 bg-gradient-to-r from-gray-50 to-white shadow-sm">
+                <h3 className="font-bold mb-3 flex items-center gap-2 text-gray-800">
+                  <span>🎫 Ticket Details</span>
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <div className="flex flex-col">
+                    <label className="text-[11px] font-bold text-gray-500 mb-1">Booking Reference (PNR)</label>
+                    <input name="bookingReference" value={travelData.bookingReference || ""} onChange={handleTravelChange} placeholder="e.g. AB1CD2" className="w-full p-2 border rounded" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[11px] font-bold text-gray-500 mb-1">Ticket Number (E-ticket)</label>
+                    <input name="ticketNumber" value={travelData.ticketNumber || ""} onChange={handleTravelChange} placeholder="e.g. 057-1234567890" className="w-full p-2 border rounded" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[11px] font-bold text-gray-500 mb-1">Document Issue Date</label>
+                    <input name="documentIssueDate" value={travelData.documentIssueDate || ""} onChange={handleTravelChange} placeholder="e.g. 15 May 2026" className="w-full p-2 border rounded" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[11px] font-bold text-gray-500 mb-1">Airline Code (Optional)</label>
+                    <input name="airlineCode" value={travelData.airlineCode || ""} onChange={handleTravelChange} placeholder="e.g. MS" className="w-full p-2 border rounded" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[11px] font-bold text-gray-500 mb-1">Frequent Flyer (Optional)</label>
+                    <input name="frequentFlyerNumber" value={travelData.frequentFlyerNumber || ""} onChange={handleTravelChange} placeholder="e.g. MS-12345" className="w-full p-2 border rounded" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[11px] font-bold text-gray-500 mb-1">Booking Status (Optional)</label>
+                    <input name="bookingStatus" value={travelData.bookingStatus || ""} onChange={handleTravelChange} placeholder="e.g. Confirmed" className="w-full p-2 border rounded" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[11px] font-bold text-gray-500 mb-1">Cabin Class (Optional)</label>
+                    <input name="cabinClass" value={travelData.cabinClass || ""} onChange={handleTravelChange} placeholder="e.g. Business" className="w-full p-2 border rounded" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[11px] font-bold text-gray-500 mb-1">Baggage Allowance (Optional)</label>
+                    <input name="baggageAllowance" value={travelData.baggageAllowance || ""} onChange={handleTravelChange} placeholder="e.g. 2PC" className="w-full p-2 border rounded" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[11px] font-bold text-gray-500 mb-1">Aircraft (Optional)</label>
+                    <input name="aircraft" value={travelData.aircraft || ""} onChange={handleTravelChange} placeholder="e.g. B787-9" className="w-full p-2 border rounded" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[11px] font-bold text-gray-500 mb-1">Meal preference (Optional)</label>
+                    <input name="meal" value={travelData.meal || ""} onChange={handleTravelChange} placeholder="e.g. Standard" className="w-full p-2 border rounded" />
+                  </div>
+                  <div className="flex flex-col sm:col-span-2">
+                    <label className="text-[11px] font-bold text-gray-500 mb-1">Remarks / Duration (Optional)</label>
+                    <input name="duration" value={travelData.duration || ""} onChange={handleTravelChange} placeholder="e.g. Duration: 4h 15m" className="w-full p-2 border rounded" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 border border-yellow-200 rounded-lg bg-yellow-50/20 shadow-sm">
+                <h3 className="font-bold mb-3 text-yellow-800 border-b border-yellow-100 pb-1.5 flex items-center gap-1.5">
+                  <span>🛫 Departure Flight (Trip 1: To Prague)</span>
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <input name="departure.flightNumber" value={travelData.departure?.flightNumber} onChange={handleTravelChange} placeholder="Flight Number" className="w-full p-2 border rounded" />
-                  <input name="departure.date" type="date" value={travelData.departure?.date} onChange={handleTravelChange} className="w-full p-2 border rounded" />
+                  <div className="col-span-1 sm:col-span-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100/50 p-1.5 rounded">Flight Meta</div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Flight Number</label>
+                    <input name="departure.flightNumber" value={travelData.departure?.flightNumber || ""} onChange={handleTravelChange} placeholder="e.g. MS 789" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Equipment / Aircraft</label>
+                    <input name="departure.aircraft" value={travelData.departure?.aircraft || ""} onChange={handleTravelChange} placeholder="e.g. AIRBUS A320NEO" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Booking Status</label>
+                    <input name="departure.bookingStatus" value={travelData.departure?.bookingStatus || ""} onChange={handleTravelChange} placeholder="e.g. Confirmed" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Cabin Class</label>
+                    <input name="departure.cabinClass" value={travelData.departure?.cabinClass || ""} onChange={handleTravelChange} placeholder="e.g. Economy" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Duration (Non stop)</label>
+                    <input name="departure.duration" value={travelData.departure?.duration || ""} onChange={handleTravelChange} placeholder="e.g. 03:55" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Frequent Flyer (Departure flight)</label>
+                    <input name="departure.frequentFlyerNumber" value={travelData.departure?.frequentFlyerNumber || ""} onChange={handleTravelChange} placeholder="e.g. MS4001012993" className="w-full p-2 border rounded bg-white" />
+                  </div>
+
+                  <div className="col-span-1 sm:col-span-2 text-xs font-bold text-rose-800 uppercase tracking-wider bg-rose-50 p-1.5 rounded mt-2">🛫 Departure Information</div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-rose-700 mb-0.5">Departure Date</label>
+                    <input name="departure.date" type="date" value={travelData.departure?.date || ""} onChange={handleTravelChange} className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-rose-700 mb-0.5">Departure Time</label>
+                    <input name="departure.time" type="time" value={travelData.departure?.time || ""} onChange={handleTravelChange} className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-rose-700 mb-0.5">Departure Airport</label>
+                    <input name="departure.departureAirport" value={travelData.departure?.departureAirport || ""} onChange={handleTravelChange} placeholder="e.g. Cairo (Intl)" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-rose-700 mb-0.5">Departure Airport Location Link</label>
+                    <input name="departure.departureAirportLink" value={travelData.departure?.departureAirportLink || ""} onChange={handleTravelChange} placeholder="e.g. Google Maps Link" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex flex-col">
+                      <label className="text-[10px] font-bold text-rose-700 mb-0.5">Terminal</label>
+                      <input name="departure.terminal" value={travelData.departure?.terminal || ""} onChange={handleTravelChange} placeholder="Terminal" className="w-full p-2 border rounded bg-white" />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-[10px] font-bold text-rose-700 mb-0.5">Gate</label>
+                      <input name="departure.gate" value={travelData.departure?.gate || ""} onChange={handleTravelChange} placeholder="Gate" className="w-full p-2 border rounded bg-white" />
+                    </div>
+                  </div>
+
+                  <div className="col-span-1 sm:col-span-2 text-xs font-bold text-emerald-800 uppercase tracking-wider bg-emerald-50 p-1.5 rounded mt-2">🛬 Arrival Information</div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Arrival Date</label>
+                    <input name="departure.arrivalDate" type="date" value={travelData.departure?.arrivalDate || ""} onChange={handleTravelChange} className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Arrival Time</label>
+                    <input name="departure.arrivalTime" type="time" value={travelData.departure?.arrivalTime || ""} onChange={handleTravelChange} className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Arrival Airport</label>
+                    <input name="departure.arrivalAirport" value={travelData.departure?.arrivalAirport || ""} onChange={handleTravelChange} placeholder="e.g. Prague (Vaclav Havel)" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Arrival Airport Location Link</label>
+                    <input name="departure.arrivalAirportLink" value={travelData.departure?.arrivalAirportLink || ""} onChange={handleTravelChange} placeholder="e.g. Google Maps Link" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex flex-col">
+                      <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Terminal</label>
+                      <input name="departure.arrivalTerminal" value={travelData.departure?.arrivalTerminal || ""} onChange={handleTravelChange} placeholder="Terminal" className="w-full p-2 border rounded bg-white" />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Gate</label>
+                      <input name="departure.arrivalGate" value={travelData.departure?.arrivalGate || ""} onChange={handleTravelChange} placeholder="Gate" className="w-full p-2 border rounded bg-white" />
+                    </div>
+                  </div>
+
+                  <div className="col-span-1 sm:col-span-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100/50 p-1.5 rounded mt-2">Services & Preferences</div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Baggage Allowance</label>
+                    <input name="departure.baggage" value={travelData.departure?.baggage || ""} onChange={handleTravelChange} placeholder="e.g. 2 Piece(s)" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Flight Meal</label>
+                    <input name="departure.meal" value={travelData.departure?.meal || ""} onChange={handleTravelChange} placeholder="e.g. Meal" className="w-full p-2 border rounded bg-white" />
+                  </div>
+
+                  {/* Timezones */}
+                  <div className="col-span-1 sm:col-span-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100/50 p-1.5 rounded mt-2">Timezone Display Settings</div>
                   
-                  <div className="flex flex-col gap-1">
-                    <input name="departure.time" type="time" value={travelData.departure?.time} onChange={handleTravelChange} className="w-full p-2 border rounded" />
-                    
+                  <div className="flex flex-col col-span-1 sm:col-span-2 gap-1.5 bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                     {/* Timezone Selector */}
-                    <div className="flex flex-col mt-1">
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Timezone</label>
-                      <div className="flex gap-2">
-                        <label className="flex items-center gap-1 cursor-pointer">
+                    <div className="flex flex-col">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Timezone for calculations</label>
+                      <div className="flex gap-4">
+                        <label className="flex items-center gap-1.5 cursor-pointer">
                           <input
                             type="radio"
                             name="depTz"
@@ -502,11 +928,11 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                               ...prev,
                               departure: { ...prev.departure, inputTimezone: "Africa/Cairo" }
                             }))}
-                            className="accent-yellow-500 w-3 h-3"
+                            className="accent-yellow-500 w-4 h-4"
                           />
-                          <span className="text-xs text-gray-700">🇪🇬 Cairo</span>
+                          <span className="text-xs text-gray-700 font-medium">🇪🇬 Cairo (UTC+3)</span>
                         </label>
-                        <label className="flex items-center gap-1 cursor-pointer">
+                        <label className="flex items-center gap-1.5 cursor-pointer">
                           <input
                             type="radio"
                             name="depTz"
@@ -516,18 +942,18 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                               ...prev,
                               departure: { ...prev.departure, inputTimezone: "Europe/Prague" }
                             }))}
-                            className="accent-yellow-500 w-3 h-3"
+                            className="accent-yellow-500 w-4 h-4"
                           />
-                          <span className="text-xs text-gray-700">🇨🇿 Prague</span>
+                          <span className="text-xs text-gray-700 font-medium">🇨🇿 Prague (UTC+2)</span>
                         </label>
                       </div>
                     </div>
 
                     {/* Timezone Display Mode Selector */}
-                    <div className="flex flex-col mt-1">
-                      <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Show time as</label>
-                      <div className="flex flex-col gap-1 mt-1">
-                        <label className="flex items-center gap-1 cursor-pointer select-none">
+                    <div className="flex flex-col mt-2 pt-2 border-t">
+                      <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Show time on screen as</label>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <label className="flex items-center gap-1.5 cursor-pointer select-none">
                           <input
                             type="radio"
                             name="depTzDisp"
@@ -537,11 +963,11 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                               ...prev,
                               departure: { ...prev.departure, timezoneDisplay: "both" }
                             }))}
-                            className="accent-yellow-500 w-3 h-3"
+                            className="accent-yellow-500 w-3.5 h-3.5"
                           />
-                          <span className="text-[10px] text-gray-700">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                          <span className="text-[11px] text-gray-700 font-medium">Both timezones</span>
                         </label>
-                        <label className="flex items-center gap-1 cursor-pointer select-none">
+                        <label className="flex items-center gap-1.5 cursor-pointer select-none">
                           <input
                             type="radio"
                             name="depTzDisp"
@@ -551,11 +977,11 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                               ...prev,
                               departure: { ...prev.departure, timezoneDisplay: "prague" }
                             }))}
-                            className="accent-yellow-500 w-3 h-3"
+                            className="accent-yellow-500 w-3.5 h-3.5"
                           />
-                          <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague only</span>
+                          <span className="text-[11px] text-gray-705 font-semibold">🇨🇿 Prague only</span>
                         </label>
-                        <label className="flex items-center gap-1 cursor-pointer select-none">
+                        <label className="flex items-center gap-1.5 cursor-pointer select-none">
                           <input
                             type="radio"
                             name="depTzDisp"
@@ -565,45 +991,131 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                               ...prev,
                               departure: { ...prev.departure, timezoneDisplay: "cairo" }
                             }))}
-                            className="accent-yellow-500 w-3 h-3"
+                            className="accent-yellow-500 w-3.5 h-3.5"
                           />
-                          <span className="text-[10px] text-gray-750 font-semibold">🇪🇬 Cairo only</span>
+                          <span className="text-[11px] text-gray-705 font-semibold">🇪🇬 Cairo only</span>
                         </label>
                       </div>
                     </div>
 
                     {/* Live Preview */}
                     {departurePragueDisplay && departureCairoDisplay && (
-                      <div className="text-[10px] bg-white p-1.5 rounded border border-gray-100 text-gray-650 font-semibold leading-normal flex flex-col justify-center mt-1">
+                      <div className="text-[10px] bg-gray-50 p-2 rounded border border-gray-150 text-gray-650 font-semibold leading-normal flex flex-row items-center gap-3 mt-2">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-400">Preview:</span>
                         <div>🇨🇿 PRG: <strong>{departurePragueDisplay}</strong></div>
-                        <div className="mt-0.5">🇪🇬 CAI: <strong>{departureCairoDisplay}</strong></div>
+                        <div>🇪🇬 CAI: <strong>{departureCairoDisplay}</strong></div>
                       </div>
                     )}
-                  </div>
-
-                  <input name="departure.departureAirport" value={travelData.departure?.departureAirport} onChange={handleTravelChange} placeholder="Departure Airport" className="w-full p-2 border rounded" />
-                  <input name="departure.arrivalAirport" value={travelData.departure?.arrivalAirport} onChange={handleTravelChange} placeholder="Arrival Airport (PRG)" className="w-full p-2 border rounded" />
-                  <div className="grid grid-cols-2 gap-2">
-                    <input name="departure.terminal" value={travelData.departure?.terminal} onChange={handleTravelChange} placeholder="Terminal" className="w-full p-2 border rounded" />
-                    <input name="departure.gate" value={travelData.departure?.gate} onChange={handleTravelChange} placeholder="Gate" className="w-full p-2 border rounded" />
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 border rounded bg-gray-50">
-                <h3 className="font-bold mb-3">🛬 Arrival Trip (Return Home)</h3>
+              <div className="p-4 border border-yellow-200 rounded-lg bg-yellow-50/20 shadow-sm">
+                <h3 className="font-bold mb-3 text-yellow-800 border-b border-yellow-100 pb-1.5 flex items-center gap-1.5">
+                  <span>🛬 Arrival Flight (Trip 2: Return Home)</span>
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <input name="arrival.flightNumber" value={travelData.arrival?.flightNumber} onChange={handleTravelChange} placeholder="Flight Number" className="w-full p-2 border rounded" />
-                  <input name="arrival.date" type="date" value={travelData.arrival?.date} onChange={handleTravelChange} className="w-full p-2 border rounded" />
-                  
-                  <div className="flex flex-col gap-1">
-                    <input name="arrival.time" type="time" value={travelData.arrival?.time} onChange={handleTravelChange} className="w-full p-2 border rounded" />
-                    
+                  <div className="col-span-1 sm:col-span-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100/50 p-1.5 rounded">Flight Meta</div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Flight Number</label>
+                    <input name="arrival.flightNumber" value={travelData.arrival?.flightNumber || ""} onChange={handleTravelChange} placeholder="e.g. MS 790" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Equipment / Aircraft</label>
+                    <input name="arrival.aircraft" value={travelData.arrival?.aircraft || ""} onChange={handleTravelChange} placeholder="e.g. AIRBUS A320NEO" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Booking Status</label>
+                    <input name="arrival.bookingStatus" value={travelData.arrival?.bookingStatus || ""} onChange={handleTravelChange} placeholder="e.g. Confirmed" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Cabin Class</label>
+                    <input name="arrival.cabinClass" value={travelData.arrival?.cabinClass || ""} onChange={handleTravelChange} placeholder="e.g. Economy" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Duration (Non stop)</label>
+                    <input name="arrival.duration" value={travelData.arrival?.duration || ""} onChange={handleTravelChange} placeholder="e.g. 03:55" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Frequent Flyer (Arrival Flight)</label>
+                    <input name="arrival.frequentFlyerNumber" value={travelData.arrival?.frequentFlyerNumber || ""} onChange={handleTravelChange} placeholder="e.g. MS4001012993" className="w-full p-2 border rounded bg-white" />
+                  </div>
+
+                  <div className="col-span-1 sm:col-span-2 text-xs font-bold text-rose-800 uppercase tracking-wider bg-rose-50 p-1.5 rounded mt-2">🛫 Departure Information</div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-rose-700 mb-0.5">Departure Date</label>
+                    <input name="arrival.date" type="date" value={travelData.arrival?.date || ""} onChange={handleTravelChange} className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-rose-700 mb-0.5">Departure Time</label>
+                    <input name="arrival.time" type="time" value={travelData.arrival?.time || ""} onChange={handleTravelChange} className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-rose-700 mb-0.5">Departure Airport</label>
+                    <input name="arrival.departureAirport" value={travelData.arrival?.departureAirport || ""} onChange={handleTravelChange} placeholder="e.g. Prague (Vaclav Havel)" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-rose-700 mb-0.5">Departure Airport Location Link</label>
+                    <input name="arrival.departureAirportLink" value={travelData.arrival?.departureAirportLink || ""} onChange={handleTravelChange} placeholder="e.g. Google Maps Link" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex flex-col">
+                      <label className="text-[10px] font-bold text-rose-700 mb-0.5">Terminal</label>
+                      <input name="arrival.terminal" value={travelData.arrival?.terminal || ""} onChange={handleTravelChange} placeholder="Terminal" className="w-full p-2 border rounded bg-white" />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-[10px] font-bold text-rose-700 mb-0.5">Gate</label>
+                      <input name="arrival.gate" value={travelData.arrival?.gate || ""} onChange={handleTravelChange} placeholder="Gate" className="w-full p-2 border rounded bg-white" />
+                    </div>
+                  </div>
+
+                  <div className="col-span-1 sm:col-span-2 text-xs font-bold text-emerald-800 uppercase tracking-wider bg-emerald-50 p-1.5 rounded mt-2">🛬 Arrival Information</div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Arrival Date</label>
+                    <input name="arrival.arrivalDate" type="date" value={travelData.arrival?.arrivalDate || ""} onChange={handleTravelChange} className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Arrival Time</label>
+                    <input name="arrival.arrivalTime" type="time" value={travelData.arrival?.arrivalTime || ""} onChange={handleTravelChange} className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Arrival Airport</label>
+                    <input name="arrival.arrivalAirport" value={travelData.arrival?.arrivalAirport || ""} onChange={handleTravelChange} placeholder="e.g. Cairo (Intl)" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Arrival Airport Location Link</label>
+                    <input name="arrival.arrivalAirportLink" value={travelData.arrival?.arrivalAirportLink || ""} onChange={handleTravelChange} placeholder="e.g. Google Maps Link" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex flex-col">
+                      <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Terminal</label>
+                      <input name="arrival.arrivalTerminal" value={travelData.arrival?.arrivalTerminal || ""} onChange={handleTravelChange} placeholder="Terminal" className="w-full p-2 border rounded bg-white" />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Gate</label>
+                      <input name="arrival.arrivalGate" value={travelData.arrival?.arrivalGate || ""} onChange={handleTravelChange} placeholder="Gate" className="w-full p-2 border rounded bg-white" />
+                    </div>
+                  </div>
+
+                  <div className="col-span-1 sm:col-span-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100/50 p-1.5 rounded mt-2">Services & Preferences</div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Baggage Allowance</label>
+                    <input name="arrival.baggage" value={travelData.arrival?.baggage || ""} onChange={handleTravelChange} placeholder="e.g. 2 Piece(s)" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-gray-500 mb-0.5">Flight Meal</label>
+                    <input name="arrival.meal" value={travelData.arrival?.meal || ""} onChange={handleTravelChange} placeholder="e.g. Meal" className="w-full p-2 border rounded bg-white" />
+                  </div>
+
+                  {/* Timezones */}
+                  <div className="col-span-1 sm:col-span-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100/50 p-1.5 rounded mt-2">Timezone Display Settings</div>
+
+                  <div className="flex flex-col col-span-1 sm:col-span-2 gap-1.5 bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                     {/* Timezone Selector */}
-                    <div className="flex flex-col mt-1">
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Timezone</label>
-                      <div className="flex gap-2">
-                        <label className="flex items-center gap-1 cursor-pointer">
+                    <div className="flex flex-col">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Timezone for calculations</label>
+                      <div className="flex gap-4">
+                        <label className="flex items-center gap-1.5 cursor-pointer">
                           <input
                             type="radio"
                             name="arrTz"
@@ -613,11 +1125,11 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                               ...prev,
                               arrival: { ...prev.arrival, inputTimezone: "Africa/Cairo" }
                             }))}
-                            className="accent-yellow-500 w-3 h-3"
+                            className="accent-yellow-500 w-4 h-4"
                           />
-                          <span className="text-xs text-gray-700">🇪🇬 Cairo</span>
+                          <span className="text-xs text-gray-700 font-medium">🇪🇬 Cairo (UTC+3)</span>
                         </label>
-                        <label className="flex items-center gap-1 cursor-pointer">
+                        <label className="flex items-center gap-1.5 cursor-pointer">
                           <input
                             type="radio"
                             name="arrTz"
@@ -627,18 +1139,18 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                               ...prev,
                               arrival: { ...prev.arrival, inputTimezone: "Europe/Prague" }
                             }))}
-                            className="accent-yellow-500 w-3 h-3"
+                            className="accent-yellow-500 w-4 h-4"
                           />
-                          <span className="text-xs text-gray-700">🇨🇿 Prague</span>
+                          <span className="text-xs text-gray-700 font-medium">🇨🇿 Prague (UTC+2)</span>
                         </label>
                       </div>
                     </div>
 
                     {/* Timezone Display Mode Selector */}
-                    <div className="flex flex-col mt-1">
-                      <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Show time as</label>
-                      <div className="flex flex-col gap-1 mt-1">
-                        <label className="flex items-center gap-1 cursor-pointer select-none">
+                    <div className="flex flex-col mt-2 pt-2 border-t">
+                      <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Show time on screen as</label>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <label className="flex items-center gap-1.5 cursor-pointer select-none">
                           <input
                             type="radio"
                             name="arrTzDisp"
@@ -648,11 +1160,11 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                               ...prev,
                               arrival: { ...prev.arrival, timezoneDisplay: "both" }
                             }))}
-                            className="accent-yellow-500 w-3 h-3"
+                            className="accent-yellow-500 w-3.5 h-3.5"
                           />
-                          <span className="text-[10px] text-gray-700">🇨🇿 Prague + 🇪🇬 Cairo</span>
+                          <span className="text-[11px] text-gray-700 font-medium">Both timezones</span>
                         </label>
-                        <label className="flex items-center gap-1 cursor-pointer select-none">
+                        <label className="flex items-center gap-1.5 cursor-pointer select-none">
                           <input
                             type="radio"
                             name="arrTzDisp"
@@ -662,11 +1174,11 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                               ...prev,
                               arrival: { ...prev.arrival, timezoneDisplay: "prague" }
                             }))}
-                            className="accent-yellow-500 w-3 h-3"
+                            className="accent-yellow-500 w-3.5 h-3.5"
                           />
-                          <span className="text-[10px] text-gray-750 font-semibold">🇨🇿 Prague only</span>
+                          <span className="text-[11px] text-gray-705 font-semibold">🇨🇿 Prague only</span>
                         </label>
-                        <label className="flex items-center gap-1 cursor-pointer select-none">
+                        <label className="flex items-center gap-1.5 cursor-pointer select-none">
                           <input
                             type="radio"
                             name="arrTzDisp"
@@ -676,27 +1188,21 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                               ...prev,
                               arrival: { ...prev.arrival, timezoneDisplay: "cairo" }
                             }))}
-                            className="accent-yellow-500 w-3 h-3"
+                            className="accent-yellow-500 w-3.5 h-3.5"
                           />
-                          <span className="text-[10px] text-gray-750 font-semibold">🇪🇬 Cairo only</span>
+                          <span className="text-[11px] text-gray-705 font-semibold">🇪🇬 Cairo only</span>
                         </label>
                       </div>
                     </div>
 
                     {/* Live Preview */}
                     {arrivalPragueDisplay && arrivalCairoDisplay && (
-                      <div className="text-[10px] bg-white p-1.5 rounded border border-gray-100 text-gray-650 font-semibold leading-normal flex flex-col justify-center mt-1">
+                      <div className="text-[10px] bg-gray-50 p-2 rounded border border-gray-150 text-gray-650 font-semibold leading-normal flex flex-row items-center gap-3 mt-2">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-400">Preview:</span>
                         <div>🇨🇿 PRG: <strong>{arrivalPragueDisplay}</strong></div>
-                        <div className="mt-0.5">🇪🇬 CAI: <strong>{arrivalCairoDisplay}</strong></div>
+                        <div>🇪🇬 CAI: <strong>{arrivalCairoDisplay}</strong></div>
                       </div>
                     )}
-                  </div>
-
-                  <input name="arrival.departureAirport" value={travelData.arrival?.departureAirport} onChange={handleTravelChange} placeholder="Departure Airport (PRG)" className="w-full p-2 border rounded" />
-                  <input name="arrival.arrivalAirport" value={travelData.arrival?.arrivalAirport} onChange={handleTravelChange} placeholder="Arrival Home Airport" className="w-full p-2 border rounded" />
-                  <div className="grid grid-cols-2 gap-2">
-                    <input name="arrival.terminal" value={travelData.arrival?.terminal} onChange={handleTravelChange} placeholder="Terminal" className="w-full p-2 border rounded" />
-                    <input name="arrival.gate" value={travelData.arrival?.gate} onChange={handleTravelChange} placeholder="Gate" className="w-full p-2 border rounded" />
                   </div>
                 </div>
               </div>
@@ -710,6 +1216,56 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                   <input name="checkOut" type="date" value={travelData.checkOut} onChange={handleTravelChange} className="w-full p-2 border rounded" />
                   <input name="hotelAddress" value={travelData.hotelAddress} onChange={handleTravelChange} placeholder="Address" className="col-span-2 w-full p-2 border rounded" />
                   <input name="mapsLink" value={travelData.mapsLink} onChange={handleTravelChange} placeholder="Google Maps Link" className="col-span-2 w-full p-2 border rounded" />
+                  
+                  <div className="col-span-2 flex flex-col gap-1.5 mt-1">
+                    <label className="text-xs font-bold text-gray-500">Hotel Photo URL</label>
+                    <div className="flex gap-2">
+                      <input 
+                        name="hotelPhotoUrl" 
+                        value={travelData.hotelPhotoUrl || ""} 
+                        onChange={handleTravelChange} 
+                        placeholder="e.g. https://images.unsplash.com/... or click fetch to auto-extract" 
+                        className="flex-1 p-2 border rounded text-xs" 
+                      />
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!travelData.mapsLink) {
+                            showToast("Please enter a Google Maps Link first!", "error");
+                            return;
+                          }
+                          showToast("Resolving hotel photo from Maps Link...", "info");
+                          try {
+                            const res = await fetch(`/api/maps-photo?url=${encodeURIComponent(travelData.mapsLink)}`);
+                            if (!res.ok) throw new Error("Could not resolve map photo");
+                            const data = await res.json();
+                            if (data.photoUrl) {
+                              setTravelData(prev => ({ ...prev, hotelPhotoUrl: data.photoUrl }));
+                              showToast("Resolved hotel photo successfully! ✓", "success");
+                            } else {
+                              showToast("No main photo found in maps preview page. Try using another location link or entering an image URL.", "info");
+                            }
+                          } catch (e: any) {
+                            showToast(`Failed to parse photo: ${e.message}`, "error");
+                          }
+                        }}
+                        className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded transition-colors whitespace-nowrap"
+                      >
+                        ⚡ Fetch from Maps
+                      </button>
+                    </div>
+                    {travelData.hotelPhotoUrl && (
+                      <div className="mt-2 text-center">
+                        <span className="text-xs font-semibold text-gray-400 block mb-1">Preview:</span>
+                        <img 
+                          src={travelData.hotelPhotoUrl} 
+                          alt="Hotel Preview" 
+                          className="mx-auto max-h-40 rounded object-cover shadow border bg-gray-100"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               <label className="flex items-center gap-2 cursor-pointer p-3 bg-yellow-50 text-yellow-900 border border-yellow-200 rounded-lg max-w-max mx-auto shadow-sm hover:bg-yellow-100 transition-colors">

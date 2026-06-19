@@ -84,6 +84,84 @@ export const DEFAULT_TRIP_INFO: TripInfo = {
   }
 };
 
+export function getDefaultFlightDetails(name: string) {
+  const travelerName = name || "Ashraf Shahin";
+  return {
+    bookingReference: "XMVNK8",
+    ticketNumber: `077-6908093857 for ${travelerName}`,
+    documentIssueDate: "11 June 2026",
+    airlineCode: "MS (Egyptair)",
+    frequentFlyerNumber: `MS4001012993 for ${travelerName}`,
+    bookingStatus: "Confirmed",
+    cabinClass: "Economy",
+    baggageAllowance: `2 Piece(s) for ${travelerName}`,
+    aircraft: "AIRBUS A320NEO",
+    meal: "Meal",
+    duration: "03:55",
+    departure: {
+      flightNumber: "MS 789",
+      date: "2026-06-25",
+      time: "12:50",
+      departureAirport: "Cairo, (Cairo Intl)",
+      departureAirportLink: "https://maps.app.goo.gl/uX3Lh46rFrXWc3Q2A",
+      arrivalAirport: "Prague, (Vaclav Havel)",
+      arrivalAirportLink: "https://maps.app.goo.gl/YV5gLwW2rFrXea5b8",
+      terminal: "3",
+      gate: "",
+      inputTimezone: "Africa/Cairo",
+      timezoneDisplay: "both",
+      arrivalTime: "15:45",
+      arrivalDate: "2026-06-25",
+      arrivalTerminal: "1",
+      arrivalGate: "",
+      duration: "03:55 (Non stop)",
+      aircraft: "AIRBUS A320NEO",
+      baggage: `2 Piece(s) for ${travelerName}`,
+      meal: "Meal",
+      cabinClass: "Economy",
+      bookingStatus: "Confirmed",
+      frequentFlyerNumber: `MS4001012993 for ${travelerName}`,
+    },
+    arrival: {
+      flightNumber: "MS 790",
+      date: "2026-07-05",
+      time: "16:45",
+      departureAirport: "Prague, (Vaclav Havel)",
+      departureAirportLink: "https://maps.app.goo.gl/YV5gLwW2rFrXea5b8",
+      arrivalAirport: "Cairo, (Cairo Intl)",
+      arrivalAirportLink: "https://maps.app.goo.gl/uX3Lh46rFrXWc3Q2A",
+      terminal: "1",
+      gate: "",
+      inputTimezone: "Europe/Prague",
+      timezoneDisplay: "both",
+      arrivalTime: "21:35",
+      arrivalDate: "2026-07-05",
+      arrivalTerminal: "3",
+      arrivalGate: "",
+      duration: "03:50 (Non stop)",
+      aircraft: "AIRBUS A320NEO",
+      baggage: `2 Piece(s) for ${travelerName}`,
+      meal: "Meal",
+      cabinClass: "Economy",
+      bookingStatus: "Confirmed",
+      frequentFlyerNumber: `MS4001012993 for ${travelerName}`,
+    }
+  };
+}
+
+export function getDefaultHotelDetails() {
+  return {
+    name: "Vienna House Diplomat Prague",
+    address: "Evropská 15, 160 41 Praha 6, Czech Republic",
+    checkIn: "2026-06-25",
+    checkOut: "2026-07-05",
+    roomNumber: "Allocated upon arrival",
+    mapsLink: "https://maps.app.goo.gl/PuScYyJrgmk4SMq58",
+    photoUrl: ""
+  };
+}
+
+
 export interface MessageButton {
   label: string;
   link: string;
@@ -347,7 +425,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const fetchFreshData = useCallback(async () => {
     const [u, sc, se, st, md, ti, ac, ms, ga, co] = await Promise.all([
-      readJSON("users.json"),
+      readJSON("users.json").then((usersList: any[]) => {
+        return usersList.map((user: any) => {
+          let updated = { ...user };
+          if (!updated.flightDetails || !updated.flightDetails.departure || !updated.flightDetails.departure.flightNumber) {
+            updated.flightDetails = getDefaultFlightDetails(updated.name);
+          }
+          if (!updated.hotel || !updated.hotel.name) {
+            updated.hotel = getDefaultHotelDetails();
+          }
+          return updated;
+        });
+      }),
       readJSON("schedule.json"),
       readJSON("sessions.json"),
       readJSON("settings.json").catch(() => ({})),
@@ -580,9 +669,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [users]);
 
   const updateUsers = useCallback((data: any[]) => {
-    setUsers(data);
+    const enriched = data.map((user: any) => {
+      if (!user.flightDetails || !user.flightDetails.departure || !user.flightDetails.departure.flightNumber) {
+        return {
+          ...user,
+          flightDetails: getDefaultFlightDetails(user.name)
+        };
+      }
+      return user;
+    });
+    setUsers(enriched);
     try { 
-      sessionStorage.setItem(CACHE.users, JSON.stringify(data));
+      sessionStorage.setItem(CACHE.users, JSON.stringify(enriched));
       localStorage.setItem(CACHE.lastFetch, Date.now().toString());
     } catch {}
   }, []);

@@ -198,6 +198,27 @@ async function startServer() {
     }
   });
 
+  app.all("/api/maps-photo", async (req, res) => {
+    try {
+      const handler = (await import("./api/maps-photo.ts")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      console.error("Local maps-photo API error:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.all("/api/admin/users/:id", async (req, res) => {
+    req.query.id = req.params.id;
+    try {
+      const handler = (await import("./api/admin/users.ts")).default;
+      await handler(req, res);
+    } catch (err: any) {
+      console.error("Local users API error:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // 1) Create user
   app.post("/api/users", async (req, res) => {
     try {

@@ -19,6 +19,7 @@ import { useAppContext } from "../context/AppContext";
 import { getLabel } from "../utils/labels";
 import { utcToDisplay, localToUtc, splitAmPm } from "../utils/timezone";
 import DualClock from "../components/DualClock";
+import { MapPhoto } from "../components/MapPhoto";
 
 // Event type color map
 const typeColorMap: Record<string, string> = {
@@ -483,6 +484,16 @@ export default function Schedule() {
                                         🗺️ Map Link
                                       </a>
                                     )}
+                                  </div>
+                                )}
+
+                                {event.mapLocation && (
+                                  <div className="mt-2.5 max-w-xs sm:max-w-sm rounded-lg overflow-hidden border border-gray-150 shadow-xs">
+                                    <MapPhoto 
+                                      url={event.mapLocation} 
+                                      alt={event.location || event.label} 
+                                      className="w-full h-24 object-cover animate-fadeIn"
+                                    />
                                   </div>
                                 )}
 
