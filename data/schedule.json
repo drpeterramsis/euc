@@ -10,11 +10,11 @@
       "date": "2026-06-25",
       "time": "12:50",
       "departureAirport": "Cairo International Airport",
-      "departureAirportLocation": "https://maps.app.goo.gl/ad7ihbm8hvXgdNVU7",
+      "departureAirportLocation": "https://maps.app.goo.gl/eqq3eSQEkkb9nEPz7",
       "departureTerminal": "3",
       "departureGate": "",
       "arrivalAirport": "Prague Airport",
-      "arrivalAirportLocation": "https://maps.app.goo.gl/kHFvyZfs5deXuYaeA",
+      "arrivalAirportLocation": "https://maps.app.goo.gl/hEMvxstxDQ3ySn447",
       "timezoneDisplay": "cairo"
     }
   },
@@ -29,11 +29,11 @@
       "date": "2026-06-28",
       "time": "17:45",
       "departureAirport": "Prague Airport",
-      "departureAirportLocation": "https://maps.app.goo.gl/kHFvyZfs5deXuYaeA",
+      "departureAirportLocation": "https://maps.app.goo.gl/hEMvxstxDQ3ySn447",
       "departureTerminal": "1",
       "departureGate": "",
       "arrivalAirport": "Cairo Airport",
-      "arrivalAirportLocation": "https://maps.app.goo.gl/ad7ihbm8hvXgdNVU7",
+      "arrivalAirportLocation": "https://maps.app.goo.gl/eqq3eSQEkkb9nEPz7",
       "inputTimezone": "Europe/Prague",
       "timezoneDisplay": "prague"
     }

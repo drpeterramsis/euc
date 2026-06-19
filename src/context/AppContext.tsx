@@ -102,11 +102,11 @@ export function getDefaultFlightDetails(name: string) {
       date: "2026-06-25",
       time: "12:50",
       departureAirport: "Cairo, (Cairo Intl)",
-      departureAirportLink: "https://maps.app.goo.gl/h9bRF2RbK5PPNugD8",
-      departureAirportPhotoUrl: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80",
+      departureAirportLink: "https://maps.app.goo.gl/eqq3eSQEkkb9nEPz7",
+      departureAirportPhotoUrl: "https://dl.dropboxusercontent.com/scl/fi/bck8538s5pp109ns47tk7/cairo_airport.webp?rlkey=ikmzh780qea8juim09o44bp9p&st=sov4t97n",
       arrivalAirport: "Prague, (Vaclav Havel)",
-      arrivalAirportLink: "https://maps.app.goo.gl/UPB6j1K93u3wDcu3A",
-      arrivalAirportPhotoUrl: "https://images.unsplash.com/photo-1544016768-982d1554f0b9?auto=format&fit=crop&w=800&q=80",
+      arrivalAirportLink: "https://maps.app.goo.gl/hEMvxstxDQ3ySn447",
+      arrivalAirportPhotoUrl: "https://dl.dropboxusercontent.com/scl/fi/kjjra5b0zs63ubfupye3a/prague_airport.jpg?rlkey=bd40zfck0pbbdh2te8jipk4xi&st=cy4e4qvc",
       terminal: "3",
       gate: "",
       inputTimezone: "Africa/Cairo",
@@ -128,11 +128,11 @@ export function getDefaultFlightDetails(name: string) {
       date: "2026-07-05",
       time: "16:45",
       departureAirport: "Prague, (Vaclav Havel)",
-      departureAirportLink: "https://maps.app.goo.gl/UPB6j1K93u3wDcu3A",
-      departureAirportPhotoUrl: "https://images.unsplash.com/photo-1544016768-982d1554f0b9?auto=format&fit=crop&w=800&q=80",
+      departureAirportLink: "https://maps.app.goo.gl/hEMvxstxDQ3ySn447",
+      departureAirportPhotoUrl: "https://dl.dropboxusercontent.com/scl/fi/kjjra5b0zs63ubfupye3a/prague_airport.jpg?rlkey=bd40zfck0pbbdh2te8jipk4xi&st=cy4e4qvc",
       arrivalAirport: "Cairo, (Cairo Intl)",
-      arrivalAirportLink: "https://maps.app.goo.gl/h9bRF2RbK5PPNugD8",
-      arrivalAirportPhotoUrl: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80",
+      arrivalAirportLink: "https://maps.app.goo.gl/eqq3eSQEkkb9nEPz7",
+      arrivalAirportPhotoUrl: "https://dl.dropboxusercontent.com/scl/fi/bck8538s5pp109ns47tk7/cairo_airport.webp?rlkey=ikmzh780qea8juim09o44bp9p&st=sov4t97n",
       terminal: "1",
       gate: "",
       inputTimezone: "Europe/Prague",
@@ -160,7 +160,7 @@ export function getDefaultHotelDetails() {
     checkOut: "2026-07-05",
     roomNumber: "Allocated upon arrival",
     mapsLink: "https://maps.app.goo.gl/526iVtZV4oZUQ8Sh6",
-    photoUrl: ""
+    photoUrl: "https://dl.dropboxusercontent.com/scl/fi/lf60zdhhkwucu3zhmc074/Diplomat-Hotel-Prague.png?rlkey=iit6sq96u71ug40mb3603yyky&st=ojhoihcn"
   };
 }
 

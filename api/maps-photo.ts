@@ -19,6 +19,7 @@ export default async function handler(req: any, res: any) {
 
     // Precision mapping for Cairo Airport - Terminal 3 & modern premium flight interior
     const isCairoAirport = 
+      lowercaseUrl.includes("eqq3esqekkb9nepz7") || 
       lowercaseUrl.includes("h9brf2rbk5ppnugd8") || 
       lowercaseUrl.includes("ad7ihbm8hvygdnvu7") || 
       lowercaseUrl.includes("ux3lh46rfrxwc3q2a") || 
@@ -28,6 +29,7 @@ export default async function handler(req: any, res: any) {
 
     // Precision mapping for Prague Airport - Václav Havel terminal & Prague Charles Bridge skyline
     const isPragueAirport = 
+      lowercaseUrl.includes("hemvxstxdq3ysn447") || 
       lowercaseUrl.includes("upb6j1k93u3wdcu3a") || 
       lowercaseUrl.includes("khfvyzfs5dexuyaea") || 
       lowercaseUrl.includes("yv5gwll2rfrxea5b8") || 
@@ -47,19 +49,19 @@ export default async function handler(req: any, res: any) {
 
     if (isCairoAirport) {
       return res.status(200).json({
-        photoUrl: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80"
+        photoUrl: "https://dl.dropboxusercontent.com/scl/fi/bck8538s5pp109ns47tk7/cairo_airport.webp?rlkey=ikmzh780qea8juim09o44bp9p&st=sov4t97n"
       });
     }
 
     if (isPragueAirport) {
       return res.status(200).json({
-        photoUrl: "https://images.unsplash.com/photo-1544016768-982d1554f0b9?auto=format&fit=crop&w=800&q=80"
+        photoUrl: "https://dl.dropboxusercontent.com/scl/fi/kjjra5b0zs63ubfupye3a/prague_airport.jpg?rlkey=bd40zfck0pbbdh2te8jipk4xi&st=cy4e4qvc"
       });
     }
 
     if (isHotel) {
       return res.status(200).json({
-         photoUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80"
+         photoUrl: "https://dl.dropboxusercontent.com/scl/fi/lf60zdhhkwucu3zhmc074/Diplomat-Hotel-Prague.png?rlkey=iit6sq96u71ug40mb3603yyky&st=ojhoihcn"
       });
     }
 
