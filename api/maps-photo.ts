@@ -7,24 +7,49 @@ export default async function handler(req: any, res: any) {
   try {
     const lowercaseUrl = url.toLowerCase();
     
-    // Check if the link is related to Cairo Airport
-    if (lowercaseUrl.includes("ux3lh46rfrxwc3q2a") || lowercaseUrl.includes("cairo") || lowercaseUrl.includes("cai")) {
+    // Precision mapping for Cairo Airport
+    const isCairoAirport = 
+      lowercaseUrl.includes("h9brf2rbk5ppnugd8") || 
+      lowercaseUrl.includes("ad7ihbm8hvygdnvu7") || 
+      lowercaseUrl.includes("ux3lh46rfrxwc3q2a") || 
+      (lowercaseUrl.includes("cairo") && lowercaseUrl.includes("airport")) ||
+      lowercaseUrl.includes("cairo-airport") ||
+      (lowercaseUrl.includes("cai") && lowercaseUrl.includes("airport"));
+
+    // Precision mapping for Prague Airport
+    const isPragueAirport = 
+      lowercaseUrl.includes("upb6j1k93u3wdcu3a") || 
+      lowercaseUrl.includes("khfvyzfs5dexuyaea") || 
+      lowercaseUrl.includes("yv5gwll2rfrxea5b8") || 
+      lowercaseUrl.includes("yv5glww2rfrxea5b8") || 
+      (lowercaseUrl.includes("prague") && lowercaseUrl.includes("airport")) ||
+      lowercaseUrl.includes("prg") ||
+      lowercaseUrl.includes("havel");
+
+    // Precision mapping for Vienna House Diplomat Hotel
+    const isHotel = 
+      lowercaseUrl.includes("526ivtzv4ozuq8sh6") || 
+      lowercaseUrl.includes("b3jpsq89q3fwjs7ma") || 
+      lowercaseUrl.includes("puscyyjrgmk4smq58") || 
+      lowercaseUrl.includes("diplomat") || 
+      lowercaseUrl.includes("vienna") || 
+      lowercaseUrl.includes("hotel");
+
+    if (isCairoAirport) {
       return res.status(200).json({
         photoUrl: "https://images.unsplash.com/photo-1540962351504-03099e0a754b?auto=format&fit=crop&w=800&q=80"
       });
     }
 
-    // Check if the link is related to Prague Airport
-    if (lowercaseUrl.includes("yv5glww2rfrxea5b8") || lowercaseUrl.includes("prague") || lowercaseUrl.includes("prg") || lowercaseUrl.includes("havel")) {
+    if (isPragueAirport) {
       return res.status(200).json({
-        photoUrl: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80"
+        photoUrl: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=800&q=80"
       });
     }
 
-    // Check if the link is related to Vienna House Diplomat Hotel Prague
-    if (lowercaseUrl.includes("puscyyjrgmk4smq58") || lowercaseUrl.includes("diplomat") || lowercaseUrl.includes("vienna") || lowercaseUrl.includes("hotel")) {
+    if (isHotel) {
       return res.status(200).json({
-        photoUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
+         photoUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
       });
     }
 

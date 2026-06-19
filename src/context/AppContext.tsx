@@ -70,7 +70,7 @@ export interface TripInfo {
 export const DEFAULT_TRIP_INFO: TripInfo = {
   hotel: {
     name: "Vienna House Diplomat Prague",
-    mapUrl: "https://maps.app.goo.gl/PuScYyJrgmk4SMq58"
+    mapUrl: "https://maps.app.goo.gl/526iVtZV4oZUQ8Sh6"
   },
   departure: {
     flightNumber: "MS.789",
@@ -103,9 +103,9 @@ export function getDefaultFlightDetails(name: string) {
       date: "2026-06-25",
       time: "12:50",
       departureAirport: "Cairo, (Cairo Intl)",
-      departureAirportLink: "https://maps.app.goo.gl/uX3Lh46rFrXWc3Q2A",
+      departureAirportLink: "https://maps.app.goo.gl/h9bRF2RbK5PPNugD8",
       arrivalAirport: "Prague, (Vaclav Havel)",
-      arrivalAirportLink: "https://maps.app.goo.gl/YV5gLwW2rFrXea5b8",
+      arrivalAirportLink: "https://maps.app.goo.gl/UPB6j1K93u3wDcu3A",
       terminal: "3",
       gate: "",
       inputTimezone: "Africa/Cairo",
@@ -127,9 +127,9 @@ export function getDefaultFlightDetails(name: string) {
       date: "2026-07-05",
       time: "16:45",
       departureAirport: "Prague, (Vaclav Havel)",
-      departureAirportLink: "https://maps.app.goo.gl/YV5gLwW2rFrXea5b8",
+      departureAirportLink: "https://maps.app.goo.gl/UPB6j1K93u3wDcu3A",
       arrivalAirport: "Cairo, (Cairo Intl)",
-      arrivalAirportLink: "https://maps.app.goo.gl/uX3Lh46rFrXWc3Q2A",
+      arrivalAirportLink: "https://maps.app.goo.gl/h9bRF2RbK5PPNugD8",
       terminal: "1",
       gate: "",
       inputTimezone: "Europe/Prague",
@@ -156,7 +156,7 @@ export function getDefaultHotelDetails() {
     checkIn: "2026-06-25",
     checkOut: "2026-07-05",
     roomNumber: "Allocated upon arrival",
-    mapsLink: "https://maps.app.goo.gl/PuScYyJrgmk4SMq58",
+    mapsLink: "https://maps.app.goo.gl/526iVtZV4oZUQ8Sh6",
     photoUrl: ""
   };
 }
