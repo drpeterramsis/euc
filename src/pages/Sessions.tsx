@@ -17,6 +17,8 @@ import { getPageAccess } from "../utils/pageAccess";
 import { utcToDisplay, localToUtc, splitAmPm } from "../utils/timezone";
 
 import { getPageAccess as getCentralPageAccess } from "../lib/pageAccess";
+import { getNearestSessionDate } from "../utils/session";
+import { generateAskSpeakerMessage, DEFAULT_ASK_SPEAKER_TEMPLATE } from "../utils/askSpeaker";
 
 /**
  * Sessions component renders the list/grid of scientific sessions.
@@ -69,13 +71,13 @@ export default function Sessions() {
   // Gather unique and sorted available dates from existing loaded sessions
   const availableDates = Array.from(new Set(sessions.map((s: any) => (s.date || "") as string)))
     .filter(Boolean)
-    .sort((a: string, b: string) => a.localeCompare(b));
+    .sort((a: string, b: string) => a.localeCompare(b)) as string[];
 
-  // Sync selectedDate with first date in list if current state is empty or invalid
+  // Sync selectedDate with correct auto-selected date or preserve selected date if valid
   useEffect(() => {
     if (availableDates.length > 0) {
       if (!selectedDate || !availableDates.includes(selectedDate)) {
-        setSelectedDate(availableDates[0]);
+        setSelectedDate(getNearestSessionDate(availableDates));
       }
     } else {
       setSelectedDate("");
@@ -370,20 +372,29 @@ export default function Sessions() {
                   const cairo = utcToDisplay(rawDate, "Africa/Cairo");
                   const prague = utcToDisplay(rawDate, "Europe/Prague");
                   
-                  let dateTimeStr = `Date: ${activeQuestionSession.date}`;
                   const showPrague = (activeQuestionSession.timezoneDisplay ?? "both") === "both" || (activeQuestionSession.timezoneDisplay ?? "both") === "prague";
-                  if (showPrague) {
-                    dateTimeStr += ` at ${prague.time} (Prague)`;
-                  } else {
-                    dateTimeStr += ` at ${cairo.time} (Cairo)`;
-                  }
+                  const timeStr = showPrague ? `${prague.time} (Prague)` : `${cairo.time} (Cairo)`;
 
-                  const hallStr = activeQuestionSession.hall ? `Hall: ${activeQuestionSession.hall}` : "";
-                  
-                  let formattedMsg = `Hello Speaker,\n\nMy name is ${userName}.\nI have a question regarding your session "${sessionTitle}"`;
-                  if (dateTimeStr) formattedMsg += `\n(${dateTimeStr})`;
-                  if (hallStr) formattedMsg += `\n${hallStr}`;
-                  formattedMsg += `\n\nQuestion:\n${questionText.trim()}`;
+                  const askSpeakerConfig = content?.settings?.askSpeaker || {
+                    template: DEFAULT_ASK_SPEAKER_TEMPLATE,
+                    includeDate: true,
+                    includeTime: true,
+                    includeLocation: true
+                  };
+
+                  const formattedMsg = generateAskSpeakerMessage({
+                    template: askSpeakerConfig.template || DEFAULT_ASK_SPEAKER_TEMPLATE,
+                    includeDate: askSpeakerConfig.includeDate !== false,
+                    includeTime: askSpeakerConfig.includeTime !== false,
+                    includeLocation: askSpeakerConfig.includeLocation !== false,
+                    speakerName: activeQuestionSession.speaker || "Speaker",
+                    senderName: userName,
+                    sessionTitle: sessionTitle,
+                    dateStr: activeQuestionSession.date,
+                    timeStr: timeStr,
+                    locationStr: activeQuestionSession.hall || "",
+                    questionText: questionText.trim()
+                  });
 
                   let rawPhone = activeQuestionSession.speakerWhatsApp || "";
                   rawPhone = rawPhone.replace(/[^\d+]/g, "");

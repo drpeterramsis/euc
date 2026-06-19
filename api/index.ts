@@ -120,7 +120,12 @@ export default async function handler(req: any, res: any) {
           return { ...cat, checkins: filteredCheckins };
         }));
 
-        const activeCategories = categories.filter(c => c && c.active !== false);
+        const activeCategories = categories.filter(c => {
+          if (!c) return false;
+          // Inactive categories are only visible to admins
+          if (c.active === false && !isAdminUser) return false;
+          return true;
+        });
 
         // Calculate total pending checkins based on activeCategories
         let totalPending = 0;
@@ -249,6 +254,31 @@ export default async function handler(req: any, res: any) {
          const cat = await kv.get(`checkinCat:${catId}`) as any;
          if (!cat) return res.status(404).json({ error: "Not found" });
          await kv.set(`checkinCat:${catId}`, { ...cat, ...patch });
+         return res.status(200).json({ ok: true });
+      }
+
+      if (path === "categories/delete") {
+         if (role !== "admin") return res.status(403).json({ error: "Forbidden" });
+         const { catId } = body;
+         const cat = await kv.get(`checkinCat:${catId}`) as any;
+         if (!cat) return res.status(404).json({ error: "Not found" });
+
+         // Cascading deletion of checkins belonging to this category
+         const checkinIds: string[] = await kv.smembers(`checkins:cat:${catId}`) || [];
+         await Promise.all(checkinIds.map(async (cId) => {
+            await kv.del(`checkin:${cId}`);
+            await kv.del(`checkin:${cId}:users`);
+         }));
+         await kv.del(`checkins:cat:${catId}`);
+
+         // Delete the category metadata
+         await kv.del(`checkinCat:${catId}`);
+
+         // Remove index association from trip segment
+         if (cat.tripId) {
+            await kv.srem(`checkinCats:trip:${cat.tripId}`, catId);
+         }
+
          return res.status(200).json({ ok: true });
       }
 

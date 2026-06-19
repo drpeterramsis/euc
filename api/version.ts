@@ -8,6 +8,25 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
+    // Check settings.json first
+    const settingsPath = path.join(process.cwd(), "data", "settings.json");
+    if (fs.existsSync(settingsPath)) {
+      try {
+        const settings = JSON.parse(fs.readFileSync(settingsPath, "utf-8"));
+        if (settings?.appVersion) {
+          const rawVersion = settings.appVersion.trim();
+          const versionStr = rawVersion.startsWith("v") ? rawVersion : `v${rawVersion}`;
+          return res.status(200).json({
+            version: versionStr,
+            commitSha: process.env.VERCEL_GIT_COMMIT_SHA || "local-dev",
+            buildTime: new Date().toISOString()
+          });
+        }
+      } catch (e) {
+        console.error("Error reading application version from settings.json:", e);
+      }
+    }
+
     const versionPath = path.join(process.cwd(), "src", "version.json");
     let versionData = { major: 1, minor: 0, patch: 0, buildTime: "", commitSha: "" };
 

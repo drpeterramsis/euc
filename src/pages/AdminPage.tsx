@@ -12,6 +12,8 @@ import {
 import { APP_VERSION } from "../version";
 import { Navigate, useSearchParams, useNavigate } from "react-router-dom";
 import { writeJSON, readJSON } from "../utils/github";
+import { normalizeUrl } from "../utils/normalizeUrl";
+import { getNearestSessionDate } from "../utils/session";
 import UserControlCard from "../components/UserControlCard";
 import UserGridCard from "../components/UserGridCard";
 import UserAvatar from "../components/UserAvatar";
@@ -158,11 +160,11 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     if (sessionItems.length > 0) {
       const uniqueDays = Array.from(new Set(sessionItems.map((s: any) => (s.date || "") as string)))
         .filter(Boolean)
-        .sort((a: string, b: string) => a.localeCompare(b));
+        .sort((a: string, b: string) => a.localeCompare(b)) as string[];
       
       if (uniqueDays.length > 0) {
         if (!selectedSessionDay || !uniqueDays.includes(selectedSessionDay)) {
-          setSelectedSessionDay(uniqueDays[0]);
+          setSelectedSessionDay(getNearestSessionDate(uniqueDays));
         }
       } else {
         setSelectedSessionDay("");
@@ -1309,12 +1311,13 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     if (isSavingSession) return;
     try {
       setIsSavingSession(true);
+      const normalizedLink = normalizeUrl(sessionForm.linkUrl || sessionForm.link || "");
       const localDatetime = `${sessionForm.date}T${sessionForm.time}`;
       const sessionFormWithUtc = {
         ...sessionForm,
         inputTimezone,
-        link: sessionForm.linkUrl || sessionForm.link || "",
-        linkUrl: sessionForm.linkUrl || sessionForm.link || "",
+        link: normalizedLink,
+        linkUrl: normalizedLink,
         datetime_utc: localToUtc(localDatetime, inputTimezone),
       };
 

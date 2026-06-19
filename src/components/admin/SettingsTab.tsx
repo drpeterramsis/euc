@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useApp } from "../../context/AppContext";
 import { writeJSON } from "../../utils/github";
+import { DEFAULT_ASK_SPEAKER_TEMPLATE } from "../../utils/askSpeaker";
 
 export default function SettingsTab() {
   const { content, updateContent, users, appConfig } = useApp() as any;
@@ -17,6 +18,18 @@ export default function SettingsTab() {
     userOverrides: {},
     roleOverrides: {} // FIX: Initialize roleOverrides
   };
+
+  const askSpeakerCfg = currentSettings.askSpeaker || {
+    template: DEFAULT_ASK_SPEAKER_TEMPLATE,
+    includeDate: true,
+    includeTime: true,
+    includeLocation: true
+  };
+
+  const [askSpeakerTemplate, setAskSpeakerTemplate] = useState(askSpeakerCfg.template);
+  const [includeDate, setIncludeDate] = useState(askSpeakerCfg.includeDate);
+  const [includeTime, setIncludeTime] = useState(askSpeakerCfg.includeTime);
+  const [includeLocation, setIncludeLocation] = useState(askSpeakerCfg.includeLocation);
 
   const pagesList = ["announcements", "agenda", "posts", "media", "staffDirectory"];
 
@@ -162,10 +175,21 @@ export default function SettingsTab() {
       setIsSaving(true);
       setSaveStatus(null);
 
+      // Deep copy localSettings and append the active askSpeaker values dynamically
+      const finalSettings = {
+        ...localSettings,
+        askSpeaker: {
+          template: askSpeakerTemplate,
+          includeDate,
+          includeTime,
+          includeLocation
+        }
+      };
+
       // Construct final content ensuring settings is correct
       const updatedContent = {
         ...(content || {}),
-        settings: localSettings
+        settings: finalSettings
       };
 
       // Write content.json through existing writeJSON wrapper
@@ -174,7 +198,7 @@ export default function SettingsTab() {
       // Update app provider state immediately
       updateContent(updatedContent);
 
-      setSaveStatus({ type: "success", message: "Page visibility settings saved successfully!" });
+      setSaveStatus({ type: "success", message: "Page visibility and Ask Speaker settings saved successfully!" });
       setTimeout(() => setSaveStatus(null), 4000);
     } catch (e: any) {
       console.error(e);
@@ -538,6 +562,118 @@ export default function SettingsTab() {
             Select a role from the dropdown above to view or customize their configuration
           </div>
         )}
+      </div>
+
+      {/* SECTION D: ASK SPEAKER CUSTOMIZATION */}
+      <div className="mt-10 pt-10 border-t border-gray-150">
+        <h3 className="text-base font-bold text-gray-900 mb-4 uppercase tracking-tight flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-green-500 rounded-full"></span>
+          Section D — Ask Speaker Setup & Template
+        </h3>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Editor block */}
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">
+                Custom WhatsApp Template Structure
+              </label>
+              <textarea
+                value={askSpeakerTemplate}
+                onChange={(e) => setAskSpeakerTemplate(e.target.value)}
+                rows={10}
+                className="w-full bg-gray-50 border border-gray-250 text-gray-900 font-mono text-xs rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:bg-white resize-y"
+                placeholder="Type the default message template here..."
+              />
+            </div>
+
+            <div>
+              <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-3">
+                Selectable Message Fields to Include
+              </span>
+              <div className="flex flex-wrap gap-4 bg-gray-50 p-4 rounded-xl border border-gray-150">
+                <label className="inline-flex items-center gap-2 text-xs font-extrabold text-gray-800 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeDate}
+                    onChange={(e) => setIncludeDate(e.target.checked)}
+                    className="rounded text-green-500 focus:ring-green-400 w-4 h-4 cursor-pointer"
+                  />
+                  📅 Session Date
+                </label>
+                <label className="inline-flex items-center gap-2 text-xs font-extrabold text-gray-800 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeTime}
+                    onChange={(e) => setIncludeTime(e.target.checked)}
+                    className="rounded text-green-500 focus:ring-green-400 w-4 h-4 cursor-pointer"
+                  />
+                  ⏰ Session Time
+                </label>
+                <label className="inline-flex items-center gap-2 text-xs font-extrabold text-gray-800 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeLocation}
+                    onChange={(e) => setIncludeLocation(e.target.checked)}
+                    className="rounded text-green-500 focus:ring-green-400 w-4 h-4 cursor-pointer"
+                  />
+                  📍 Session Location
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Reference guidelines & Placeholders */}
+          <div className="bg-amber-50/45 border border-amber-200/50 rounded-2xl p-5 space-y-4 text-xs font-sans text-gray-700 leading-relaxed">
+            <h4 className="font-extrabold text-gray-950 uppercase tracking-widest text-center border-b pb-2.5 border-amber-200/50 flex items-center justify-center gap-1.5">
+              <span>💡</span> Placeholder & Formatting Reference
+            </h4>
+            
+            <p className="font-medium text-gray-600">
+              When attendees tap "Ask Speaker" on a session, their question will be formatted according to the template above using these real-time dynamic tags:
+            </p>
+
+            <ul className="space-y-2 list-none p-0 m-0">
+              <li className="flex items-start gap-2">
+                <code className="bg-white border border-amber-300 font-bold px-1.5 py-0.5 rounded text-[10px] text-amber-950 shrink-0 select-all">{"{speakerName}"}</code>
+                <span>Speaker's full scientific name.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <code className="bg-white border border-amber-300 font-bold px-1.5 py-0.5 rounded text-[10px] text-amber-950 shrink-0 select-all">{"{senderName}"}</code>
+                <span>Attendee's input name.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <code className="bg-white border border-amber-300 font-bold px-1.5 py-0.5 rounded text-[10px] text-amber-950 shrink-0 select-all">{"{sessionTitle}"}</code>
+                <span>Title of the associated presentation.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <code className="bg-white border border-amber-300 font-bold px-1.5 py-0.5 rounded text-[10px] text-amber-950 shrink-0 select-all">{"{date}"}</code>
+                <span>The date of the session presentation (strips parent line if unchecked).</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <code className="bg-white border border-amber-300 font-bold px-1.5 py-0.5 rounded text-[10px] text-amber-950 shrink-0 select-all">{"{time}"}</code>
+                <span>The exact start time of the session (strips parent line if unchecked).</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <code className="bg-white border border-amber-300 font-bold px-1.5 py-0.5 rounded text-[10px] text-amber-950 shrink-0 select-all">{"{location}"}</code>
+                <span>The room or hall location of the presentation (strips parent line if unchecked).</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <code className="bg-white border border-amber-300 font-bold px-1.5 py-0.5 rounded text-[10px] text-amber-950 shrink-0 select-all">{"{questionText}"}</code>
+                <span>The text of the question entered by the attendee.</span>
+              </li>
+            </ul>
+
+            <div className="pt-2 border-t border-amber-100 mt-2 space-y-1">
+              <p className="font-extrabold text-gray-900 uppercase tracking-wider text-[10px]">WhatsApp Markdown Tips:</p>
+              <p className="text-[11px] text-gray-600">
+                - Bold words: enclose them inside asterisks, e.g. <code className="bg-white px-1 py-0.5 border rounded font-mono">*bold*</code>
+                <br />
+                - Italicize words: enclose them inside underscores, e.g. <code className="bg-white px-1 py-0.5 border rounded font-mono">_italic_</code>
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
