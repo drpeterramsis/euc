@@ -13,10 +13,23 @@ export function MapPhoto({ url, alt, className = "w-full h-32 object-cover round
   useEffect(() => {
     if (!url) return;
     let isMounted = true;
+    
+    // Quick local bypass for direct image URLs, Unsplash paths, or Base64 data images
+    if (
+      url.match(/\.(jpeg|jpg|gif|png|webp|svg|bmp|tiff)/i) || 
+      url.includes("images.unsplash.com") || 
+      url.includes("placeholder") ||
+      url.startsWith("data:image/")
+    ) {
+      setPhotoUrl(url);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     
-    // Check local storage for cached URL
-    const cacheKey = `map_photo_cache_${url}`;
+    // Check version 3 of local storage to automatically clear any stale wrong photo selections from old versions
+    const cacheKey = `map_photo_cache_v3_${url}`;
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
       setPhotoUrl(cached);

@@ -85,16 +85,15 @@ export const DEFAULT_TRIP_INFO: TripInfo = {
 };
 
 export function getDefaultFlightDetails(name: string) {
-  const travelerName = name || "Ashraf Shahin";
   return {
     bookingReference: "XMVNK8",
-    ticketNumber: `077-6908093857 for ${travelerName}`,
+    ticketNumber: `077-6908093857`,
     documentIssueDate: "11 June 2026",
     airlineCode: "MS (Egyptair)",
-    frequentFlyerNumber: `MS4001012993 for ${travelerName}`,
+    frequentFlyerNumber: `MS4001012993`,
     bookingStatus: "Confirmed",
     cabinClass: "Economy",
-    baggageAllowance: `2 Piece(s) for ${travelerName}`,
+    baggageAllowance: `2 Piece(s)`,
     aircraft: "AIRBUS A320NEO",
     meal: "Meal",
     duration: "03:55",
@@ -116,11 +115,11 @@ export function getDefaultFlightDetails(name: string) {
       arrivalGate: "",
       duration: "03:55 (Non stop)",
       aircraft: "AIRBUS A320NEO",
-      baggage: `2 Piece(s) for ${travelerName}`,
+      baggage: `2 Piece(s)`,
       meal: "Meal",
       cabinClass: "Economy",
       bookingStatus: "Confirmed",
-      frequentFlyerNumber: `MS4001012993 for ${travelerName}`,
+      frequentFlyerNumber: `MS4001012993`,
     },
     arrival: {
       flightNumber: "MS 790",
@@ -140,11 +139,11 @@ export function getDefaultFlightDetails(name: string) {
       arrivalGate: "",
       duration: "03:50 (Non stop)",
       aircraft: "AIRBUS A320NEO",
-      baggage: `2 Piece(s) for ${travelerName}`,
+      baggage: `2 Piece(s)`,
       meal: "Meal",
       cabinClass: "Economy",
       bookingStatus: "Confirmed",
-      frequentFlyerNumber: `MS4001012993 for ${travelerName}`,
+      frequentFlyerNumber: `MS4001012993`,
     }
   };
 }

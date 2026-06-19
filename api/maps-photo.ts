@@ -7,7 +7,17 @@ export default async function handler(req: any, res: any) {
   try {
     const lowercaseUrl = url.toLowerCase();
     
-    // Precision mapping for Cairo Airport
+    // Direct image URL quick return shortcut
+    if (
+      url.match(/\.(jpeg|jpg|gif|png|webp|svg|bmp|tiff)/i) || 
+      url.includes("images.unsplash.com") || 
+      url.includes("placeholder") ||
+      url.startsWith("data:image/")
+    ) {
+      return res.status(200).json({ photoUrl: url });
+    }
+
+    // Precision mapping for Cairo Airport - Terminal 3 & modern premium flight interior
     const isCairoAirport = 
       lowercaseUrl.includes("h9brf2rbk5ppnugd8") || 
       lowercaseUrl.includes("ad7ihbm8hvygdnvu7") || 
@@ -16,7 +26,7 @@ export default async function handler(req: any, res: any) {
       lowercaseUrl.includes("cairo-airport") ||
       (lowercaseUrl.includes("cai") && lowercaseUrl.includes("airport"));
 
-    // Precision mapping for Prague Airport
+    // Precision mapping for Prague Airport - Václav Havel terminal & Prague Charles Bridge skyline
     const isPragueAirport = 
       lowercaseUrl.includes("upb6j1k93u3wdcu3a") || 
       lowercaseUrl.includes("khfvyzfs5dexuyaea") || 
@@ -26,7 +36,7 @@ export default async function handler(req: any, res: any) {
       lowercaseUrl.includes("prg") ||
       lowercaseUrl.includes("havel");
 
-    // Precision mapping for Vienna House Diplomat Hotel
+    // Precision mapping for Vienna House Diplomat Hotel - Gorgeous continental luxury room / chic Prague city business facade (no tropical pools!)
     const isHotel = 
       lowercaseUrl.includes("526ivtzv4ozuq8sh6") || 
       lowercaseUrl.includes("b3jpsq89q3fwjs7ma") || 
@@ -37,19 +47,19 @@ export default async function handler(req: any, res: any) {
 
     if (isCairoAirport) {
       return res.status(200).json({
-        photoUrl: "https://images.unsplash.com/photo-1540962351504-03099e0a754b?auto=format&fit=crop&w=800&q=80"
+        photoUrl: "https://images.unsplash.com/photo-1529074963764-98f45c47344b?auto=format&fit=crop&w=800&q=80"
       });
     }
 
     if (isPragueAirport) {
       return res.status(200).json({
-        photoUrl: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=800&q=80"
+        photoUrl: "https://images.unsplash.com/photo-1541343072873-a7ed21a7b715?auto=format&fit=crop&w=800&q=80"
       });
     }
 
     if (isHotel) {
       return res.status(200).json({
-         photoUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
+         photoUrl: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80"
       });
     }
 

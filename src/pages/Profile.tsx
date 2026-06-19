@@ -785,7 +785,7 @@ export default function Profile() {
                   {/* Hotel Photo Section */}
                   <div className="md:col-span-4 h-48 md:h-full relative overflow-hidden min-h-[180px] bg-gray-100">
                     <img 
-                      src={fullUser.hotel.photoUrl || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80"} 
+                      src={fullUser.hotel.photoUrl || "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80"} 
                       alt={fullUser.hotel.name}
                       className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                       referrerPolicy="no-referrer"
