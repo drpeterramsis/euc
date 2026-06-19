@@ -482,10 +482,10 @@ export default function Profile() {
                             </span>
                           )}
                         </div>
-                        {fullUser.flightDetails?.departure?.departureAirportLink && (
+                        {(fullUser.flightDetails?.departure?.departureAirportPhotoUrl || fullUser.flightDetails?.departure?.departureAirportLink) && (
                           <div className="mt-2.5">
                             <MapPhoto 
-                              url={fullUser.flightDetails.departure.departureAirportLink} 
+                              url={fullUser.flightDetails.departure.departureAirportPhotoUrl || fullUser.flightDetails.departure.departureAirportLink} 
                               alt={fullUser.flightDetails.departure.departureAirport || "Departure Airport"} 
                               className="w-full h-32 object-cover rounded-lg shadow-inner border border-rose-100"
                             />
@@ -546,10 +546,10 @@ export default function Profile() {
                             </span>
                           )}
                         </div>
-                        {fullUser.flightDetails?.departure?.arrivalAirportLink && (
+                        {(fullUser.flightDetails?.departure?.arrivalAirportPhotoUrl || fullUser.flightDetails?.departure?.arrivalAirportLink) && (
                           <div className="mt-2.5">
                             <MapPhoto 
-                              url={fullUser.flightDetails.departure.arrivalAirportLink} 
+                              url={fullUser.flightDetails.departure.arrivalAirportPhotoUrl || fullUser.flightDetails.departure.arrivalAirportLink} 
                               alt={fullUser.flightDetails.departure.arrivalAirport || "Arrival Airport"} 
                               className="w-full h-32 object-cover rounded-lg shadow-inner border border-emerald-100"
                             />
@@ -674,10 +674,10 @@ export default function Profile() {
                             </span>
                           )}
                         </div>
-                        {fullUser.flightDetails?.arrival?.departureAirportLink && (
+                        {(fullUser.flightDetails?.arrival?.departureAirportPhotoUrl || fullUser.flightDetails?.arrival?.departureAirportLink) && (
                           <div className="mt-2.5">
                             <MapPhoto 
-                              url={fullUser.flightDetails.arrival.departureAirportLink} 
+                              url={fullUser.flightDetails.arrival.departureAirportPhotoUrl || fullUser.flightDetails.arrival.departureAirportLink} 
                               alt={fullUser.flightDetails.arrival.departureAirport || "Departure Airport"} 
                               className="w-full h-32 object-cover rounded-lg shadow-inner border border-rose-100"
                             />
@@ -738,10 +738,10 @@ export default function Profile() {
                             </span>
                           )}
                         </div>
-                        {fullUser.flightDetails?.arrival?.arrivalAirportLink && (
+                        {(fullUser.flightDetails?.arrival?.arrivalAirportPhotoUrl || fullUser.flightDetails?.arrival?.arrivalAirportLink) && (
                           <div className="mt-2.5">
                             <MapPhoto 
-                              url={fullUser.flightDetails.arrival.arrivalAirportLink} 
+                              url={fullUser.flightDetails.arrival.arrivalAirportPhotoUrl || fullUser.flightDetails.arrival.arrivalAirportLink} 
                               alt={fullUser.flightDetails.arrival.arrivalAirport || "Arrival Airport"} 
                               className="w-full h-32 object-cover rounded-lg shadow-inner border border-emerald-100"
                             />

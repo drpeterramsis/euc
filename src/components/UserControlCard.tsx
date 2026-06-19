@@ -124,8 +124,10 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
           time:              user.flightDetails?.departure?.time             || "",
           departureAirport:  user.flightDetails?.departure?.departureAirport || "",
           departureAirportLink: user.flightDetails?.departure?.departureAirportLink || "",
+          departureAirportPhotoUrl: user.flightDetails?.departure?.departureAirportPhotoUrl || "",
           arrivalAirport:    user.flightDetails?.departure?.arrivalAirport   || "",
           arrivalAirportLink:   user.flightDetails?.departure?.arrivalAirportLink   || "",
+          arrivalAirportPhotoUrl:   user.flightDetails?.departure?.arrivalAirportPhotoUrl   || "",
           terminal:          user.flightDetails?.departure?.terminal         || "",
           gate:              user.flightDetails?.departure?.gate             || "",
           inputTimezone:     user.flightDetails?.departure?.inputTimezone     || "Africa/Cairo",
@@ -149,8 +151,10 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
           time:              user.flightDetails?.arrival?.time               || "",
           departureAirport:  user.flightDetails?.arrival?.departureAirport || "",
           departureAirportLink: user.flightDetails?.arrival?.departureAirportLink || "",
+          departureAirportPhotoUrl: user.flightDetails?.arrival?.departureAirportPhotoUrl || "",
           arrivalAirport:    user.flightDetails?.arrival?.arrivalAirport   || "",
           arrivalAirportLink:   user.flightDetails?.arrival?.arrivalAirportLink   || "",
+          arrivalAirportPhotoUrl:   user.flightDetails?.arrival?.arrivalAirportPhotoUrl   || "",
           terminal:          user.flightDetails?.arrival?.terminal           || "",
           gate:              user.flightDetails?.arrival?.gate               || "",
           inputTimezone:     user.flightDetails?.arrival?.inputTimezone     || "Africa/Cairo",
@@ -271,8 +275,10 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                 time:              fetchedUser.flightDetails?.departure?.time             || "",
                 departureAirport:  fetchedUser.flightDetails?.departure?.departureAirport || "",
                 departureAirportLink: fetchedUser.flightDetails?.departure?.departureAirportLink || "",
+                departureAirportPhotoUrl: fetchedUser.flightDetails?.departure?.departureAirportPhotoUrl || "",
                 arrivalAirport:    fetchedUser.flightDetails?.departure?.arrivalAirport   || "",
                 arrivalAirportLink:   fetchedUser.flightDetails?.departure?.arrivalAirportLink   || "",
+                arrivalAirportPhotoUrl:   fetchedUser.flightDetails?.departure?.arrivalAirportPhotoUrl   || "",
                 terminal:          fetchedUser.flightDetails?.departure?.terminal         || "",
                 gate:              fetchedUser.flightDetails?.departure?.gate             || "",
                 inputTimezone:     fetchedUser.flightDetails?.departure?.inputTimezone     || "Africa/Cairo",
@@ -295,8 +301,10 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                 time:              fetchedUser.flightDetails?.arrival?.time               || "",
                 departureAirport:  fetchedUser.flightDetails?.arrival?.departureAirport || "",
                 departureAirportLink: fetchedUser.flightDetails?.arrival?.departureAirportLink || "",
+                departureAirportPhotoUrl: fetchedUser.flightDetails?.arrival?.departureAirportPhotoUrl || "",
                 arrivalAirport:    fetchedUser.flightDetails?.arrival?.arrivalAirport   || "",
                 arrivalAirportLink:   fetchedUser.flightDetails?.arrival?.arrivalAirportLink   || "",
+                arrivalAirportPhotoUrl:   fetchedUser.flightDetails?.arrival?.arrivalAirportPhotoUrl   || "",
                 terminal:          fetchedUser.flightDetails?.arrival?.terminal           || "",
                 gate:              fetchedUser.flightDetails?.arrival?.gate               || "",
                 inputTimezone:     fetchedUser.flightDetails?.arrival?.inputTimezone     || "Africa/Cairo",
@@ -384,8 +392,10 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                 time:              fallbackUser.flightDetails?.departure?.time             || "",
                 departureAirport:  fallbackUser.flightDetails?.departure?.departureAirport || "",
                 departureAirportLink: fallbackUser.flightDetails?.departure?.departureAirportLink || "",
+                departureAirportPhotoUrl: fallbackUser.flightDetails?.departure?.departureAirportPhotoUrl || "",
                 arrivalAirport:    fallbackUser.flightDetails?.departure?.arrivalAirport   || "",
                 arrivalAirportLink:   fallbackUser.flightDetails?.departure?.arrivalAirportLink   || "",
+                arrivalAirportPhotoUrl:   fallbackUser.flightDetails?.departure?.arrivalAirportPhotoUrl   || "",
                 terminal:          fallbackUser.flightDetails?.departure?.terminal         || "",
                 gate:              fallbackUser.flightDetails?.departure?.gate             || "",
                 inputTimezone:     fallbackUser.flightDetails?.departure?.inputTimezone     || "Africa/Cairo",
@@ -408,8 +418,10 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                 time:              fallbackUser.flightDetails?.arrival?.time               || "",
                 departureAirport:  fallbackUser.flightDetails?.arrival?.departureAirport || "",
                 departureAirportLink: fallbackUser.flightDetails?.arrival?.departureAirportLink || "",
+                departureAirportPhotoUrl: fallbackUser.flightDetails?.arrival?.departureAirportPhotoUrl || "",
                 arrivalAirport:    fallbackUser.flightDetails?.arrival?.arrivalAirport   || "",
                 arrivalAirportLink:   fallbackUser.flightDetails?.arrival?.arrivalAirportLink   || "",
+                arrivalAirportPhotoUrl:   fallbackUser.flightDetails?.arrival?.arrivalAirportPhotoUrl   || "",
                 terminal:          fallbackUser.flightDetails?.arrival?.terminal           || "",
                 gate:              fallbackUser.flightDetails?.arrival?.gate               || "",
                 inputTimezone:     fallbackUser.flightDetails?.arrival?.inputTimezone     || "Africa/Cairo",
@@ -861,6 +873,10 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                     <label className="text-[10px] font-bold text-rose-700 mb-0.5">Departure Airport Location Link</label>
                     <input name="departure.departureAirportLink" value={travelData.departure?.departureAirportLink || ""} onChange={handleTravelChange} placeholder="e.g. Google Maps Link" className="w-full p-2 border rounded bg-white" />
                   </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-rose-700 mb-0.5">Departure Airport Direct Photo Link (Fallback Url)</label>
+                    <input name="departure.departureAirportPhotoUrl" value={travelData.departure?.departureAirportPhotoUrl || ""} onChange={handleTravelChange} placeholder="e.g. Direct image address" className="w-full p-2 border rounded bg-white text-xs text-gray-700" />
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="flex flex-col">
                       <label className="text-[10px] font-bold text-rose-700 mb-0.5">Terminal</label>
@@ -888,6 +904,10 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                   <div className="flex flex-col">
                     <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Arrival Airport Location Link</label>
                     <input name="departure.arrivalAirportLink" value={travelData.departure?.arrivalAirportLink || ""} onChange={handleTravelChange} placeholder="e.g. Google Maps Link" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Arrival Airport Direct Photo Link (Fallback Url)</label>
+                    <input name="departure.arrivalAirportPhotoUrl" value={travelData.departure?.arrivalAirportPhotoUrl || ""} onChange={handleTravelChange} placeholder="e.g. Direct image address" className="w-full p-2 border rounded bg-white text-xs text-gray-700" />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="flex flex-col">
@@ -1058,6 +1078,10 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                     <label className="text-[10px] font-bold text-rose-700 mb-0.5">Departure Airport Location Link</label>
                     <input name="arrival.departureAirportLink" value={travelData.arrival?.departureAirportLink || ""} onChange={handleTravelChange} placeholder="e.g. Google Maps Link" className="w-full p-2 border rounded bg-white" />
                   </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-rose-700 mb-0.5">Departure Airport Direct Photo Link (Fallback Url)</label>
+                    <input name="arrival.departureAirportPhotoUrl" value={travelData.arrival?.departureAirportPhotoUrl || ""} onChange={handleTravelChange} placeholder="e.g. Direct image address" className="w-full p-2 border rounded bg-white text-xs text-gray-700" />
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="flex flex-col">
                       <label className="text-[10px] font-bold text-rose-700 mb-0.5">Terminal</label>
@@ -1085,6 +1109,10 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                   <div className="flex flex-col">
                     <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Arrival Airport Location Link</label>
                     <input name="arrival.arrivalAirportLink" value={travelData.arrival?.arrivalAirportLink || ""} onChange={handleTravelChange} placeholder="e.g. Google Maps Link" className="w-full p-2 border rounded bg-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-emerald-700 mb-0.5">Arrival Airport Direct Photo Link (Fallback Url)</label>
+                    <input name="arrival.arrivalAirportPhotoUrl" value={travelData.arrival?.arrivalAirportPhotoUrl || ""} onChange={handleTravelChange} placeholder="e.g. Direct image address" className="w-full p-2 border rounded bg-white text-xs text-gray-700" />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="flex flex-col">

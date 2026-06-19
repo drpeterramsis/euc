@@ -47,19 +47,19 @@ export default async function handler(req: any, res: any) {
 
     if (isCairoAirport) {
       return res.status(200).json({
-        photoUrl: "https://images.unsplash.com/photo-1529074963764-98f45c47344b?auto=format&fit=crop&w=800&q=80"
+        photoUrl: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80"
       });
     }
 
     if (isPragueAirport) {
       return res.status(200).json({
-        photoUrl: "https://images.unsplash.com/photo-1541343072873-a7ed21a7b715?auto=format&fit=crop&w=800&q=80"
+        photoUrl: "https://images.unsplash.com/photo-1544016768-982d1554f0b9?auto=format&fit=crop&w=800&q=80"
       });
     }
 
     if (isHotel) {
       return res.status(200).json({
-         photoUrl: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80"
+         photoUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80"
       });
     }
 
