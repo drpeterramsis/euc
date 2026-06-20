@@ -159,19 +159,17 @@ export default async function handler(req: any, res: any) {
       "anonymous"
     ])).filter(Boolean);
 
-    const results = { sent: 0, failed: 0, expired: 0 };
     const processedEndpoints = new Set<string>();
 
-    for (const key of allUniqueKeys) {
+    const notificationResults = await Promise.all(allUniqueKeys.map(async (key) => {
       let sub = await kv.get(`user:${key}:subscription`) as any;
       if (!sub) {
         sub = await kv.get(`push:sub:${key}`) as any;
       }
 
       if (sub && sub.endpoint) {
-        // Prevent duplicate sending to the same subscription endpoint
         if (processedEndpoints.has(sub.endpoint)) {
-          continue;
+          return { sent: 0, failed: 0, expired: 0 };
         }
         processedEndpoints.add(sub.endpoint);
 
@@ -184,19 +182,25 @@ export default async function handler(req: any, res: any) {
             badgeUrl,
             imageUrl
           }));
-          results.sent++;
+          return { sent: 1, failed: 0, expired: 0 };
         } catch (err: any) {
           if (err.statusCode === 410) {
-            // Subscription expired, remove from KV
             await kv.del(`user:${key}:subscription`);
             await kv.del(`push:sub:${key}`);
-            results.expired++;
+            return { sent: 0, failed: 0, expired: 1 };
           } else {
-            results.failed++;
+            return { sent: 0, failed: 1, expired: 0 };
           }
         }
       }
-    }
+      return { sent: 0, failed: 0, expired: 0 };
+    }));
+
+    const results = notificationResults.reduce((acc, curr) => ({
+      sent: acc.sent + curr.sent,
+      failed: acc.failed + curr.failed,
+      expired: acc.expired + curr.expired,
+    }), { sent: 0, failed: 0, expired: 0 });
 
     return res.status(200).json({ ok: true, message: "Push notifications dispatched", ...results });
   } catch (err: any) {

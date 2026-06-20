@@ -276,33 +276,6 @@ export default function Checkins() {
           </select>
         </div>
 
-        {/* Push Notifications Configuration */}
-        {pushSupported && (
-          <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 transition-all duration-200">
-            <div className="flex items-center gap-3">
-              <span className="text-xl shrink-0">🔔</span>
-              <div>
-                <p className="text-xs font-black text-amber-900 uppercase tracking-wider">Stay updated en route</p>
-                <p className="text-[11px] text-amber-800 font-semibold leading-relaxed">
-                  {isSubscribed 
-                    ? "Push alerts configured: you will receive instant notifications on flight changes and checkpoints!" 
-                    : "Receive real-time updates when itinerary, flight segments, or critical travel milestones change."
-                  }
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={handleTogglePush}
-              className={`w-full sm:w-auto px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-xs border shrink-0 ${
-                isSubscribed 
-                  ? "bg-white border-amber-200 text-amber-800 hover:bg-amber-100" 
-                  : "bg-amber-500 hover:bg-amber-600 text-black border-amber-600"
-              }`}
-            >
-              {isSubscribed ? "Disable Push Alerts" : "Enable Push Alerts"}
-            </button>
-          </div>
-        )}
 
         {/* Banner Section */}
         <div className="bg-black text-white p-6 rounded-2xl mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border border-gray-800 shadow-md">

@@ -16,8 +16,12 @@ export const AdminNotificationSender = () => {
   const [targetUserId, setTargetUserId] = useState("");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const [persistedTags, setPersistedTags] = useState<any[]>([]);
 
   useEffect(() => {
+    const saved = localStorage.getItem("push_tags");
+    if(saved) setPersistedTags(JSON.parse(saved));
+    
     fetch('/api/admin/routes')
       .then(res => res.json())
       .then(setRoutes)
@@ -39,6 +43,15 @@ export const AdminNotificationSender = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [sending]);
+
+  const selectTag = (tag: any) => {
+    setTitle(tag.title);
+    setBody(tag.body);
+    setUrl(tag.url);
+    setIconUrl(tag.iconUrl || "");
+    setBadgeUrl(tag.badgeUrl || "");
+    setImageUrl(tag.imageUrl || "");
+  };
 
   const send = async () => {
     setSending(true);
@@ -91,6 +104,12 @@ export const AdminNotificationSender = () => {
       }
 
       const data = await res.json();
+      
+      const newTag = { title, body, url, iconUrl, badgeUrl, imageUrl };
+      const updatedTags = [newTag, ...persistedTags.filter(t => JSON.stringify(t) !== JSON.stringify(newTag))];
+      setPersistedTags(updatedTags);
+      localStorage.setItem("push_tags", JSON.stringify(updatedTags));
+      
       setResult(data);
     } catch (err) {
       setResult({ error: "Failed to send notification" });
@@ -131,6 +150,25 @@ export const AdminNotificationSender = () => {
       )}
 
       <h2 className="text-lg font-bold mb-4">Compose & Send Notification</h2>
+      
+      {persistedTags.length > 0 && (
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Reuse Previous Tags:</label>
+          <div className="flex flex-wrap gap-2">
+            {persistedTags.map((t, i) => (
+              <button 
+                key={i} 
+                onClick={() => selectTag(t)}
+                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs font-semibold text-gray-700 transition-colors"
+                title={`${t.title}: ${t.body}`}
+              >
+                {t.title.length > 20 ? t.title.substring(0, 17) + "..." : t.title}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4">
         <input 
           className="w-full p-2 border rounded disabled:bg-gray-50 disabled:text-gray-400" 
