@@ -47,6 +47,13 @@ export default async function handler(req: any, res: any) {
       lowercaseUrl.includes("vienna") || 
       lowercaseUrl.includes("hotel");
 
+    // Precision mapping for Munich Airport
+    const isMunichAirport = 
+      lowercaseUrl.includes("q2qxgh6h8n9yzjv27") || 
+      (lowercaseUrl.includes("munich") && lowercaseUrl.includes("airport")) ||
+      lowercaseUrl.includes("muc") ||
+      lowercaseUrl.includes("munich");
+
     if (isCairoAirport) {
       return res.status(200).json({
         photoUrl: "https://dl.dropboxusercontent.com/scl/fi/bck8538s5pp109ns47tk7/cairo_airport.webp?rlkey=ikmzh780qea8juim09o44bp9p&st=sov4t97n"
@@ -56,6 +63,12 @@ export default async function handler(req: any, res: any) {
     if (isPragueAirport) {
       return res.status(200).json({
         photoUrl: "https://dl.dropboxusercontent.com/scl/fi/kjjra5b0zs63ubfupye3a/prague_airport.jpg?rlkey=bd40zfck0pbbdh2te8jipk4xi&st=cy4e4qvc"
+      });
+    }
+
+    if (isMunichAirport) {
+      return res.status(200).json({
+        photoUrl: "https://dl.dropboxusercontent.com/scl/fi/rg9wm8k1t2bno2l00uewe/munich.webp?rlkey=6p5kciszqgmllgkjkqa3nopr1&st=4qzgrebu"
       });
     }
 

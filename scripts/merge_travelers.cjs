@@ -32,7 +32,9 @@ const MAP = {
   "tamer elsayed": "Tamer Elsayed Helmy Elsayed",
   "wael ali": "Wael Mohamed Farhat Ali",
   "wael khalil": "Wael Mohamed Sameh Taha Abdelmoneim Khalil",
-  "walid youssef": "Walid Milad Said Youssef"
+  "walid youssef": "Walid Milad Said Youssef",
+  "happy tawdrous": "Happy Raafat",
+  "michael bebawy": "Michael Melad Kamel"
 };
 
 function formatDate(dateStr) {
@@ -111,6 +113,11 @@ function getAirportLinkAndPhoto(city, defaultLink, defaultPhoto) {
     return {
       link: "https://maps.app.goo.gl/hEMvxstxDQ3ySn447",
       photo: "https://dl.dropboxusercontent.com/scl/fi/kjjra5b0zs63ubfupye3a/prague_airport.jpg?rlkey=bd40zfck0pbbdh2te8jipk4xi&st=cy4e4qvc"
+    };
+  } else if (lowercase.includes("munich")) {
+    return {
+      link: "https://maps.app.goo.gl/q2qXGh6H8n9yZjV27",
+      photo: "https://dl.dropboxusercontent.com/scl/fi/rg9wm8k1t2bno2l00uewe/munich.webp?rlkey=6p5kciszqgmllgkjkqa3nopr1&st=4qzgrebu"
     };
   } else {
     return {
