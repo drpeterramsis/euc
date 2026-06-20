@@ -17,6 +17,7 @@ export const AdminNotificationSender = () => {
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [persistedTags, setPersistedTags] = useState<any[]>([]);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("push_tags");
@@ -111,6 +112,8 @@ export const AdminNotificationSender = () => {
       localStorage.setItem("push_tags", JSON.stringify(updatedTags));
       
       setResult(data);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 5000);
     } catch (err) {
       setResult({ error: "Failed to send notification" });
     } finally {
@@ -120,6 +123,23 @@ export const AdminNotificationSender = () => {
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6 relative">
+      {/* Success Modal */}
+      {showSuccess && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center">
+            <div className="text-4xl mb-4">✅</div>
+            <h3 className="text-lg font-bold">Notification Sent!</h3>
+            <p className="text-gray-600 mt-2">The notification was broadcasted successfully.</p>
+            <button 
+              onClick={() => setShowSuccess(false)}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Full screen sending block overlay modal */}
       {sending && (
         <div 
@@ -154,18 +174,20 @@ export const AdminNotificationSender = () => {
       {persistedTags.length > 0 && (
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Reuse Previous Tags:</label>
-          <div className="flex flex-wrap gap-2">
+          <select 
+            className="w-full p-2 border rounded"
+            onChange={(e) => {
+              const tag = persistedTags[parseInt(e.target.value)];
+              if (tag) selectTag(tag);
+            }}
+          >
+            <option value="">Select a previous configuration...</option>
             {persistedTags.map((t, i) => (
-              <button 
-                key={i} 
-                onClick={() => selectTag(t)}
-                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs font-semibold text-gray-700 transition-colors"
-                title={`${t.title}: ${t.body}`}
-              >
-                {t.title.length > 20 ? t.title.substring(0, 17) + "..." : t.title}
-              </button>
+              <option key={i} value={i}>
+                {t.title}
+              </option>
             ))}
-          </div>
+          </select>
         </div>
       )}
 
@@ -275,9 +297,9 @@ export const AdminNotificationSender = () => {
         </div>
       )}
       
-      {result && (
-        <div className="mt-4 p-4 rounded bg-gray-100 text-sm">
-          <pre>{JSON.stringify(result, null, 2)}</pre>
+      {result && result.error && (
+        <div className="mt-4 p-4 rounded bg-red-100 text-red-800 text-sm">
+          {result.error}
         </div>
       )}
     </div>

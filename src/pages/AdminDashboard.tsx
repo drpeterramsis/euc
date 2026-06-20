@@ -20,6 +20,8 @@ const adminTools = [
   { key: 'media', label: 'Media / Posts', icon: '🖼️' },
   { key: 'categories', label: 'Categories', icon: '📂' },
   { key: 'pageSettings', label: 'Page Access', icon: '🔒' },
+  { key: 'checkins', label: 'Check-ins', icon: '✅' },
+  { key: 'notifications', label: 'Notifications', icon: '🔔' },
 ];
 
 export default function AdminDashboard({ onSelectTab }: AdminDashboardProps) {
