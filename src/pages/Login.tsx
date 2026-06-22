@@ -78,7 +78,7 @@ export default function Login() {
       {/* Logo Container */}
       <div className="mb-10 relative z-10 flex flex-col items-center justify-center filter drop-shadow-2xl">
         {/* Static Logo */}
-        <div className="relative w-60 h-60 sm:w-64 sm:h-64">
+        <div className="relative w-100 h-100 sm:w-110 sm:h-110">
           <img 
             src="/images/euc_logo.webp" 
             alt="EUC Logo" 
