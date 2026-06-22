@@ -17,7 +17,7 @@ export default defineConfig(({mode}) => {
         filename: 'sw.ts',
         registerType: 'autoUpdate',
         manifest: {
-          name: "EUC - EVA URO COMMUNITY",
+          name: "EUC - Experts of URO COMMUNITY",
           short_name: "EUC",
           theme_color: "#000000",
           display: "standalone",

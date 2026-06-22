@@ -56,7 +56,7 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
             referrerPolicy="no-referrer"
           />
           <span className="text-white font-bold tracking-wide whitespace-nowrap text-sm sm:text-base group-hover:text-yellow-500 transition-colors">
-            EVA UROLOGY COMMUNITY
+            Experts of UROLOGY COMMUNITY
           </span>
         </Link>
       </div>
