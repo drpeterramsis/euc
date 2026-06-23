@@ -229,7 +229,7 @@ export default function WeatherForecast() {
   }, []);
 
   return (
-    <div className="bg-[#0b1120] text-white rounded-2xl border border-slate-800 shadow-xl overflow-hidden mb-8 transition-all duration-300">
+    <div className="mb-2 w-full">
       {/* CSS Animation Keyframes Injector */}
       <style>{`
         @keyframes float {
@@ -245,185 +245,258 @@ export default function WeatherForecast() {
           0%, 90%, 100% { opacity: 0.1; }
           95% { opacity: 1; }
         }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
       `}</style>
 
-      {/* Header with City & Pulsing live badge */}
-      <div className="p-5 pb-3 flex items-center justify-between border-b border-slate-850">
-        <div className="flex items-center gap-2">
-          <div className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+      {/* Mobile Slim Widget View (Click to toggle expansion) */}
+      <div 
+        onClick={() => setMobileExpanded(!mobileExpanded)}
+        className="md:hidden block bg-gradient-to-r from-[#0b1120] to-[#0f172a] text-white rounded-2xl border border-slate-800 shadow-lg p-3 cursor-pointer hover:border-slate-700 transition-all duration-300 active:scale-[0.99]"
+      >
+        <div className="flex items-center justify-between gap-3">
+          {/* Weather Icon & Temperature */}
+          <div className="flex items-center gap-3">
+            <div className="p-1.5 w-11 h-11 bg-slate-900/80 rounded-xl border border-slate-800/85 flex items-center justify-center flex-shrink-0">
+              <AnimatedWeatherIcon weatherCode={weather.current.weatherCode} size="small" />
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-baseline leading-none">
+                <span className="text-lg font-extrabold tracking-tight">{weather.current.temp}</span>
+                <span className="text-xs font-bold text-amber-500 ml-0.5">°C</span>
+              </div>
+              <span className="text-[10px] text-slate-400 font-semibold mt-0.5">{weather.current.description}</span>
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-bold tracking-tight text-white">Prague, Czechia</h3>
-            <p className="text-[9px] text-slate-400 font-bold tracking-widest uppercase">REAL-TIME SCIENTIFIC FORECAST</p>
+
+          {/* Location & Pulse Badge */}
+          <div className="flex flex-col items-end text-right">
+            <div className="flex items-center gap-1.5">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+              </span>
+              <span className="text-xs font-bold tracking-tight text-white">Prague, CZ</span>
+            </div>
+            <span className="text-[9px] text-slate-500 font-semibold mt-0.5">Feels {weather.current.feelsLike}°C</span>
+          </div>
+
+          {/* Chevron Indicator */}
+          <div className="pl-1.5 border-l border-slate-800/80 flex items-center h-8">
+            {mobileExpanded ? (
+              <ChevronUp className="w-4 h-4 text-slate-400" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-slate-400 animate-pulse" />
+            )}
           </div>
         </div>
-        <button 
-          onClick={fetchWeather}
-          disabled={loading}
-          className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
-          title="Refresh forecast"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-        </button>
+
+        {/* Nested Expanded Content for Mobile - beautifully compact and matching styling */}
+        {mobileExpanded && (
+          <div className="mt-3 pt-3 border-t border-slate-800/60 space-y-3 animate-[fadeIn_0.2s_ease-out]">
+            {/* Quick stats row */}
+            <div className="grid grid-cols-3 gap-2 text-center bg-slate-900/50 p-2 rounded-xl border border-slate-800/45">
+              <div>
+                <span className="text-[8px] uppercase tracking-wider text-slate-500 font-extrabold block">Range</span>
+                <span className="text-[10px] font-bold text-slate-200">{weather.daily[0]?.tempMax}° / {weather.daily[0]?.tempMin}°</span>
+              </div>
+              <div>
+                <span className="text-[8px] uppercase tracking-wider text-slate-500 font-extrabold block">Humidity</span>
+                <span className="text-[10px] font-bold text-slate-200 flex items-center justify-center gap-0.5">
+                  <Droplets className="w-2.5 h-2.5 text-blue-400" />
+                  {weather.current.humidity}%
+                </span>
+              </div>
+              <div>
+                <span className="text-[8px] uppercase tracking-wider text-slate-500 font-extrabold block">Wind Speed</span>
+                <span className="text-[10px] font-bold text-slate-200 flex items-center justify-center gap-0.5">
+                  <Wind className="w-2.5 h-2.5 text-teal-400" />
+                  {weather.current.windSpeed} km/h
+                </span>
+              </div>
+            </div>
+
+            {/* Compact 4-Day mini forecast for mobile */}
+            <div className="space-y-1.5">
+              <p className="text-[8px] font-extrabold tracking-widest uppercase text-slate-400 px-0.5">Upcoming Days</p>
+              <div className="grid grid-cols-4 gap-1.5">
+                {weather.daily.slice(0, 4).map((day, idx) => (
+                  <div key={idx} className="bg-slate-900/40 border border-slate-850/60 p-2 rounded-xl flex flex-col items-center">
+                    <span className="text-[9px] font-bold text-slate-400">{idx === 0 ? "Today" : day.dateStr}</span>
+                    <div className="my-1">
+                      <AnimatedWeatherIcon weatherCode={day.weatherCode} size="small" />
+                    </div>
+                    <span className="text-[10px] font-black text-slate-200">{day.tempMax}°</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="p-5 md:p-6 pb-6">
-        {/* Main Banner Block */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-          {/* Left Large Current block */}
-          <div className="md:col-span-6 flex items-center gap-5">
-            <div className="relative p-3 w-20 h-20 bg-slate-900/60 rounded-2xl border border-slate-800 shadow-inner flex items-center justify-center flex-shrink-0">
-              <AnimatedWeatherIcon weatherCode={weather.current.weatherCode} size="large" />
+      {/* Desktop Detailed Forecast View */}
+      <div className="hidden md:block bg-[#0b1120] text-white rounded-2xl border border-slate-800 shadow-xl overflow-hidden transition-all duration-300">
+        {/* Header with City & Pulsing live badge */}
+        <div className="p-5 pb-3 flex items-center justify-between border-b border-slate-850">
+          <div className="flex items-center gap-2">
+            <div className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </div>
-            
             <div>
-              <div className="flex items-start">
-                <span className="text-4xl font-black tracking-tighter text-slate-50">{weather.current.temp}</span>
-                <span className="text-lg font-bold text-amber-500 mt-0.5 ml-0.5">°C</span>
-              </div>
-              <p className="text-sm font-black text-slate-200 capitalize mt-0.5 leading-none">
-                {weather.current.description}
-              </p>
-              <p className="text-[10px] font-bold text-slate-400 font-sans mt-1">
-                Feels like <strong className="text-slate-350 font-bold">{weather.current.feelsLike}°C</strong>
-              </p>
+              <h3 className="text-sm font-bold tracking-tight text-white">Prague, Czechia</h3>
+              <p className="text-[9px] text-slate-400 font-bold tracking-widest uppercase">REAL-TIME SCIENTIFIC FORECAST</p>
             </div>
           </div>
-
-          {/* Right Parameters stats with Tab Switchers */}
-          <div className={`md:col-span-6 space-y-3.5 p-4 bg-slate-900/30 rounded-xl border border-slate-800 ${mobileExpanded ? 'block' : 'hidden md:block'}`}>
-            <div className="flex border-b border-slate-800 pb-2">
-              <button 
-                onClick={() => setActiveTab('temp')} 
-                className={`flex-1 text-center text-[10px] font-bold uppercase tracking-wider pb-1 transition-all ${activeTab === 'temp' ? 'text-amber-500 border-b-2 border-amber-550 font-extrabold' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                Temperature
-              </button>
-              <button 
-                onClick={() => setActiveTab('precip')} 
-                className={`flex-1 text-center text-[10px] font-bold uppercase tracking-wider pb-1 transition-all ${activeTab === 'precip' ? 'text-amber-500 border-b-2 border-amber-550 font-extrabold' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                Precipitation
-              </button>
-              <button 
-                onClick={() => setActiveTab('wind')} 
-                className={`flex-1 text-center text-[10px] font-bold uppercase tracking-wider pb-1 transition-all ${activeTab === 'wind' ? 'text-amber-500 border-b-2 border-amber-550 font-extrabold' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                Wind
-              </button>
-            </div>
-
-            {activeTab === 'temp' && (
-              <div className="grid grid-cols-2 gap-3 pt-0.5">
-                <div className="space-y-1">
-                  <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-500 block">Today's Range</span>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-xs font-black text-slate-100">{weather.daily[0]?.tempMax}°C</span>
-                    <span className="text-xs text-slate-500 font-semibold">/</span>
-                    <span className="text-xs text-slate-400 font-bold">{weather.daily[0]?.tempMin}°C</span>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-500 block">RH Humidity</span>
-                  <span className="text-xs font-black text-slate-100 flex items-center gap-1">
-                    <Droplets className="w-3 h-3 text-blue-400 flex-shrink-0 animate-pulse" />
-                    {weather.current.humidity}%
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'precip' && (
-              <div className="grid grid-cols-2 gap-3 pt-0.5">
-                <div className="space-y-1">
-                  <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-500 block">Precip Amount</span>
-                  <span className="text-xs font-black text-slate-100">{weather.current.precipitation} mm</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-500 block">Probability</span>
-                  <span className="text-xs font-black text-sky-400">{weather.daily[0]?.precipProb}%</span>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'wind' && (
-              <div className="grid grid-cols-2 gap-3 pt-0.5">
-                <div className="space-y-1">
-                  <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-500 block">Velocity</span>
-                  <span className="text-xs font-black text-slate-100 flex items-center gap-1">
-                    <Wind className="w-3 h-3 text-teal-400 flex-shrink-0" />
-                    {weather.current.windSpeed} km/h
-                  </span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-500 block">Direction</span>
-                  <span className="text-xs font-black text-slate-100 flex items-center gap-1">
-                    <Compass className="w-3 h-3 text-teal-500 flex-shrink-0 animate-pulse" />
-                    ENE
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 7-Day Forecast Grid */}
-        <div className={`mt-6 pt-5 border-t border-slate-850 ${mobileExpanded ? 'block' : 'hidden md:block'}`}>
-          <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-3.5 flex items-center gap-1.5 leading-none">
-            <Calendar className="w-3.5 h-3.5 text-amber-500" />
-            Upcoming Prague Forecast
-          </p>
-          
-          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-            {weather.daily.map((day, idx) => {
-              return (
-                <div 
-                  key={idx} 
-                  className={`p-2.5 py-3 rounded-xl border flex flex-col items-center justify-between transition-all duration-300 ${idx === 0 ? 'bg-slate-900/80 border-amber-500/30 ring-1 ring-amber-550/15' : 'bg-slate-900/35 border-slate-850/60 hover:bg-slate-900/60 hover:border-slate-800'}`}
-                >
-                  <span className="text-[10px] font-extrabold text-slate-400 leading-none">{day.dateStr}</span>
-                  <span className="text-[8px] font-bold text-slate-500 mt-1 font-sans">{day.dateLabel}</span>
-                  
-                  <div className="my-2.5">
-                    <AnimatedWeatherIcon weatherCode={day.weatherCode} size="small" />
-                  </div>
-                  
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs font-bold text-slate-100">{day.tempMax}°</span>
-                    <span className="text-[9px] font-semibold text-slate-500 mt-0.5">{day.tempMin}°</span>
-                  </div>
-
-                  {day.precipProb > 5 ? (
-                    <span className="text-[8px] font-extrabold text-sky-400 mt-1.5 font-mono">{day.precipProb}%</span>
-                  ) : (
-                    <span className="text-[8px] font-semibold text-transparent mt-1.5 font-mono">0%</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Toggle Button for Mobile View */}
-        <div className="mt-4 flex justify-center md:hidden">
-          <button
-            onClick={() => setMobileExpanded(!mobileExpanded)}
-            className="flex items-center justify-center gap-1.5 w-full py-2.5 px-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:bg-slate-800/80 hover:border-slate-700 text-[10px] font-extrabold text-slate-350 tracking-wider transition-all uppercase"
+          <button 
+            onClick={fetchWeather}
+            disabled={loading}
+            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+            title="Refresh forecast"
           >
-            {mobileExpanded ? (
-              <>
-                <span>Collapse Forecast</span>
-                <ChevronUp className="w-3.5 h-3.5 text-amber-500" />
-              </>
-            ) : (
-              <>
-                <span>Expand Prague Forecast & Details</span>
-                <ChevronDown className="w-3.5 h-3.5 text-amber-500" />
-              </>
-            )}
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           </button>
+        </div>
+
+        <div className="p-5 md:p-6 pb-6">
+          {/* Main Banner Block */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            {/* Left Large Current block */}
+            <div className="md:col-span-6 flex items-center gap-5">
+              <div className="relative p-3 w-20 h-20 bg-slate-900/60 rounded-2xl border border-slate-800 shadow-inner flex items-center justify-center flex-shrink-0">
+                <AnimatedWeatherIcon weatherCode={weather.current.weatherCode} size="large" />
+              </div>
+              
+              <div>
+                <div className="flex items-start">
+                  <span className="text-4xl font-black tracking-tighter text-slate-50">{weather.current.temp}</span>
+                  <span className="text-lg font-bold text-amber-500 mt-0.5 ml-0.5">°C</span>
+                </div>
+                <p className="text-sm font-black text-slate-200 capitalize mt-0.5 leading-none">
+                  {weather.current.description}
+                </p>
+                <p className="text-[10px] font-bold text-slate-400 font-sans mt-1">
+                  Feels like <strong className="text-slate-350 font-bold">{weather.current.feelsLike}°C</strong>
+                </p>
+              </div>
+            </div>
+
+            {/* Right Parameters stats with Tab Switchers */}
+            <div className="md:col-span-6 space-y-3.5 p-4 bg-slate-900/30 rounded-xl border border-slate-800">
+              <div className="flex border-b border-slate-800 pb-2">
+                <button 
+                  onClick={() => setActiveTab('temp')} 
+                  className={`flex-1 text-center text-[10px] font-bold uppercase tracking-wider pb-1 transition-all ${activeTab === 'temp' ? 'text-amber-500 border-b-2 border-amber-550 font-extrabold' : 'text-slate-400 hover:text-slate-200'}`}
+                >
+                  Temperature
+                </button>
+                <button 
+                  onClick={() => setActiveTab('precip')} 
+                  className={`flex-1 text-center text-[10px] font-bold uppercase tracking-wider pb-1 transition-all ${activeTab === 'precip' ? 'text-amber-500 border-b-2 border-amber-550 font-extrabold' : 'text-slate-400 hover:text-slate-200'}`}
+                >
+                  Precipitation
+                </button>
+                <button 
+                  onClick={() => setActiveTab('wind')} 
+                  className={`flex-1 text-center text-[10px] font-bold uppercase tracking-wider pb-1 transition-all ${activeTab === 'wind' ? 'text-amber-500 border-b-2 border-amber-550 font-extrabold' : 'text-slate-400 hover:text-slate-200'}`}
+                >
+                  Wind
+                </button>
+              </div>
+
+              {activeTab === 'temp' && (
+                <div className="grid grid-cols-2 gap-3 pt-0.5">
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-500 block">Today's Range</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-xs font-black text-slate-100">{weather.daily[0]?.tempMax}°C</span>
+                      <span className="text-xs text-slate-500 font-semibold">/</span>
+                      <span className="text-xs text-slate-400 font-bold">{weather.daily[0]?.tempMin}°C</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-500 block">RH Humidity</span>
+                    <span className="text-xs font-black text-slate-100 flex items-center gap-1">
+                      <Droplets className="w-3 h-3 text-blue-400 flex-shrink-0 animate-pulse" />
+                      {weather.current.humidity}%
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'precip' && (
+                <div className="grid grid-cols-2 gap-3 pt-0.5">
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-500 block">Precip Amount</span>
+                    <span className="text-xs font-black text-slate-100">{weather.current.precipitation} mm</span>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-500 block">Probability</span>
+                    <span className="text-xs font-black text-sky-400">{weather.daily[0]?.precipProb}%</span>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'wind' && (
+                <div className="grid grid-cols-2 gap-3 pt-0.5">
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-500 block">Velocity</span>
+                    <span className="text-xs font-black text-slate-100 flex items-center gap-1">
+                      <Wind className="w-3 h-3 text-teal-400 flex-shrink-0" />
+                      {weather.current.windSpeed} km/h
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-500 block">Direction</span>
+                    <span className="text-xs font-black text-slate-100 flex items-center gap-1">
+                      <Compass className="w-3 h-3 text-teal-500 flex-shrink-0 animate-pulse" />
+                      ENE
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 7-Day Forecast Grid */}
+          <div className="mt-6 pt-5 border-t border-slate-850">
+            <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-3.5 flex items-center gap-1.5 leading-none">
+              <Calendar className="w-3.5 h-3.5 text-amber-500" />
+              Upcoming Prague Forecast
+            </p>
+            
+            <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+              {weather.daily.map((day, idx) => {
+                return (
+                  <div 
+                    key={idx} 
+                    className={`p-2.5 py-3 rounded-xl border flex flex-col items-center justify-between transition-all duration-300 ${idx === 0 ? 'bg-slate-900/80 border-amber-500/30 ring-1 ring-amber-550/15' : 'bg-slate-900/35 border-slate-850/60 hover:bg-slate-900/60 hover:border-slate-800'}`}
+                  >
+                    <span className="text-[10px] font-extrabold text-slate-400 leading-none">{day.dateStr}</span>
+                    <span className="text-[8px] font-bold text-slate-500 mt-1 font-sans">{day.dateLabel}</span>
+                    
+                    <div className="my-2.5">
+                      <AnimatedWeatherIcon weatherCode={day.weatherCode} size="small" />
+                    </div>
+                    
+                    <div className="flex flex-col items-center">
+                      <span className="text-xs font-bold text-slate-100">{day.tempMax}°</span>
+                      <span className="text-[9px] font-semibold text-slate-500 mt-0.5">{day.tempMin}°</span>
+                    </div>
+
+                    {day.precipProb > 5 ? (
+                      <span className="text-[8px] font-extrabold text-sky-400 mt-1.5 font-mono">{day.precipProb}%</span>
+                    ) : (
+                      <span className="text-[8px] font-semibold text-transparent mt-1.5 font-mono">0%</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>

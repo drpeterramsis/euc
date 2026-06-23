@@ -156,17 +156,19 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      <div className="px-4 pt-4">
-        <div className="mb-4">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest leading-none mb-1">
-            Welcome Back,
-          </p>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            {fullUser?.name ?? "Guest"}
-          </h1>
+      <div className="space-y-6 flex flex-col">
+        {/* Welcome greeting & Clocks */}
+        <div className="space-y-4">
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest leading-none mb-1">
+              Welcome Back,
+            </p>
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              {fullUser?.name ?? "Guest"}
+            </h1>
+          </div>
+          <DualClock />
         </div>
-        <DualClock />
-      </div>
       
       {viewAs && (
         <div className="bg-yellow-105 text-yellow-800 p-3 text-center font-bold mb-6 rounded-lg relative shadow border border-yellow-200">
@@ -265,7 +267,7 @@ export default function Dashboard() {
       )}
 
       {/* Legacy/Classic Fallback Detail Row Section */}
-      
+      </div>
     </Layout>
   );
 }
