@@ -4,7 +4,7 @@ export const DEFAULT_LABELS = {
   dashboard:  "Home Page",
   schedule:   "Schedule",
   sessions:   "Sessions",
-  media:      "News Feed",
+  media:      "Gallery",
   directory:  "Staff Directory",
   staff:      "Staff Directory", // ← LEGACY BACKWARD-COMPATIBILITY LOCK
   profile:    "My Profile",

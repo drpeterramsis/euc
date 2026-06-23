@@ -20,6 +20,7 @@ import { readJSON } from '../utils/github';
 import GalleryCard from '../components/GalleryCard';
 import { formatTimeAmPm, splitAmPm } from '../utils/timezone';
 import CheckinsShortcut from '../components/CheckinsShortcut';
+import WeatherForecast from '../components/WeatherForecast';
 
 // ─────────────────────────────────────────────
 // SUMMARY CARD FOR FLIGHTS (Compact, clean with icons)
@@ -155,7 +156,15 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      <div className="px-4 pt-4 pb-2">
+      <div className="px-4 pt-4">
+        <div className="mb-4">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest leading-none mb-1">
+            Welcome Back,
+          </p>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            {fullUser?.name ?? "Guest"}
+          </h1>
+        </div>
         <DualClock />
       </div>
       
@@ -190,14 +199,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="mb-6">
-        <p className="text-sm font-normal text-gray-500 leading-tight">
-          Welcome Back,
-        </p>
-        <h1 className="text-2xl font-bold text-gray-900 leading-tight mt-0.5">
-          {fullUser?.name ?? "Guest"}
-        </h1>
-      </div>
+      <WeatherForecast />
 
       <CheckinsShortcut user={fullUser} />
 

@@ -1,8 +1,8 @@
-# EUC – Experts of URO CLUB
+# EUC – Experts of Urology Community
 Version: 1.0.1010
 
 ## What is EUC?
-EUC (Experts of URO CLUB) is a full-stack conference trip management WebApp
+EUC (Experts of Urology Community) is a full-stack conference trip management WebApp
 built for medical delegations attending scientific conferences.
 Current event: Prague Conference 2026.
 

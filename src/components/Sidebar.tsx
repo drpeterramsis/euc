@@ -37,7 +37,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
     dashboard: "Home Page",
     schedule: "Schedule",
     sessions: "Sessions",
-    media: "News Feed",
+    media: "Gallery",
     directory: "Staff Directory",
     profile: "My Profile",
     checkins: "Check-ins"

@@ -260,7 +260,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
         dashboard: "Home Page",
         schedule: "Schedule",
         sessions: "Sessions",
-        media: "News Feed",
+        media: "Gallery",
         directory: "Staff Directory",
         profile: "My Profile",
       },
@@ -410,7 +410,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                 dashboard: "Home Page",
                 schedule: "Schedule",
                 sessions: "Sessions",
-                media: "News Feed",
+                media: "Gallery",
                 directory: "Staff Directory",
                 profile: "My Profile",
               }[key] ||

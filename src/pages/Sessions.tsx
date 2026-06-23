@@ -175,12 +175,12 @@ export default function Sessions() {
                       s.datetime_utc ||
                       localToUtc(
                         `${s.date}T${s.time || "00:00"}`,
-                        "Africa/Cairo",
+                        s.inputTimezone || "Europe/Prague",
                       );
                     const cairo = utcToDisplay(rawDate, "Africa/Cairo");
                     const prague = utcToDisplay(rawDate, "Europe/Prague");
-                    const showPrague = (s.timezoneDisplay ?? "both") === "both" || (s.timezoneDisplay ?? "both") === "prague";
-                    const showCairo = (s.timezoneDisplay ?? "both") === "both" || (s.timezoneDisplay ?? "both") === "cairo";
+                    const showPrague = true;
+                    const showCairo = false;
                     return (
                       <div className="flex flex-col gap-1.5 items-start">
                         {showPrague && (() => {
@@ -367,13 +367,11 @@ export default function Sessions() {
                   // Format timezone display nicely for message details
                   const rawDate = activeQuestionSession.datetime_utc || localToUtc(
                     `${activeQuestionSession.date}T${activeQuestionSession.time || "00:00"}`,
-                    "Africa/Cairo"
+                    activeQuestionSession.inputTimezone || "Europe/Prague"
                   );
-                  const cairo = utcToDisplay(rawDate, "Africa/Cairo");
                   const prague = utcToDisplay(rawDate, "Europe/Prague");
                   
-                  const showPrague = (activeQuestionSession.timezoneDisplay ?? "both") === "both" || (activeQuestionSession.timezoneDisplay ?? "both") === "prague";
-                  const timeStr = showPrague ? `${prague.time} (Prague)` : `${cairo.time} (Cairo)`;
+                  const timeStr = `${prague.time} (Prague)`;
 
                   const askSpeakerConfig = content?.settings?.askSpeaker || {
                     template: DEFAULT_ASK_SPEAKER_TEMPLATE,

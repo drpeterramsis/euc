@@ -49,49 +49,41 @@ export default function Activity() {
     return matchesRole(audienceObj, currentUser.role);
   };
 
-  // Mark visible messages as read automatically
-  useEffect(() => {
-    if (!currentUser || !messages || messages.length === 0) return;
+  // Toggle single message read/unread state manually
+  const markAsReadIfUnread = (msgId: string) => {
+    if (!currentUser || !messages) return;
+    const msg = messages.find((m: any) => m.id === msgId);
+    if (!msg) return;
+    const isUnread = !msg.readBy || !msg.readBy.includes(currentUser.id);
+    if (!isUnread) return;
 
-    // Filter unread messages that belong to the messages list (excluding notifications)
-    const unreadVisible = messages.filter((m: any) => {
-      const isPublished = m.status === "published" && (!m.expiresAt || new Date(m.expiresAt).getTime() > Date.now());
-      const isRead = m.readBy && m.readBy.includes(currentUser.id);
-      const belongs = m.category !== 'notification';
-
-      return isPublished && isMessageVisible(m) && belongs && !isRead;
+    const updatedMessages = messages.map((m: any) => {
+      if (m.id === msgId) {
+        const reads = new Set(m.readBy || []);
+        reads.add(currentUser.id);
+        return { ...m, readBy: Array.from(reads) };
+      }
+      return m;
     });
 
-    if (unreadVisible.length > 0) {
-      // 1. Update localStorage cache index
-      const readByLocal = JSON.parse(localStorage.getItem("euc_read_message_ids") || "[]");
-      const unreadIds = unreadVisible.map((m: any) => m.id);
-      const updatedReadLocal = Array.from(new Set([...readByLocal, ...unreadIds]));
-      localStorage.setItem("euc_read_message_ids", JSON.stringify(updatedReadLocal));
+    // Update global state
+    updateMessages(updatedMessages);
 
-      // 2. Map messages to set readBy property
-      const updatedMessages = messages.map((m: any) => {
-        if (unreadIds.includes(m.id)) {
-          const reads = new Set(m.readBy || []);
-          reads.add(currentUser.id);
-          return { ...m, readBy: Array.from(reads) };
-        }
-        return m;
-      });
+    // Sync localStorage
+    const readIds = updatedMessages
+      .filter((m: any) => m.readBy && m.readBy.includes(currentUser.id))
+      .map((m: any) => m.id);
+    localStorage.setItem("euc_read_message_ids", JSON.stringify(readIds));
 
-      // 3. Update global messages state
-      updateMessages(updatedMessages);
-
-      // 4. Synergize with server-side read API if running
-      fetch("/api/notifications/mark-read", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: currentUser.id, all: true })
-      }).catch(err => {
-        console.warn("Could not sync read-status to server:", err);
-      });
-    }
-  }, [messages, currentUser, updateMessages]);
+    // Synergize server-side on mark read
+    fetch("/api/notifications/mark-read", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: currentUser.id, id: msgId })
+    }).catch(err => {
+      console.warn("Could not sync read-status to server:", err);
+    });
+  };
 
   if (!centralAccess.enabled) {
     return (
@@ -368,7 +360,8 @@ export default function Activity() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, delay: Math.min(idx * 0.05, 0.4) }}
-                className={`p-5 rounded-2xl border transition-all duration-200 relative overflow-hidden bg-white ${
+                onClick={() => markAsReadIfUnread(item.id)}
+                className={`p-5 rounded-2xl border transition-all duration-200 relative overflow-hidden bg-white cursor-pointer hover:shadow-md ${
                   isUnread 
                     ? "border-blue-100 bg-blue-50/10 shadow-sm" 
                     : "border-gray-100 hover:border-gray-200 shadow-xs"

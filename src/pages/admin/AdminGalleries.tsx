@@ -334,7 +334,7 @@ export default function AdminGalleries() {
                   }
                   className="rounded text-black focus:ring-black"
                 />
-                Show in News Feed
+                Show in Gallery
               </label>
               <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
                 <input

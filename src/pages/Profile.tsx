@@ -770,7 +770,7 @@ export default function Profile() {
                   <div className="flex items-center gap-2">
                     <span className="text-xl">🏨</span>
                     <div>
-                      <h3 className="font-bold text-sm uppercase tracking-wide">My Hotel & Lodging Logistics</h3>
+                      <h3 className="font-bold text-sm uppercase tracking-wide">Hotel</h3>
                       <p className="text-[10px] opacity-90 font-semibold">Assigned Accommodations in Prague</p>
                     </div>
                   </div>
@@ -801,42 +801,57 @@ export default function Profile() {
 
                   {/* Hotel Text details */}
                   <div className="md:col-span-8 p-5 flex flex-col justify-between">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-3.5">
-                        <div>
-                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-0.5">Hotel Name</span>
-                          <h4 className="text-base font-black text-gray-800 leading-snug">{fullUser.hotel.name}</h4>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-3.5">
+                          <div>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-0.5">Hotel Name</span>
+                            <h4 className="text-base font-black text-gray-800 leading-snug">{fullUser.hotel.name}</h4>
+                          </div>
+                          <div>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-0.5">Address</span>
+                            <p className="text-xs text-gray-750 font-medium leading-relaxed">{fullUser.hotel.address || "Prague City Center, Czech Republic"}</p>
+                          </div>
+                          {fullUser.hotel?.mapsLink && (
+                            <a 
+                              href={fullUser.hotel.mapsLink} 
+                              target="_blank" 
+                              rel="noreferrer" 
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 underline focus:ring-1 focus:ring-emerald-500 rounded px-1 -ml-1 transition-all"
+                            >
+                              📍 View on Google Maps ↗
+                            </a>
+                          )}
                         </div>
-                        <div>
-                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-0.5">Address</span>
-                          <p className="text-xs text-gray-750 font-medium leading-relaxed">{fullUser.hotel.address || "Prague City Center, Czech Republic"}</p>
+
+                        <div className="grid grid-cols-2 gap-3 sm:border-l border-gray-150 pt-4 sm:pt-0 sm:pl-5 border-t sm:border-t-0 border-gray-150">
+                          <div>
+                            <span className="text-[9px] font-extrabold text-emerald-700 uppercase tracking-wider block mb-0.5">📅 Check-In Date</span>
+                            <p className="text-xs font-black text-gray-800">
+                              {fullUser.hotel?.checkIn ? new Date(fullUser.hotel.checkIn).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) : "—"}
+                            </p>
+                            <p className="text-[10px] text-gray-400 font-semibold mt-0.5 font-sans">Rooms ready from 14:00</p>
+                          </div>
+                          <div>
+                            <span className="text-[9px] font-extrabold text-rose-700 uppercase tracking-wider block mb-0.5">📅 Check-Out Date</span>
+                            <p className="text-xs font-black text-gray-800">
+                              {fullUser.hotel?.checkOut ? new Date(fullUser.hotel.checkOut).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) : "—"}
+                            </p>
+                            <p className="text-[10px] text-gray-400 font-semibold mt-0.5 font-sans">Key return before 11:00 AM</p>
+                          </div>
                         </div>
-                        {fullUser.hotel?.mapsLink && (
-                          <a 
-                            href={fullUser.hotel.mapsLink} 
-                            target="_blank" 
-                            rel="noreferrer" 
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 underline focus:ring-1 focus:ring-emerald-500 rounded px-1 -ml-1 transition-all"
-                          >
-                            📍 View on Google Maps ↗
-                          </a>
-                        )}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3 sm:border-l border-gray-150 pt-4 sm:pt-0 sm:pl-5 border-t sm:border-t-0 border-gray-150">
-                        <div>
-                          <span className="text-[9px] font-extrabold text-emerald-700 uppercase tracking-wider block mb-0.5">📅 Check-In Date</span>
-                          <p className="text-xs font-black text-gray-800">
-                            {fullUser.hotel?.checkIn ? new Date(fullUser.hotel.checkIn).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) : "—"}
+                      {/* Hotel Description */}
+                      <div className="pt-4 border-t border-gray-150">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">About the Hotel</span>
+                        <div className="text-xs text-gray-650 leading-relaxed font-normal space-y-2">
+                          <p>
+                            Diplomat Hotel Prague is located in the heart of the prestigious diplomatic district of Dejvice, just minutes from the historic center of Prague and 12 kilometers from the airport. Evropská 15, 160 41 Prague 6.
                           </p>
-                          <p className="text-[10px] text-gray-400 font-semibold mt-0.5 font-sans">Rooms ready from 14:00</p>
-                        </div>
-                        <div>
-                          <span className="text-[9px] font-extrabold text-rose-700 uppercase tracking-wider block mb-0.5">📅 Check-Out Date</span>
-                          <p className="text-xs font-black text-gray-800">
-                            {fullUser.hotel?.checkOut ? new Date(fullUser.hotel.checkOut).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) : "—"}
+                          <p>
+                            Just steps away from the Dejvicka Underground Station, Diplomat Hotel Prague is 5 minutes from Prague's city centre. Prague Castle is about 600 metres away. Bus and tram stops, as well as a stop of the airport bus, are right outside the main entrance.
                           </p>
-                          <p className="text-[10px] text-gray-400 font-semibold mt-0.5 font-sans">Key return before 11:00 AM</p>
                         </div>
                       </div>
                     </div>

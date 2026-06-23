@@ -1,8 +1,8 @@
 {
-  "name": "euc-eva-uro-club",
+  "name": "euc-experts-of-uro-community",
   "private": true,
   "version": "1.0.1010",
-  "description": "EUC – Experts of URO CLUB Prague Conference Trip Management App",
+  "description": "EUC – Experts of Urology Community Prague Conference Trip Management App",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",

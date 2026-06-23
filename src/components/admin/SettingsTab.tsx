@@ -100,7 +100,7 @@ export default function SettingsTab() {
       case "announcements": return `💬 ${navLabels.dashboard || "Home Page"} (Messages)`;
       case "agenda": return `📅 ${navLabels.schedule || "Schedule"} (Sessions/Schedule)`;
       case "posts": return `📝 ${navLabels.sessions || "Sessions"} (Blog/Stream)`;
-      case "media": return `🎥 ${navLabels.media || "News Feed"} (Audio/Video)`;
+      case "media": return `🎥 ${navLabels.media || "Gallery"} (Audio/Video)`;
       case "staffDirectory": return `👥 ${navLabels.directory || "Staff Directory"}`;
       default: return page.charAt(0).toUpperCase() + page.slice(1);
     }

@@ -3,7 +3,7 @@ import Admin from './AdminPage';
 
 // ─────────────────────────────────────────────
 // FILE: src/pages/AdminPosts.tsx
-// PURPOSE: Admin view pre-set to the News Feed / Posts management tab.
+// PURPOSE: Admin view pre-set to the Gallery / Posts management tab.
 // ─────────────────────────────────────────────
 
 export default function AdminPosts() {

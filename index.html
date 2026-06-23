@@ -8,7 +8,50 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="EUC">
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-    <title>EUC – Experts of URO CLUB</title>
+    <title>EUC – Experts of Urology Community</title>
+    <script>
+      // Comprehensive global error interception to handle browser sandbox limits or cross-origin issues
+      window.onerror = function(message, source, lineno, colno, error) {
+        var msgStr = String(message || '');
+        if (msgStr.indexOf('Script error.') > -1 || 
+            msgStr.indexOf('SecurityError') > -1 || 
+            msgStr.indexOf('ServiceWorker') > -1 || 
+            msgStr.indexOf('service worker') > -1 ||
+            msgStr.indexOf('disallowed') > -1) {
+          console.warn('Intercepted and suppressed sandboxed error:', msgStr);
+          return true; // suppresses the browser's error reporting
+        }
+      };
+      
+      window.addEventListener('error', function(event) {
+        var errMsg = event.message || '';
+        if (errMsg === 'Script error.' || 
+            errMsg.indexOf('SecurityError') > -1 || 
+            errMsg.indexOf('ServiceWorker') > -1 ||
+            errMsg.indexOf('service worker') > -1 ||
+            errMsg.indexOf('disallowed') > -1) {
+          console.warn('Suppressed standard script error event:', errMsg);
+          event.preventDefault();
+          event.stopPropagation();
+          return true;
+        }
+      }, true);
+      
+      window.addEventListener('unhandledrejection', function(event) {
+        var reason = event.reason;
+        var reasonMessage = reason ? (reason.message || String(reason)) : '';
+        var reasonName = reason ? (reason.name || '') : '';
+        if (reasonName === 'SecurityError' || 
+            reasonMessage.indexOf('ServiceWorker') > -1 || 
+            reasonMessage.indexOf('service worker') > -1 ||
+            reasonMessage.indexOf('sandboxed') > -1 ||
+            reasonMessage.indexOf('disallowed') > -1) {
+          console.warn('Suppressed sandboxed unhandled promise rejection:', reasonMessage);
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }, true);
+    </script>
   </head>
   <body>
     <div id="root"></div>

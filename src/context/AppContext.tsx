@@ -228,7 +228,7 @@ export const DEFAULT_APP_CONFIG: AppConfig = {
     dashboard: "Home Page",
     schedule: "Schedule",
     sessions: "Sessions",
-    media: "News Feed",
+    media: "Gallery",
     directory: "Staff Directory",
     profile: "My Profile"
   },
@@ -247,7 +247,7 @@ export const DEFAULT_APP_CONFIG: AppConfig = {
 };
 
 export const DEFAULT_CONTENT = {
-  home: { description: "Welcome to Experts of URO CLUB Prague Conference Trip Management App" },
+  home: { description: "Welcome to Experts of Urology Community Prague Conference Trip Management App" },
   announcements: [],
   agenda: [],
   posts: [],

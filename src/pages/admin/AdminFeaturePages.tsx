@@ -82,7 +82,7 @@ export const AdminUsers = () => {
   );
 };
 
-export const AdminPosts = () => <AdminPlaceholder title="News Feed Posts" />;
+export const AdminPosts = () => <AdminPlaceholder title="Gallery" />;
 export const AdminCategories = () => (
   <AdminPlaceholder title="Post Categories" />
 );

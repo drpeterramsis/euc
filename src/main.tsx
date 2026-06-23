@@ -12,8 +12,18 @@ import './index.css';
 // @ts-ignore
 import { registerSW } from 'virtual:pwa-register';
 
-if ('serviceWorker' in navigator) {
-  registerSW({ immediate: true });
+// Only register service worker in production environments (not inside the development sandboxed iframe)
+if ('serviceWorker' in navigator && !import.meta.env.DEV) {
+  try {
+    registerSW({ 
+      immediate: true,
+      onRegisterError(error: any) {
+        console.warn('Service worker registration failed:', error);
+      }
+    });
+  } catch (err) {
+    console.warn('Failed to call registerSW:', err);
+  }
 }
 
 const forceLight = () => {
