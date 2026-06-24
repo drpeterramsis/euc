@@ -48,13 +48,14 @@ export default function WorldCupCard() {
 
   // Voting inputs
   const [selectedWinner, setSelectedWinner] = useState<"Egypt" | "Iran" | "Draw" | "">("");
-  const [predictScoreEgypt, setPredictScoreEgypt] = useState("");
-  const [predictScoreIran, setPredictScoreIran] = useState("");
+  const [predictScoreEgypt, setPredictScoreEgypt] = useState("0");
+  const [predictScoreIran, setPredictScoreIran] = useState("0");
   const [votingMessage, setVotingMessage] = useState({ type: "", text: "" });
   const [isSubmittingVote, setIsSubmittingVote] = useState(false);
 
   // Admin settings
   const [isFinalized, setIsFinalized] = useState(false);
+  const [isPredictionsClosed, setIsPredictionsClosed] = useState(false);
   const [actualWinner, setActualWinner] = useState<"Egypt" | "Iran" | "Draw" | "">("");
   const [actualScoreEgypt, setActualScoreEgypt] = useState("");
   const [actualScoreIran, setActualScoreIran] = useState("");
@@ -123,6 +124,7 @@ export default function WorldCupCard() {
       setLiveScoreEgypt(activeMatch.liveScoreEgypt || "");
       setLiveScoreIran(activeMatch.liveScoreIran || "");
       setMatchGroup(activeMatch.matchGroup || "");
+      setIsPredictionsClosed(activeMatch.isPredictionsClosed || false);
       if (activeMatch.actualScore && activeMatch.actualScore.includes("-")) {
         const parts = activeMatch.actualScore.split("-");
         setActualScoreEgypt(parts[0].trim());
@@ -219,20 +221,25 @@ export default function WorldCupCard() {
       setVotingMessage({ type: "error", text: "Please log in to cast your prediction!" });
       return;
     }
+    if (isPredictionsClosed || (new Date(match.dateTime).getTime() <= Date.now())) {
+      setVotingMessage({ type: "error", text: "Predictions are closed for this match!" });
+      return;
+    }
     if (!selectedWinner) {
       setVotingMessage({ type: "error", text: "Please choose who you think will win!" });
+      return;
+    }
+    if (!predictScoreEgypt || !predictScoreIran) {
+      setVotingMessage({ type: "error", text: "Please enter both scores for your prediction!" });
       return;
     }
 
     setIsSubmittingVote(true);
     setVotingMessage({ type: "", text: "" });
 
-    console.log("Submitting vote:", { selectedWinner, predictScoreEgypt, predictScoreIran });
-    const scoreEgypt = predictScoreEgypt ? predictScoreEgypt.trim() : "";
-    const scoreIran = predictScoreIran ? predictScoreIran.trim() : "";
-    const scoreStr = (scoreEgypt !== "" && scoreIran !== "") 
-      ? `${scoreEgypt}-${scoreIran}`
-      : "";
+    const scoreEgypt = predictScoreEgypt.trim();
+    const scoreIran = predictScoreIran.trim();
+    const scoreStr = `${scoreEgypt}-${scoreIran}`;
     console.log("Calculated scoreStr:", scoreStr);
     
     try {
@@ -278,6 +285,32 @@ export default function WorldCupCard() {
     }
   };
 
+  const handleResetPrediction = async () => {
+    setIsSubmittingVote(true);
+    setVotingMessage({ type: "", text: "" });
+    try {
+      const predictions = await readJSON("worldcup_predictions.json") || [];
+      const predictionsArray = Array.isArray(predictions) ? predictions : [];
+      const lowerUsername = username.trim().toLowerCase();
+      
+      const filteredPredictions = predictionsArray.filter(
+        (p: any) => p && p.username && p.username.toLowerCase() !== lowerUsername
+      );
+      
+      await writeJSON("worldcup_predictions.json", filteredPredictions);
+      setVotingMessage({ type: "success", text: "Prediction reset! 🔄" });
+      setSelectedWinner("");
+      setPredictScoreEgypt("0");
+      setPredictScoreIran("0");
+      await fetchMatchData();
+    } catch (err: any) {
+      console.error("Failed to reset prediction:", err);
+      setVotingMessage({ type: "error", text: "Failed to reset prediction. Please try again." });
+    } finally {
+      setIsSubmittingVote(false);
+    }
+  };
+
   // Submit Admin settings
   const handleAdminSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -290,6 +323,7 @@ export default function WorldCupCard() {
         liveStreamUrl: (formLiveStream || "").trim(),
         isLive,
         isFinalized,
+        isPredictionsClosed,
         liveScoreEgypt: liveScoreEgypt.trim(),
         liveScoreIran: liveScoreIran.trim(),
         matchGroup: matchGroup.trim(),
@@ -594,9 +628,10 @@ export default function WorldCupCard() {
               {/* Score inputs */}
               <div className="flex items-center justify-between gap-3 bg-black/20 p-2.5 rounded-lg border border-white/15">
                 <span className="text-[9px] font-black uppercase tracking-wider text-emerald-100">
-                  Predicted Score (Optional)
+                  Predicted Score
                 </span>
                 <div className="flex items-center gap-1.5">
+                  <span className="text-sm">🇪🇬</span>
                   <input
                     type="number"
                     min="0"
@@ -616,6 +651,7 @@ export default function WorldCupCard() {
                     onChange={(e) => setPredictScoreIran(e.target.value)}
                     className="w-10 p-1 bg-black/40 border border-white/25 rounded text-center text-xs font-extrabold focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 text-white"
                   />
+                  <span className="text-sm">🇮🇷</span>
                 </div>
               </div>
 
@@ -644,6 +680,16 @@ export default function WorldCupCard() {
                   </>
                 )}
               </button>
+              {userVote && (
+                <button
+                  type="button"
+                  onClick={handleResetPrediction}
+                  disabled={isSubmittingVote}
+                  className="w-full bg-red-900/40 hover:bg-red-900/60 text-red-100 font-black uppercase tracking-wider text-xs py-2.5 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5 mt-2"
+                >
+                  Reset Prediction
+                </button>
+              )}
             </form>
           </div>
         </div>
@@ -741,12 +787,14 @@ export default function WorldCupCard() {
                             <th className="pb-1.5">User</th>
                             <th className="pb-1.5 text-center">Predicts</th>
                             <th className="pb-1.5 text-right">Score Guess</th>
+                            <th className="pb-1.5 text-right">Time</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/10">
                           {votersList.map((vote) => {
                             const isWinnerCorrect = isFinalized && actualWinner && vote.winner === actualWinner;
                             const isScoreCorrect = isFinalized && actualScoreEgypt && actualScoreIran && vote.score === `${actualScoreEgypt}-${actualScoreIran}`;
+                            const scoreParts = (vote.score || "0-0").split("-");
 
                             return (
                               <tr key={vote.username} className="hover:bg-white/5">
@@ -760,8 +808,11 @@ export default function WorldCupCard() {
                                 </td>
                                 <td className="py-2 text-right font-black text-amber-300 font-mono">
                                   <span className={isScoreCorrect ? "bg-emerald-600 text-white px-1.5 py-0.5 rounded" : ""}>
-                                    {vote.score || "—"}
+                                    🇪🇬{scoreParts[0] || "0"} - {scoreParts[1] || "0"}🇮🇷
                                   </span>
+                                </td>
+                                <td className="py-2 text-right font-semibold text-white/50 text-[9px]">
+                                  {vote.updatedAt ? new Date(vote.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "—"}
                                 </td>
                               </tr>
                             );
@@ -879,6 +930,15 @@ export default function WorldCupCard() {
                           className="accent-amber-400"
                         />
                         <span className="text-[10px] font-black uppercase tracking-wider text-white">Finalize Match Result</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={isPredictionsClosed}
+                          onChange={(e) => setIsPredictionsClosed(e.target.checked)}
+                          className="accent-red-400"
+                        />
+                        <span className="text-[10px] font-black uppercase tracking-wider text-white">Close Predictions</span>
                       </label>
                       {isFinalized && (
                         <div className="space-y-2 bg-black/30 p-3 rounded">
