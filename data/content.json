@@ -39,15 +39,21 @@
             "comingSoon": false
           },
           "posts": {
-            "enabled": false,
+            "enabled": true,
             "comingSoon": false
           },
           "media": {
-            "enabled": false,
+            "enabled": true,
             "comingSoon": false
           }
         }
       }
+    },
+    "askSpeaker": {
+      "template": "Hello *{speakerName}*,\n\nMy name is *{senderName}*.\n\nI have a question regarding your session \"*{sessionTitle}*\":\nDate: {date}\nTime: {time}\nLocation: {location}\n\n_\"{questionText}\"_",
+      "includeDate": true,
+      "includeTime": true,
+      "includeLocation": true
     }
   }
 }
