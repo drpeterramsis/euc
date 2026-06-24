@@ -1,6 +1,6 @@
 import React, { useState, useEffect, FormEvent } from "react";
 import { useApp } from "../context/AppContext";
-import confetti from 'canvas-confetti';
+import * as confetti from 'canvas-confetti';
 import { 
   Trophy, 
   Tv, 
@@ -75,7 +75,7 @@ export default function WorldCupCard() {
   // Celebration
   useEffect(() => {
     if (celebrateEgyptWins && actualWinner === "Egypt" && isFinalized) {
-       confetti({
+       (confetti as any)({
          particleCount: 150,
          spread: 70,
          origin: { y: 0.6 }
@@ -91,10 +91,14 @@ export default function WorldCupCard() {
     try {
       // 1. Fetch match configuration
       const matchResult = await readJSON("worldcup_match.json") as any;
-      let activeMatch = {
+      let activeMatch: any = {
         title: "Egypt vs Iran — FIFA World Cup",
         dateTime: "2026-06-26T21:00:00",
-        liveStreamUrl: ""
+        liveStreamUrl: "",
+        isFinalized: false,
+        actualWinner: "",
+        actualScore: "",
+        celebrateEgyptWins: false
       };
       if (matchResult && !Array.isArray(matchResult)) {
         activeMatch = matchResult;
@@ -215,9 +219,12 @@ export default function WorldCupCard() {
     setVotingMessage({ type: "", text: "" });
 
     console.log("Submitting vote:", { selectedWinner, predictScoreEgypt, predictScoreIran });
-    const scoreStr = (predictScoreEgypt.trim() !== "" && predictScoreIran.trim() !== "") 
-      ? `${predictScoreEgypt.trim()}-${predictScoreIran.trim()}`
+    const scoreEgypt = predictScoreEgypt ? predictScoreEgypt.trim() : "";
+    const scoreIran = predictScoreIran ? predictScoreIran.trim() : "";
+    const scoreStr = (scoreEgypt !== "" && scoreIran !== "") 
+      ? `${scoreEgypt}-${scoreIran}`
       : "";
+    console.log("Calculated scoreStr:", scoreStr);
 
     try {
       const predictions = await readJSON("worldcup_predictions.json") || [];
@@ -236,11 +243,14 @@ export default function WorldCupCard() {
       };
 
       if (existingIndex > -1) {
+        console.log("Updating existing prediction at index:", existingIndex);
         predictionsArray[existingIndex] = voteData;
       } else {
+        console.log("Adding new prediction");
         predictionsArray.push(voteData);
       }
 
+      console.log("Saving predictionsArray:", predictionsArray);
       await writeJSON("worldcup_predictions.json", predictionsArray);
       setVotingMessage({ type: "success", text: "Prediction successfully saved! 🎉" });
       await fetchMatchData();
