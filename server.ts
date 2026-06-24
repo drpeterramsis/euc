@@ -219,6 +219,132 @@ async function startServer() {
     }
   });
 
+  // --- World Cup Event Endpoints ---
+  app.get("/api/worldcup/match", async (req, res) => {
+    try {
+      const username = (req.query.username as string || "").trim().toLowerCase();
+      let match: any = await kv.get("worldcup:match");
+      if (!match) {
+        match = {
+          title: "Egypt vs Iran — FIFA World Cup",
+          dateTime: "2026-06-26T21:00:00",
+          liveStreamUrl: "",
+        };
+        await kv.set("worldcup:match", match);
+      }
+
+      // Fetch user's individual vote
+      let userVote = null;
+      if (username) {
+        userVote = await kv.get(`worldcup:vote:${username}`);
+      }
+
+      // Fetch all votes to summarize
+      const votedUsers: string[] = await kv.smembers("worldcup:voted_users") || [];
+      const votesSummary = { egypt: 0, iran: 0, draw: 0, total: 0 };
+      
+      for (const user of votedUsers) {
+        const vote: any = await kv.get(`worldcup:vote:${user}`);
+        if (vote) {
+          votesSummary.total++;
+          const winnerLower = (vote.winner || "").toLowerCase();
+          if (winnerLower === "egypt") votesSummary.egypt++;
+          else if (winnerLower === "iran") votesSummary.iran++;
+          else if (winnerLower === "draw") votesSummary.draw++;
+        }
+      }
+
+      return res.status(200).json({
+        match,
+        votesSummary,
+        userVote,
+      });
+    } catch (err: any) {
+      console.error("Error in GET /api/worldcup/match:", err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/worldcup/vote", async (req, res) => {
+    try {
+      const { username, winner, score } = req.body;
+      if (!username) {
+        return res.status(400).json({ error: "username is required" });
+      }
+      if (!winner || !["Egypt", "Iran", "Draw"].includes(winner)) {
+        return res.status(400).json({ error: "Invalid winner selected" });
+      }
+
+      const lowerUsername = username.trim().toLowerCase();
+      const voteData = {
+        winner,
+        score: (score || "").trim(),
+        updatedAt: Date.now(),
+      };
+
+      await kv.set(`worldcup:vote:${lowerUsername}`, voteData);
+      await kv.sadd("worldcup:voted_users", lowerUsername);
+
+      return res.status(200).json({ success: true, userVote: voteData });
+    } catch (err: any) {
+      console.error("Error in POST /api/worldcup/vote:", err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/worldcup/admin/settings", async (req, res) => {
+    try {
+      const { role, title, dateTime, liveStreamUrl } = req.body;
+      if (role !== "admin") {
+        return res.status(403).json({ error: "Forbidden: Admin privilege required" });
+      }
+
+      const updatedMatch = {
+        title: (title || "Egypt vs Iran — FIFA World Cup").trim(),
+        dateTime: (dateTime || "2026-06-26T21:00:00").trim(),
+        liveStreamUrl: (liveStreamUrl || "").trim(),
+      };
+
+      await kv.set("worldcup:match", updatedMatch);
+      return res.status(200).json({ success: true, match: updatedMatch });
+    } catch (err: any) {
+      console.error("Error in POST /api/worldcup/admin/settings:", err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/worldcup/admin/votes", async (req, res) => {
+    try {
+      const role = req.query.role as string;
+      if (role !== "admin") {
+        return res.status(403).json({ error: "Forbidden: Admin privilege required" });
+      }
+
+      const votedUsers: string[] = await kv.smembers("worldcup:voted_users") || [];
+      const votes: any[] = [];
+
+      for (const user of votedUsers) {
+        const vote: any = await kv.get(`worldcup:vote:${user}`);
+        if (vote) {
+          votes.push({
+            username: user,
+            winner: vote.winner,
+            score: vote.score,
+            updatedAt: vote.updatedAt,
+          });
+        }
+      }
+
+      // Sort by latest vote
+      votes.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+
+      return res.status(200).json({ votes });
+    } catch (err: any) {
+      console.error("Error in GET /api/worldcup/admin/votes:", err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
   // 1) Create user
   app.post("/api/users", async (req, res) => {
     try {

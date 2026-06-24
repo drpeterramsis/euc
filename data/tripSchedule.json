@@ -32,7 +32,11 @@
         "type": "hotel",
         "inputTimezone": "Europe/Prague",
         "timezoneDisplay": "prague",
-        "important": false
+        "important": false,
+        "location": "Vienna House Diplomat Prague",
+        "mapLocation": "https://maps.app.goo.gl/mqPnpBEAtUixG4KM6",
+        "imageUrl": "https://dl.dropboxusercontent.com/scl/fi/lf60zdhhkwucu3zhmc074/Diplomat-Hotel-Prague.png?rlkey=iit6sq96u71ug40mb3603yyky&st=ojhoihcn",
+        "description": "Vienna House Diplomat Prague is located in the prestigious diplomatic district of Dejvice, offering elegant rooms and premium services."
       },
       {
         "id": "TSE_1781013670060",
@@ -52,7 +56,11 @@
         "type": "activity",
         "inputTimezone": "Europe/Prague",
         "timezoneDisplay": "prague",
-        "important": false
+        "important": false,
+        "location": "U Cedru Restaurant",
+        "mapLocation": "https://maps.app.goo.gl/ReMux55RvdN7LWLY9",
+        "imageUrl": "https://dl.dropboxusercontent.com/scl/fi/te68jww02mk0gqt9x1qbp/ucedru.jpeg?rlkey=4o25guy40ulnvjlm2pj7szj9t&st=3mxakn0u",
+        "description": "Indulge in authentic, aromatic Lebanese cuisine and traditional hospitality in a beautiful setting."
       }
     ]
   },
@@ -110,7 +118,11 @@
         "type": "activity",
         "inputTimezone": "Europe/Prague",
         "timezoneDisplay": "prague",
-        "important": false
+        "important": false,
+        "location": "Charles Bridge Restaurant",
+        "mapLocation": "https://maps.app.goo.gl/T6Tw8nRa922Z5Baw9",
+        "imageUrl": "https://dl.dropboxusercontent.com/scl/fi/2go5z1z0i6h5tapwobrex/charles.jpg?rlkey=yyft914boi60bncdj1o3v0px9&st=ep9x1nsy",
+        "description": "Dine with a breathtaking view of the historic Charles Bridge, enjoying traditional Czech and international dishes."
       },
       {
         "id": "TSE_1781014361013",
@@ -178,7 +190,11 @@
         "type": "travel",
         "inputTimezone": "Europe/Prague",
         "timezoneDisplay": "prague",
-        "important": false
+        "important": false,
+        "location": "Fashion Arena Prague Outlet",
+        "mapLocation": "https://maps.app.goo.gl/HXr2Q1TZF3bLJPn59",
+        "imageUrl": "https://dl.dropboxusercontent.com/scl/fi/1j7g3nkbdcdnzuihr7rr2/fashion.jpg?rlkey=t9iupn4wul1evj5jeyl05502i&st=d1cfvgmo",
+        "description": "Prague's premium open-air outlet shopping mall featuring global designer brands at special prices."
       },
       {
         "id": "TSE_1781014744176",
@@ -198,7 +214,11 @@
         "type": "activity",
         "inputTimezone": "Europe/Prague",
         "timezoneDisplay": "prague",
-        "important": false
+        "important": false,
+        "location": "Folklore Garden",
+        "mapLocation": "https://maps.app.goo.gl/BusMREWMEPK2erVX8",
+        "imageUrl": "https://dl.dropboxusercontent.com/scl/fi/yp5lx88j2s20lz6vg858d/folklore.jpg?rlkey=u4krgdqjb1dhk4me8ldp8308y&st=7b7c84h0",
+        "description": "Experience an unforgettable evening of traditional Czech folklore music and dance show, paired with a 4-course dinner and unlimited drinks."
       },
       {
         "id": "TSE_1781014914915",

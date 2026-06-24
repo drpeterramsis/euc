@@ -590,13 +590,29 @@ export default function Schedule() {
                               </div>
                             )}
 
-                            {event.mapLocation && (
+                            {event.mapLocation && !event.imageUrl && (
                               <div className="mt-2.5 max-w-xs sm:max-w-sm rounded-lg overflow-hidden border border-gray-150 shadow-xs">
                                 <MapPhoto 
                                   url={event.mapLocation} 
                                   alt={event.location || event.label} 
                                   className="w-full h-24 object-cover animate-fadeIn"
                                 />
+                              </div>
+                            )}
+
+                            {event.imageUrl && (
+                              <div className="mt-3 bg-gray-50/30 rounded-xl border border-gray-150/80 overflow-hidden w-full max-w-md">
+                                <div className="divide-y divide-gray-150 w-full">
+                                  <DestinationCard 
+                                    place={{
+                                      name: event.location || event.label,
+                                      category: event.type === "hotel" ? "🏨 Hotel" : event.type === "activity" ? "🍽️ Restaurant" : event.type === "travel" ? "🛍️ Outlet Mall" : "📍 Venue",
+                                      description: event.description || `View visual details and map directions for ${event.location || event.label}.`,
+                                      imageUrl: event.imageUrl,
+                                      mapUrl: event.mapLocation || "#",
+                                    }}
+                                  />
+                                </div>
                               </div>
                             )}
 

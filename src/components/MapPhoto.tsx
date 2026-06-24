@@ -18,6 +18,7 @@ export function MapPhoto({ url, alt, className = "w-full h-32 object-cover round
     if (
       url.match(/\.(jpeg|jpg|gif|png|webp|svg|bmp|tiff)/i) || 
       url.includes("images.unsplash.com") || 
+      url.includes("dropboxusercontent.com") ||
       url.includes("placeholder") ||
       url.startsWith("data:image/")
     ) {

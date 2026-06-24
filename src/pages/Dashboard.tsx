@@ -21,6 +21,7 @@ import GalleryCard from '../components/GalleryCard';
 import { formatTimeAmPm, splitAmPm } from '../utils/timezone';
 import CheckinsShortcut from '../components/CheckinsShortcut';
 import WeatherForecast from '../components/WeatherForecast';
+import WorldCupCard from '../components/WorldCupCard';
 
 // ─────────────────────────────────────────────
 // SUMMARY CARD FOR FLIGHTS (Compact, clean with icons)
@@ -231,15 +232,16 @@ export default function Dashboard() {
         </div>
       </div>
 
-
-
-
       {/* Dynamic Smart Countdown from configuration & schedule */}
       <div className="mb-8">
         <SmartCountdown
           scheduleItems={scheduleItems}
           countdownConfig={countdownConfig}
         />
+      </div>
+
+      <div className="mb-8">
+        <WorldCupCard />
       </div>
 
             {/* Your Trip Logistics Compact Highlights */}

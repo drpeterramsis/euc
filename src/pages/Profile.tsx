@@ -153,7 +153,7 @@ export default function Profile() {
           arrivalTime: fullUser.flightDetails?.departure?.arrivalTime || "",
           duration: fullUser.flightDetails?.departure?.duration || fullUser.flightDetails?.duration || "",
           aircraft: fullUser.flightDetails?.departure?.aircraft || fullUser.flightDetails?.aircraft || "",
-          baggage: fullUser.flightDetails?.departure?.baggage || fullUser.flightDetails?.baggageAllowance || "2 Piece(s)",
+          baggage: fullUser.flightDetails?.departure?.baggage || fullUser.flightDetails?.baggageAllowance || "2 pieces * 23 Kg",
           meal: fullUser.flightDetails?.departure?.meal || fullUser.flightDetails?.meal || "Meal",
           cabinClass: fullUser.flightDetails?.departure?.cabinClass || fullUser.flightDetails?.cabinClass || "Economy",
           bookingStatus: fullUser.flightDetails?.departure?.bookingStatus || fullUser.flightDetails?.bookingStatus || "Confirmed",
@@ -193,7 +193,7 @@ export default function Profile() {
           arrivalTime: fullUser.flightDetails?.arrival?.arrivalTime || "",
           duration: fullUser.flightDetails?.arrival?.duration || fullUser.flightDetails?.duration || "",
           aircraft: fullUser.flightDetails?.arrival?.aircraft || fullUser.flightDetails?.aircraft || "",
-          baggage: fullUser.flightDetails?.arrival?.baggage || fullUser.flightDetails?.baggageAllowance || "2 Piece(s)",
+          baggage: fullUser.flightDetails?.arrival?.baggage || fullUser.flightDetails?.baggageAllowance || "2 pieces * 23 Kg",
           meal: fullUser.flightDetails?.arrival?.meal || fullUser.flightDetails?.meal || "Meal",
           cabinClass: fullUser.flightDetails?.arrival?.cabinClass || fullUser.flightDetails?.cabinClass || "Economy",
           bookingStatus: fullUser.flightDetails?.arrival?.bookingStatus || fullUser.flightDetails?.bookingStatus || "Confirmed",
@@ -564,7 +564,7 @@ export default function Profile() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-semibold text-[10px] text-gray-400 uppercase tracking-wider">Pass Preferences:</span>
                       <span className="bg-gray-100 px-2 py-0.5 rounded text-[11px] font-bold text-gray-750">🍽 {fullUser.flightDetails?.departure?.meal || fullUser.flightDetails?.meal || "Meal"}</span>
-                      <span className="bg-gray-100 px-2.5 py-0.5 rounded text-[11px] font-bold text-gray-750">💼 {fullUser.flightDetails?.departure?.baggage || fullUser.flightDetails?.baggageAllowance || "2 Piece(s)"}</span>
+                      <span className="bg-gray-100 px-2.5 py-0.5 rounded text-[11px] font-bold text-gray-750">💼 {fullUser.flightDetails?.departure?.baggage || fullUser.flightDetails?.baggageAllowance || "2 pieces * 23 Kg"}</span>
                     </div>
                   </div>
                 </div>
@@ -756,7 +756,7 @@ export default function Profile() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-semibold text-[10px] text-gray-400 uppercase tracking-wider">Pass Preferences:</span>
                       <span className="bg-gray-100 px-2 py-0.5 rounded text-[11px] font-bold text-gray-750">🍽 {fullUser.flightDetails?.arrival?.meal || fullUser.flightDetails?.meal || "Meal"}</span>
-                      <span className="bg-gray-100 px-2.5 py-0.5 rounded text-[11px] font-bold text-gray-750">💼 {fullUser.flightDetails?.arrival?.baggage || fullUser.flightDetails?.baggageAllowance || "2 Piece(s)"}</span>
+                      <span className="bg-gray-100 px-2.5 py-0.5 rounded text-[11px] font-bold text-gray-750">💼 {fullUser.flightDetails?.arrival?.baggage || fullUser.flightDetails?.baggageAllowance || "2 pieces * 23 Kg"}</span>
                     </div>
                   </div>
                 </div>

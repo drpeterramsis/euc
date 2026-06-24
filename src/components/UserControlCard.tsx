@@ -139,7 +139,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
           arrivalGate:       user.flightDetails?.departure?.arrivalGate       || "",
           duration:          user.flightDetails?.departure?.duration          || user.flightDetails?.duration || "",
           aircraft:          user.flightDetails?.departure?.aircraft          || user.flightDetails?.aircraft || "",
-          baggage:           user.flightDetails?.departure?.baggage           || user.flightDetails?.baggageAllowance || "2 Piece(s)",
+          baggage:           user.flightDetails?.departure?.baggage           || user.flightDetails?.baggageAllowance || "2 pieces * 23 Kg",
           meal:              user.flightDetails?.departure?.meal              || user.flightDetails?.meal || "Meal",
           cabinClass:        user.flightDetails?.departure?.cabinClass        || user.flightDetails?.cabinClass || "Economy",
           bookingStatus:     user.flightDetails?.departure?.bookingStatus     || user.flightDetails?.bookingStatus || "Confirmed",
@@ -166,7 +166,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
           arrivalGate:       user.flightDetails?.arrival?.arrivalGate       || "",
           duration:          user.flightDetails?.arrival?.duration          || user.flightDetails?.duration || "",
           aircraft:          user.flightDetails?.arrival?.aircraft          || user.flightDetails?.aircraft || "",
-          baggage:           user.flightDetails?.arrival?.baggage           || user.flightDetails?.baggageAllowance || "2 Piece(s)",
+          baggage:           user.flightDetails?.arrival?.baggage           || user.flightDetails?.baggageAllowance || "2 pieces * 23 Kg",
           meal:              user.flightDetails?.arrival?.meal              || user.flightDetails?.meal || "Meal",
           cabinClass:        user.flightDetails?.arrival?.cabinClass        || user.flightDetails?.cabinClass || "Economy",
           bookingStatus:     user.flightDetails?.arrival?.bookingStatus     || user.flightDetails?.bookingStatus || "Confirmed",
@@ -194,8 +194,8 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
       aircraft:            "",
       meal:                "",
       duration:            "",
-      departure: { flightNumber: "", date: "", time: "", departureAirport: "", departureAirportLink: "", arrivalAirport: "", arrivalAirportLink: "", terminal: "", gate: "", inputTimezone: "Africa/Cairo", timezoneDisplay: "both", arrivalTime: "", arrivalDate: "", arrivalTerminal: "", arrivalGate: "", duration: "", aircraft: "", baggage: "2 Piece(s)", meal: "Meal", cabinClass: "Economy", bookingStatus: "Confirmed", frequentFlyerNumber: "" },
-      arrival: { flightNumber: "", date: "", time: "", departureAirport: "", departureAirportLink: "", arrivalAirport: "", arrivalAirportLink: "", terminal: "", gate: "", inputTimezone: "Africa/Cairo", timezoneDisplay: "both", arrivalTime: "", arrivalDate: "", arrivalTerminal: "", arrivalGate: "", duration: "", aircraft: "", baggage: "2 Piece(s)", meal: "Meal", cabinClass: "Economy", bookingStatus: "Confirmed", frequentFlyerNumber: "" },
+      departure: { flightNumber: "", date: "", time: "", departureAirport: "", departureAirportLink: "", arrivalAirport: "", arrivalAirportLink: "", terminal: "", gate: "", inputTimezone: "Africa/Cairo", timezoneDisplay: "both", arrivalTime: "", arrivalDate: "", arrivalTerminal: "", arrivalGate: "", duration: "", aircraft: "", baggage: "2 pieces * 23 Kg", meal: "Meal", cabinClass: "Economy", bookingStatus: "Confirmed", frequentFlyerNumber: "" },
+      arrival: { flightNumber: "", date: "", time: "", departureAirport: "", departureAirportLink: "", arrivalAirport: "", arrivalAirportLink: "", terminal: "", gate: "", inputTimezone: "Africa/Cairo", timezoneDisplay: "both", arrivalTime: "", arrivalDate: "", arrivalTerminal: "", arrivalGate: "", duration: "", aircraft: "", baggage: "2 pieces * 23 Kg", meal: "Meal", cabinClass: "Economy", bookingStatus: "Confirmed", frequentFlyerNumber: "" },
       hotelName: "", hotelAddress: "", checkIn: "",
       checkOut: "", roomNumber: "", mapsLink: "", hotelPhotoUrl: "", transfers: [],
     };
@@ -289,7 +289,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                 arrivalGate:       fetchedUser.flightDetails?.departure?.arrivalGate       || "",
                 duration:          fetchedUser.flightDetails?.departure?.duration          || fetchedUser.flightDetails?.duration || "",
                 aircraft:          fetchedUser.flightDetails?.departure?.aircraft          || fetchedUser.flightDetails?.aircraft || "",
-                baggage:           fetchedUser.flightDetails?.departure?.baggage           || fetchedUser.flightDetails?.baggageAllowance || "2 Piece(s)",
+                baggage:           fetchedUser.flightDetails?.departure?.baggage           || fetchedUser.flightDetails?.baggageAllowance || "2 pieces * 23 Kg",
                 meal:              fetchedUser.flightDetails?.departure?.meal              || fetchedUser.flightDetails?.meal || "Meal",
                 cabinClass:        fetchedUser.flightDetails?.departure?.cabinClass        || fetchedUser.flightDetails?.cabinClass || "Economy",
                 bookingStatus:     fetchedUser.flightDetails?.departure?.bookingStatus     || fetchedUser.flightDetails?.bookingStatus || "Confirmed",
@@ -315,7 +315,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                 arrivalGate:       fetchedUser.flightDetails?.arrival?.arrivalGate       || "",
                 duration:          fetchedUser.flightDetails?.arrival?.duration          || fetchedUser.flightDetails?.duration || "",
                 aircraft:          fetchedUser.flightDetails?.arrival?.aircraft          || fetchedUser.flightDetails?.aircraft || "",
-                baggage:           fetchedUser.flightDetails?.arrival?.baggage           || fetchedUser.flightDetails?.baggageAllowance || "2 Piece(s)",
+                baggage:           fetchedUser.flightDetails?.arrival?.baggage           || fetchedUser.flightDetails?.baggageAllowance || "2 pieces * 23 Kg",
                 meal:              fetchedUser.flightDetails?.arrival?.meal              || fetchedUser.flightDetails?.meal || "Meal",
                 cabinClass:        fetchedUser.flightDetails?.arrival?.cabinClass        || fetchedUser.flightDetails?.cabinClass || "Economy",
                 bookingStatus:     fetchedUser.flightDetails?.arrival?.bookingStatus     || fetchedUser.flightDetails?.bookingStatus || "Confirmed",
@@ -406,7 +406,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                 arrivalGate:       fallbackUser.flightDetails?.departure?.arrivalGate       || "",
                 duration:          fallbackUser.flightDetails?.departure?.duration          || fallbackUser.flightDetails?.duration || "",
                 aircraft:          fallbackUser.flightDetails?.departure?.aircraft          || fallbackUser.flightDetails?.aircraft || "",
-                baggage:           fallbackUser.flightDetails?.departure?.baggage           || fallbackUser.flightDetails?.baggageAllowance || "2 Piece(s)",
+                baggage:           fallbackUser.flightDetails?.departure?.baggage           || fallbackUser.flightDetails?.baggageAllowance || "2 pieces * 23 Kg",
                 meal:              fallbackUser.flightDetails?.departure?.meal              || fallbackUser.flightDetails?.meal || "Meal",
                 cabinClass:        fallbackUser.flightDetails?.departure?.cabinClass        || fallbackUser.flightDetails?.cabinClass || "Economy",
                 bookingStatus:     fallbackUser.flightDetails?.departure?.bookingStatus     || fallbackUser.flightDetails?.bookingStatus || "Confirmed",
@@ -432,7 +432,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                 arrivalGate:       fallbackUser.flightDetails?.arrival?.arrivalGate       || "",
                 duration:          fallbackUser.flightDetails?.arrival?.duration          || fallbackUser.flightDetails?.duration || "",
                 aircraft:          fallbackUser.flightDetails?.arrival?.aircraft          || fallbackUser.flightDetails?.aircraft || "",
-                baggage:           fallbackUser.flightDetails?.arrival?.baggage           || fallbackUser.flightDetails?.baggageAllowance || "2 Piece(s)",
+                baggage:           fallbackUser.flightDetails?.arrival?.baggage           || fallbackUser.flightDetails?.baggageAllowance || "2 pieces * 23 Kg",
                 meal:              fallbackUser.flightDetails?.arrival?.meal              || fallbackUser.flightDetails?.meal || "Meal",
                 cabinClass:        fallbackUser.flightDetails?.arrival?.cabinClass        || fallbackUser.flightDetails?.cabinClass || "Economy",
                 bookingStatus:     fallbackUser.flightDetails?.arrival?.bookingStatus     || fallbackUser.flightDetails?.bookingStatus || "Confirmed",
@@ -923,7 +923,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                   <div className="col-span-1 sm:col-span-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100/50 p-1.5 rounded mt-2">Services & Preferences</div>
                   <div className="flex flex-col">
                     <label className="text-[10px] font-bold text-gray-500 mb-0.5">Baggage Allowance</label>
-                    <input name="departure.baggage" value={travelData.departure?.baggage || ""} onChange={handleTravelChange} placeholder="e.g. 2 Piece(s)" className="w-full p-2 border rounded bg-white" />
+                    <input name="departure.baggage" value={travelData.departure?.baggage || ""} onChange={handleTravelChange} placeholder="e.g. 2 pieces * 23 Kg" className="w-full p-2 border rounded bg-white" />
                   </div>
                   <div className="flex flex-col">
                     <label className="text-[10px] font-bold text-gray-500 mb-0.5">Flight Meal</label>
@@ -1128,7 +1128,7 @@ export default function UserControlCard({ isOpen, mode, user, onClose, onSave }:
                   <div className="col-span-1 sm:col-span-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100/50 p-1.5 rounded mt-2">Services & Preferences</div>
                   <div className="flex flex-col">
                     <label className="text-[10px] font-bold text-gray-500 mb-0.5">Baggage Allowance</label>
-                    <input name="arrival.baggage" value={travelData.arrival?.baggage || ""} onChange={handleTravelChange} placeholder="e.g. 2 Piece(s)" className="w-full p-2 border rounded bg-white" />
+                    <input name="arrival.baggage" value={travelData.arrival?.baggage || ""} onChange={handleTravelChange} placeholder="e.g. 2 pieces * 23 Kg" className="w-full p-2 border rounded bg-white" />
                   </div>
                   <div className="flex flex-col">
                     <label className="text-[10px] font-bold text-gray-500 mb-0.5">Flight Meal</label>
