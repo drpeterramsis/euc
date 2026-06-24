@@ -12,6 +12,7 @@ import {
   TrendingUp,
   AlertCircle
 } from "lucide-react";
+import { readJSON, writeJSON } from "../utils/github";
 
 export default function WorldCupCard() {
   const { currentUser } = useApp() as any;
@@ -61,26 +62,57 @@ export default function WorldCupCard() {
   const username = currentUser?.username || "";
   const isAdmin = currentUser?.role === "admin";
 
-  // Fetch match details
+  // Fetch match details and predictions from GitHub
   const fetchMatchData = async () => {
     try {
-      const res = await fetch(`/api/worldcup/match?username=${encodeURIComponent(username)}`);
-      if (res.ok) {
-        const data = await res.json();
-        setMatch(data.match);
-        setVotesSummary(data.votesSummary);
-        setUserVote(data.userVote);
+      // 1. Fetch match configuration
+      const matchResult = await readJSON("worldcup_match.json") as any;
+      let activeMatch = {
+        title: "Egypt vs Iran — FIFA World Cup",
+        dateTime: "2026-06-26T21:00:00",
+        liveStreamUrl: ""
+      };
+      if (matchResult && !Array.isArray(matchResult)) {
+        activeMatch = matchResult;
+      } else if (Array.isArray(matchResult) && matchResult.length > 0) {
+        activeMatch = matchResult[0];
+      }
+      setMatch(activeMatch);
 
-        // Pre-populate admin fields
-        setFormTitle(data.match.title);
-        setFormDateTime(data.match.dateTime);
-        setFormLiveStream(data.match.liveStreamUrl || "");
+      // Pre-populate admin fields
+      setFormTitle(activeMatch.title);
+      setFormDateTime(activeMatch.dateTime);
+      setFormLiveStream(activeMatch.liveStreamUrl || "");
+
+      // 2. Fetch predictions
+      const predictions = await readJSON("worldcup_predictions.json") || [];
+      const predictionsArray = Array.isArray(predictions) ? predictions : [];
+
+      // 3. Calculate summary
+      const summary = { egypt: 0, iran: 0, draw: 0, total: 0 };
+      predictionsArray.forEach((vote: any) => {
+        if (vote && vote.winner) {
+          summary.total++;
+          const winnerLower = vote.winner.toLowerCase();
+          if (winnerLower === "egypt") summary.egypt++;
+          else if (winnerLower === "iran") summary.iran++;
+          else if (winnerLower === "draw") summary.draw++;
+        }
+      });
+      setVotesSummary(summary);
+
+      // 4. Find current user's vote
+      if (username) {
+        const userVoteItem = predictionsArray.find(
+          (p: any) => p && p.username && p.username.toLowerCase() === username.toLowerCase()
+        );
+        setUserVote(userVoteItem || null);
 
         // Pre-populate voter fields if voted
-        if (data.userVote) {
-          setSelectedWinner(data.userVote.winner);
-          if (data.userVote.score && data.userVote.score.includes("-")) {
-            const parts = data.userVote.score.split("-");
+        if (userVoteItem) {
+          setSelectedWinner(userVoteItem.winner);
+          if (userVoteItem.score && userVoteItem.score.includes("-")) {
+            const parts = userVoteItem.score.split("-");
             setPredictScoreEgypt(parts[0].trim());
             setPredictScoreIran(parts[1].trim());
           }
@@ -98,11 +130,8 @@ export default function WorldCupCard() {
     if (!isAdmin) return;
     setLoadingVoters(true);
     try {
-      const res = await fetch(`/api/worldcup/admin/votes?role=admin`);
-      if (res.ok) {
-        const data = await res.json();
-        setVotersList(data.votes || []);
-      }
+      const predictions = await readJSON("worldcup_predictions.json") || [];
+      setVotersList(Array.isArray(predictions) ? predictions : []);
     } catch (e) {
       console.error("Failed to load voters list:", e);
     } finally {
@@ -119,7 +148,6 @@ export default function WorldCupCard() {
     if (!match.dateTime) return;
 
     const interval = setInterval(() => {
-      // Parse match date as a local Prague date
       const matchTime = new Date(match.dateTime).getTime();
       const now = new Date().getTime();
       const diff = matchTime - now;
@@ -159,25 +187,33 @@ export default function WorldCupCard() {
       : "";
 
     try {
-      const res = await fetch("/api/worldcup/vote", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          winner: selectedWinner,
-          score: scoreStr
-        })
-      });
+      const predictions = await readJSON("worldcup_predictions.json") || [];
+      const predictionsArray = Array.isArray(predictions) ? predictions : [];
 
-      if (res.ok) {
-        setVotingMessage({ type: "success", text: "Prediction successfully saved! 🎉" });
-        fetchMatchData();
+      const lowerUsername = username.trim().toLowerCase();
+      const existingIndex = predictionsArray.findIndex(
+        (p: any) => p && p.username && p.username.toLowerCase() === lowerUsername
+      );
+
+      const voteData = {
+        username: lowerUsername,
+        winner: selectedWinner,
+        score: scoreStr,
+        updatedAt: Date.now()
+      };
+
+      if (existingIndex > -1) {
+        predictionsArray[existingIndex] = voteData;
       } else {
-        const err = await res.json();
-        setVotingMessage({ type: "error", text: err.error || "Failed to submit prediction." });
+        predictionsArray.push(voteData);
       }
-    } catch (err) {
-      setVotingMessage({ type: "error", text: "Network error occurred." });
+
+      await writeJSON("worldcup_predictions.json", predictionsArray);
+      setVotingMessage({ type: "success", text: "Prediction successfully saved! 🎉" });
+      await fetchMatchData();
+    } catch (err: any) {
+      console.error("Failed to submit prediction:", err);
+      setVotingMessage({ type: "error", text: "Failed to save prediction: " + (err.message || String(err)) });
     } finally {
       setIsSubmittingVote(false);
     }
@@ -189,26 +225,18 @@ export default function WorldCupCard() {
     setAdminMessage({ type: "", text: "" });
 
     try {
-      const res = await fetch("/api/worldcup/admin/settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          role: "admin",
-          title: formTitle,
-          dateTime: formDateTime,
-          liveStreamUrl: formLiveStream
-        })
-      });
+      const updatedMatch = {
+        title: (formTitle || "Egypt vs Iran — FIFA World Cup").trim(),
+        dateTime: (formDateTime || "2026-06-26T21:00:00").trim(),
+        liveStreamUrl: (formLiveStream || "").trim(),
+      };
 
-      if (res.ok) {
-        setAdminMessage({ type: "success", text: "Match settings updated successfully!" });
-        fetchMatchData();
-      } else {
-        const err = await res.json();
-        setAdminMessage({ type: "error", text: err.error || "Failed to update match settings." });
-      }
-    } catch (e) {
-      setAdminMessage({ type: "error", text: "Network error occurred." });
+      await writeJSON("worldcup_match.json", updatedMatch);
+      setAdminMessage({ type: "success", text: "Match settings updated successfully!" });
+      await fetchMatchData();
+    } catch (err: any) {
+      console.error("Failed to update match settings:", err);
+      setAdminMessage({ type: "error", text: "Failed to update match settings: " + (err.message || String(err)) });
     }
   };
 
@@ -239,15 +267,15 @@ export default function WorldCupCard() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col items-center justify-center min-h-[220px]">
-        <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin mb-3"></div>
-        <p className="text-xs font-bold text-gray-500">Retrieving Match Details...</p>
+      <div className="bg-emerald-900 rounded-2xl border border-white/20 p-6 flex flex-col items-center justify-center min-h-[220px]">
+        <div className="w-8 h-8 rounded-full border-2 border-amber-400 border-t-transparent animate-spin mb-3" />
+        <p className="text-xs font-bold text-emerald-100">Retrieving Match Details...</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white rounded-2xl border border-slate-800 shadow-xl overflow-hidden relative group transition-all duration-300 hover:shadow-2xl hover:border-indigo-500/30">
+    <div className="bg-gradient-to-br from-emerald-800 via-green-800 to-emerald-950 text-white rounded-2xl border border-white/25 shadow-xl overflow-hidden relative group transition-all duration-300 hover:shadow-2xl hover:border-white/40">
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes flagWave {
           0% { transform: translateY(0) scale(1) rotate(0deg); }
@@ -269,44 +297,60 @@ export default function WorldCupCard() {
         }
       `}} />
 
-      {/* Background Decorative Glow */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
-      <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+      {/* ── CENTRAL MATCH DISPLAY (REPRESENTING SOCCER PITCH/PLAYGROUND MARKINGS) ───────────────────────── */}
+      <div className="relative overflow-hidden flex items-center justify-center gap-6 sm:gap-12 py-10 px-5 bg-black/20 border-b border-white/25">
+        
+        {/* --- Pitch Markings --- */}
+        {/* Halfway line */}
+        <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white/20 -translate-x-1/2 pointer-events-none" />
+        {/* Center circle */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full border-2 border-white/25 pointer-events-none" />
+        {/* Center spot */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white/50 pointer-events-none" />
+        
+        {/* Left goal area / box */}
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-28 border-y-2 border-r-2 border-white/20 pointer-events-none" />
+        {/* Left penalty arc */}
+        <div className="absolute left-7 top-1/2 -translate-y-1/2 w-8 h-16 rounded-full border-2 border-white/15 border-l-0 pointer-events-none" />
+        
+        {/* Right goal area / box */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-28 border-y-2 border-l-2 border-white/20 pointer-events-none" />
+        {/* Right penalty arc */}
+        <div className="absolute right-7 top-1/2 -translate-y-1/2 w-8 h-16 rounded-full border-2 border-white/15 border-r-0 pointer-events-none" />
 
-      {/* ── CENTRAL MATCH DISPLAY (ALWAYS VISIBLE) ───────────────────────── */}
-      <div className="flex items-center justify-center gap-6 sm:gap-12 py-8 px-5 bg-slate-950/40 border-b border-slate-900">
+        {/* --- Teams (Absolute overlayed) --- */}
         {/* Egypt */}
-        <div className="flex flex-col items-center flex-1 text-center">
+        <div className="flex flex-col items-center flex-1 text-center z-10">
           <div className="text-6xl sm:text-7xl select-none wavy-flag wavy-flag-egypt mb-3 leading-none font-sans">
             🇪🇬
           </div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          <span className="text-[11px] font-black uppercase tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] bg-black/35 px-2 py-0.5 rounded-full">
             Egypt
           </span>
         </div>
 
         {/* VS Badge */}
-        <div className="flex flex-col items-center shrink-0">
-          <div className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-black text-emerald-400 tracking-widest uppercase shadow-md">
+        <div className="flex flex-col items-center shrink-0 z-10">
+          <div className="px-3 py-1 rounded-full bg-emerald-950 border border-white/40 text-[10px] font-black text-amber-300 tracking-widest uppercase shadow-md drop-shadow-md">
             VS
           </div>
         </div>
 
         {/* Iran */}
-        <div className="flex flex-col items-center flex-1 text-center">
+        <div className="flex flex-col items-center flex-1 text-center z-10">
           <div className="text-6xl sm:text-7xl select-none wavy-flag wavy-flag-iran mb-3 leading-none font-sans">
             🇮🇷
           </div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          <span className="text-[11px] font-black uppercase tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] bg-black/35 px-2 py-0.5 rounded-full">
             Iran
           </span>
         </div>
       </div>
 
       {/* ── COUNTDOWN TIMER (ALWAYS VISIBLE BELOW MATCH DETAILS) ─────────── */}
-      <div className="p-5 flex flex-col items-center border-b border-slate-900/60 bg-gradient-to-b from-transparent to-slate-950/20">
-        <div className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-2.5 flex items-center gap-1.5">
-          <Clock className="w-3 h-3 text-emerald-500" />
+      <div className="p-5 flex flex-col items-center border-b border-white/20 bg-black/10">
+        <div className="text-[9px] font-black uppercase tracking-widest text-emerald-200 mb-2.5 flex items-center gap-1.5">
+          <Clock className="w-3 h-3 text-amber-300" />
           <span>Match Kickoff Countdown</span>
         </div>
 
@@ -314,53 +358,53 @@ export default function WorldCupCard() {
           <div className="flex items-center justify-center gap-3">
             {/* Days */}
             <div className="flex flex-col items-center">
-              <div className="bg-gradient-to-b from-slate-900 to-slate-950 text-white font-black text-lg px-2.5 py-1.5 rounded-lg min-w-[38px] text-center border border-slate-800 shadow-lg">
+              <div className="bg-black/35 text-white font-black text-lg px-2.5 py-1.5 rounded-lg min-w-[38px] text-center border border-white/20 shadow-md">
                 {String(timeLeft.days).padStart(2, "0")}
               </div>
-              <span className="text-[7px] font-bold tracking-widest text-slate-500 uppercase mt-1">Days</span>
+              <span className="text-[7px] font-bold tracking-widest text-emerald-200 uppercase mt-1">Days</span>
             </div>
-            <span className="text-lg font-bold text-emerald-400 select-none -mt-4 animate-pulse">:</span>
+            <span className="text-lg font-bold text-amber-300 select-none -mt-4 animate-pulse">:</span>
 
             {/* Hours */}
             <div className="flex flex-col items-center">
-              <div className="bg-gradient-to-b from-slate-900 to-slate-950 text-white font-black text-lg px-2.5 py-1.5 rounded-lg min-w-[38px] text-center border border-slate-800 shadow-lg">
+              <div className="bg-black/35 text-white font-black text-lg px-2.5 py-1.5 rounded-lg min-w-[38px] text-center border border-white/20 shadow-md">
                 {String(timeLeft.hours).padStart(2, "0")}
               </div>
-              <span className="text-[7px] font-bold tracking-widest text-slate-500 uppercase mt-1">Hours</span>
+              <span className="text-[7px] font-bold tracking-widest text-emerald-200 uppercase mt-1">Hours</span>
             </div>
-            <span className="text-lg font-bold text-emerald-400 select-none -mt-4 animate-pulse">:</span>
+            <span className="text-lg font-bold text-amber-300 select-none -mt-4 animate-pulse">:</span>
 
             {/* Minutes */}
             <div className="flex flex-col items-center">
-              <div className="bg-gradient-to-b from-slate-900 to-slate-950 text-white font-black text-lg px-2.5 py-1.5 rounded-lg min-w-[38px] text-center border border-slate-800 shadow-lg">
+              <div className="bg-black/35 text-white font-black text-lg px-2.5 py-1.5 rounded-lg min-w-[38px] text-center border border-white/20 shadow-md">
                 {String(timeLeft.minutes).padStart(2, "0")}
               </div>
-              <span className="text-[7px] font-bold tracking-widest text-slate-500 uppercase mt-1">Mins</span>
+              <span className="text-[7px] font-bold tracking-widest text-emerald-200 uppercase mt-1">Mins</span>
             </div>
-            <span className="text-lg font-bold text-emerald-400 select-none -mt-4 animate-pulse">:</span>
+            <span className="text-lg font-bold text-amber-300 select-none -mt-4 animate-pulse">:</span>
 
             {/* Seconds */}
             <div className="flex flex-col items-center">
-              <div className="bg-gradient-to-b from-slate-900 to-slate-950 text-white font-black text-lg px-2.5 py-1.5 rounded-lg min-w-[38px] text-center border border-slate-800 shadow-lg text-emerald-400">
+              <div className="bg-black/35 text-white font-black text-lg px-2.5 py-1.5 rounded-lg min-w-[38px] text-center border border-white/20 shadow-md text-amber-300">
                 {String(timeLeft.seconds).padStart(2, "0")}
               </div>
-              <span className="text-[7px] font-bold tracking-widest text-slate-500 uppercase mt-1">Secs</span>
+              <span className="text-[7px] font-bold tracking-widest text-emerald-200 uppercase mt-1">Secs</span>
             </div>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-full text-red-400 font-extrabold text-[9px] uppercase tracking-wider animate-pulse">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 block animate-ping" />
+          <div className="flex items-center gap-1.5 bg-red-500/20 border border-red-500/35 px-3 py-1.5 rounded-full text-red-200 font-extrabold text-[9px] uppercase tracking-wider animate-pulse">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400 block animate-ping" />
             <span>Match is Live / Concluded</span>
           </div>
         )}
 
-        <p className="text-[9px] font-semibold text-slate-400 mt-3 italic text-center">
+        <p className="text-[9px] font-semibold text-emerald-100 mt-3 italic text-center drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]">
           Kickoff: {formatKickoff(match.dateTime)}
         </p>
       </div>
 
       {/* ── ACTION INTERACTION BUTTONS (VOTE / LIVE STREAM) ───────────────── */}
-      <div className="p-4 flex flex-col sm:flex-row gap-2.5 bg-slate-950/20">
+      <div className="p-4 flex flex-col sm:flex-row gap-2.5 bg-black/15 border-b border-white/15">
         {/* Expand Vote Button */}
         <button
           onClick={() => {
@@ -369,8 +413,8 @@ export default function WorldCupCard() {
           }}
           className={`flex-1 font-black uppercase tracking-widest text-xs py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border select-none cursor-pointer ${
             isVotingExpanded
-              ? "bg-slate-800 text-white border-slate-700 shadow-inner"
-              : "bg-emerald-500 hover:bg-emerald-400 text-slate-950 border-emerald-400 shadow-[0_4px_12px_rgba(16,185,129,0.2)]"
+              ? "bg-black/30 text-white border-white/20 shadow-inner"
+              : "bg-amber-400 hover:bg-amber-300 text-emerald-950 border-amber-300 shadow-[0_4px_12px_rgba(245,158,11,0.2)]"
           }`}
         >
           <span>🏆</span>
@@ -389,7 +433,7 @@ export default function WorldCupCard() {
             href={match.liveStreamUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 font-black uppercase tracking-widest text-xs py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 text-white border border-red-500 shadow-[0_4px_12px_rgba(239,68,68,0.3)] select-none cursor-pointer"
+            className="flex-1 font-black uppercase tracking-widest text-xs py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 text-white border border-white/20 shadow-[0_4px_12px_rgba(239,68,68,0.3)] select-none cursor-pointer"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
@@ -402,12 +446,12 @@ export default function WorldCupCard() {
 
       {/* ── COLLAPSIBLE PREDICTION FORM (EXPANDABLE) ────────────────────── */}
       {isVotingExpanded && (
-        <div className="px-4 pb-5 border-t border-slate-900/60 pt-4 bg-slate-950/35 space-y-4">
-          <div className="bg-slate-900/40 rounded-xl p-4 border border-slate-800 space-y-3">
+        <div className="px-4 pb-5 border-b border-white/15 pt-4 bg-black/20 space-y-4">
+          <div className="bg-black/25 rounded-xl p-4 border border-white/20 space-y-3">
             <div className="flex items-center gap-1.5">
-              <Trophy className="w-3.5 h-3.5 text-emerald-400" />
-              <h5 className="text-[10px] font-black uppercase tracking-wider text-slate-200">
-                {userVote ? "Your Saved Prediction" : "Predict the Winner &amp; Score!"}
+              <Trophy className="w-3.5 h-3.5 text-amber-300" />
+              <h5 className="text-[10px] font-black uppercase tracking-wider text-white">
+                {userVote ? "Your Saved Prediction" : "Predict the Winner & Score!"}
               </h5>
             </div>
 
@@ -419,13 +463,13 @@ export default function WorldCupCard() {
                   onClick={() => setSelectedWinner("Egypt")}
                   className={`p-2.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all border flex items-center gap-3 w-full text-left cursor-pointer ${
                     selectedWinner === "Egypt"
-                      ? "bg-emerald-600/35 border-emerald-500 text-white shadow-lg shadow-emerald-500/10"
-                      : "bg-slate-950/60 border-slate-850 text-slate-300 hover:border-slate-700"
+                      ? "bg-white/25 border-white text-white shadow-lg"
+                      : "bg-black/30 border-white/10 text-emerald-100 hover:border-white/30"
                   }`}
                 >
                   <span className="text-xl leading-none wavy-flag-egypt">🇪🇬</span>
                   <span>Egypt wins</span>
-                  {selectedWinner === "Egypt" && <Check className="w-4 h-4 text-emerald-400 ml-auto" />}
+                  {selectedWinner === "Egypt" && <Check className="w-4 h-4 text-amber-300 ml-auto animate-pulse" />}
                 </button>
 
                 <button
@@ -433,13 +477,13 @@ export default function WorldCupCard() {
                   onClick={() => setSelectedWinner("Draw")}
                   className={`p-2.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all border flex items-center gap-3 w-full text-left cursor-pointer ${
                     selectedWinner === "Draw"
-                      ? "bg-slate-700/40 border-slate-600 text-white shadow-lg shadow-white/5"
-                      : "bg-slate-950/60 border-slate-850 text-slate-300 hover:border-slate-700"
+                      ? "bg-white/25 border-white text-white shadow-lg"
+                      : "bg-black/30 border-white/10 text-emerald-100 hover:border-white/30"
                   }`}
                 >
                   <span className="text-xl leading-none">🤝</span>
                   <span>Draw</span>
-                  {selectedWinner === "Draw" && <Check className="w-4 h-4 text-emerald-400 ml-auto" />}
+                  {selectedWinner === "Draw" && <Check className="w-4 h-4 text-amber-300 ml-auto animate-pulse" />}
                 </button>
 
                 <button
@@ -447,19 +491,19 @@ export default function WorldCupCard() {
                   onClick={() => setSelectedWinner("Iran")}
                   className={`p-2.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all border flex items-center gap-3 w-full text-left cursor-pointer ${
                     selectedWinner === "Iran"
-                      ? "bg-emerald-600/35 border-emerald-500 text-white shadow-lg shadow-emerald-500/10"
-                      : "bg-slate-950/60 border-slate-850 text-slate-300 hover:border-slate-700"
+                      ? "bg-white/25 border-white text-white shadow-lg"
+                      : "bg-black/30 border-white/10 text-emerald-100 hover:border-white/30"
                   }`}
                 >
                   <span className="text-xl leading-none wavy-flag-iran">🇮🇷</span>
                   <span>Iran wins</span>
-                  {selectedWinner === "Iran" && <Check className="w-4 h-4 text-emerald-400 ml-auto" />}
+                  {selectedWinner === "Iran" && <Check className="w-4 h-4 text-amber-300 ml-auto animate-pulse" />}
                 </button>
               </div>
 
               {/* Score inputs */}
-              <div className="flex items-center justify-between gap-3 bg-slate-950/40 p-2.5 rounded-lg border border-slate-850">
-                <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">
+              <div className="flex items-center justify-between gap-3 bg-black/20 p-2.5 rounded-lg border border-white/15">
+                <span className="text-[9px] font-black uppercase tracking-wider text-emerald-100">
                   Predicted Score (Optional)
                 </span>
                 <div className="flex items-center gap-1.5">
@@ -470,9 +514,9 @@ export default function WorldCupCard() {
                     placeholder="0"
                     value={predictScoreEgypt}
                     onChange={(e) => setPredictScoreEgypt(e.target.value)}
-                    className="w-10 p-1 bg-slate-900 border border-slate-700 rounded text-center text-xs font-extrabold focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-white"
+                    className="w-10 p-1 bg-black/40 border border-white/25 rounded text-center text-xs font-extrabold focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 text-white"
                   />
-                  <span className="text-slate-500 font-bold">-</span>
+                  <span className="text-white/60 font-bold">-</span>
                   <input
                     type="number"
                     min="0"
@@ -480,7 +524,7 @@ export default function WorldCupCard() {
                     placeholder="0"
                     value={predictScoreIran}
                     onChange={(e) => setPredictScoreIran(e.target.value)}
-                    className="w-10 p-1 bg-slate-900 border border-slate-700 rounded text-center text-xs font-extrabold focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-white"
+                    className="w-10 p-1 bg-black/40 border border-white/25 rounded text-center text-xs font-extrabold focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 text-white"
                   />
                 </div>
               </div>
@@ -488,8 +532,8 @@ export default function WorldCupCard() {
               {votingMessage.text && (
                 <div className={`p-2 rounded text-[10px] font-bold flex items-center gap-1.5 ${
                   votingMessage.type === "success" 
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" 
-                    : "bg-red-500/20 text-red-300 border border-red-500/30"
+                    ? "bg-white/20 text-white border border-white/30" 
+                    : "bg-red-500/20 text-red-200 border border-red-500/30"
                 }`}>
                   {votingMessage.type === "error" ? <AlertCircle className="w-3.5 h-3.5 shrink-0" /> : <Check className="w-3.5 h-3.5 shrink-0" />}
                   <span>{votingMessage.text}</span>
@@ -499,7 +543,7 @@ export default function WorldCupCard() {
               <button
                 type="submit"
                 disabled={isSubmittingVote}
-                className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase tracking-wider text-xs py-2.5 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-[0_4px_12px_rgba(16,185,129,0.2)] disabled:opacity-50"
+                className="w-full bg-amber-400 hover:bg-amber-300 text-emerald-950 font-black uppercase tracking-wider text-xs py-2.5 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-[0_4px_12px_rgba(245,158,11,0.2)] disabled:opacity-50"
               >
                 {isSubmittingVote ? (
                   <span className="w-4 h-4 rounded-full border-2 border-slate-950 border-t-transparent animate-spin" />
@@ -517,7 +561,7 @@ export default function WorldCupCard() {
 
       {/* ── ADMIN ONLY SECTION (PREDICTIONS BOARD & SETTINGS) ──────────────── */}
       {isAdmin && (
-        <div className="border-t border-slate-900 bg-slate-950/60">
+        <div className="border-t border-white/25 bg-black/30">
           <button
             onClick={() => {
               setIsAdminDashboardExpanded(!isAdminDashboardExpanded);
@@ -525,27 +569,27 @@ export default function WorldCupCard() {
                 fetchVoters();
               }
             }}
-            className="w-full px-4 py-3 flex items-center justify-between text-left text-xs font-extrabold text-amber-400 hover:bg-slate-900/40 select-none cursor-pointer transition-colors"
+            className="w-full px-4 py-3 flex items-center justify-between text-left text-xs font-extrabold text-amber-300 hover:bg-black/10 select-none cursor-pointer transition-colors"
           >
             <span className="flex items-center gap-2">
               👑 <span>Admin Predictions Board &amp; Config</span>
             </span>
-            <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+            <span className="text-[10px] bg-black/20 text-white px-2 py-0.5 rounded border border-white/25">
               {isAdminDashboardExpanded ? "Hide Panel" : "Show Panel"}
             </span>
           </button>
 
           {isAdminDashboardExpanded && (
-            <div className="p-4 border-t border-slate-900 bg-slate-950/80 space-y-4">
+            <div className="p-4 border-t border-white/25 bg-black/20 space-y-4">
               {/* Mini Navigation inside Admin Panel */}
-              <div className="flex gap-2 border-b border-slate-850 pb-2">
+              <div className="flex gap-2 border-b border-white/15 pb-2">
                 <button
                   type="button"
                   onClick={() => setActiveTab("voters")}
                   className={`px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-wider font-black transition-all ${
                     activeTab === "voters"
-                      ? "bg-amber-500 text-slate-950 font-black"
-                      : "bg-slate-900 text-slate-400 hover:text-white"
+                      ? "bg-amber-400 text-emerald-950 font-black"
+                      : "bg-black/30 text-emerald-100 hover:text-white border border-white/10"
                   }`}
                 >
                   👥 Predictors
@@ -555,8 +599,8 @@ export default function WorldCupCard() {
                   onClick={() => setActiveTab("results")}
                   className={`px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-wider font-black transition-all ${
                     activeTab === "results"
-                      ? "bg-amber-500 text-slate-950 font-black"
-                      : "bg-slate-900 text-slate-400 hover:text-white"
+                      ? "bg-amber-400 text-emerald-950 font-black"
+                      : "bg-black/30 text-emerald-100 hover:text-white border border-white/10"
                   }`}
                 >
                   📊 Breakdown
@@ -566,8 +610,8 @@ export default function WorldCupCard() {
                   onClick={() => setActiveTab("admin")}
                   className={`px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-wider font-black transition-all ${
                     activeTab === "admin"
-                      ? "bg-amber-500 text-slate-950 font-black"
-                      : "bg-slate-900 text-slate-400 hover:text-white"
+                      ? "bg-amber-400 text-emerald-950 font-black"
+                      : "bg-black/30 text-emerald-100 hover:text-white border border-white/10"
                   }`}
                 >
                   ⚙️ Configure
@@ -578,13 +622,13 @@ export default function WorldCupCard() {
               {activeTab === "voters" && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                    <span className="text-[9px] font-black text-emerald-200 uppercase tracking-widest">
                       voter spreadsheet
                     </span>
                     <button
                       type="button"
                       onClick={fetchVoters}
-                      className="text-[8px] font-black bg-slate-800 hover:bg-slate-700 border border-slate-700 px-2 py-0.5 rounded cursor-pointer uppercase tracking-wider text-slate-300"
+                      className="text-[8px] font-black bg-black/30 hover:bg-black/40 border border-white/20 px-2 py-0.5 rounded cursor-pointer uppercase tracking-wider text-white"
                     >
                       Refresh
                     </button>
@@ -593,40 +637,34 @@ export default function WorldCupCard() {
                   {loadingVoters ? (
                     <div className="flex flex-col items-center justify-center py-6">
                       <div className="w-5 h-5 rounded-full border-2 border-amber-400 border-t-transparent animate-spin mb-2" />
-                      <span className="text-[10px] font-bold text-slate-400">Loading Voters...</span>
+                      <span className="text-[10px] font-bold text-emerald-200">Loading Voters...</span>
                     </div>
                   ) : votersList.length === 0 ? (
-                    <p className="text-[10px] font-semibold italic text-slate-500 text-center py-6">
+                    <p className="text-[10px] font-semibold italic text-emerald-200/60 text-center py-6">
                       No predictions cast yet...
                     </p>
                   ) : (
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-[10.5px]">
                         <thead>
-                          <tr className="border-b border-slate-800 text-slate-400 font-extrabold uppercase">
+                          <tr className="border-b border-white/15 text-emerald-200 font-extrabold uppercase">
                             <th className="pb-1.5">User</th>
                             <th className="pb-1.5 text-center">Predicts</th>
                             <th className="pb-1.5 text-right">Score Guess</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-800/60">
+                        <tbody className="divide-y divide-white/10">
                           {votersList.map((vote) => (
-                            <tr key={vote.username} className="hover:bg-slate-900/30">
+                            <tr key={vote.username} className="hover:bg-white/5">
                               <td className="py-2 font-bold text-white uppercase tracking-tight">
                                 {vote.username}
                               </td>
                               <td className="py-2 text-center">
-                                <span className={`inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide border ${
-                                  vote.winner === "Egypt"
-                                    ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
-                                    : vote.winner === "Iran"
-                                    ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
-                                    : "bg-slate-800 text-slate-300 border-slate-700"
-                                }`}>
+                                <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide border bg-black/20 border-white/20 text-white">
                                   {vote.winner === "Egypt" ? "🇪🇬 Egypt" : vote.winner === "Iran" ? "🇮🇷 Iran" : "🤝 Draw"}
                                 </span>
                               </td>
-                              <td className="py-2 text-right font-black text-amber-400 font-mono">
+                              <td className="py-2 text-right font-black text-amber-300 font-mono">
                                 {vote.score || "—"}
                               </td>
                             </tr>
@@ -642,10 +680,10 @@ export default function WorldCupCard() {
               {activeTab === "results" && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                    <span className="text-[9px] font-black text-emerald-200 uppercase tracking-widest">
                       Aggregate Statistics
                     </span>
-                    <span className="text-[9px] font-black bg-slate-800 border border-slate-750 px-2 py-0.5 rounded text-amber-400">
+                    <span className="text-[9px] font-black bg-black/20 border border-white/20 px-2 py-0.5 rounded text-amber-300">
                       {votesSummary.total} Total Votes
                     </span>
                   </div>
@@ -657,11 +695,11 @@ export default function WorldCupCard() {
                         <span className="flex items-center gap-1.5">
                           <span className="wavy-flag-egypt">🇪🇬</span> Egypt
                         </span>
-                        <span className="text-emerald-400">{egyptPct}% ({votesSummary.egypt})</span>
+                        <span className="text-amber-300">{egyptPct}% ({votesSummary.egypt})</span>
                       </div>
-                      <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden border border-slate-800">
+                      <div className="w-full h-2 rounded-full bg-black/30 overflow-hidden border border-white/15">
                         <div 
-                          className="h-full bg-emerald-500 rounded-full transition-all duration-500" 
+                          className="h-full bg-amber-400 rounded-full transition-all duration-500" 
                           style={{ width: `${egyptPct}%` }}
                         />
                       </div>
@@ -673,11 +711,11 @@ export default function WorldCupCard() {
                         <span className="flex items-center gap-1.5">
                           <span>🤝</span> Draw
                         </span>
-                        <span className="text-slate-300">{drawPct}% ({votesSummary.draw})</span>
+                        <span className="text-white/85">{drawPct}% ({votesSummary.draw})</span>
                       </div>
-                      <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden border border-slate-800">
+                      <div className="w-full h-2 rounded-full bg-black/30 overflow-hidden border border-white/15">
                         <div 
-                          className="h-full bg-slate-500 rounded-full transition-all duration-500" 
+                          className="h-full bg-white/70 rounded-full transition-all duration-500" 
                           style={{ width: `${drawPct}%` }}
                         />
                       </div>
@@ -689,11 +727,11 @@ export default function WorldCupCard() {
                         <span className="flex items-center gap-1.5">
                           <span className="wavy-flag-iran">🇮🇷</span> Iran
                         </span>
-                        <span className="text-emerald-400">{iranPct}% ({votesSummary.iran})</span>
+                        <span className="text-amber-300">{iranPct}% ({votesSummary.iran})</span>
                       </div>
-                      <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden border border-slate-800">
+                      <div className="w-full h-2 rounded-full bg-black/30 overflow-hidden border border-white/15">
                         <div 
-                          className="h-full bg-emerald-500 rounded-full transition-all duration-500" 
+                          className="h-full bg-amber-400 rounded-full transition-all duration-500" 
                           style={{ width: `${iranPct}%` }}
                         />
                       </div>
@@ -705,10 +743,10 @@ export default function WorldCupCard() {
               {/* TAB CONTENT 3: CONFIGURE (ADMIN SETTINGS) */}
               {activeTab === "admin" && (
                 <form onSubmit={handleAdminSubmit} className="space-y-4">
-                  <div className="space-y-3 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                  <div className="space-y-3 bg-black/20 p-3.5 rounded-xl border border-white/15">
                     {/* Match Title */}
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                      <label className="text-[10px] font-black uppercase tracking-wider text-emerald-200 block">
                         Match Title
                       </label>
                       <input
@@ -716,28 +754,28 @@ export default function WorldCupCard() {
                         placeholder="Egypt vs Iran — FIFA World Cup"
                         value={formTitle}
                         onChange={(e) => setFormTitle(e.target.value)}
-                        className="w-full p-2 bg-slate-950 border border-slate-800 rounded text-xs text-white focus:outline-none focus:border-amber-400 font-semibold"
+                        className="w-full p-2 bg-black/30 border border-white/20 rounded text-xs text-white focus:outline-none focus:border-amber-400 font-semibold"
                         required
                       />
                     </div>
 
                     {/* Kickoff Local Time in Prague */}
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                      <label className="text-[10px] font-black uppercase tracking-wider text-emerald-200 block">
                         Kickoff Date &amp; Time (Prague Time)
                       </label>
                       <input
                         type="datetime-local"
                         value={formDateTime}
                         onChange={(e) => setFormDateTime(e.target.value)}
-                        className="w-full p-2 bg-slate-950 border border-slate-800 rounded text-xs text-white focus:outline-none focus:border-amber-400 font-semibold"
+                        className="w-full p-2 bg-black/30 border border-white/20 rounded text-xs text-white focus:outline-none focus:border-amber-400 font-semibold"
                         required
                       />
                     </div>
 
                     {/* Live Stream URL */}
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                      <label className="text-[10px] font-black uppercase tracking-wider text-emerald-200 block">
                         Live Stream Link (Controlled from Admin Panel)
                       </label>
                       <input
@@ -745,7 +783,7 @@ export default function WorldCupCard() {
                         placeholder="https://youtube.com/..."
                         value={formLiveStream}
                         onChange={(e) => setFormLiveStream(e.target.value)}
-                        className="w-full p-2 bg-slate-950 border border-slate-800 rounded text-xs text-white focus:outline-none focus:border-amber-400 font-semibold"
+                        className="w-full p-2 bg-black/30 border border-white/20 rounded text-xs text-white focus:outline-none focus:border-amber-400 font-semibold"
                       />
                     </div>
                   </div>
@@ -753,8 +791,8 @@ export default function WorldCupCard() {
                   {adminMessage.text && (
                     <div className={`p-2 rounded text-[10px] font-bold flex items-center gap-1.5 ${
                       adminMessage.type === "success" 
-                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" 
-                        : "bg-red-500/20 text-red-300 border border-red-500/30"
+                        ? "bg-white/20 text-white border border-white/35" 
+                        : "bg-red-500/20 text-red-200 border border-red-500/30"
                     }`}>
                       {adminMessage.type === "success" ? <Check className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
                       <span>{adminMessage.text}</span>
@@ -763,7 +801,7 @@ export default function WorldCupCard() {
 
                   <button
                     type="submit"
-                    className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black uppercase tracking-wider text-xs py-2 rounded-lg transition-colors cursor-pointer text-center block font-bold shadow-[0_4px_12px_rgba(245,158,11,0.2)]"
+                    className="w-full bg-amber-400 hover:bg-amber-300 text-emerald-950 font-black uppercase tracking-wider text-xs py-2 rounded-lg transition-colors cursor-pointer text-center block font-bold shadow-[0_4px_12px_rgba(245,158,11,0.2)]"
                   >
                     Save Event Settings
                   </button>
