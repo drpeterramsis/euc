@@ -11,7 +11,8 @@
         "label": "Depart Cairo - EgyptAir MS 789",
         "icon": "✈️",
         "type": "travel",
-        "timezoneDisplay": "cairo"
+        "timezoneDisplay": "cairo",
+        "important": true
       },
       {
         "id": "TS001-E2",
@@ -20,7 +21,8 @@
         "icon": "🛬",
         "type": "travel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": true
       },
       {
         "id": "TS001-E3",
@@ -29,7 +31,8 @@
         "icon": "🏨",
         "type": "hotel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TSE_1781013670060",
@@ -38,7 +41,8 @@
         "icon": "🚌",
         "type": "activity",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TSE_1781013739551",
@@ -47,7 +51,8 @@
         "icon": "🍽️",
         "type": "activity",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       }
     ]
   },
@@ -64,7 +69,8 @@
         "icon": "🍽️",
         "type": "hotel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TS002-E2",
@@ -73,7 +79,8 @@
         "icon": "🎤",
         "type": "session",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": true
       },
       {
         "id": "TS002-E3",
@@ -82,7 +89,8 @@
         "icon": "🚌",
         "type": "hotel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TSE_1781014169284",
@@ -91,7 +99,8 @@
         "icon": "🏛️",
         "type": "travel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TSE_1781014219062",
@@ -100,7 +109,8 @@
         "icon": "🍽️",
         "type": "activity",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TSE_1781014361013",
@@ -109,7 +119,8 @@
         "icon": "🚌",
         "type": "travel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TSE_1781014410793",
@@ -118,7 +129,8 @@
         "icon": "📌",
         "type": "break",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       }
     ]
   },
@@ -135,7 +147,8 @@
         "icon": "🍽️",
         "type": "hotel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TS003-E2",
@@ -144,7 +157,8 @@
         "icon": "🎤",
         "type": "session",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": true
       },
       {
         "id": "TS003-E3",
@@ -153,7 +167,8 @@
         "icon": "👥",
         "type": "hotel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TSE_1781014603752",
@@ -162,7 +177,8 @@
         "icon": "🚌",
         "type": "travel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TSE_1781014744176",
@@ -171,7 +187,8 @@
         "icon": "🚌",
         "type": "travel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TSE_1781014799812",
@@ -180,7 +197,8 @@
         "icon": "🍽️",
         "type": "activity",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TSE_1781014914915",
@@ -189,7 +207,8 @@
         "icon": "🚌",
         "type": "travel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TSE_1781014950771",
@@ -198,7 +217,8 @@
         "icon": "📌",
         "type": "break",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       }
     ]
   },
@@ -215,7 +235,8 @@
         "icon": "📌",
         "type": "hotel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": false
       },
       {
         "id": "TS004-E1",
@@ -224,7 +245,8 @@
         "icon": "🏨",
         "type": "hotel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": true
       },
       {
         "id": "TS004-E2",
@@ -233,7 +255,8 @@
         "icon": "✈️",
         "type": "travel",
         "inputTimezone": "Europe/Prague",
-        "timezoneDisplay": "prague"
+        "timezoneDisplay": "prague",
+        "important": true
       },
       {
         "id": "TSE_1781015146178",
@@ -241,7 +264,8 @@
         "label": "Arrival Cairo Airport",
         "icon": "📌",
         "type": "travel",
-        "timezoneDisplay": "cairo"
+        "timezoneDisplay": "cairo",
+        "important": true
       }
     ]
   }

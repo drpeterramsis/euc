@@ -382,14 +382,25 @@ export default function Schedule() {
                     const evtUtc = getEventDateUtc(day.date, event);
                     const isPast = evtUtc.getTime() < now.getTime() && activeEvent?.id !== event.id;
                     const isNow = activeEvent?.id === event.id;
+                    const isImportant = event.important || 
+                      event.type === "session" || 
+                      (event.label && (
+                        event.label.toLowerCase().includes("flight") ||
+                        event.label.toLowerCase().includes("check-out") ||
+                        event.label.toLowerCase().includes("checkout") ||
+                        event.label.toLowerCase().includes("depart") ||
+                        event.label.toLowerCase().includes("arrive") ||
+                        event.label.toLowerCase().includes("scientific")
+                      ));
 
                     return (
                       <div
                         key={event.id}
                         id={`event-row-${event.id}`}
-                        className={`flex flex-col md:flex-row md:items-start gap-3 md:gap-4 py-4 first:pt-2 last:pb-2 border-none transition-all duration-300 scroll-mt-28
+                        className={`flex flex-col md:flex-row md:items-start gap-3 md:gap-4 py-4 px-3 first:pt-2 last:pb-2 transition-all duration-300 scroll-mt-28 rounded-xl
                           ${isPast ? "opacity-55 scale-[0.98] grayscale-[15%]" : ""} 
-                          ${isNow ? "bg-amber-50/10 p-2 rounded-xl border border-amber-100" : ""}`}
+                          ${isNow ? "bg-amber-50/20 border border-amber-200" : ""}
+                          ${isImportant && !isNow && !isPast ? "bg-red-50/40 border-l-4 border-l-red-500 border-y border-r border-red-100/40 shadow-xs" : ""}`}
                       >
                         {/* Time Column/Row (Sits ABOVE details on mobile, and to the left on desktop) */}
                         <div className="flex flex-row md:flex-col items-center md:items-end gap-1.5 md:gap-1.5 md:w-20 md:flex-shrink-0 flex-wrap">
@@ -464,6 +475,11 @@ export default function Schedule() {
                                       • Happening Now
                                     </span>
                                   )}
+                                  {isImportant && (
+                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] bg-red-100 border border-red-200 text-red-700 font-black uppercase tracking-wider select-none">
+                                      🚩 Important Event
+                                    </span>
+                                  )}
                                 </span>
 
                                 {/* 📍 Custom Location Name with a Minified Short map directions button */}
@@ -494,6 +510,79 @@ export default function Schedule() {
                                       alt={event.location || event.label} 
                                       className="w-full h-24 object-cover animate-fadeIn"
                                     />
+                                  </div>
+                                )}
+
+                                {day.date === "2026-06-26" && event.type === "break" && (
+                                  <div className="mt-4 p-4 bg-gray-50/75 rounded-xl border border-gray-150 shadow-xs">
+                                    <div className="flex items-center gap-2 mb-3.5 pb-2 border-b border-gray-200">
+                                      <span className="text-base select-none">🗺️</span>
+                                      <h4 className="text-xs font-black text-gray-800 uppercase tracking-widest">
+                                        Recommended Free Time Destinations
+                                      </h4>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                      {[
+                                        {
+                                          name: "Primark",
+                                          category: "🛍️ Shopping",
+                                          description: "A popular, massive multi-story department store in the heart of Prague, offering a huge selection of trendy fashion, homeware, and accessories at budget-friendly prices.",
+                                          mapUrl: "https://maps.app.goo.gl/Le5KXX2zXXsPqWHB6",
+                                        },
+                                        {
+                                          name: "Billa",
+                                          category: "🛒 Supermarket",
+                                          description: "A premium European supermarket chain store in Prague, perfect for picking up local chocolates, traditional snacks, fresh fruits, and refreshing drinks.",
+                                          mapUrl: "https://maps.app.goo.gl/U7fVMCrUHx5zWtVu8",
+                                        },
+                                        {
+                                          name: "Prague's Narrowest Alley",
+                                          category: "📸 Sightseeing",
+                                          description: "A unique 150-meter-long historic passage so narrow (only 50cm wide) that a pedestrian traffic light is installed to coordinate visitors walking through.",
+                                          mapUrl: "https://maps.app.goo.gl/ykNhByd5uTRexiCj7",
+                                        },
+                                        {
+                                          name: "Prague Castle",
+                                          category: "🏰 Landmark",
+                                          description: "One of the most magnificent and largest ancient castle complexes in the world, dominating the city skyline with breathtaking Gothic architecture and panoramic vistas.",
+                                          mapUrl: "https://maps.app.goo.gl/dV29a8Dxd1VTHjuDA",
+                                        }
+                                      ].map((place) => (
+                                        <div key={place.name} className="bg-white rounded-lg border border-gray-150 overflow-hidden flex flex-col justify-between shadow-xs">
+                                          <div>
+                                            <div className="w-full h-28 relative bg-gray-100 overflow-hidden">
+                                              <MapPhoto 
+                                                url={place.mapUrl} 
+                                                alt={place.name} 
+                                                className="w-full h-full object-cover"
+                                              />
+                                              <span className="absolute top-2 left-2 text-[8px] font-black uppercase tracking-wider bg-black/75 text-yellow-400 px-2 py-0.5 rounded shadow select-none">
+                                                {place.category}
+                                              </span>
+                                            </div>
+                                            <div className="p-3">
+                                              <h5 className="text-xs font-black text-gray-900 leading-tight">
+                                                {place.name}
+                                              </h5>
+                                              <p className="text-[11px] leading-relaxed text-gray-500 mt-1 font-medium">
+                                                {place.description}
+                                              </p>
+                                            </div>
+                                          </div>
+                                          <div className="p-3 pt-0">
+                                            <a
+                                              href={place.mapUrl}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              referrerPolicy="no-referrer"
+                                              className="w-full cursor-pointer inline-flex items-center justify-center gap-1.5 text-[9px] font-black text-amber-800 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 py-1.5 rounded-md transition-all uppercase tracking-wider"
+                                            >
+                                              📍 View Directions
+                                            </a>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
                                   </div>
                                 )}
 

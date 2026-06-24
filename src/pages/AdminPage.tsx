@@ -3485,6 +3485,25 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                           </div>
                         </div>
 
+                        <div className="col-span-full mt-2.5 px-1 py-1.5 bg-red-50/20 border border-red-100/30 rounded-lg flex items-center">
+                          <label className="flex items-center gap-2 cursor-pointer text-xs font-black text-red-600 select-none">
+                            <input
+                              type="checkbox"
+                              checked={!!event.important}
+                              onChange={(e) =>
+                                handleUpdateTripEventField(
+                                  day.id,
+                                  event.id,
+                                  "important",
+                                  e.target.checked,
+                                )
+                              }
+                              className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
+                            />
+                            🚩 Red Flag as Important / Highlight Event
+                          </label>
+                        </div>
+
                         {/* Interactive Place, Maps, and Custom Action Buttons */}
                         <div className="col-span-full pt-2.5 mt-2 border-t border-dashed border-gray-200 grid grid-cols-1 sm:grid-cols-4 gap-2">
                           <div>
