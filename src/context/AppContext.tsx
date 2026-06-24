@@ -157,7 +157,7 @@ export function getDefaultHotelDetails() {
     name: "Vienna House Diplomat Prague",
     address: "Evropská 15, 160 41 Praha 6, Czech Republic",
     checkIn: "2026-06-25",
-    checkOut: "2026-07-05",
+    checkOut: "2026-06-28",
     roomNumber: "Allocated upon arrival",
     mapsLink: "https://maps.app.goo.gl/526iVtZV4oZUQ8Sh6",
     photoUrl: "https://dl.dropboxusercontent.com/scl/fi/lf60zdhhkwucu3zhmc074/Diplomat-Hotel-Prague.png?rlkey=iit6sq96u71ug40mb3603yyky&st=ojhoihcn"
