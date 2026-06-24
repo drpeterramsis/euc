@@ -234,11 +234,11 @@ export const DEFAULT_APP_CONFIG: AppConfig = {
   },
   navOrder: [
     "dashboard",
+    "profile",
     "schedule",
     "sessions",
     "media",
-    "directory",
-    "profile"
+    "directory"
   ],
   pages: {
     directory: { visible: true,  comingSoon: false },

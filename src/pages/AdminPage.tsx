@@ -278,11 +278,11 @@ export default function Admin({ initialTab }: AdminProps = {}) {
     () =>
       appConfig?.navOrder || [
         "dashboard",
+        "profile",
         "schedule",
         "sessions",
         "media",
         "directory",
-        "profile",
       ],
   );
 

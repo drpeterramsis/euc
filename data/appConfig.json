@@ -9,11 +9,11 @@
   },
   "navOrder": [
     "dashboard",
+    "profile",
     "schedule",
     "sessions",
     "media",
-    "directory",
-    "profile"
+    "directory"
   ],
   "pages": {
     "dashboard":  { "visible": true,  "comingSoon": false },

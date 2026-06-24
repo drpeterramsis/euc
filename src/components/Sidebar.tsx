@@ -54,11 +54,11 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
   // All possible nav items (master list — never changes)
   const ALL_NAV_ITEMS = [
     { key: "dashboard",  path: "/dashboard",   icon: "🏠" },
+    { key: "profile",    path: "/profile",     icon: "👤" },
     { key: "schedule",   path: "/schedule",    icon: "📅", featureKey: "schedule" },
     { key: "sessions",   path: "/sessions",    icon: "🎓", featureKey: "sessions" },
     { key: "media",      path: "/media",       icon: "🖼️", featureKey: "photoGallery" },
     { key: "directory",  path: "/directory",   icon: "👥" },
-    { key: "profile",    path: "/profile",     icon: "👤" },
     { key: "checkins",   path: "/checkins",    icon: "✈️" },
   ];
 

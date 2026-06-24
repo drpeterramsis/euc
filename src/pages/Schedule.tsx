@@ -38,6 +38,80 @@ const typeDotMap: Record<string, string> = {
   break: "bg-gray-400",
 };
 
+// Expandable Destination Card with custom interactive state and flush layout
+function DestinationCard({ place }: { place: any; key?: any }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="bg-white hover:bg-gray-50/30 transition-all duration-150 w-full">
+      {/* Clickable Header */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-3 py-2.5 flex flex-row items-center gap-3 text-left focus:outline-none select-none cursor-pointer hover:bg-gray-50/50"
+      >
+        {/* Thumbnail photo */}
+        <div className="w-11 h-11 rounded-md overflow-hidden flex-shrink-0 bg-gray-50 border border-gray-150 relative">
+          <img 
+            src={place.imageUrl} 
+            alt={place.name} 
+            className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+
+        {/* Info Text */}
+        <div className="flex-1 min-w-0">
+          <h5 className="text-[11px] font-extrabold text-gray-900 leading-tight truncate w-full">
+            {place.name}
+          </h5>
+          <div className="flex items-center justify-between mt-1.5 w-full">
+            <span className="text-[8px] font-black uppercase text-amber-700 bg-amber-50 border border-amber-100 px-1.5 py-0.5 rounded-sm shrink-0">
+              {place.category}
+            </span>
+            <span className="text-[10px] text-amber-600 font-extrabold select-none mr-0.5">
+              {isOpen ? "▲" : "▼"}
+            </span>
+          </div>
+        </div>
+      </button>
+
+      {/* Expanded Content Panel */}
+      {isOpen && (
+        <div className="px-3 pb-3 border-t border-gray-100 bg-gray-50/30 space-y-2 animate-fadeIn">
+          {/* Main Photo */}
+          <div className="mt-2 w-full h-28 sm:h-32 rounded-md overflow-hidden bg-gray-100 border border-gray-150 relative shadow-2xs">
+            <img 
+              src={place.imageUrl} 
+              alt={place.name} 
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+
+          {/* Description */}
+          <p className="text-[9.5px] leading-relaxed text-gray-600 font-medium">
+            {place.description}
+          </p>
+
+          {/* Action Link */}
+          <div className="pt-0.5">
+            <a
+              href={place.mapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              referrerPolicy="no-referrer"
+              className="cursor-pointer inline-flex items-center gap-1 text-[8px] font-black text-amber-800 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2 py-0.5 rounded transition-colors uppercase tracking-wider"
+            >
+              📍 Directions
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 export default function Schedule() {
   const { appConfig, currentUser, content } = useAppContext() as any;
   const pageTitle = getLabel(appConfig, "schedule") || "Schedule";
@@ -459,15 +533,16 @@ export default function Schedule() {
                         </div>
 
                         {/* Event Content & Type Badge (Full-width custom layouts with short maps links) */}
-                        <div className="flex-1 flex items-start justify-between gap-3 min-w-0">
-                          <div className="min-w-0">
-                            <div className="flex items-start gap-2.5">
+                        <div className="flex-1 flex flex-col min-w-0 w-full">
+                          {/* Title & Badge Row */}
+                          <div className="flex items-start justify-between gap-3 w-full">
+                            <div className="flex items-start gap-2.5 min-w-0 flex-1">
                               {event.icon && (
                                 <span className="text-xl flex-shrink-0 mt-0.5 select-none">
                                   {event.icon}
                                 </span>
                               )}
-                              <div className="min-w-0">
+                              <div className="min-w-0 flex-1">
                                 <span className={`text-sm font-bold text-gray-800 break-words leading-tight flex flex-wrap items-center gap-1.5 ${isNow ? 'text-emerald-800 font-black' : ''}`}>
                                   {event.label}
                                   {isNow && (
@@ -481,135 +556,110 @@ export default function Schedule() {
                                     </span>
                                   )}
                                 </span>
-
-                                {/* 📍 Custom Location Name with a Minified Short map directions button */}
-                                {event.location && (
-                                  <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
-                                    <span className="inline-flex items-center gap-1 text-[11px] text-gray-600 font-bold bg-gray-50 border border-gray-150 px-2 py-0.5 rounded-md">
-                                      📍 {event.location}
-                                    </span>
-                                    {event.mapLocation && (
-                                      <a
-                                        href={event.mapLocation}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        referrerPolicy="no-referrer"
-                                        className="inline-flex items-center gap-0.5 text-[9px] font-black text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-150 px-2.5 py-0.5 rounded-md transition-all uppercase tracking-wider cursor-pointer"
-                                        title="View location on the Map"
-                                      >
-                                        🗺️ Map Link
-                                      </a>
-                                    )}
-                                  </div>
-                                )}
-
-                                {event.mapLocation && (
-                                  <div className="mt-2.5 max-w-xs sm:max-w-sm rounded-lg overflow-hidden border border-gray-150 shadow-xs">
-                                    <MapPhoto 
-                                      url={event.mapLocation} 
-                                      alt={event.location || event.label} 
-                                      className="w-full h-24 object-cover animate-fadeIn"
-                                    />
-                                  </div>
-                                )}
-
-                                {day.date === "2026-06-26" && event.type === "break" && (
-                                  <div className="mt-4 p-4 bg-gray-50/75 rounded-xl border border-gray-150 shadow-xs">
-                                    <div className="flex items-center gap-2 mb-3.5 pb-2 border-b border-gray-200">
-                                      <span className="text-base select-none">🗺️</span>
-                                      <h4 className="text-xs font-black text-gray-800 uppercase tracking-widest">
-                                        Recommended Free Time Destinations
-                                      </h4>
-                                    </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                      {[
-                                        {
-                                          name: "Primark",
-                                          category: "🛍️ Shopping",
-                                          description: "A popular, massive multi-story department store in the heart of Prague, offering a huge selection of trendy fashion, homeware, and accessories at budget-friendly prices.",
-                                          mapUrl: "https://maps.app.goo.gl/Le5KXX2zXXsPqWHB6",
-                                        },
-                                        {
-                                          name: "Billa",
-                                          category: "🛒 Supermarket",
-                                          description: "A premium European supermarket chain store in Prague, perfect for picking up local chocolates, traditional snacks, fresh fruits, and refreshing drinks.",
-                                          mapUrl: "https://maps.app.goo.gl/U7fVMCrUHx5zWtVu8",
-                                        },
-                                        {
-                                          name: "Prague's Narrowest Alley",
-                                          category: "📸 Sightseeing",
-                                          description: "A unique 150-meter-long historic passage so narrow (only 50cm wide) that a pedestrian traffic light is installed to coordinate visitors walking through.",
-                                          mapUrl: "https://maps.app.goo.gl/ykNhByd5uTRexiCj7",
-                                        },
-                                        {
-                                          name: "Prague Castle",
-                                          category: "🏰 Landmark",
-                                          description: "One of the most magnificent and largest ancient castle complexes in the world, dominating the city skyline with breathtaking Gothic architecture and panoramic vistas.",
-                                          mapUrl: "https://maps.app.goo.gl/dV29a8Dxd1VTHjuDA",
-                                        }
-                                      ].map((place) => (
-                                        <div key={place.name} className="bg-white rounded-lg border border-gray-150 overflow-hidden flex flex-col justify-between shadow-xs">
-                                          <div>
-                                            <div className="w-full h-28 relative bg-gray-100 overflow-hidden">
-                                              <MapPhoto 
-                                                url={place.mapUrl} 
-                                                alt={place.name} 
-                                                className="w-full h-full object-cover"
-                                              />
-                                              <span className="absolute top-2 left-2 text-[8px] font-black uppercase tracking-wider bg-black/75 text-yellow-400 px-2 py-0.5 rounded shadow select-none">
-                                                {place.category}
-                                              </span>
-                                            </div>
-                                            <div className="p-3">
-                                              <h5 className="text-xs font-black text-gray-900 leading-tight">
-                                                {place.name}
-                                              </h5>
-                                              <p className="text-[11px] leading-relaxed text-gray-500 mt-1 font-medium">
-                                                {place.description}
-                                              </p>
-                                            </div>
-                                          </div>
-                                          <div className="p-3 pt-0">
-                                            <a
-                                              href={place.mapUrl}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              referrerPolicy="no-referrer"
-                                              className="w-full cursor-pointer inline-flex items-center justify-center gap-1.5 text-[9px] font-black text-amber-800 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 py-1.5 rounded-md transition-all uppercase tracking-wider"
-                                            >
-                                              📍 View Directions
-                                            </a>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Action button of operation defined by the admin */}
-                                {event.link && (
-                                  <div className="mt-2.5">
-                                    <a
-                                      href={event.link}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      referrerPolicy="no-referrer"
-                                      className="inline-flex items-center gap-1 text-[10px] font-black text-white bg-gray-900 hover:bg-gray-800 px-3 py-1.5 rounded-lg transition-all shadow-sm uppercase tracking-wider cursor-pointer"
-                                    >
-                                      🔗 {event.actionText || "View Activity Details"}
-                                    </a>
-                                  </div>
-                                )}
                               </div>
                             </div>
+
+                            <span
+                              className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider flex-shrink-0 self-start mt-0.5
+                            ${typeColorMap[event.type] ?? "bg-gray-100 text-gray-500 border-gray-200"}`}
+                            >
+                              {event.type}
+                            </span>
                           </div>
-                          
-                          <span
-                            className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider flex-shrink-0 self-start mt-0.5
-                          ${typeColorMap[event.type] ?? "bg-gray-100 text-gray-500 border-gray-200"}`}
-                          >
-                            {event.type}
-                          </span>
+
+                          {/* Details Block (Full Width below the title row, with matching indentation of the title) */}
+                          <div className={`w-full mt-2 ${event.icon ? "pl-[30px]" : "pl-0"}`}>
+                            {/* 📍 Custom Location Name with a Minified Short map directions button */}
+                            {event.location && (
+                              <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                                <span className="inline-flex items-center gap-1 text-[11px] text-gray-600 font-bold bg-gray-50 border border-gray-150 px-2 py-0.5 rounded-md">
+                                  📍 {event.location}
+                                </span>
+                                {event.mapLocation && (
+                                  <a
+                                    href={event.mapLocation}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    referrerPolicy="no-referrer"
+                                    className="inline-flex items-center gap-0.5 text-[9px] font-black text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-150 px-2.5 py-0.5 rounded-md transition-all uppercase tracking-wider cursor-pointer"
+                                    title="View location on the Map"
+                                  >
+                                    🗺️ Map Link
+                                  </a>
+                                )}
+                              </div>
+                            )}
+
+                            {event.mapLocation && (
+                              <div className="mt-2.5 max-w-xs sm:max-w-sm rounded-lg overflow-hidden border border-gray-150 shadow-xs">
+                                <MapPhoto 
+                                  url={event.mapLocation} 
+                                  alt={event.location || event.label} 
+                                  className="w-full h-24 object-cover animate-fadeIn"
+                                />
+                              </div>
+                            )}
+
+                            {day.date === "2026-06-26" && event.type === "break" && (
+                              <div className="mt-3.5 bg-gray-50/30 rounded-xl border border-gray-150/80 overflow-hidden w-full">
+                                <div className="px-3 py-2 bg-gray-50/80 border-b border-gray-150 flex items-center gap-1.5">
+                                  <span className="text-xs select-none">📍</span>
+                                  <h4 className="text-[10px] font-extrabold text-gray-700 uppercase tracking-wider">
+                                    Recommended Free Time Destinations
+                                  </h4>
+                                </div>
+                                <div className="divide-y divide-gray-150 w-full">
+                                  {[
+                                    {
+                                      name: "Primark (Wenceslas Square)",
+                                      category: "🛍️ Shopping",
+                                      description: "A popular, massive multi-story department store in the heart of Prague, offering budget-friendly trendy fashion and accessories.",
+                                      imageUrl: "https://dl.dropboxusercontent.com/scl/fi/sgfj8t3o7ngkvbps4wlpo/Primark-Praha.jpg?rlkey=ccqsfrsa0nz4610u5exyuhgro&st=y2800s44",
+                                      mapUrl: "https://maps.app.goo.gl/Le5KXX2zXXsPqWHB6",
+                                    },
+                                    {
+                                      name: "Billa Supermarket",
+                                      category: "🛒 Grocery",
+                                      description: "A premium European supermarket, perfect for traditional Czech chocolates, snacks, and refreshing drinks.",
+                                      imageUrl: "https://dl.dropboxusercontent.com/scl/fi/nwcbxq43bwgaq2l9py5x6/billa.jpg?rlkey=vezhwbu2c9xurj20xpx01pfhr&st=ab3gnseb",
+                                      mapUrl: "https://maps.app.goo.gl/U7fVMCrUHx5zWtVu8",
+                                    },
+                                    {
+                                      name: "Prague's Narrowest Alley",
+                                      category: "📸 Sightseeing",
+                                      description: "A unique 50cm wide passage with a pedestrian traffic light to coordinate visitors walking through.",
+                                      imageUrl: "https://dl.dropboxusercontent.com/scl/fi/s13lcivdjuyf3aj1hnvew/narrowest-Street.jpg?rlkey=pzalrnfcr16fcc3e0jabaj5ww&st=tq56ut5r",
+                                      mapUrl: "https://maps.app.goo.gl/ykNhByd5uTRexiCj7",
+                                    },
+                                    {
+                                      name: "Prague Castle",
+                                      category: "🏰 Landmark",
+                                      description: "One of the most magnificent ancient castle complexes in the world, with gorgeous Gothic architecture and city views.",
+                                      imageUrl: "https://dl.dropboxusercontent.com/scl/fi/sebe54rgipok7fqe5tpa3/castle.jpg?rlkey=3ip17n6knk8ua2oivvaqjtp1r&st=6zkuo3lq",
+                                      mapUrl: "https://maps.app.goo.gl/dV29a8Dxd1VTHjuDA",
+                                    }
+                                  ].map((place) => (
+                                    <DestinationCard key={place.name} place={place} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Action button of operation defined by the admin */}
+                            {event.link && (
+                              <div className="mt-2.5">
+                                <a
+                                  href={event.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  referrerPolicy="no-referrer"
+                                  className="inline-flex items-center gap-1 text-[10px] font-black text-white bg-gray-900 hover:bg-gray-800 px-3 py-1.5 rounded-lg transition-all shadow-sm uppercase tracking-wider cursor-pointer"
+                                >
+                                  🔗 {event.actionText || "View Activity Details"}
+                                </a>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
