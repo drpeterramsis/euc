@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import { useState, useEffect, DragEvent, useRef } from "react";
+import { useState, useEffect, DragEvent, useRef, Fragment } from "react";
 import Layout from "../components/Layout";
 import {
   useApp,
@@ -1434,7 +1434,8 @@ export default function Admin({ initialTab }: AdminProps = {}) {
         .join(" ")
         .toLowerCase();
       return hay.includes(q);
-    });
+    })
+    .sort((a: any, b: any) => (a.name || "").localeCompare(b.name || ""));
 
   const renderTab1 = () => {
     return (
@@ -1522,82 +1523,177 @@ export default function Admin({ initialTab }: AdminProps = {}) {
           <div className="bg-white rounded-lg shadow overflow-hidden">
             {/* Mobile List View */}
             <div className="md:hidden divide-y text-sm">
-              {filteredUsers.map((u: any) => (
-                <div key={u.id} className="p-4 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <UserAvatar user={u} size="md" />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-gray-900 truncate">
-                        {u.name}
-                      </h4>
-                      <p className="text-gray-500 truncate">{u.username}</p>
-                      {u.phone && (
-                        <p className="text-xs text-gray-500 mt-1 flex flex-wrap gap-x-2 gap-y-1 items-center">
-                          <span>📞 {displayPhone(u.phone)}</span>
-                          <span className="text-gray-300">|</span>
-                          <a
-                            href={callHref(u.phone)}
-                            className="text-blue-600 hover:text-blue-800 font-bold"
-                          >
-                            Call
-                          </a>
-                          <span className="text-gray-300">|</span>
-                          <a
-                            href={whatsappHref(u.phone)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-green-600 hover:text-green-800 font-bold"
-                          >
-                            WhatsApp
-                          </a>
-                        </p>
-                      )}
+              {roleFilter === "all" ? (
+                ["admin", "doctor", "staff"].map((role) => {
+                  const group = filteredUsers.filter((u) => u.role === role);
+                  if (group.length === 0) return null;
+                  return (
+                    <Fragment key={role}>
+                      <div className="bg-gray-100/65 px-4 py-2 font-black text-[10px] text-gray-500 uppercase tracking-widest flex justify-between items-center border-b">
+                        <span>{role === "admin" ? "🔧 Admin" : role === "doctor" ? "🩺 Doctor" : "💼 Staff"}</span>
+                        <span className="bg-gray-200/80 px-2 py-0.5 rounded-full text-[9px] text-gray-600 font-bold">
+                          {group.length}
+                        </span>
+                      </div>
+                      <div className="divide-y divide-gray-100">
+                        {group.map((u: any) => (
+                          <div key={u.id} className="p-4 space-y-3 bg-white">
+                            <div className="flex items-center gap-3">
+                              <UserAvatar user={u} size="md" />
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-gray-900 truncate">
+                                  {u.name}
+                                </h4>
+                                <p className="text-gray-500 truncate">{u.username}</p>
+                                {u.phone && (
+                                  <p className="text-xs text-gray-500 mt-1 flex flex-wrap gap-x-2 gap-y-1 items-center font-sans">
+                                    <span>📞 {displayPhone(u.phone)}</span>
+                                    <span className="text-gray-300">|</span>
+                                    <a
+                                      href={callHref(u.phone)}
+                                      className="text-blue-600 hover:text-blue-800 font-bold"
+                                    >
+                                      Call
+                                    </a>
+                                    <span className="text-gray-300">|</span>
+                                    <a
+                                      href={whatsappHref(u.phone)}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-green-600 hover:text-green-800 font-bold"
+                                    >
+                                      WhatsApp
+                                    </a>
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span
+                                className={`px-2 py-1 rounded text-xs font-bold ${
+                                  u.role === "admin"
+                                    ? "bg-yellow-200 text-yellow-800"
+                                    : u.role === "doctor"
+                                      ? "bg-blue-100 text-blue-800"
+                                      : "bg-gray-200 text-gray-800"
+                                }`}
+                              >
+                                {u.role.toUpperCase()}
+                              </span>
+                              <span className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+                                <span
+                                  className={`w-2 h-2 rounded-full ${u.isActive ? "bg-green-500" : "bg-red-500"}`}
+                                ></span>
+                                {u.isActive ? "Active" : "Inactive"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 pt-2 border-t border-gray-100 font-bold">
+                              <button
+                                onClick={() => handleImpersonate(u)}
+                                className="flex-1 py-1.5 bg-gray-100 hover:bg-gray-200 rounded text-xs text-center font-bold"
+                              >
+                                👁 View
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingUser(u);
+                                  setModalOpen(true);
+                                }}
+                                className="flex-1 py-1.5 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs text-center font-bold"
+                              >
+                                ✏️ Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteUser(u.id)}
+                                className="flex-1 py-1.5 text-red-600 hover:bg-red-50 bg-red-50 rounded text-xs text-center font-bold"
+                              >
+                                🗑 Delete
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </Fragment>
+                  );
+                })
+              ) : (
+                filteredUsers.map((u: any) => (
+                  <div key={u.id} className="p-4 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <UserAvatar user={u} size="md" />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-gray-900 truncate">
+                          {u.name}
+                        </h4>
+                        <p className="text-gray-500 truncate">{u.username}</p>
+                        {u.phone && (
+                          <p className="text-xs text-gray-500 mt-1 flex flex-wrap gap-x-2 gap-y-1 items-center font-sans">
+                            <span>📞 {displayPhone(u.phone)}</span>
+                            <span className="text-gray-300">|</span>
+                            <a
+                              href={callHref(u.phone)}
+                              className="text-blue-600 hover:text-blue-800 font-bold"
+                            >
+                              Call
+                            </a>
+                            <span className="text-gray-300">|</span>
+                            <a
+                              href={whatsappHref(u.phone)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-green-600 hover:text-green-800 font-bold"
+                            >
+                              WhatsApp
+                            </a>
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-bold ${
+                          u.role === "admin"
+                            ? "bg-yellow-200 text-yellow-800"
+                            : u.role === "doctor"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-gray-200 text-gray-800"
+                        }`}
+                      >
+                        {u.role.toUpperCase()}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+                        <span
+                          className={`w-2 h-2 rounded-full ${u.isActive ? "bg-green-500" : "bg-red-500"}`}
+                        ></span>
+                        {u.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 pt-2 border-t border-gray-100 font-bold">
+                      <button
+                        onClick={() => handleImpersonate(u)}
+                        className="flex-1 py-1.5 bg-gray-100 hover:bg-gray-200 rounded text-xs text-center font-bold"
+                      >
+                        👁 View
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingUser(u);
+                          setModalOpen(true);
+                        }}
+                        className="flex-1 py-1.5 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs text-center font-bold"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteUser(u.id)}
+                        className="flex-1 py-1.5 text-red-600 hover:bg-red-50 bg-red-50 rounded text-xs text-center font-bold"
+                      >
+                        🗑 Delete
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-bold ${
-                        u.role === "admin"
-                          ? "bg-yellow-200 text-yellow-800"
-                          : u.role === "doctor"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-gray-200 text-gray-800"
-                      }`}
-                    >
-                      {u.role.toUpperCase()}
-                    </span>
-                    <span className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
-                      <span
-                        className={`w-2 h-2 rounded-full ${u.isActive ? "bg-green-500" : "bg-red-500"}`}
-                      ></span>
-                      {u.isActive ? "Active" : "Inactive"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 pt-2 border-t border-gray-100 font-bold">
-                    <button
-                      onClick={() => handleImpersonate(u)}
-                      className="flex-1 py-1.5 bg-gray-100 hover:bg-gray-200 rounded text-xs text-center font-bold"
-                    >
-                      👁 View
-                    </button>
-                    <button
-                      onClick={() => {
-                        setEditingUser(u);
-                        setModalOpen(true);
-                      }}
-                      className="flex-1 py-1.5 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs text-center font-bold"
-                    >
-                      ✏️ Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteUser(u.id)}
-                      className="flex-1 py-1.5 text-red-600 hover:bg-red-50 bg-red-50 rounded text-xs text-center font-bold"
-                    >
-                      🗑 Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
               {filteredUsers.length === 0 && (
                 <div className="p-8 text-center text-gray-500">
                   No users found.
@@ -1619,87 +1715,189 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                   </tr>
                 </thead>
                 <tbody className="divide-y text-sm">
-                  {filteredUsers.map((u: any) => (
-                    <tr
-                      key={u.id}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="p-4">
-                        <UserAvatar user={u} size="md" />
-                      </td>
-                      <td className="p-4 font-semibold">
-                        <div>{u.name}</div>
-                        {u.phone && (
-                          <div className="text-xs text-gray-500 font-normal flex items-center gap-2 mt-1">
-                            <span>📞 {displayPhone(u.phone)}</span>
-                            <span className="text-gray-300">|</span>
-                            <a
-                              href={callHref(u.phone)}
-                              className="text-blue-600 hover:text-blue-800 font-bold"
+                  {roleFilter === "all" ? (
+                    ["admin", "doctor", "staff"].map((role) => {
+                      const group = filteredUsers.filter((u) => u.role === role);
+                      if (group.length === 0) return null;
+                      return (
+                        <Fragment key={role}>
+                          <tr className="bg-gray-50/75">
+                            <td colSpan={6} className="p-3 px-4 font-black text-[10px] text-gray-500 uppercase tracking-widest border-y border-gray-100">
+                              <div className="flex justify-between items-center">
+                                <span>{role === "admin" ? "🔧 Admin" : role === "doctor" ? "🩺 Doctor" : "💼 Staff"}</span>
+                                <span className="bg-gray-200 px-2 py-0.5 rounded-full text-[10px] text-gray-600 font-bold normal-case tracking-normal">
+                                  {group.length} users
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                          {group.map((u: any) => (
+                            <tr
+                              key={u.id}
+                              className="hover:bg-gray-50 transition-colors"
                             >
-                              Call
-                            </a>
-                            <span className="text-gray-300">|</span>
-                            <a
-                              href={whatsappHref(u.phone)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-green-600 hover:text-green-800 font-bold"
-                            >
-                              WhatsApp
-                            </a>
-                          </div>
-                        )}
-                      </td>
-                      <td className="p-4 text-gray-500">{u.username}</td>
-                      <td className="p-4">
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-bold ${
-                            u.role === "admin"
-                              ? "bg-yellow-200 text-yellow-800"
-                              : u.role === "doctor"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-gray-200 text-gray-800"
-                          }`}
-                        >
-                          {u.role.toUpperCase()}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <span className="flex items-center gap-2">
+                              <td className="p-4">
+                                <UserAvatar user={u} size="md" />
+                              </td>
+                              <td className="p-4 font-semibold">
+                                <div>{u.name}</div>
+                                {u.phone && (
+                                  <div className="text-xs text-gray-500 font-normal flex items-center gap-2 mt-1 font-sans">
+                                    <span>📞 {displayPhone(u.phone)}</span>
+                                    <span className="text-gray-300">|</span>
+                                    <a
+                                      href={callHref(u.phone)}
+                                      className="text-blue-600 hover:text-blue-800 font-bold"
+                                    >
+                                      Call
+                                    </a>
+                                    <span className="text-gray-300">|</span>
+                                    <a
+                                      href={whatsappHref(u.phone)}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-green-600 hover:text-green-800 font-bold"
+                                    >
+                                      WhatsApp
+                                    </a>
+                                  </div>
+                                )}
+                              </td>
+                              <td className="p-4 text-gray-500">{u.username}</td>
+                              <td className="p-4">
+                                <span
+                                  className={`px-2 py-1 rounded text-xs font-bold ${
+                                    u.role === "admin"
+                                      ? "bg-yellow-200 text-yellow-800"
+                                      : u.role === "doctor"
+                                        ? "bg-blue-100 text-blue-800"
+                                        : "bg-gray-200 text-gray-800"
+                                  }`}
+                                >
+                                  {u.role.toUpperCase()}
+                                </span>
+                              </td>
+                              <td className="p-4">
+                                <span className="flex items-center gap-2">
+                                  <span
+                                    className={`w-2 h-2 rounded-full ${u.isActive ? "bg-green-500" : "bg-red-500"}`}
+                                  ></span>
+                                  {u.isActive ? "Active" : "Inactive"}
+                                </span>
+                              </td>
+                              <td className="p-4">
+                                <div className="flex items-center gap-2 font-bold font-sans">
+                                  <button
+                                    onClick={() => handleImpersonate(u)}
+                                    className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold flex items-center gap-1"
+                                  >
+                                    👁 View
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setEditingUser(u);
+                                      setModalOpen(true);
+                                    }}
+                                    className="px-2 py-1 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs font-bold"
+                                  >
+                                    ✏️ Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteUser(u.id)}
+                                    className="px-2 py-1 text-red-600 hover:bg-red-0 hover:bg-red-50 bg-red-50 rounded text-xs font-bold"
+                                  >
+                                    🗑 Delete
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </Fragment>
+                      );
+                    })
+                  ) : (
+                    filteredUsers.map((u: any) => (
+                      <tr
+                        key={u.id}
+                        className="hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="p-4">
+                          <UserAvatar user={u} size="md" />
+                        </td>
+                        <td className="p-4 font-semibold">
+                          <div>{u.name}</div>
+                          {u.phone && (
+                            <div className="text-xs text-gray-500 font-normal flex items-center gap-2 mt-1 font-sans">
+                              <span>📞 {displayPhone(u.phone)}</span>
+                              <span className="text-gray-300">|</span>
+                              <a
+                                href={callHref(u.phone)}
+                                className="text-blue-600 hover:text-blue-800 font-bold"
+                              >
+                                Call
+                              </a>
+                              <span className="text-gray-300">|</span>
+                              <a
+                                href={whatsappHref(u.phone)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-green-600 hover:text-green-800 font-bold"
+                              >
+                                WhatsApp
+                              </a>
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-4 text-gray-500">{u.username}</td>
+                        <td className="p-4">
                           <span
-                            className={`w-2 h-2 rounded-full ${u.isActive ? "bg-green-500" : "bg-red-500"}`}
-                          ></span>
-                          {u.isActive ? "Active" : "Inactive"}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2 font-bold font-sans">
-                          <button
-                            onClick={() => handleImpersonate(u)}
-                            className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold flex items-center gap-1"
+                            className={`px-2 py-1 rounded text-xs font-bold ${
+                              u.role === "admin"
+                                ? "bg-yellow-200 text-yellow-800"
+                                : u.role === "doctor"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : "bg-gray-200 text-gray-800"
+                            }`}
                           >
-                            👁 View
-                          </button>
-                          <button
-                            onClick={() => {
-                              setEditingUser(u);
-                              setModalOpen(true);
-                            }}
-                            className="px-2 py-1 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs font-bold"
-                          >
-                            ✏️ Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteUser(u.id)}
-                            className="px-2 py-1 text-red-600 hover:bg-red-0 hover:bg-red-50 bg-red-50 rounded text-xs font-bold"
-                          >
-                            🗑 Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                            {u.role.toUpperCase()}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <span className="flex items-center gap-2">
+                            <span
+                              className={`w-2 h-2 rounded-full ${u.isActive ? "bg-green-500" : "bg-red-500"}`}
+                            ></span>
+                            {u.isActive ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-2 font-bold font-sans">
+                            <button
+                              onClick={() => handleImpersonate(u)}
+                              className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold flex items-center gap-1"
+                            >
+                              👁 View
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingUser(u);
+                                setModalOpen(true);
+                              }}
+                              className="px-2 py-1 text-blue-600 hover:bg-blue-50 bg-blue-50 rounded text-xs font-bold"
+                            >
+                              ✏️ Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteUser(u.id)}
+                              className="px-2 py-1 text-red-600 hover:bg-red-0 hover:bg-red-50 bg-red-50 rounded text-xs font-bold"
+                            >
+                              🗑 Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                   {filteredUsers.length === 0 && (
                     <tr>
                       <td colSpan={6} className="p-8 text-center text-gray-500">

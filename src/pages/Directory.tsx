@@ -65,7 +65,15 @@ export default function Directory() {
       search === "" ||
       u.name?.toLowerCase().includes(search.toLowerCase()) ||
       u.title?.toLowerCase().includes(search.toLowerCase())
-    );
+    )
+    .sort((a, b) => {
+      if (roleFilter === "all") {
+        const roleA = a.role === "doctor" ? 0 : 1;
+        const roleB = b.role === "doctor" ? 0 : 1;
+        if (roleA !== roleB) return roleA - roleB;
+      }
+      return (a.name || "").localeCompare(b.name || "");
+    });
 
   const nonAdminUsers = users.filter(u => u.role !== "admin");
 
@@ -119,6 +127,52 @@ export default function Directory() {
         {filtered.length === 0 ? (
           <div className="text-center py-16 text-gray-400 text-sm font-medium">
             No members found matching your search.
+          </div>
+        ) : roleFilter === "all" ? (
+          <div className="space-y-10">
+            {/* Doctors Section */}
+            {filtered.some(u => u.role === "doctor") && (
+              <div>
+                <div className="mb-5">
+                  <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <span>🩺 Doctors</span>
+                    <span className="bg-blue-50 text-blue-700 text-[10px] px-2.5 py-0.5 rounded-full font-bold border border-blue-100 normal-case tracking-normal">
+                      {filtered.filter(u => u.role === "doctor").length}
+                    </span>
+                  </h2>
+                  <div className="h-[2px] bg-gray-100 mt-2 rounded-full w-full"></div>
+                </div>
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {filtered
+                    .filter(u => u.role === "doctor")
+                    .map(user => (
+                      <DirectoryCard key={user.id} user={user} currentUser={currentUser} />
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {/* Staff Section */}
+            {filtered.some(u => u.role === "staff") && (
+              <div>
+                <div className="mb-5 pt-2">
+                  <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <span>💼 Staff Members</span>
+                    <span className="bg-amber-50 text-amber-700 text-[10px] px-2.5 py-0.5 rounded-full font-bold border border-amber-100 normal-case tracking-normal">
+                      {filtered.filter(u => u.role === "staff").length}
+                    </span>
+                  </h2>
+                  <div className="h-[2px] bg-gray-100 mt-2 rounded-full w-full"></div>
+                </div>
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {filtered
+                    .filter(u => u.role === "staff")
+                    .map(user => (
+                      <DirectoryCard key={user.id} user={user} currentUser={currentUser} />
+                    ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

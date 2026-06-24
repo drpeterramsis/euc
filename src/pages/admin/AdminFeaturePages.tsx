@@ -46,7 +46,7 @@ export const AdminUsers = () => {
       <div className="p-6">
         <h2 className="text-xl font-bold mb-6">User Management</h2>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          {users.map((u: any) => (
+          {[...users].sort((a: any, b: any) => (a.name || "").localeCompare(b.name || "")).map((u: any) => (
             <div
               key={u.id}
               className="p-4 border-b border-gray-100 flex items-center justify-between"
