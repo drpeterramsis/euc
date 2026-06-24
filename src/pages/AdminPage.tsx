@@ -4505,7 +4505,7 @@ export default function Admin({ initialTab }: AdminProps = {}) {
                   alt={post.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                <div className="absolute top-2 right-2 flex gap-1 opacity-100 transition-all">
                   <button
                     onClick={() => handleEditMedia(post)}
                     className="p-2 bg-white text-blue-600 rounded-lg shadow hover:bg-blue-50"

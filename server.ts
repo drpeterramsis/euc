@@ -524,6 +524,25 @@ async function startServer() {
     }
   });
 
+  app.get("/api/admin/update-checkouts", async (req, res) => {
+    try {
+      const usersPath = path.join(process.cwd(), "data", "users.json");
+      const users = JSON.parse(fs.readFileSync(usersPath, "utf8"));
+
+      users.forEach((user: any) => {
+        if (user.hotel) {
+          user.hotel.checkOut = "2026-06-28";
+        }
+      });
+
+      fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+      return res.status(200).json({ success: true, message: "Updated all hotel check-out dates to 2026-06-28" });
+    } catch (err: any) {
+      console.error("Error in GET /api/admin/update-checkouts:", err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
   // Setup Vite middleware or serve static files
   if (process.env.NODE_ENV !== "production") {
     // Gracefully handle stale browser/ServiceWorker requests to "/src/pages/admin" or "/src/pages/Admin" folders

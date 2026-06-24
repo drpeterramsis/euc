@@ -675,6 +675,30 @@ export default function SettingsTab() {
           </div>
         </div>
       </div>
+
+      {/* SECTION E: MAINTENANCE */}
+      <div className="mt-10 pt-10 border-t border-gray-150">
+        <h3 className="text-base font-bold text-gray-900 mb-4 uppercase tracking-tight flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+          Section E — Maintenance
+        </h3>
+        <button
+          onClick={async () => {
+             if (confirm("Are you sure you want to update ALL hotel check-out dates to 2026-06-28?")) {
+                try {
+                  const res = await fetch("/api/admin/update-checkouts");
+                  const data = await res.json();
+                  alert(data.message || data.error);
+                } catch(e: any) {
+                  alert("Failed to call update API: " + e.message);
+                }
+             }
+          }}
+          className="px-6 py-2.5 rounded-xl font-bold text-sm tracking-tight border border-red-500 bg-red-100 text-red-800 hover:bg-red-200 cursor-pointer"
+        >
+          Update All Hotel Check-out Dates to 2026-06-28
+        </button>
+      </div>
     </div>
   );
 }
