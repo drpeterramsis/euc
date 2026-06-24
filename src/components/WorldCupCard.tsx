@@ -38,6 +38,7 @@ export default function WorldCupCard() {
   const [isVotingExpanded, setIsVotingExpanded] = useState(false);
   const [isAdminDashboardExpanded, setIsAdminDashboardExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"results" | "voters" | "admin">("voters");
+  const [showLiveUpdates, setShowLiveUpdates] = useState(false);
 
   // Admin Form fields
   const [formTitle, setFormTitle] = useState("");
@@ -57,6 +58,10 @@ export default function WorldCupCard() {
   const [actualWinner, setActualWinner] = useState<"Egypt" | "Iran" | "Draw" | "">("");
   const [actualScoreEgypt, setActualScoreEgypt] = useState("");
   const [actualScoreIran, setActualScoreIran] = useState("");
+  const [isLive, setIsLive] = useState(false);
+  const [liveScoreEgypt, setLiveScoreEgypt] = useState("");
+  const [liveScoreIran, setLiveScoreIran] = useState("");
+  const [matchGroup, setMatchGroup] = useState("");
   const [celebrateEgyptWins, setCelebrateEgyptWins] = useState(false);
 
   // Admin voter breakdown
@@ -114,6 +119,10 @@ export default function WorldCupCard() {
       setIsFinalized(activeMatch.isFinalized || false);
       setActualWinner(activeMatch.actualWinner || "");
       setCelebrateEgyptWins(activeMatch.celebrateEgyptWins || false);
+      setIsLive(activeMatch.isLive || false);
+      setLiveScoreEgypt(activeMatch.liveScoreEgypt || "");
+      setLiveScoreIran(activeMatch.liveScoreIran || "");
+      setMatchGroup(activeMatch.matchGroup || "");
       if (activeMatch.actualScore && activeMatch.actualScore.includes("-")) {
         const parts = activeMatch.actualScore.split("-");
         setActualScoreEgypt(parts[0].trim());
@@ -225,7 +234,7 @@ export default function WorldCupCard() {
       ? `${scoreEgypt}-${scoreIran}`
       : "";
     console.log("Calculated scoreStr:", scoreStr);
-
+    
     try {
       const predictions = await readJSON("worldcup_predictions.json") || [];
       const predictionsArray = Array.isArray(predictions) ? predictions : [];
@@ -235,13 +244,15 @@ export default function WorldCupCard() {
         (p: any) => p && p.username && p.username.toLowerCase() === lowerUsername
       );
 
+      // Log the entire prediction object before saving
       const voteData = {
         username: lowerUsername,
         winner: selectedWinner,
         score: scoreStr,
         updatedAt: Date.now()
       };
-
+      console.log("Saving voteData:", voteData);
+      
       if (existingIndex > -1) {
         console.log("Updating existing prediction at index:", existingIndex);
         predictionsArray[existingIndex] = voteData;
@@ -249,10 +260,15 @@ export default function WorldCupCard() {
         console.log("Adding new prediction");
         predictionsArray.push(voteData);
       }
-
-      console.log("Saving predictionsArray:", predictionsArray);
+      
+      console.log("Saving full predictionsArray:", predictionsArray);
       await writeJSON("worldcup_predictions.json", predictionsArray);
       setVotingMessage({ type: "success", text: "Prediction successfully saved! 🎉" });
+      
+      // Verify load
+      const verifyPredictions = await readJSON("worldcup_predictions.json");
+      console.log("Verified predictions after save:", verifyPredictions);
+      
       await fetchMatchData();
     } catch (err: any) {
       console.error("Failed to submit prediction:", err);
@@ -272,7 +288,11 @@ export default function WorldCupCard() {
         title: (formTitle || "Egypt vs Iran — FIFA World Cup").trim(),
         dateTime: (formDateTime || "2026-06-26T21:00:00").trim(),
         liveStreamUrl: (formLiveStream || "").trim(),
+        isLive,
         isFinalized,
+        liveScoreEgypt: liveScoreEgypt.trim(),
+        liveScoreIran: liveScoreIran.trim(),
+        matchGroup: matchGroup.trim(),
         actualWinner,
         actualScore: (actualScoreEgypt.trim() !== "" && actualScoreIran.trim() !== "") 
           ? `${actualScoreEgypt.trim()}-${actualScoreIran.trim()}`
@@ -396,14 +416,35 @@ export default function WorldCupCard() {
         </div>
       </div>
 
-      {/* ── COUNTDOWN TIMER (ALWAYS VISIBLE BELOW MATCH DETAILS) ─────────── */}
+      {/* ── COUNTDOWN TIMER OR LIVE MATCH DETAILS (TOGGLEABLE) ─────────── */}
       <div className="p-5 flex flex-col items-center border-b border-white/20 bg-black/10">
-        <div className="text-[9px] font-black uppercase tracking-widest text-emerald-200 mb-2.5 flex items-center gap-1.5">
-          <Clock className="w-3 h-3 text-amber-300" />
-          <span>Match Kickoff Countdown</span>
+        <div className="text-[9px] font-black uppercase tracking-widest text-emerald-200 mb-2.5 flex items-center gap-1.5 justify-between w-full">
+          <div className="flex items-center gap-1.5">
+             <Clock className="w-3 h-3 text-amber-300" />
+             <span>{showLiveUpdates ? "Match Status" : "Kickoff Countdown"}</span>
+          </div>
+          {(isLive || isFinalized) && (
+            <button onClick={() => setShowLiveUpdates(!showLiveUpdates)} className="text-[8px] underline text-emerald-300 cursor-pointer">
+              {showLiveUpdates ? "Show Countdown" : "Show Live Details"}
+            </button>
+          )}
         </div>
 
-        {!timeLeft.isOver ? (
+        {showLiveUpdates && (isLive || isFinalized) ? (
+          <div className="flex flex-col items-center gap-2 py-2">
+             <div className="font-black text-xs text-emerald-200 uppercase tracking-widest bg-black/20 px-3 py-1 rounded-full">{matchGroup || "World Cup Match"}</div>
+             {isLive && (
+               <div className="flex items-center gap-3 bg-red-600/20 border border-red-500/30 p-3 rounded-lg shadow-inner">
+                 <span className="font-black text-3xl text-white">{liveScoreEgypt || "0"}</span>
+                 <span className="text-white/60 text-xl font-bold">-</span>
+                 <span className="font-black text-3xl text-white">{liveScoreIran || "0"}</span>
+               </div>
+             )}
+             {isFinalized && (
+               <div className="font-bold text-sm text-emerald-100 bg-emerald-900/40 px-3 py-1 rounded-lg">Final Score: {match.actualScore}</div>
+             )}
+          </div>
+        ) : !timeLeft.isOver ? (
           <div className="flex items-center justify-center gap-3">
             {/* Days */}
             <div className="flex flex-col items-center">
@@ -814,6 +855,19 @@ export default function WorldCupCard() {
                         required
                       />
                     </div>
+                    {/* Match Group */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black uppercase tracking-wider text-emerald-200 block">
+                        Group
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Group A"
+                        value={matchGroup}
+                        onChange={(e) => setMatchGroup(e.target.value)}
+                        className="w-full p-2 bg-black/30 border border-white/20 rounded text-xs text-white focus:outline-none focus:border-amber-400 font-semibold"
+                      />
+                    </div>
 
                     {/* Finalize Match */}
                     <div className="space-y-2 pt-2 border-t border-white/10">
@@ -859,6 +913,28 @@ export default function WorldCupCard() {
                         />
                         <span className="text-[10px] font-black uppercase tracking-wider text-white">Celebrate Egypt Wins</span>
                       </label>
+                    </div>
+
+                    {/* Live Match Settings */}
+                    <div className="pt-2 border-t border-white/10 space-y-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={isLive}
+                          onChange={(e) => setIsLive(e.target.checked)}
+                          className="accent-amber-400"
+                        />
+                        <span className="text-[10px] font-black uppercase tracking-wider text-white">Is Match Live?</span>
+                      </label>
+                      {isLive && (
+                        <div className="space-y-2 bg-black/30 p-3 rounded">
+                          <label className="text-[10px] font-black uppercase tracking-wider text-emerald-200 block">Live Score</label>
+                          <div className="flex gap-2">
+                             <input type="number" value={liveScoreEgypt} onChange={(e) => setLiveScoreEgypt(e.target.value)} className="w-full p-2 bg-black/30 border border-white/20 rounded text-xs text-white" placeholder="Egypt" />
+                             <input type="number" value={liveScoreIran} onChange={(e) => setLiveScoreIran(e.target.value)} className="w-full p-2 bg-black/30 border border-white/20 rounded text-xs text-white" placeholder="Iran" />
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Kickoff Local Time in Prague */}
