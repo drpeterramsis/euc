@@ -72,8 +72,8 @@
     "events": [
       {
         "id": "TS002-E1",
-        "time": "07:00",
-        "label": "Breakfast (7 - 9 AM)",
+        "time": "08:00",
+        "label": "Breakfast (07:00 - 09:00 AM)",
         "icon": "🍽️",
         "type": "hotel",
         "inputTimezone": "Europe/Prague",
@@ -154,8 +154,8 @@
     "events": [
       {
         "id": "TS003-E1",
-        "time": "07:00",
-        "label": "Breakfast (7 - 9 AM)",
+        "time": "08:00",
+        "label": "Breakfast (07:00 - 09:00 AM)",
         "icon": "🍽️",
         "type": "hotel",
         "inputTimezone": "Europe/Prague",
@@ -250,8 +250,8 @@
     "events": [
       {
         "id": "TSE_1781015004517",
-        "time": "07:00",
-        "label": "Breakfast (7 - 9 AM)",
+        "time": "08:00",
+        "label": "Breakfast (07:00 - 09:00 AM)",
         "icon": "📌",
         "type": "hotel",
         "inputTimezone": "Europe/Prague",
