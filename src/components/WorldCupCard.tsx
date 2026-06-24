@@ -1,5 +1,6 @@
 import React, { useState, useEffect, FormEvent } from "react";
 import { useApp } from "../context/AppContext";
+import confetti from 'canvas-confetti';
 import { 
   Trophy, 
   Tv, 
@@ -15,12 +16,17 @@ import {
 import { readJSON, writeJSON } from "../utils/github";
 
 export default function WorldCupCard() {
+  // ... (rest of state)
   const { currentUser } = useApp() as any;
   const [loading, setLoading] = useState(true);
   const [match, setMatch] = useState<any>({
     title: "Egypt vs Iran — FIFA World Cup",
     dateTime: "2026-06-26T21:00:00",
-    liveStreamUrl: ""
+    liveStreamUrl: "",
+    isFinalized: false,
+    actualWinner: "",
+    actualScore: "",
+    celebrateEgyptWins: false
   });
   const [votesSummary, setVotesSummary] = useState({
     egypt: 0,
@@ -46,6 +52,13 @@ export default function WorldCupCard() {
   const [votingMessage, setVotingMessage] = useState({ type: "", text: "" });
   const [isSubmittingVote, setIsSubmittingVote] = useState(false);
 
+  // Admin settings
+  const [isFinalized, setIsFinalized] = useState(false);
+  const [actualWinner, setActualWinner] = useState<"Egypt" | "Iran" | "Draw" | "">("");
+  const [actualScoreEgypt, setActualScoreEgypt] = useState("");
+  const [actualScoreIran, setActualScoreIran] = useState("");
+  const [celebrateEgyptWins, setCelebrateEgyptWins] = useState(false);
+
   // Admin voter breakdown
   const [votersList, setVotersList] = useState<any[]>([]);
   const [loadingVoters, setLoadingVoters] = useState(false);
@@ -58,6 +71,17 @@ export default function WorldCupCard() {
     seconds: 0,
     isOver: false
   });
+
+  // Celebration
+  useEffect(() => {
+    if (celebrateEgyptWins && actualWinner === "Egypt" && isFinalized) {
+       confetti({
+         particleCount: 150,
+         spread: 70,
+         origin: { y: 0.6 }
+       });
+    }
+  }, [celebrateEgyptWins, actualWinner, isFinalized]);
 
   const username = currentUser?.username || "";
   const isAdmin = currentUser?.role === "admin";
@@ -83,6 +107,14 @@ export default function WorldCupCard() {
       setFormTitle(activeMatch.title);
       setFormDateTime(activeMatch.dateTime);
       setFormLiveStream(activeMatch.liveStreamUrl || "");
+      setIsFinalized(activeMatch.isFinalized || false);
+      setActualWinner(activeMatch.actualWinner || "");
+      setCelebrateEgyptWins(activeMatch.celebrateEgyptWins || false);
+      if (activeMatch.actualScore && activeMatch.actualScore.includes("-")) {
+        const parts = activeMatch.actualScore.split("-");
+        setActualScoreEgypt(parts[0].trim());
+        setActualScoreIran(parts[1].trim());
+      }
 
       // 2. Fetch predictions
       const predictions = await readJSON("worldcup_predictions.json") || [];
@@ -182,7 +214,8 @@ export default function WorldCupCard() {
     setIsSubmittingVote(true);
     setVotingMessage({ type: "", text: "" });
 
-    const scoreStr = predictScoreEgypt !== "" && predictScoreIran !== "" 
+    console.log("Submitting vote:", { selectedWinner, predictScoreEgypt, predictScoreIran });
+    const scoreStr = (predictScoreEgypt.trim() !== "" && predictScoreIran.trim() !== "") 
       ? `${predictScoreEgypt.trim()}-${predictScoreIran.trim()}`
       : "";
 
@@ -229,6 +262,12 @@ export default function WorldCupCard() {
         title: (formTitle || "Egypt vs Iran — FIFA World Cup").trim(),
         dateTime: (formDateTime || "2026-06-26T21:00:00").trim(),
         liveStreamUrl: (formLiveStream || "").trim(),
+        isFinalized,
+        actualWinner,
+        actualScore: (actualScoreEgypt.trim() !== "" && actualScoreIran.trim() !== "") 
+          ? `${actualScoreEgypt.trim()}-${actualScoreIran.trim()}`
+          : "",
+        celebrateEgyptWins,
       };
 
       await writeJSON("worldcup_match.json", updatedMatch);
@@ -654,21 +693,28 @@ export default function WorldCupCard() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/10">
-                          {votersList.map((vote) => (
-                            <tr key={vote.username} className="hover:bg-white/5">
-                              <td className="py-2 font-bold text-white uppercase tracking-tight">
-                                {vote.username}
-                              </td>
-                              <td className="py-2 text-center">
-                                <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide border bg-black/20 border-white/20 text-white">
-                                  {vote.winner === "Egypt" ? "🇪🇬 Egypt" : vote.winner === "Iran" ? "🇮🇷 Iran" : "🤝 Draw"}
-                                </span>
-                              </td>
-                              <td className="py-2 text-right font-black text-amber-300 font-mono">
-                                {vote.score || "—"}
-                              </td>
-                            </tr>
-                          ))}
+                          {votersList.map((vote) => {
+                            const isWinnerCorrect = isFinalized && actualWinner && vote.winner === actualWinner;
+                            const isScoreCorrect = isFinalized && actualScoreEgypt && actualScoreIran && vote.score === `${actualScoreEgypt}-${actualScoreIran}`;
+
+                            return (
+                              <tr key={vote.username} className="hover:bg-white/5">
+                                <td className="py-2 font-bold text-white uppercase tracking-tight">
+                                  {vote.username}
+                                </td>
+                                <td className="py-2 text-center">
+                                  <span className={`inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide border ${isWinnerCorrect ? "bg-emerald-600 border-emerald-400" : "bg-black/20 border-white/20"} text-white`}>
+                                    {vote.winner === "Egypt" ? "🇪🇬 Egypt" : vote.winner === "Iran" ? "🇮🇷 Iran" : "🤝 Draw"}
+                                  </span>
+                                </td>
+                                <td className="py-2 text-right font-black text-amber-300 font-mono">
+                                  <span className={isScoreCorrect ? "bg-emerald-600 text-white px-1.5 py-0.5 rounded" : ""}>
+                                    {vote.score || "—"}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>
@@ -757,6 +803,52 @@ export default function WorldCupCard() {
                         className="w-full p-2 bg-black/30 border border-white/20 rounded text-xs text-white focus:outline-none focus:border-amber-400 font-semibold"
                         required
                       />
+                    </div>
+
+                    {/* Finalize Match */}
+                    <div className="space-y-2 pt-2 border-t border-white/10">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={isFinalized}
+                          onChange={(e) => setIsFinalized(e.target.checked)}
+                          className="accent-amber-400"
+                        />
+                        <span className="text-[10px] font-black uppercase tracking-wider text-white">Finalize Match Result</span>
+                      </label>
+                      {isFinalized && (
+                        <div className="space-y-2 bg-black/30 p-3 rounded">
+                          <label className="text-[10px] font-black uppercase tracking-wider text-emerald-200 block">Actual Winner</label>
+                          <select 
+                            value={actualWinner}
+                            onChange={(e) => setActualWinner(e.target.value as any)}
+                            className="w-full p-2 bg-black/30 border border-white/20 rounded text-xs text-white"
+                          >
+                            <option value="">Select Winner</option>
+                            <option value="Egypt">Egypt</option>
+                            <option value="Iran">Iran</option>
+                            <option value="Draw">Draw</option>
+                          </select>
+                          <label className="text-[10px] font-black uppercase tracking-wider text-emerald-200 block">Actual Score</label>
+                          <div className="flex gap-2">
+                             <input type="number" value={actualScoreEgypt} onChange={(e) => setActualScoreEgypt(e.target.value)} className="w-full p-2 bg-black/30 border border-white/20 rounded text-xs text-white" placeholder="Egypt" />
+                             <input type="number" value={actualScoreIran} onChange={(e) => setActualScoreIran(e.target.value)} className="w-full p-2 bg-black/30 border border-white/20 rounded text-xs text-white" placeholder="Iran" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Celebrate Egypt Wins */}
+                    <div className="pt-2 border-t border-white/10">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={celebrateEgyptWins}
+                          onChange={(e) => setCelebrateEgyptWins(e.target.checked)}
+                          className="accent-amber-400"
+                        />
+                        <span className="text-[10px] font-black uppercase tracking-wider text-white">Celebrate Egypt Wins</span>
+                      </label>
                     </div>
 
                     {/* Kickoff Local Time in Prague */}
