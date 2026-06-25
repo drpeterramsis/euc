@@ -31,18 +31,21 @@
   },
   {
     "id": "ses003",
-    "date": "2026-06-27",
     "title": "From Symptoms to Solutions : Practical BPH Cases and Clinical Decision-Making",
     "speaker": "Prof. Mohamed Abdel Rasoul",
-    "speakerPhoto": "https://dl.dropboxusercontent.com/scl/fi/q792qt9qdnyuhelnh66so/Mohamed.Abdelrassoul.jpg?rlkey=lmjkz2e6n08in8wzgyhpjxqvl&st=dfg5v6ev",
     "speakerJob": "Professor of Urology, Cairo University\nHead of Scientific committee of the MESSM",
-    "speakerWhatsApp": "+201223592805",
+    "date": "2026-06-27",
     "time": "10:00",
     "toTime": "12:00",
     "hall": "Main Hall A",
-    "topic": "BPH Diagnosis and Treatment",
+    "link": "https://PollEv.com/mohammedabdouabdelrassoul009?qr=1",
+    "linkUrl": "https://PollEv.com/mohammedabdouabdelrassoul009?qr=1",
+    "linkTitle": "Vote",
+    "timezoneDisplay": "prague",
+    "speakerPhoto": "https://dl.dropboxusercontent.com/scl/fi/q792qt9qdnyuhelnh66so/Mohamed.Abdelrassoul.jpg?rlkey=lmjkz2e6n08in8wzgyhpjxqvl&st=dfg5v6ev",
+    "speakerWhatsApp": "+201223592805",
     "inputTimezone": "Europe/Prague",
-    "timezoneDisplay": "prague"
+    "datetime_utc": "2026-06-27T07:00:00.000Z"
   },
   {
     "id": "ses004",
