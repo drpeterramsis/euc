@@ -573,20 +573,24 @@
         "departureAirport": "Cairo, (Cairo Intl)",
         "departureAirportLink": "https://maps.app.goo.gl/eqq3eSQEkkb9nEPz7",
         "departureAirportPhotoUrl": "https://dl.dropboxusercontent.com/scl/fi/bck8538s5pp109ns47tk7/cairo_airport.webp?rlkey=ikmzh780qea8juim09o44bp9p&st=sov4t97n",
-        "terminal": "3",
         "arrivalAirport": "Prague, (Vaclav Havel)",
         "arrivalAirportLink": "https://maps.app.goo.gl/hEMvxstxDQ3ySn447",
         "arrivalAirportPhotoUrl": "https://dl.dropboxusercontent.com/scl/fi/kjjra5b0zs63ubfupye3a/prague_airport.jpg?rlkey=bd40zfck0pbbdh2te8jipk4xi&st=cy4e4qvc",
+        "terminal": "3",
+        "gate": "",
+        "inputTimezone": "Africa/Cairo",
+        "timezoneDisplay": "both",
         "arrivalTime": "15:45",
         "arrivalDate": "25 June 2026",
         "arrivalTerminal": "1",
+        "arrivalGate": "",
         "duration": "03:55 (Non stop)",
         "aircraft": "AIRBUS A320NEO",
         "baggage": "2 pieces * 23 Kg",
         "meal": "Flight meal",
-        "specialMeal": "",
         "cabinClass": "Economy",
-        "bookingStatus": "Confirmed"
+        "bookingStatus": "Confirmed",
+        "frequentFlyerNumber": ""
       },
       "arrival": {
         "flightNumber": "MS 790",
@@ -595,20 +599,24 @@
         "departureAirport": "Prague, (Vaclav Havel)",
         "departureAirportLink": "https://maps.app.goo.gl/hEMvxstxDQ3ySn447",
         "departureAirportPhotoUrl": "https://dl.dropboxusercontent.com/scl/fi/kjjra5b0zs63ubfupye3a/prague_airport.jpg?rlkey=bd40zfck0pbbdh2te8jipk4xi&st=cy4e4qvc",
-        "terminal": "1",
         "arrivalAirport": "Cairo, (Cairo Intl)",
         "arrivalAirportLink": "https://maps.app.goo.gl/eqq3eSQEkkb9nEPz7",
         "arrivalAirportPhotoUrl": "https://dl.dropboxusercontent.com/scl/fi/bck8538s5pp109ns47tk7/cairo_airport.webp?rlkey=ikmzh780qea8juim09o44bp9p&st=sov4t97n",
+        "terminal": "1",
+        "gate": "",
+        "inputTimezone": "Africa/Cairo",
+        "timezoneDisplay": "both",
         "arrivalTime": "21:45",
         "arrivalDate": "28 June 2026",
         "arrivalTerminal": "3",
+        "arrivalGate": "",
         "duration": "03:50 (Non stop)",
         "aircraft": "BOEING 737-800",
         "baggage": "2 pieces * 23 Kg",
         "meal": "Flight meal",
-        "specialMeal": "",
         "cabinClass": "Economy",
-        "bookingStatus": "Confirmed"
+        "bookingStatus": "Confirmed",
+        "frequentFlyerNumber": ""
       }
     },
     "hotel": {
@@ -616,7 +624,7 @@
       "address": "Evropská 15, 160 41 Praha 6, Czech Republic",
       "checkIn": "2026-06-25",
       "checkOut": "2026-06-28",
-      "roomNumber": "Allocated upon arrival",
+      "roomNumber": "628",
       "mapsLink": "https://maps.app.goo.gl/526iVtZV4oZUQ8Sh6",
       "photoUrl": "https://dl.dropboxusercontent.com/scl/fi/lf60zdhhkwucu3zhmc074/Diplomat-Hotel-Prague.png?rlkey=iit6sq96u71ug40mb3603yyky&st=ojhoihcn"
     },
@@ -641,12 +649,8 @@
       }
     },
     "visibleFields": {
-      "flightNumber": true,
-      "departureDate": true,
-      "departureTime": true,
-      "departureAirport": true,
-      "arrivalAirport": true,
-      "arrivalTime": true,
+      "departure": true,
+      "arrival": true,
       "hotelName": true,
       "hotelAddress": true,
       "checkIn": true,
@@ -655,8 +659,16 @@
       "mapsLink": true,
       "transfers": true,
       "email": true,
-      "phone": true
-    }
+      "phone": true,
+      "flightNumber": true,
+      "departureDate": true,
+      "departureTime": true,
+      "departureAirport": true,
+      "arrivalAirport": true,
+      "arrivalTime": true
+    },
+    "photo": "https://dl.dropboxusercontent.com/scl/fi/qkujcyjin2fvn4xu22b32/Ahmed.Abdellatif.jpg?rlkey=c7s0bzweg7r2jbmtx5k6c5pup&st=t84h1k9c",
+    "transfers": []
   },
   {
     "id": "U004",
