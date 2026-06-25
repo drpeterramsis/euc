@@ -26,7 +26,7 @@
       },
       {
         "id": "TS001-E3",
-        "time": "17:30",
+        "time": "16:30",
         "label": "Check-in - Vienna House Diplomat Prague",
         "icon": "🏨",
         "type": "hotel",
@@ -40,7 +40,7 @@
       },
       {
         "id": "TSE_1781013670060",
-        "time": "20:45",
+        "time": "19:45",
         "label": "Gather at Lobby to move to dinner",
         "icon": "🚌",
         "type": "activity",
@@ -50,7 +50,7 @@
       },
       {
         "id": "TSE_1781013739551",
-        "time": "21:00",
+        "time": "20:00",
         "label": "Dinner at U Cedru Resturant",
         "icon": "🍽️",
         "type": "activity",
