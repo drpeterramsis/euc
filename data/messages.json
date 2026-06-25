@@ -1,18 +1,1 @@
-[
-  {
-    "id": "msg_002",
-    "title": "Dinner Tonight at 8PM",
-    "body": "Please meet at the hotel lobby at 7:45PM for the group transfer.",
-    "status": "scheduled",
-    "category": "logistics",
-    "scheduledAt": "2025-06-11T17:00:00Z",
-    "publishedAt": null,
-    "expiresAt": "2025-06-11T22:00:00Z",
-    "priority": "normal",
-    "recipients": "all",
-    "buttons": [],
-    "createdBy": "admin",
-    "readBy": [],
-    "pinned": false
-  }
-]
+[]
