@@ -72,7 +72,7 @@
     "events": [
       {
         "id": "TS002-E1",
-        "time": "08:00",
+        "time": "07:00",
         "label": "Breakfast (07:00 - 09:00 AM)",
         "icon": "🍽️",
         "type": "hotel",
@@ -82,7 +82,7 @@
       },
       {
         "id": "TS002-E2",
-        "time": "10:00",
+        "time": "09:00",
         "label": "Scientific Session",
         "icon": "🎤",
         "type": "session",
@@ -92,7 +92,7 @@
       },
       {
         "id": "TS002-E3",
-        "time": "13:15",
+        "time": "12:15",
         "label": "Gather to City Tour",
         "icon": "🚌",
         "type": "hotel",
@@ -102,7 +102,7 @@
       },
       {
         "id": "TSE_1781014169284",
-        "time": "13:30",
+        "time": "12:30",
         "label": "City Tour Prague",
         "icon": "🏛️",
         "type": "travel",
@@ -112,7 +112,7 @@
       },
       {
         "id": "TSE_1781014219062",
-        "time": "17:30",
+        "time": "16:30",
         "label": "Dinner at Charles Bridge Resturant",
         "icon": "🍽️",
         "type": "activity",
@@ -126,7 +126,7 @@
       },
       {
         "id": "TSE_1781014361013",
-        "time": "19:00",
+        "time": "18:00",
         "label": "Back to Hotel",
         "icon": "🚌",
         "type": "travel",
@@ -136,7 +136,7 @@
       },
       {
         "id": "TSE_1781014410793",
-        "time": "19:30",
+        "time": "18:30",
         "label": "Free Time",
         "icon": "📌",
         "type": "break",
@@ -154,7 +154,7 @@
     "events": [
       {
         "id": "TS003-E1",
-        "time": "08:00",
+        "time": "07:00",
         "label": "Breakfast (07:00 - 09:00 AM)",
         "icon": "🍽️",
         "type": "hotel",
@@ -164,7 +164,7 @@
       },
       {
         "id": "TS003-E2",
-        "time": "10:00",
+        "time": "09:00",
         "label": "Scientific Session",
         "icon": "🎤",
         "type": "session",
@@ -174,7 +174,7 @@
       },
       {
         "id": "TS003-E3",
-        "time": "13:15",
+        "time": "12:15",
         "label": "Gather at Lobby",
         "icon": "👥",
         "type": "hotel",
@@ -184,7 +184,7 @@
       },
       {
         "id": "TSE_1781014603752",
-        "time": "13:30",
+        "time": "12:30",
         "label": "Move to Fashion Arena",
         "icon": "🚌",
         "type": "travel",
@@ -198,7 +198,7 @@
       },
       {
         "id": "TSE_1781014744176",
-        "time": "19:00",
+        "time": "18:00",
         "label": "Move From Fashion Arena",
         "icon": "🚌",
         "type": "travel",
@@ -208,7 +208,7 @@
       },
       {
         "id": "TSE_1781014799812",
-        "time": "20:00",
+        "time": "19:00",
         "label": "Dinner with show at Folklore Garden Resturant",
         "icon": "🍽️",
         "type": "activity",
@@ -222,7 +222,7 @@
       },
       {
         "id": "TSE_1781014914915",
-        "time": "22:00",
+        "time": "21:00",
         "label": "Back to Hotel",
         "icon": "🚌",
         "type": "travel",
@@ -232,7 +232,7 @@
       },
       {
         "id": "TSE_1781014950771",
-        "time": "23:00",
+        "time": "22:00",
         "label": "Free Time",
         "icon": "📌",
         "type": "break",
@@ -250,7 +250,7 @@
     "events": [
       {
         "id": "TSE_1781015004517",
-        "time": "08:00",
+        "time": "07:00",
         "label": "Breakfast (07:00 - 09:00 AM)",
         "icon": "📌",
         "type": "hotel",
@@ -260,7 +260,7 @@
       },
       {
         "id": "TS004-E1",
-        "time": "12:45",
+        "time": "11:45",
         "label": "Check-out - and Move to airport",
         "icon": "🏨",
         "type": "hotel",
@@ -270,7 +270,7 @@
       },
       {
         "id": "TS004-E2",
-        "time": "17:45",
+        "time": "16:45",
         "label": "Depart Prague - MS 790",
         "icon": "✈️",
         "type": "travel",
