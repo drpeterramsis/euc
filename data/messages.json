@@ -1,5 +1,26 @@
 [
   {
+    "id": "48eb9e61-240f-4882-83e9-d40e5f61d56f",
+    "title": "🏨 Hotel Check-in",
+    "body": "You can find your hotel room number in My Profile.",
+    "category": "general",
+    "status": "published",
+    "scheduledAt": null,
+    "publishedAt": "2026-06-25T14:56:37.352Z",
+    "expiresAt": null,
+    "priority": "high",
+    "recipients": "all",
+    "buttons": [],
+    "createdBy": "admin",
+    "readBy": [],
+    "pinned": true,
+    "imageUrl": "",
+    "inputTimezone": "Africa/Cairo",
+    "inputTimezoneExpires": "Africa/Cairo",
+    "timezoneDisplay": "both",
+    "timezoneDisplayExpires": "both"
+  },
+  {
     "id": "f424970a-7484-4b9b-826b-8075263fc977",
     "title": "🇨🇿 Welcome to Prague!",
     "body": "We're delighted to welcome you to Prague. We hope you had a pleasant flight and wish you a wonderful stay.\n\nEnjoy the event, and thank you for joining us!",
