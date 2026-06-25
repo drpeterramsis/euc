@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "id": "8fda58c6-f11a-45c8-a294-18aee6e922a3",
+    "title": "✈️ Airport Check In",
+    "body": "Kindly check in using the app upon your arrival at Cairo Airport.",
+    "category": "general",
+    "status": "published",
+    "scheduledAt": null,
+    "publishedAt": "2026-06-25T06:10:41.325Z",
+    "expiresAt": null,
+    "priority": "normal",
+    "recipients": "all",
+    "buttons": [
+      {
+        "label": "CHECK IN",
+        "link": "/checkins",
+        "style": "primary"
+      }
+    ],
+    "createdBy": "admin",
+    "readBy": [],
+    "pinned": false,
+    "imageUrl": "",
+    "inputTimezone": "Africa/Cairo",
+    "inputTimezoneExpires": "Africa/Cairo",
+    "timezoneDisplay": "both",
+    "timezoneDisplayExpires": "both"
+  }
+]
