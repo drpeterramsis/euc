@@ -1,5 +1,32 @@
 [
   {
+    "id": "0e679b2a-587a-47e0-a60c-e4cc18ec99cd",
+    "title": "🍔 U Cedru Resturant 🍽",
+    "body": "Please check-in once arrived",
+    "category": "general",
+    "status": "published",
+    "scheduledAt": null,
+    "publishedAt": "2026-06-25T18:01:06.232Z",
+    "expiresAt": null,
+    "priority": "normal",
+    "recipients": "all",
+    "buttons": [
+      {
+        "label": "Open Check-In",
+        "link": "/checkins",
+        "style": "primary"
+      }
+    ],
+    "createdBy": "admin",
+    "readBy": [],
+    "pinned": false,
+    "imageUrl": "",
+    "inputTimezone": "Africa/Cairo",
+    "inputTimezoneExpires": "Africa/Cairo",
+    "timezoneDisplay": "both",
+    "timezoneDisplayExpires": "both"
+  },
+  {
     "id": "48eb9e61-240f-4882-83e9-d40e5f61d56f",
     "title": "🏨 Hotel Check-in",
     "body": "You can find your hotel room number in My Profile.",
