@@ -10,7 +10,13 @@
     "expiresAt": null,
     "priority": "high",
     "recipients": "all",
-    "buttons": [],
+    "buttons": [
+      {
+        "label": "Profile",
+        "link": "/profile",
+        "style": "primary"
+      }
+    ],
     "createdBy": "admin",
     "readBy": [],
     "pinned": true,
