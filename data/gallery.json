@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "id": "gallery_1782426848351",
+    "type": "gallery",
+    "title": "🇨🇿 Prague Moments",
+    "category": "trip-gallery",
+    "publishedAt": "2026-06-25T22:34:08.351Z",
+    "scheduledAt": null,
+    "images": [
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782426848351/1782427415182_1.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782426848351/1782427419805_3.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782426848351/1782427457156_0.jpg",
+        "caption": ""
+      }
+    ],
+    "showInFeed": true,
+    "showInLatest": true,
+    "uploadedBy": "admin",
+    "allowDownload": true
+  }
+]
