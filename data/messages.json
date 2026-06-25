@@ -35,7 +35,7 @@
     "scheduledAt": null,
     "publishedAt": "2026-06-25T14:56:37.352Z",
     "expiresAt": null,
-    "priority": "high",
+    "priority": "normal",
     "recipients": "all",
     "buttons": [
       {
@@ -46,7 +46,7 @@
     ],
     "createdBy": "admin",
     "readBy": [],
-    "pinned": true,
+    "pinned": false,
     "imageUrl": "",
     "inputTimezone": "Africa/Cairo",
     "inputTimezoneExpires": "Africa/Cairo",
