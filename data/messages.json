@@ -1,24 +1,5 @@
 [
   {
-    "id": "msg_001",
-    "title": "Welcome to Prague!",
-    "body": "We are excited to have you here. Check the schedule for today's sessions.",
-    "status": "published",
-    "category": "urgent",
-    "scheduledAt": "2025-06-10T08:00:00Z",
-    "publishedAt": "2025-06-10T08:00:00Z",
-    "expiresAt": "2025-06-15T23:59:00Z",
-    "priority": "high",
-    "recipients": "all",
-    "buttons": [
-      { "label": "View Schedule", "link": "/schedule", "style": "primary" },
-      { "label": "View Map", "link": "/map", "style": "secondary" }
-    ],
-    "createdBy": "admin",
-    "readBy": [],
-    "pinned": true
-  },
-  {
     "id": "msg_002",
     "title": "Dinner Tonight at 8PM",
     "body": "Please meet at the hotel lobby at 7:45PM for the group transfer.",
