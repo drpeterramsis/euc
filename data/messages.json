@@ -1,5 +1,26 @@
 [
   {
+    "id": "a5cc8afc-4920-4f0f-91a3-d249cf495b91",
+    "title": "🛫 Boarding Gate H04",
+    "body": "Please proceed to Departure Gate H04 for boarding.\n\nWe wish you a safe and pleasant flight! ✈️",
+    "category": "general",
+    "status": "published",
+    "scheduledAt": null,
+    "publishedAt": "2026-06-25T08:09:33.113Z",
+    "expiresAt": null,
+    "priority": "high",
+    "recipients": "all",
+    "buttons": [],
+    "createdBy": "admin",
+    "readBy": [],
+    "pinned": true,
+    "imageUrl": "",
+    "inputTimezone": "Africa/Cairo",
+    "inputTimezoneExpires": "Africa/Cairo",
+    "timezoneDisplay": "both",
+    "timezoneDisplayExpires": "both"
+  },
+  {
     "id": "99cf5676-06ba-4e4a-8422-83514867e385",
     "title": "✨️ Michael Melad",
     "body": "Dear Professors,\n\nIt is a great pleasure to welcome you to this event. I am truly honored to have the opportunity to meet you in person.\n\nWishing you a safe and pleasant journey. We look forward to welcoming you and sharing a successful and memorable event together.\n\nMichael Melad\nMarketing Head\nUrology Domain | EVA Pharma",
