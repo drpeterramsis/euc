@@ -10,7 +10,13 @@
     "expiresAt": null,
     "priority": "normal",
     "recipients": "all",
-    "buttons": [],
+    "buttons": [
+      {
+        "label": "Open Gallery",
+        "link": "/media",
+        "style": "primary"
+      }
+    ],
     "createdBy": "admin",
     "readBy": [],
     "pinned": true,
