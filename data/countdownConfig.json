@@ -73,6 +73,15 @@
       "color": "blue",
       "inputTimezone": "Europe/Prague",
       "timezoneDisplay": "prague"
+    },
+    {
+      "id": "CT_1782458418853",
+      "label": "Free Time",
+      "datetime": "2026-06-26T15:30:00.000Z",
+      "icon": "🚶",
+      "color": "yellow",
+      "inputTimezone": "Europe/Prague",
+      "timezoneDisplay": "prague"
     }
   ]
 }
