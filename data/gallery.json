@@ -326,5 +326,39 @@
     "showInLatest": true,
     "uploadedBy": "admin",
     "allowDownload": true
+  },
+  {
+    "id": "gallery_1782510198844",
+    "type": "gallery",
+    "title": "Dr. Ahmed Abosief",
+    "category": "trip-gallery",
+    "publishedAt": "2026-06-26T21:43:18.844Z",
+    "scheduledAt": null,
+    "images": [
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782510198844/1782510239598_0.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782510198844/1782510244699_1.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782510198844/1782510252344_3.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782510198844/1782510255439_4.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782510198844/1782510258442_5.jpg",
+        "caption": ""
+      }
+    ],
+    "showInFeed": true,
+    "showInLatest": true,
+    "uploadedBy": "admin",
+    "allowDownload": true
   }
 ]
