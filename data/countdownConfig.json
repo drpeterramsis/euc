@@ -37,6 +37,15 @@
       "color": "gray",
       "inputTimezone": "Europe/Prague",
       "timezoneDisplay": "prague"
+    },
+    {
+      "id": "CT_1782458159852",
+      "label": "Gather to city tour",
+      "datetime": "2026-06-26T09:15:00.000Z",
+      "icon": "🚌",
+      "color": "green",
+      "inputTimezone": "Europe/Prague",
+      "timezoneDisplay": "prague"
     }
   ]
 }
