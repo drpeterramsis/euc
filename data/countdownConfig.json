@@ -136,6 +136,15 @@
       "color": "gray",
       "inputTimezone": "Europe/Prague",
       "timezoneDisplay": "prague"
+    },
+    {
+      "id": "CT_1782458926177",
+      "label": "Breakfast",
+      "datetime": "2026-06-28T03:00:00.000Z",
+      "icon": "🍽️",
+      "color": "green",
+      "inputTimezone": "Europe/Prague",
+      "timezoneDisplay": "prague"
     }
   ]
 }
