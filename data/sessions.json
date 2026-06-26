@@ -55,18 +55,21 @@
   },
   {
     "id": "ses004",
-    "date": "2026-06-27",
     "title": "portfolio session",
     "speaker": "Dr. Michael Milad",
-    "speakerPhoto": "https://dl.dropboxusercontent.com/scl/fi/8ul5psuqgtdcl76td5b4q/Michael.Melad.jpg?rlkey=c5c30icwhfzpe51dh3mjvc49r&st=t7mgyw2r",
     "speakerJob": "Marketing Lead",
-    "speakerWhatsApp": "201069993301",
+    "date": "2026-06-27",
     "time": "12:00",
     "toTime": "13:00",
-    "hall": "Main Hall A",
-    "topic": "Strategic Portfolios",
+    "hall": "CRACOW II",
+    "link": "",
+    "linkUrl": "",
+    "linkTitle": "",
+    "timezoneDisplay": "prague",
+    "speakerPhoto": "https://dl.dropboxusercontent.com/scl/fi/8ul5psuqgtdcl76td5b4q/Michael.Melad.jpg?rlkey=c5c30icwhfzpe51dh3mjvc49r&st=t7mgyw2r",
+    "speakerWhatsApp": "201069993301",
     "inputTimezone": "Europe/Prague",
-    "timezoneDisplay": "prague"
+    "datetime_utc": "2026-06-27T09:00:00.000Z"
   },
   {
     "id": "ses005",
