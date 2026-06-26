@@ -73,17 +73,20 @@
   },
   {
     "id": "ses005",
-    "date": "2026-06-27",
     "title": "portfolio session",
     "speaker": "Dr. Mahmoud Abdelaty",
-    "speakerPhoto": "https://dl.dropboxusercontent.com/scl/fi/gez2bkappvxz7aarrjypb/Mahmoud.Abdelaty.jpg?rlkey=horls6oycffole2ze9ahuwfhg&st=f4tl4hkb",
     "speakerJob": "Product Manager",
-    "speakerWhatsApp": "201026060462",
+    "date": "2026-06-27",
     "time": "12:00",
     "toTime": "13:00",
-    "hall": "Main Hall A",
-    "topic": "Product Portfolio",
+    "hall": "CRACOW II",
+    "link": "",
+    "linkUrl": "",
+    "linkTitle": "",
+    "timezoneDisplay": "prague",
+    "speakerPhoto": "https://dl.dropboxusercontent.com/scl/fi/gez2bkappvxz7aarrjypb/Mahmoud.Abdelaty.jpg?rlkey=horls6oycffole2ze9ahuwfhg&st=f4tl4hkb",
+    "speakerWhatsApp": "201026060462",
     "inputTimezone": "Europe/Prague",
-    "timezoneDisplay": "prague"
+    "datetime_utc": "2026-06-27T09:00:00.000Z"
   }
 ]
