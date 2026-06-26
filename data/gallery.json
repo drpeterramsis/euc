@@ -28,5 +28,71 @@
     "showInLatest": true,
     "uploadedBy": "admin",
     "allowDownload": true
+  },
+  {
+    "id": "gallery_1782469299985",
+    "type": "gallery",
+    "title": "Day 2 🔸️ Scientific meeting",
+    "category": "trip-gallery",
+    "publishedAt": "2026-06-26T10:21:39.985Z",
+    "scheduledAt": null,
+    "images": [
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469350506_0.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469356220_1.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469363017_2.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469369719_3.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469376064_4.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469383173_5.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469389720_6.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469400557_8.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469406764_9.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469411887_10.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469420578_11.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469427749_12.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782469299985/1782469508210_0.jpg",
+        "caption": ""
+      }
+    ],
+    "showInFeed": true,
+    "showInLatest": true,
+    "uploadedBy": "admin",
+    "allowDownload": true
   }
 ]
