@@ -82,6 +82,42 @@
       "color": "yellow",
       "inputTimezone": "Europe/Prague",
       "timezoneDisplay": "prague"
+    },
+    {
+      "id": "CT_1782458516265",
+      "label": "Breakfast",
+      "datetime": "2026-06-27T03:00:00.000Z",
+      "icon": "☕",
+      "color": "green",
+      "inputTimezone": "Europe/Prague",
+      "timezoneDisplay": "prague"
+    },
+    {
+      "id": "CT_1782458547008",
+      "label": "Scientific Sessions",
+      "datetime": "2026-06-27T06:00:00.000Z",
+      "icon": "🎤",
+      "color": "gray",
+      "inputTimezone": "Europe/Prague",
+      "timezoneDisplay": "prague"
+    },
+    {
+      "id": "CT_1782458644466",
+      "label": "Move to Fashion Arena",
+      "datetime": "2026-06-27T09:30:00.000Z",
+      "icon": "🚌",
+      "color": "green",
+      "inputTimezone": "Europe/Prague",
+      "timezoneDisplay": "prague"
+    },
+    {
+      "id": "CT_1782458683396",
+      "label": "Move from Fashion Arena",
+      "datetime": "2026-06-27T15:00:00.000Z",
+      "icon": "🚌",
+      "color": "red",
+      "inputTimezone": "Europe/Prague",
+      "timezoneDisplay": "prague"
     }
   ]
 }
