@@ -28,6 +28,15 @@
       "color": "gray",
       "inputTimezone": "Africa/Cairo",
       "timezoneDisplay": "cairo"
+    },
+    {
+      "id": "CT_1782458060027",
+      "label": "Scientific Sessions",
+      "datetime": "2026-06-26T06:00:00.000Z",
+      "icon": "🎤",
+      "color": "gray",
+      "inputTimezone": "Europe/Prague",
+      "timezoneDisplay": "prague"
     }
   ]
 }
