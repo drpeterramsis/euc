@@ -46,6 +46,15 @@
       "color": "green",
       "inputTimezone": "Europe/Prague",
       "timezoneDisplay": "prague"
+    },
+    {
+      "id": "CT_1782458267254",
+      "label": "City Tour Prague",
+      "datetime": "2026-06-26T09:30:00.000Z",
+      "icon": "📍",
+      "color": "green",
+      "inputTimezone": "Europe/Prague",
+      "timezoneDisplay": "prague"
     }
   ]
 }
