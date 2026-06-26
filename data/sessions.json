@@ -19,18 +19,21 @@
   },
   {
     "id": "ses002",
-    "date": "2026-06-26",
     "title": "Erectile Dysfunction: Clinical Decision Making through Evidence-based Real Case Management",
     "speaker": "Prof. Ayman Rashed",
-    "speakerPhoto": "https://dl.dropboxusercontent.com/scl/fi/8amofrvt7zxj8de8bdtu9/Ayman.Rashed.jpg?rlkey=3j5pv1p6zkua1gf6zgda88gl2&st=hly2yhp3",
     "speakerJob": "Prof. of Urology - October 6th University",
-    "speakerWhatsApp": "+201006023284",
+    "date": "2026-06-26",
     "time": "11:30",
     "toTime": "13:00",
-    "hall": "Main Hall A",
-    "topic": "Clinical Case Studies",
+    "hall": "CRACOW II",
+    "link": "",
+    "linkUrl": "",
+    "linkTitle": "",
+    "timezoneDisplay": "prague",
+    "speakerPhoto": "https://dl.dropboxusercontent.com/scl/fi/8amofrvt7zxj8de8bdtu9/Ayman.Rashed.jpg?rlkey=3j5pv1p6zkua1gf6zgda88gl2&st=hly2yhp3",
+    "speakerWhatsApp": "+201006023284",
     "inputTimezone": "Europe/Prague",
-    "timezoneDisplay": "prague"
+    "datetime_utc": "2026-06-26T08:30:00.000Z"
   },
   {
     "id": "ses003",
