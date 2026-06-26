@@ -168,5 +168,59 @@
     "showInLatest": true,
     "uploadedBy": "admin",
     "allowDownload": true
+  },
+  {
+    "id": "gallery_1782484827454",
+    "type": "gallery",
+    "title": "Charle Bridge Resturant",
+    "category": "trip-gallery",
+    "publishedAt": "2026-06-26T14:40:27.454Z",
+    "scheduledAt": null,
+    "images": [
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782484827454/1782484908376_0.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782484827454/1782484912097_1.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782484827454/1782484915429_2.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782484827454/1782484918919_3.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782484827454/1782484922118_4.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782484827454/1782484925001_5.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782484827454/1782484928138_6.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782484827454/1782484930910_7.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782484827454/1782484933487_8.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782484827454/1782484936190_9.jpg",
+        "caption": ""
+      }
+    ],
+    "showInFeed": true,
+    "showInLatest": true,
+    "uploadedBy": "admin",
+    "allowDownload": true
   }
 ]
