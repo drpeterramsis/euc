@@ -1,18 +1,21 @@
 [
   {
     "id": "ses001",
-    "date": "2026-06-26",
     "title": "Corporate Session",
     "speaker": "Dr. Happy Raafat",
-    "speakerPhoto": "https://dl.dropboxusercontent.com/scl/fi/p0ii8vt9kyr5q41gveo6j/Happy.Raafat.jpg?rlkey=nt196kht64wtos2v0v75mszio&st=i4bvq0rr",
     "speakerJob": "Senior Line Sales Manager",
-    "speakerWhatsApp": "201061777718",
+    "date": "2026-06-26",
     "time": "10:00",
     "toTime": "11:30",
-    "hall": "Main Hall A",
-    "topic": "Scientific and Corporate Updates",
+    "hall": "CRACOW II",
+    "link": "",
+    "linkUrl": "",
+    "linkTitle": "",
+    "timezoneDisplay": "prague",
+    "speakerPhoto": "https://dl.dropboxusercontent.com/scl/fi/p0ii8vt9kyr5q41gveo6j/Happy.Raafat.jpg?rlkey=nt196kht64wtos2v0v75mszio&st=i4bvq0rr",
+    "speakerWhatsApp": "201061777718",
     "inputTimezone": "Europe/Prague",
-    "timezoneDisplay": "prague"
+    "datetime_utc": "2026-06-26T07:00:00.000Z"
   },
   {
     "id": "ses002",
