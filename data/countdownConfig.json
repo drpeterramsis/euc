@@ -64,6 +64,15 @@
       "color": "green",
       "inputTimezone": "Europe/Prague",
       "timezoneDisplay": "prague"
+    },
+    {
+      "id": "CT_1782458376942",
+      "label": "Back to Hotel",
+      "datetime": "2026-06-26T15:00:00.000Z",
+      "icon": "🏨",
+      "color": "blue",
+      "inputTimezone": "Europe/Prague",
+      "timezoneDisplay": "prague"
     }
   ]
 }
