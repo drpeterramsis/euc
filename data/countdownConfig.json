@@ -148,12 +148,12 @@
     },
     {
       "id": "CT_1782459051222",
-      "label": "🇪🇬 Egypt vs Iran 🇮🇷",
+      "label": "EGYPT 🇪🇬 vs 🇮🇷 IRAN",
       "datetime": "2026-06-27T02:30:00.000Z",
       "icon": "⚽",
       "color": "gray",
-      "inputTimezone": "Africa/Cairo",
-      "timezoneDisplay": "both"
+      "inputTimezone": "Europe/Prague",
+      "timezoneDisplay": "prague"
     }
   ]
 }
