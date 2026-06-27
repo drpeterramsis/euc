@@ -650,5 +650,35 @@
     "showInLatest": true,
     "uploadedBy": "admin",
     "allowDownload": true
+  },
+  {
+    "id": "gallery_1782582561201",
+    "type": "gallery",
+    "title": "Day 3",
+    "category": "trip-gallery",
+    "publishedAt": "2026-06-27T17:49:21.201Z",
+    "scheduledAt": null,
+    "images": [
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782582561201/1782582573507_1.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782582561201/1782582577825_3.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782582561201/1782582602297_0.jpg",
+        "caption": ""
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782582561201/1782582611127_0.jpg",
+        "caption": ""
+      }
+    ],
+    "showInFeed": true,
+    "showInLatest": true,
+    "uploadedBy": "admin",
+    "allowDownload": true
   }
 ]
