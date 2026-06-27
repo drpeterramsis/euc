@@ -10,7 +10,7 @@
   ],
   "isLive": false,
   "isFinalized": false,
-  "isPredictionsClosed": false,
+  "isPredictionsClosed": true,
   "liveScoreEgypt": "",
   "liveScoreIran": "",
   "matchGroup": "",
