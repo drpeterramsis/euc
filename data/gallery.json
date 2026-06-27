@@ -330,7 +330,7 @@
   {
     "id": "gallery_1782510198844",
     "type": "gallery",
-    "title": "Prague Moments 2",
+    "title": "Prague City Tour",
     "category": "trip-gallery",
     "publishedAt": "2026-06-26T21:43:18.844Z",
     "scheduledAt": null,
@@ -365,14 +365,6 @@
       },
       {
         "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782510198844/1782510381501_0.jpg",
-        "caption": ""
-      },
-      {
-        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782510198844/1782527580723_0.jpg",
-        "caption": ""
-      },
-      {
-        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782510198844/1782527586275_2.jpg",
         "caption": ""
       }
     ],
