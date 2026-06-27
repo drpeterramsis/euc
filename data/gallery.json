@@ -716,5 +716,23 @@
     "showInLatest": true,
     "uploadedBy": "admin",
     "allowDownload": true
+  },
+  {
+    "id": "gallery_1782591036060",
+    "type": "gallery",
+    "title": "Dr. Happy Birthday 🎂 ",
+    "category": "trip-gallery",
+    "publishedAt": "2026-06-27T20:10:36.060Z",
+    "scheduledAt": null,
+    "images": [
+      {
+        "url": "https://raw.githubusercontent.com/drpeterramsis/euc/main/data/photos/gallery_1782591036060/1782591056072_1.jpg",
+        "caption": ""
+      }
+    ],
+    "showInFeed": true,
+    "showInLatest": true,
+    "uploadedBy": "admin",
+    "allowDownload": true
   }
 ]
