@@ -5,14 +5,14 @@
   "additionalLinks": [
     {
       "label": "🇭🇲 VS 🇧🇪",
-      "url": "https://strm01.app/?m=30667&lang=ar"
+      "url": "https://a.kora-sia.com/bein-2/"
     }
   ],
   "isLive": false,
   "isFinalized": false,
   "isPredictionsClosed": true,
-  "liveScoreEgypt": "",
-  "liveScoreIran": "",
+  "liveScoreEgypt": "1",
+  "liveScoreIran": "1",
   "matchGroup": "",
   "actualWinner": "",
   "actualScore": "",
