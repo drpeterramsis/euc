@@ -8,13 +8,13 @@
       "url": "https://a.kora-sia.com/bein-2/"
     }
   ],
-  "isLive": true,
-  "isFinalized": false,
+  "isLive": false,
+  "isFinalized": true,
   "isPredictionsClosed": true,
   "liveScoreEgypt": "1",
   "liveScoreIran": "1",
   "matchGroup": "",
-  "actualWinner": "",
-  "actualScore": "",
-  "celebrateEgyptWins": false
+  "actualWinner": "Draw",
+  "actualScore": "1-1",
+  "celebrateEgyptWins": true
 }
