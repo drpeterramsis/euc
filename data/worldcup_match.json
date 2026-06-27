@@ -4,12 +4,8 @@
   "liveStreamUrl": "https://strm01.app/?m=30668&lang=ar",
   "additionalLinks": [
     {
-      "label": "🇫🇷 VS 🇳🇴",
+      "label": "🇭🇲 VS 🇧🇪",
       "url": "https://strm01.app/?m=30667&lang=ar"
-    },
-    {
-      "label": "🇮🇶  VS 🇸🇳",
-      "url": "https://strm01.app/?m=30668&lang=ar"
     }
   ],
   "isLive": false,
