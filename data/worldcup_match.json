@@ -8,7 +8,7 @@
       "url": "https://a.kora-sia.com/bein-2/"
     }
   ],
-  "isLive": false,
+  "isLive": true,
   "isFinalized": false,
   "isPredictionsClosed": true,
   "liveScoreEgypt": "1",
